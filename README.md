@@ -10,7 +10,7 @@ Every tier drives the same game world. A short, voice-led placement game picks e
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
 
-> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Voice-over is recorded (ElevenLabs, Indonesian and English). Still needed before launch: an app icon and artwork, and Play Console setup.
+> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Voice-over is recorded (ElevenLabs, Indonesian and English) and the app icon is done. Still needed before launch: character artwork, store listing graphics, and Play Console setup.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -86,6 +86,7 @@ lib/
 test/              Mirrors lib/
 .githooks/         Versioned Git hooks for commit-message validation
 tool/              Developer scripts (voice-over recording script)
+branding/          App icon source (SVG), rendered PNGs and branding/render.sh
 website/           Static landing page for cobalagi.ardeman.com, plus screenshots
 assets/config/     skills.json (skill map), adaptive.json (learning thresholds),
                    pretest.json (placement rules and warm-up vocabulary)
@@ -165,6 +166,10 @@ After adding or replacing clips, Android builds may keep using an old asset list
 `website/` is published to [cobalagi.ardeman.com](https://cobalagi.ardeman.com) by GitHub Pages. `.github/workflows/pages.yml` deploys it on every push to `master` that changes `website/`, and can also be run by hand from the Actions tab. Preview locally with `open website/index.html`; add `?lang=en` or `?lang=id` to pick a language.
 
 One-time setup (already done for this repo): Pages source **GitHub Actions**, custom domain `cobalagi.ardeman.com` (also in `website/CNAME`), and a DNS `CNAME` record `cobalagi` → `ardeman.github.io`.
+
+## App icon
+
+The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-colour version for Android 13 themed icons in `branding/icon_monochrome.svg`. After editing either, run `branding/render.sh`: it renders the PNGs with headless Chrome and generates every platform's icons with `flutter_launcher_icons` (config: `flutter_launcher_icons.yaml`). `branding/play_store_icon.png` is the 512 × 512 icon for the Play Console.
 
 ## Roadmap (MVP)
 

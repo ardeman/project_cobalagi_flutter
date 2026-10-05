@@ -1,0 +1,26 @@
+# App icons for every platform, generated from branding/ by:
+#   dart run flutter_launcher_icons
+# Edit the SVGs in branding/, then run branding/render.sh (renders and generates).
+flutter_launcher_icons:
+  image_path: branding/icon.png
+  android: true
+  min_sdk_android: 21
+  adaptive_icon_background: branding/icon_background.png
+  adaptive_icon_foreground: branding/icon_foreground.png
+  adaptive_icon_monochrome: branding/icon_monochrome.png
+  # The art already sits inside Android's safe zone, so no extra padding.
+  adaptive_icon_foreground_inset: 0
+  ios: true
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: branding/icon.png
+    background_color: "#00a6a6"
+    theme_color: "#00a6a6"
+  macos:
+    generate: true
+    image_path: branding/icon.png
+  windows:
+    generate: true
+    image_path: branding/icon.png
+    icon_size: 256

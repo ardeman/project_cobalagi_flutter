@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Coba Lagi app icon. Layers (ids) are exported separately for Android's
+       adaptive icon: #background, #foreground, and a monochrome version. -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#14b8b8"/>
+      <stop offset="1" stop-color="#008c8c"/>
+    </linearGradient>
+  </defs>
+  <g id="background">
+    <rect width="1024" height="1024" fill="url(#sky)"/>
+    <circle cx="512" cy="560" r="300" fill="#ffffff" opacity=".12"/>
+  </g>
+  <!-- Everything in #foreground stays inside the central 66% (Android safe zone). -->
+  <g id="foreground">
+    <ellipse cx="520" cy="700" rx="190" ry="34" fill="#004d4d" opacity=".25"/>
+    <path d="M512 228 L588 330 H436 Z" fill="#ff7a59"/>
+    <circle cx="512" cy="530" r="210" fill="#ff7a59"/>
+    <circle cx="512" cy="600" r="104" fill="#ffb199"/>
+    <circle cx="436" cy="462" r="54" fill="#ffffff"/>
+    <circle cx="588" cy="462" r="54" fill="#ffffff"/>
+    <circle cx="444" cy="448" r="26" fill="#263238"/>
+    <circle cx="596" cy="448" r="26" fill="#263238"/>
+    <circle cx="452" cy="440" r="8" fill="#ffffff"/>
+    <circle cx="604" cy="440" r="8" fill="#ffffff"/>
+    <path transform="translate(712 330) rotate(12)" fill="#ffc83d" stroke="#f59e0b" stroke-width="10" stroke-linejoin="round"
+          d="M0 -62 L18 -20 L62 -18 L28 10 L40 54 L0 28 L-40 54 L-28 10 L-62 -18 L-18 -20 Z"/>
+  </g>
+</svg>

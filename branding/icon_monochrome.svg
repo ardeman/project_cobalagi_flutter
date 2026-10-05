@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Android 13+ themed icon: one colour, eyes cut out so it stays a face. -->
+  <defs>
+    <mask id="eyes">
+      <rect width="1024" height="1024" fill="#fff"/>
+      <circle cx="436" cy="462" r="54" fill="#000"/>
+      <circle cx="588" cy="462" r="54" fill="#000"/>
+    </mask>
+  </defs>
+  <g fill="#ffffff">
+    <g mask="url(#eyes)">
+      <path d="M512 228 L588 330 H436 Z"/>
+      <circle cx="512" cy="530" r="210"/>
+    </g>
+    <circle cx="444" cy="448" r="26"/>
+    <circle cx="596" cy="448" r="26"/>
+    <path transform="translate(712 330) rotate(12)"
+          d="M0 -62 L18 -20 L62 -18 L28 10 L40 54 L0 28 L-40 54 L-28 10 L-62 -18 L-18 -20 Z"/>
+  </g>
+</svg>

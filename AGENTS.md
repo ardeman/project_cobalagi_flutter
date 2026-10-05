@@ -40,6 +40,11 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - **App identity:** don't change the package name `cobalagi` or the ID `com.ardeman.cobalagi` without being asked.
 - **Version:** bump `version:` in `pubspec.yaml` only when asked.
 
+## App icon
+
+- App icons are generated from `branding/` by `branding/render.sh`. Never hand-edit the generated icons under `android/`, `ios/`, `web/`, `macos/` or `windows/`; change the SVG and re-run the script.
+- Keep the foreground art inside the central 66% of `icon.svg` (Android's adaptive-icon safe zone).
+
 ## Website
 
 - `website/` is the static site for cobalagi.ardeman.com: `index.html` (landing page), `privacy.html` (privacy policy, linked from the Play listing), shared `site.css` and `site.js`, and `screenshots/`. It makes no external requests (no web fonts, analytics or CDNs), to match the app's privacy promise.
