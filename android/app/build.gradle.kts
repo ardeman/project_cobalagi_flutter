@@ -59,3 +59,16 @@ android {
 flutter {
     source = "../.."
 }
+
+// Never ship the macOS test voices from tool/test_voices.dart.
+val testVoices = rootProject.file("../assets/audio/TEST_VOICES")
+tasks.matching { it.name == "preReleaseBuild" }.configureEach {
+    doFirst {
+        if (testVoices.exists()) {
+            throw GradleException(
+                "assets/audio/ holds macOS test voices, which must not be released. " +
+                    "Run: dart run tool/test_voices.dart --clean",
+            )
+        }
+    }
+}

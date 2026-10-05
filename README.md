@@ -106,6 +106,17 @@ dart run tool/voice_script.dart en > voice_en.csv   # English
 
 Record each row as an MP3 at the listed path (`assets/audio/<language>/<clipId>.mp3`). Run the script again to see what is still missing.
 
+**Test voices (macOS):** to hear the voice flow before real recordings exist, generate every clip with the Mac's built-in voices (Damayanti for Indonesian, Flo for English):
+
+```sh
+dart run tool/test_voices.dart          # create missing clips (needs ffmpeg)
+dart run tool/test_voices.dart --clean  # remove them again
+```
+
+Apple's license doesn't cover shipping these voices, so they are git-ignored, marked by `assets/audio/TEST_VOICES`, and **release builds refuse to build while that marker exists**. When real recordings arrive, run `--clean`, delete the two voice-clip lines in `.gitignore`, and commit the recordings.
+
+After adding or replacing clips, Android builds may keep using an old asset list. Clear it with `rm -rf build/app/intermediates/flutter .dart_tool/flutter_build` (or `flutter clean`) before building.
+
 ## Release (Google Play)
 
 1. Create an upload key once and keep it safe (never commit it):
