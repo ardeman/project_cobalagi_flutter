@@ -221,13 +221,13 @@ abstract class AppLocalizations {
   /// No description provided for @planFree.
   ///
   /// In en, this message translates to:
-  /// **'Free: 1 player'**
+  /// **'Regular: 1 player'**
   String get planFree;
 
   /// No description provided for @planFull.
   ///
   /// In en, this message translates to:
-  /// **'Supporter: up to {count} players'**
+  /// **'Sponsor: up to {count} players'**
   String planFull(int count);
 
   /// No description provided for @supportCobaLagi.

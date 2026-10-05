@@ -73,11 +73,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plan => 'Version';
 
   @override
-  String get planFree => 'Free: 1 player';
+  String get planFree => 'Regular: 1 player';
 
   @override
   String planFull(int count) {
-    return 'Supporter: up to $count players';
+    return 'Sponsor: up to $count players';
   }
 
   @override

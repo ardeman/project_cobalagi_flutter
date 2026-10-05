@@ -37,8 +37,8 @@
   "languageIndonesian": "Bahasa Indonesia",
   "languageEnglish": "English",
   "plan": "Version",
-  "planFree": "Free: 1 player",
-  "planFull": "Supporter: up to {count} players",
+  "planFree": "Regular: 1 player",
+  "planFull": "Sponsor: up to {count} players",
   "@planFull": {
     "placeholders": {
       "count": {

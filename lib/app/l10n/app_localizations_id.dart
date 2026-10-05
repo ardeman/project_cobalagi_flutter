@@ -73,11 +73,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get plan => 'Versi';
 
   @override
-  String get planFree => 'Gratis: 1 pemain';
+  String get planFree => 'Reguler: 1 pemain';
 
   @override
   String planFull(int count) {
-    return 'Pendukung: hingga $count pemain';
+    return 'Sponsor: hingga $count pemain';
   }
 
   @override
