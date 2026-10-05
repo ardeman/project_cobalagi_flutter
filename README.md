@@ -137,8 +137,10 @@ After adding or replacing clips, Android builds may keep using an old asset list
 1. Create an upload key once and keep it safe (never commit it):
 
    ```sh
-   keytool -genkey -v -keystore ~/cobalagi-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+   "/Applications/Android Studio.app/Contents/jbr/Contents/Home/bin/keytool" -genkey -v -keystore ~/cobalagi-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
    ```
+
+   macOS has no system Java, so this uses the Java bundled with Android Studio. Back up the `.jks` file and its password outside this Mac; without them you can't publish updates.
 
 2. Create `android/key.properties` (git-ignored):
 
