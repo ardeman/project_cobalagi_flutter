@@ -13,11 +13,20 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - Files use `snake_case.dart` and types use `UpperCamelCase`. Use one public widget per file once `lib/` grows past `main.dart`.
 - Use `const` constructors wherever you can. Prefer `StatelessWidget` and keep state as local as possible.
 - Import project code with `package:cobalagi/...` imports, not relative paths that climb out of `lib/`.
-- Don't add a state-management, routing or DI package unless the task asks for one. That is an architectural decision, so record it in the "Decisions" section below.
+- State lives in Cubits (`flutter_bloc`). Services reach widgets through `RepositoryProvider`/`BlocProvider`, built in `lib/app/app.dart`; there is no service locator.
+- A feature folder is split into `data/` (models, repositories), `cubit/` (state) and `view/` (widgets).
+- `lib/engine/` and `lib/learning/` are pure Dart: no Flutter imports, so they can be tested headless.
+- Every editor (icon blocks, word blocks, typed code) compiles to the shared `Program` in `lib/engine/`. Never add an editor-specific path into the world or interpreter.
+- User-facing text goes in both `lib/app/l10n/app_en.arb` and `app_id.arb`; never hardcode strings. Voice clips live at `assets/audio/<id|en>/<clipId>.mp3`.
+- Learning thresholds and skill prerequisites belong in `assets/config/`, not in code.
+- Layouts adapt via `WindowClass`/`WindowClassBuilder` (`lib/core/responsive/`), not fixed device sizes. Tap targets are at least 64dp.
+- Drag-and-drop must work with touch and mouse (`Draggable`/`DragTarget`), with tap-to-add as an alternative.
 
 ## Guardrails
 
-- **Dependencies:** add packages with `flutter pub add <pkg>` (not by hand-editing versions). Commit `pubspec.lock`, because this is an app.
+- **Dependencies:** before adding a package, confirm on pub.dev that it supports Android, iOS and web. Add it with `flutter pub add <pkg>` (not by hand-editing versions), commit `pubspec.lock` (this is an app), and record the choice under "Decisions".
+- **Children's app (Google Play Families):** no ads, analytics, tracking or crash-reporting SDKs and no network calls. Data stays on the device, and a profile holds only a nickname and avatar. Settings, purchases and external links sit behind the parent gate (`showParentGate`). Never show purchase prompts to children.
+- **Builds:** build and run only for Android or macOS desktop. Don't trigger iOS builds. Keep code compatible with iOS, web and desktop anyway.
 - **Platform folders** (`android/`, `ios/`, etc.) are mostly generated. Edit them only for platform config such as permissions, the app ID or signing. Never edit `ios/Flutter/Generated.xcconfig`, `**/GeneratedPluginRegistrant.*` or anything under `build/` or `.dart_tool/`.
 - **Secrets:** never commit keystores, `key.properties`, `google-services.json`/`GoogleService-Info.plist` with real keys, `.env` files or API tokens.
 - **App identity:** don't change the package name `cobalagi` or the ID `com.ardeman.cobalagi` without being asked.
@@ -33,4 +42,11 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 
 Record architectural choices here as one line each: date, decision, reason.
 
-- _None yet._
+- 2026-10-05: `flutter_bloc` + `flame_bloc` for state. `flutter_riverpod` 3.4.3 fails pub.dev's web check (imports `flutter_test` → `dart:io`).
+- 2026-10-05: `go_router` for routing; `sembast` (+ `sembast_web` on IndexedDB) for local storage behind repositories.
+- 2026-10-05: `path_provider` is allowed without web support: it is imported only on native via `lib/core/storage/database_factory_io.dart`.
+- 2026-10-05: Flame for the game world, Rive (`flame_rive`) for characters later; placeholder shapes until then. Flame is added in Phase 2.
+- 2026-10-05: Paid version is a one-time "full version" unlock (free: 1 profile, full: `Plan.full.maxProfiles`). Checks go through `EntitlementService`/`EntitlementCubit` only. Store billing (`in_app_purchase`, no web support) arrives in Phase 5; platforms without store billing stay free.
+- 2026-10-05: Released on Google Play only for now.
+- 2026-10-05: Voice-over uses prerecorded clips, not TTS. Missing clips are skipped silently.
+- 2026-10-05: The pretest sets each child's starting point. Directions levels exist and serve as the review target for Sequencing; children who pass the pretest's left/right check skip them.

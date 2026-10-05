@@ -1,11 +1,11 @@
 {
-    "name": "cobalagi",
-    "short_name": "cobalagi",
+    "name": "Coba Lagi",
+    "short_name": "Coba Lagi",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Coba Lagi: a coding-learning app for children.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,0 +1,52 @@
+{
+  "@@locale": "en",
+  "appTitle": "Coba Lagi",
+  "whoIsPlaying": "Who's playing?",
+  "addPlayer": "New player",
+  "nickname": "Nickname",
+  "chooseAvatar": "Choose a friend",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "ok": "OK",
+  "greeting": "Hi, {name}!",
+  "@greeting": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "play": "Play",
+  "comingSoon": "Coming soon!",
+  "askAGrownUp": "Ask a grown-up",
+  "parentGateQuestion": "What is {a} × {b}?",
+  "@parentGateQuestion": {
+    "placeholders": {
+      "a": {"type": "int"},
+      "b": {"type": "int"}
+    }
+  },
+  "parentGateWrong": "Not quite. Try again.",
+  "parentArea": "Parent area",
+  "language": "Language",
+  "languageSystem": "Same as device",
+  "languageIndonesian": "Bahasa Indonesia",
+  "languageEnglish": "English",
+  "plan": "Version",
+  "planFree": "Free: 1 player",
+  "planFull": "Full version: up to {count} players",
+  "@planFull": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "unlockFullVersion": "Unlock full version",
+  "debugPlanOverride": "Debug: use full version",
+  "players": "Players",
+  "deletePlayerConfirm": "Delete {name} and all their progress?",
+  "@deletePlayerConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "playerLimitReached": "This version has room for one player. Ask a grown-up."
+}
