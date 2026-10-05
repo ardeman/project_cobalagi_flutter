@@ -10,7 +10,7 @@ Every tier drives the same game world. A short, voice-led placement game picks e
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
 
-> **Status:** Phase 0 (foundation) is done: profiles, parent gate, language switch and the free/full plan check. The game itself starts in Phase 1.
+> **Status:** Phases 0–1 are done: the app shell (profiles, parent gate, language switch, free/full plan check) and the headless game engine. The playable game screen comes in Phase 2.
 
 | | |
 | --- | --- |
@@ -66,7 +66,7 @@ lib/
   main.dart        Opens storage, wires services, starts the app
   app/             App widget, router, theme, l10n (ARB files + generated code)
   core/            Shared services: storage, settings, entitlement, audio, responsive
-  engine/          (Phase 1) Pure Dart: instruction set, world, interpreter, puzzle generator
+  engine/          Pure Dart: instruction set (program/), levels (world/), interpreter, solver + puzzle generator
   learning/        (Phase 3) Pure Dart: skill graph, mastery, advance/practice/review rules
   features/        One folder per feature (profiles, home, parent, …)
 test/              Mirrors lib/
@@ -82,7 +82,7 @@ android/ ios/ web/ macos/ linux/ windows/
 | Phase | Scope |
 | --- | --- |
 | 0. Foundation ✅ | Packages, theme, Indonesian/English, routing, local storage, responsive layout, audio, profiles, parent gate, free/full plan check |
-| 1. Engine | Instruction set, world, interpreter, level JSON, solver (unit-tested, no UI) |
+| 1. Engine ✅ | Instruction set, world, interpreter, level JSON, solver (unit-tested, no UI) |
 | 2. Play + Tier 1 | Flame world with placeholder shapes, icon-block editor, run/step/reset, Directions and Sequencing levels |
 | 3. Learning loop | Attempt tracking, mastery, advance/practice/review, generated variations, Loops levels, adventure map |
 | 4. Pretest | Reading check and pre-skills, voice-led and adaptive; placement; parent override |

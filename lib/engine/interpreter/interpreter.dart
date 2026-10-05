@@ -1,0 +1,112 @@
+import '../program/instruction.dart';
+import '../program/program.dart';
+import '../world/direction.dart';
+import '../world/grid_point.dart';
+import '../world/level.dart';
+import 'run_event.dart';
+
+/// Each single-cell move and each turn counts as one step.
+const defaultStepLimit = 1000;
+
+/// Runs [program] on [level] and returns every event plus the outcome.
+///
+/// Deterministic: the same program and level always give the same result. The
+/// run stops as soon as the goal is reached with all stars, on a bump, or at
+/// [stepLimit].
+RunResult runProgram(
+  Program program,
+  Level level, {
+  int stepLimit = defaultStepLimit,
+}) {
+  final run = _Run(level, stepLimit);
+  RunOutcome outcome;
+  try {
+    run.execute(program.body);
+    outcome = run.position != level.goal
+        ? RunOutcome.stoppedShort
+        : RunOutcome.missedStars;
+  } on _Halt catch (halt) {
+    outcome = halt.outcome;
+  }
+  // A program that starts on a solved level (no moves needed) still succeeds.
+  if (outcome != RunOutcome.bumped &&
+      outcome != RunOutcome.tooManySteps &&
+      run.isSolved) {
+    outcome = RunOutcome.success;
+  }
+  return RunResult(
+    outcome: outcome,
+    events: List.unmodifiable(run.events),
+    position: run.position,
+    facing: run.facing,
+    starsCollected: run.collected.length,
+    steps: run.steps,
+  );
+}
+
+final class _Halt implements Exception {
+  const _Halt(this.outcome);
+
+  final RunOutcome outcome;
+}
+
+final class _Run {
+  _Run(this.level, this.stepLimit)
+    : position = level.start,
+      facing = level.startFacing;
+
+  final Level level;
+  final int stepLimit;
+  final events = <RunEvent>[];
+  final collected = <GridPoint>{};
+  GridPoint position;
+  Direction facing;
+  var steps = 0;
+
+  bool get isSolved =>
+      position == level.goal && collected.length == level.stars.length;
+
+  void execute(List<Instruction> body) {
+    for (final instruction in body) {
+      switch (instruction) {
+        case Move(:final steps):
+          for (var i = 0; i < steps; i++) {
+            _step(instruction);
+          }
+        case TurnLeft():
+          _turn(facing.left, instruction);
+        case TurnRight():
+          _turn(facing.right, instruction);
+        case Repeat(:final times, :final body):
+          for (var i = 0; i < times; i++) {
+            execute(body);
+          }
+      }
+    }
+  }
+
+  void _tick() {
+    if (++steps > stepLimit) throw const _Halt(RunOutcome.tooManySteps);
+  }
+
+  void _step(Instruction source) {
+    _tick();
+    final next = position.step(facing);
+    if (!level.isOpen(next)) {
+      events.add(Bumped(position, facing, source.blockId));
+      throw const _Halt(RunOutcome.bumped);
+    }
+    events.add(Moved(position, next, source.blockId));
+    position = next;
+    if (level.stars.contains(next) && collected.add(next)) {
+      events.add(Collected(next, source.blockId));
+    }
+    if (isSolved) throw const _Halt(RunOutcome.success);
+  }
+
+  void _turn(Direction to, Instruction source) {
+    _tick();
+    events.add(Turned(facing, to, source.blockId));
+    facing = to;
+  }
+}
