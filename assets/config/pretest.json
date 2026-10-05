@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "readsWordsAt": 2,
+    "rules": [
+      { "start": "loops", "minimum": { "direction": 2, "sequencing": 3, "pattern": 2 } },
+      { "start": "sequencing", "minimum": { "direction": 2, "sequencing": 1 } }
+    ],
+    "fallback": "directions"
+  },
+  "vocabulary": {
+    "objects": ["sun", "star", "house", "car", "tree", "ball", "flower", "boat", "bird", "cake"],
+    "colors": ["red", "blue", "green", "yellow"]
+  }
+}

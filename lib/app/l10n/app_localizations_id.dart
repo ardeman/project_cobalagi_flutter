@@ -129,9 +129,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get blockRepeat => 'Ulangi';
 
   @override
-  String get successTitle => 'Hore!';
-
-  @override
   String get nextLevel => 'Lanjut';
 
   @override
@@ -181,9 +178,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get decisionMapComplete => 'Kamu sudah menjelajahi semua pulau!';
 
   @override
-  String get goodTry => 'Usaha yang bagus!';
-
-  @override
   String get skipPuzzle => 'Coba yang lain';
 
   @override
@@ -197,4 +191,140 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get dropBlocksHere => 'Taruh blok di sini';
+
+  @override
+  String get pretestWelcome => 'Ayo main pemanasan dulu!';
+
+  @override
+  String get pretestStart => 'Mulai';
+
+  @override
+  String get listenAgain => 'Dengar lagi';
+
+  @override
+  String get promptReading => 'Gambar mana yang cocok dengan tulisan ini?';
+
+  @override
+  String get promptCounting => 'Ada berapa?';
+
+  @override
+  String get promptSideLeft => 'Sentuh yang di sebelah kiri.';
+
+  @override
+  String get promptSideRight => 'Sentuh yang di sebelah kanan.';
+
+  @override
+  String get promptTurnLeft => 'Panah belok kiri. Sekarang menunjuk ke mana?';
+
+  @override
+  String get promptTurnRight => 'Panah belok kanan. Sekarang menunjuk ke mana?';
+
+  @override
+  String get promptPattern => 'Apa yang selanjutnya?';
+
+  @override
+  String get promptSequencing => 'Langkah mana yang sampai ke bendera?';
+
+  @override
+  String get pretestDone => 'Selesai! Petualanganmu dimulai sekarang.';
+
+  @override
+  String get startAdventure => 'Ayo!';
+
+  @override
+  String get wordSun => 'matahari';
+
+  @override
+  String get wordStar => 'bintang';
+
+  @override
+  String get wordHouse => 'rumah';
+
+  @override
+  String get wordCar => 'mobil';
+
+  @override
+  String get wordTree => 'pohon';
+
+  @override
+  String get wordBall => 'bola';
+
+  @override
+  String get wordFlower => 'bunga';
+
+  @override
+  String get wordBoat => 'perahu';
+
+  @override
+  String get wordBird => 'burung';
+
+  @override
+  String get wordCake => 'kue';
+
+  @override
+  String get colorRed => 'merah';
+
+  @override
+  String get colorBlue => 'biru';
+
+  @override
+  String get colorGreen => 'hijau';
+
+  @override
+  String get colorYellow => 'kuning';
+
+  @override
+  String wordsWithColor(String color, String object) {
+    return '$object $color';
+  }
+
+  @override
+  String get startingIsland => 'Pulau awal';
+
+  @override
+  String get retakePretest => 'Main pemanasan lagi';
+
+  @override
+  String placementStartsAt(String island) {
+    return 'Mulai di: $island';
+  }
+
+  @override
+  String get placementNotYet => 'Belum main pemanasan';
+
+  @override
+  String get setByParent => 'diatur orang dewasa';
+
+  @override
+  String get cheerCelebrate1 => 'Hebat!';
+
+  @override
+  String get cheerCelebrate2 => 'Keren!';
+
+  @override
+  String get cheerCelebrate3 => 'Kamu berhasil!';
+
+  @override
+  String get cheerCelebrate4 => 'Super!';
+
+  @override
+  String get cheerCelebrate5 => 'Wah, bagus sekali!';
+
+  @override
+  String get cheerCelebrate6 => 'Luar biasa!';
+
+  @override
+  String get cheerEncourage1 => 'Pemikiran yang bagus!';
+
+  @override
+  String get cheerEncourage2 => 'Usaha yang bagus!';
+
+  @override
+  String get cheerEncourage3 => 'Ayo lanjut!';
+
+  @override
+  String get cheerEncourage4 => 'Terima kasih sudah mencoba!';
+
+  @override
+  String get cheerEncourage5 => 'Kamu hebat!';
 }

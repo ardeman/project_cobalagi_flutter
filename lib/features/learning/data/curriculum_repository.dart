@@ -5,14 +5,24 @@ import 'package:flutter/services.dart';
 import '../../../engine/world/level.dart';
 import '../../../learning/adaptive_config.dart';
 import '../../../learning/learning_engine.dart';
+import '../../../learning/placement/placement.dart';
 import '../../../learning/skill_graph.dart';
 import '../../play/data/level_repository.dart';
 
 /// The skill map, the learning thresholds and the hand-made lessons.
 final class Curriculum {
-  const Curriculum({required this.engine, required this.lessons});
+  const Curriculum({
+    required this.engine,
+    required this.lessons,
+    required this.placementRules,
+    required this.vocabulary,
+  });
 
   final LearningEngine engine;
+  final PlacementRules placementRules;
+
+  /// Object and color ids the warm-up game may use.
+  final Map<String, Object?> vocabulary;
 
   /// Lessons per concept id, in play order.
   final Map<String, List<Level>> lessons;
@@ -50,9 +60,15 @@ class CurriculumRepository {
             as Map<String, Object?>;
     final graph = SkillGraph.fromJson(await json('skills'));
     final config = AdaptiveConfig.fromJson(await json('adaptive'));
+    final pretest = await json('pretest');
+    final rules = PlacementRules.fromJson(
+      pretest['placement']! as Map<String, Object?>,
+    )..checkAgainst(graph);
     return Curriculum(
       engine: LearningEngine(graph, config),
       lessons: await _levels.loadLessons(),
+      placementRules: rules,
+      vocabulary: pretest['vocabulary']! as Map<String, Object?>,
     );
   }
 }

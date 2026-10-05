@@ -320,12 +320,6 @@ abstract class AppLocalizations {
   /// **'Repeat'**
   String get blockRepeat;
 
-  /// No description provided for @successTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Hooray!'**
-  String get successTitle;
-
   /// No description provided for @nextLevel.
   ///
   /// In en, this message translates to:
@@ -422,12 +416,6 @@ abstract class AppLocalizations {
   /// **'You explored every island!'**
   String get decisionMapComplete;
 
-  /// No description provided for @goodTry.
-  ///
-  /// In en, this message translates to:
-  /// **'Good try!'**
-  String get goodTry;
-
   /// No description provided for @skipPuzzle.
   ///
   /// In en, this message translates to:
@@ -457,6 +445,270 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Put blocks here'**
   String get dropBlocksHere;
+
+  /// No description provided for @pretestWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s play a warm-up game!'**
+  String get pretestWelcome;
+
+  /// No description provided for @pretestStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get pretestStart;
+
+  /// No description provided for @listenAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen again'**
+  String get listenAgain;
+
+  /// No description provided for @promptReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Which picture matches the words?'**
+  String get promptReading;
+
+  /// No description provided for @promptCounting.
+  ///
+  /// In en, this message translates to:
+  /// **'How many are there?'**
+  String get promptCounting;
+
+  /// No description provided for @promptSideLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the one on the left.'**
+  String get promptSideLeft;
+
+  /// No description provided for @promptSideRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the one on the right.'**
+  String get promptSideRight;
+
+  /// No description provided for @promptTurnLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'The arrow turns left. Which way does it point now?'**
+  String get promptTurnLeft;
+
+  /// No description provided for @promptTurnRight.
+  ///
+  /// In en, this message translates to:
+  /// **'The arrow turns right. Which way does it point now?'**
+  String get promptTurnRight;
+
+  /// No description provided for @promptPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'What comes next?'**
+  String get promptPattern;
+
+  /// No description provided for @promptSequencing.
+  ///
+  /// In en, this message translates to:
+  /// **'Which steps reach the flag?'**
+  String get promptSequencing;
+
+  /// No description provided for @pretestDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All done! Your adventure starts now.'**
+  String get pretestDone;
+
+  /// No description provided for @startAdventure.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go!'**
+  String get startAdventure;
+
+  /// No description provided for @wordSun.
+  ///
+  /// In en, this message translates to:
+  /// **'sun'**
+  String get wordSun;
+
+  /// No description provided for @wordStar.
+  ///
+  /// In en, this message translates to:
+  /// **'star'**
+  String get wordStar;
+
+  /// No description provided for @wordHouse.
+  ///
+  /// In en, this message translates to:
+  /// **'house'**
+  String get wordHouse;
+
+  /// No description provided for @wordCar.
+  ///
+  /// In en, this message translates to:
+  /// **'car'**
+  String get wordCar;
+
+  /// No description provided for @wordTree.
+  ///
+  /// In en, this message translates to:
+  /// **'tree'**
+  String get wordTree;
+
+  /// No description provided for @wordBall.
+  ///
+  /// In en, this message translates to:
+  /// **'ball'**
+  String get wordBall;
+
+  /// No description provided for @wordFlower.
+  ///
+  /// In en, this message translates to:
+  /// **'flower'**
+  String get wordFlower;
+
+  /// No description provided for @wordBoat.
+  ///
+  /// In en, this message translates to:
+  /// **'boat'**
+  String get wordBoat;
+
+  /// No description provided for @wordBird.
+  ///
+  /// In en, this message translates to:
+  /// **'bird'**
+  String get wordBird;
+
+  /// No description provided for @wordCake.
+  ///
+  /// In en, this message translates to:
+  /// **'cake'**
+  String get wordCake;
+
+  /// No description provided for @colorRed.
+  ///
+  /// In en, this message translates to:
+  /// **'red'**
+  String get colorRed;
+
+  /// No description provided for @colorBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'blue'**
+  String get colorBlue;
+
+  /// No description provided for @colorGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'green'**
+  String get colorGreen;
+
+  /// No description provided for @colorYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'yellow'**
+  String get colorYellow;
+
+  /// No description provided for @wordsWithColor.
+  ///
+  /// In en, this message translates to:
+  /// **'{color} {object}'**
+  String wordsWithColor(String color, String object);
+
+  /// No description provided for @startingIsland.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting island'**
+  String get startingIsland;
+
+  /// No description provided for @retakePretest.
+  ///
+  /// In en, this message translates to:
+  /// **'Play the warm-up game again'**
+  String get retakePretest;
+
+  /// No description provided for @placementStartsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts at: {island}'**
+  String placementStartsAt(String island);
+
+  /// No description provided for @placementNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-up game not played yet'**
+  String get placementNotYet;
+
+  /// No description provided for @setByParent.
+  ///
+  /// In en, this message translates to:
+  /// **'set by a grown-up'**
+  String get setByParent;
+
+  /// No description provided for @cheerCelebrate1.
+  ///
+  /// In en, this message translates to:
+  /// **'Great!'**
+  String get cheerCelebrate1;
+
+  /// No description provided for @cheerCelebrate2.
+  ///
+  /// In en, this message translates to:
+  /// **'Awesome!'**
+  String get cheerCelebrate2;
+
+  /// No description provided for @cheerCelebrate3.
+  ///
+  /// In en, this message translates to:
+  /// **'You got it!'**
+  String get cheerCelebrate3;
+
+  /// No description provided for @cheerCelebrate4.
+  ///
+  /// In en, this message translates to:
+  /// **'Super!'**
+  String get cheerCelebrate4;
+
+  /// No description provided for @cheerCelebrate5.
+  ///
+  /// In en, this message translates to:
+  /// **'Wow, well done!'**
+  String get cheerCelebrate5;
+
+  /// No description provided for @cheerCelebrate6.
+  ///
+  /// In en, this message translates to:
+  /// **'Fantastic!'**
+  String get cheerCelebrate6;
+
+  /// No description provided for @cheerEncourage1.
+  ///
+  /// In en, this message translates to:
+  /// **'Good thinking!'**
+  String get cheerEncourage1;
+
+  /// No description provided for @cheerEncourage2.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice try!'**
+  String get cheerEncourage2;
+
+  /// No description provided for @cheerEncourage3.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s keep going!'**
+  String get cheerEncourage3;
+
+  /// No description provided for @cheerEncourage4.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for trying!'**
+  String get cheerEncourage4;
+
+  /// No description provided for @cheerEncourage5.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re doing great!'**
+  String get cheerEncourage5;
 }
 
 class _AppLocalizationsDelegate

@@ -68,7 +68,6 @@
   "blockTurnLeft": "Turn left",
   "blockTurnRight": "Turn right",
   "blockRepeat": "Repeat",
-  "successTitle": "Hooray!",
   "nextLevel": "Next",
   "tryAgain": "Try again!",
   "feedbackBumped": "Oops, something is in the way.",
@@ -85,10 +84,70 @@
   "decisionReview": "Let's hunt for treasure on an earlier island.",
   "decisionReturn": "Back to your adventure!",
   "decisionMapComplete": "You explored every island!",
-  "goodTry": "Good try!",
   "skipPuzzle": "Try a different one",
   "hint": "Show me the way",
   "repeatMore": "One more time",
   "repeatFewer": "One time fewer",
-  "dropBlocksHere": "Put blocks here"
+  "dropBlocksHere": "Put blocks here",
+  "pretestWelcome": "Let's play a warm-up game!",
+  "pretestStart": "Start",
+  "listenAgain": "Listen again",
+  "promptReading": "Which picture matches the words?",
+  "promptCounting": "How many are there?",
+  "promptSideLeft": "Tap the one on the left.",
+  "promptSideRight": "Tap the one on the right.",
+  "promptTurnLeft": "The arrow turns left. Which way does it point now?",
+  "promptTurnRight": "The arrow turns right. Which way does it point now?",
+  "promptPattern": "What comes next?",
+  "promptSequencing": "Which steps reach the flag?",
+  "pretestDone": "All done! Your adventure starts now.",
+  "startAdventure": "Let's go!",
+  "wordSun": "sun",
+  "wordStar": "star",
+  "wordHouse": "house",
+  "wordCar": "car",
+  "wordTree": "tree",
+  "wordBall": "ball",
+  "wordFlower": "flower",
+  "wordBoat": "boat",
+  "wordBird": "bird",
+  "wordCake": "cake",
+  "colorRed": "red",
+  "colorBlue": "blue",
+  "colorGreen": "green",
+  "colorYellow": "yellow",
+  "wordsWithColor": "{color} {object}",
+  "@wordsWithColor": {
+    "placeholders": {
+      "color": {
+        "type": "String"
+      },
+      "object": {
+        "type": "String"
+      }
+    }
+  },
+  "startingIsland": "Starting island",
+  "retakePretest": "Play the warm-up game again",
+  "placementStartsAt": "Starts at: {island}",
+  "@placementStartsAt": {
+    "placeholders": {
+      "island": {
+        "type": "String"
+      }
+    }
+  },
+  "placementNotYet": "Warm-up game not played yet",
+  "setByParent": "set by a grown-up",
+  "cheerCelebrate1": "Great!",
+  "cheerCelebrate2": "Awesome!",
+  "cheerCelebrate3": "You got it!",
+  "cheerCelebrate4": "Super!",
+  "cheerCelebrate5": "Wow, well done!",
+  "cheerCelebrate6": "Fantastic!",
+  "cheerEncourage1": "Good thinking!",
+  "cheerEncourage2": "Nice try!",
+  "cheerEncourage3": "Let's keep going!",
+  "cheerEncourage4": "Thanks for trying!",
+  "cheerEncourage5": "You're doing great!"
 }

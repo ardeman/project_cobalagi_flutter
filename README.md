@@ -10,7 +10,7 @@ Every tier drives the same game world. A short, voice-led placement game picks e
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
 
-> **Status:** Phases 0–3 are done: the app shell (profiles, parent gate, language switch, free/supporter plan check), the game engine, the Tier 1 icon-block editor with repeat blocks, and the adaptive learning loop across Directions → Sequencing → Loops with an adventure map. The placement pretest comes in Phase 4.
+> **Status:** Phases 0–4 are done: the app shell (profiles, parent gate, language switch, free/supporter plan check), the game engine, the Tier 1 icon-block editor with repeat blocks, the adaptive learning loop across Directions → Sequencing → Loops with an adventure map, and the voice-led warm-up game that places each child (parents can override). Phase 5 (billing, release, voice recordings) is next.
 
 | | |
 | --- | --- |
@@ -72,7 +72,8 @@ lib/
 test/              Mirrors lib/
 .githooks/         Versioned Git hooks for commit-message validation
 .githooks/         Versioned Git hooks for commit-message validation
-assets/config/     skills.json (skill map) and adaptive.json (learning thresholds)
+assets/config/     skills.json (skill map), adaptive.json (learning thresholds),
+                   pretest.json (placement rules and warm-up vocabulary)
 assets/levels/     Hand-made lesson packs (JSON), one per concept
 assets/audio/      (later) voice clips per language: <id|en>/
 android/ ios/ web/ macos/ linux/ windows/
@@ -87,7 +88,7 @@ android/ ios/ web/ macos/ linux/ windows/
 | 1. Engine ✅ | Instruction set, world, interpreter, level JSON, solver (unit-tested, no UI) |
 | 2. Play + Tier 1 ✅ | Flame world with placeholder shapes, icon-block editor, run/step/reset, Directions and Sequencing levels |
 | 3. Learning loop ✅ | Attempt tracking, mastery, advance/practice/review, generated variations, Loops levels, adventure map |
-| 4. Pretest | Reading check and pre-skills, voice-led and adaptive; placement; parent override |
+| 4. Pretest ✅ | Reading check and pre-skills, voice-led and adaptive; placement; parent override |
 | 5. Hardening | Donations through Google Play Billing (any donation unlocks supporter features), release config, voice clips, tablet performance |
 
 Later: Rive characters, Tiers 2 and 3, conditions, variables, functions.

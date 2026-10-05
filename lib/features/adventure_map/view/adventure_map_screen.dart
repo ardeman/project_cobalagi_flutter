@@ -49,6 +49,12 @@ class AdventureMapScreen extends StatelessWidget {
               WindowClass.medium => 140.0,
               WindowClass.expanded => 180.0,
             };
+            if (learner.placement == null) {
+              return _Welcome(
+                size: islandSize,
+                onStart: () => context.go('/child/$profileId/pretest'),
+              );
+            }
             return Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
@@ -172,6 +178,46 @@ class _Island extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ],
+    );
+  }
+}
+
+/// First visit: invite the child to the warm-up game that places them.
+class _Welcome extends StatelessWidget {
+  const _Welcome({required this.size, required this.onStart});
+
+  final double size;
+  final VoidCallback onStart;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.sports_esports_rounded,
+              size: size * 1.2,
+              color: const Color(0xFFFF7A59),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.pretestWelcome,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 32),
+            FilledButton.icon(
+              icon: const Icon(Icons.play_arrow_rounded, size: 48),
+              label: Text(l10n.pretestStart),
+              onPressed: onStart,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

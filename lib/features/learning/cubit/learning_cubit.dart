@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../engine/generator/puzzle_generator.dart';
@@ -5,6 +7,9 @@ import '../../../engine/world/level.dart';
 import '../../../learning/exercise_result.dart';
 import '../../../learning/learner_state.dart';
 import '../../../learning/learning_engine.dart';
+import '../../../learning/placement/pretest_generator.dart';
+import '../../../learning/placement/pretest_question.dart';
+import '../../../learning/placement/pretest_session.dart';
 import '../data/curriculum_repository.dart';
 import '../data/progress_repository.dart';
 
@@ -87,6 +92,24 @@ class LearningCubit extends Cubit<LearningState> {
 
   /// A served-puzzle update not yet emitted.
   LearnerState? _pending;
+
+  /// A fresh warm-up game with new questions.
+  PretestSession startPretest() => PretestSession(
+    PretestGenerator.fromJson(curriculum.vocabulary, Random()),
+  );
+
+  /// Places the child from the warm-up game result and saves it.
+  Future<void> completePretest(Map<PretestSkill, int> levels) async {
+    final placement = curriculum.placementRules.place(
+      levels,
+      at: DateTime.now(),
+    );
+    final current = _pending ?? state.learner!;
+    _pending = null;
+    final learner = engine.applyPlacement(current, placement);
+    emit(LearningState(learner: learner));
+    await _progress.save(profileId, learner);
+  }
 
   /// Records a solved or skipped exercise and returns what comes next.
   Future<Decision> record(ExerciseResult result) async {

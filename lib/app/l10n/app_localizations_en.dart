@@ -129,9 +129,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get blockRepeat => 'Repeat';
 
   @override
-  String get successTitle => 'Hooray!';
-
-  @override
   String get nextLevel => 'Next';
 
   @override
@@ -180,9 +177,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get decisionMapComplete => 'You explored every island!';
 
   @override
-  String get goodTry => 'Good try!';
-
-  @override
   String get skipPuzzle => 'Try a different one';
 
   @override
@@ -196,4 +190,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dropBlocksHere => 'Put blocks here';
+
+  @override
+  String get pretestWelcome => 'Let\'s play a warm-up game!';
+
+  @override
+  String get pretestStart => 'Start';
+
+  @override
+  String get listenAgain => 'Listen again';
+
+  @override
+  String get promptReading => 'Which picture matches the words?';
+
+  @override
+  String get promptCounting => 'How many are there?';
+
+  @override
+  String get promptSideLeft => 'Tap the one on the left.';
+
+  @override
+  String get promptSideRight => 'Tap the one on the right.';
+
+  @override
+  String get promptTurnLeft =>
+      'The arrow turns left. Which way does it point now?';
+
+  @override
+  String get promptTurnRight =>
+      'The arrow turns right. Which way does it point now?';
+
+  @override
+  String get promptPattern => 'What comes next?';
+
+  @override
+  String get promptSequencing => 'Which steps reach the flag?';
+
+  @override
+  String get pretestDone => 'All done! Your adventure starts now.';
+
+  @override
+  String get startAdventure => 'Let\'s go!';
+
+  @override
+  String get wordSun => 'sun';
+
+  @override
+  String get wordStar => 'star';
+
+  @override
+  String get wordHouse => 'house';
+
+  @override
+  String get wordCar => 'car';
+
+  @override
+  String get wordTree => 'tree';
+
+  @override
+  String get wordBall => 'ball';
+
+  @override
+  String get wordFlower => 'flower';
+
+  @override
+  String get wordBoat => 'boat';
+
+  @override
+  String get wordBird => 'bird';
+
+  @override
+  String get wordCake => 'cake';
+
+  @override
+  String get colorRed => 'red';
+
+  @override
+  String get colorBlue => 'blue';
+
+  @override
+  String get colorGreen => 'green';
+
+  @override
+  String get colorYellow => 'yellow';
+
+  @override
+  String wordsWithColor(String color, String object) {
+    return '$color $object';
+  }
+
+  @override
+  String get startingIsland => 'Starting island';
+
+  @override
+  String get retakePretest => 'Play the warm-up game again';
+
+  @override
+  String placementStartsAt(String island) {
+    return 'Starts at: $island';
+  }
+
+  @override
+  String get placementNotYet => 'Warm-up game not played yet';
+
+  @override
+  String get setByParent => 'set by a grown-up';
+
+  @override
+  String get cheerCelebrate1 => 'Great!';
+
+  @override
+  String get cheerCelebrate2 => 'Awesome!';
+
+  @override
+  String get cheerCelebrate3 => 'You got it!';
+
+  @override
+  String get cheerCelebrate4 => 'Super!';
+
+  @override
+  String get cheerCelebrate5 => 'Wow, well done!';
+
+  @override
+  String get cheerCelebrate6 => 'Fantastic!';
+
+  @override
+  String get cheerEncourage1 => 'Good thinking!';
+
+  @override
+  String get cheerEncourage2 => 'Nice try!';
+
+  @override
+  String get cheerEncourage3 => 'Let\'s keep going!';
+
+  @override
+  String get cheerEncourage4 => 'Thanks for trying!';
+
+  @override
+  String get cheerEncourage5 => 'You\'re doing great!';
 }

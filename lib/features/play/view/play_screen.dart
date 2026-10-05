@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
+import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../engine/generator/solver.dart';
 import '../../../engine/interpreter/interpreter.dart';
@@ -77,6 +78,10 @@ class _PlayViewState extends State<_PlayView> {
   final _clock = Stopwatch()..start();
   var _hints = 0;
   var _finishing = false;
+  final _cheers = CheerPicker();
+
+  /// The cheer for the current card, picked when the card appears.
+  Cheer? _cheer;
 
   /// Set once the exercise is recorded; the card then offers the next one.
   Decision? _decision;
@@ -110,6 +115,10 @@ class _PlayViewState extends State<_PlayView> {
       setState(() {
         _decision = decision;
         _solved = succeeded;
+        _cheer = _cheers.next(
+          AppLocalizations.of(context),
+          succeeded ? CheerMood.celebrate : CheerMood.encourage,
+        );
       });
     }
   }
@@ -128,17 +137,18 @@ class _PlayViewState extends State<_PlayView> {
 
   void _onPlayChanged(BuildContext context, PlayState state) {
     _game.apply(state);
-    final clip = switch (state.phase) {
-      PlayPhase.succeeded => 'success',
-      PlayPhase.failed => 'try_again',
+    final mood = switch (state.phase) {
+      PlayPhase.succeeded => CheerMood.celebrate,
+      PlayPhase.failed => CheerMood.encourage,
       _ => null,
     };
-    if (clip != null) {
-      context.read<AudioService>().playVoice(
-        clip,
-        languageCode: Localizations.localeOf(context).languageCode,
-      );
-    }
+    if (mood == null) return;
+    final cheer = _cheers.next(AppLocalizations.of(context), mood);
+    setState(() => _cheer = cheer);
+    context.read<AudioService>().playVoice(
+      cheer.clip,
+      languageCode: Localizations.localeOf(context).languageCode,
+    );
     if (state.phase == PlayPhase.succeeded) _finish(succeeded: true);
   }
 
@@ -220,14 +230,16 @@ class _PlayViewState extends State<_PlayView> {
     final play = context.watch<PlayCubit>().state;
     final Widget? card;
     if (_decision case final decision?) {
+      final cheer = _cheer!;
       card = _FeedbackCard(
-        icon: _solved
-            ? Icons.star_rounded
-            : decision is Review
-            ? Icons.diamond_rounded
-            : Icons.thumb_up_rounded,
-        iconColor: _solved ? const Color(0xFFFFC83D) : const Color(0xFF26C6DA),
-        title: _solved ? l10n.successTitle : l10n.goodTry,
+        badge: decision is Review && !_solved
+            ? const Icon(
+                Icons.diamond_rounded,
+                size: 56,
+                color: Color(0xFF26C6DA),
+              )
+            : CheerBadge(cheer: cheer, size: 56),
+        title: cheer.text,
         message: _decisionMessage(l10n, decision),
         actions: [
           FilledButton.icon(
@@ -238,10 +250,10 @@ class _PlayViewState extends State<_PlayView> {
         ],
       );
     } else if (play.phase == PlayPhase.failed) {
+      final cheer = _cheer!;
       card = _FeedbackCard(
-        icon: Icons.refresh_rounded,
-        iconColor: Theme.of(context).colorScheme.primary,
-        title: l10n.tryAgain,
+        badge: CheerBadge(cheer: cheer, size: 56),
+        title: cheer.text,
         message: _failureMessage(l10n, play.result!.outcome),
         actions: [
           if (play.runs >= widget.skipAfterRuns)
@@ -332,15 +344,13 @@ class _TopBar extends StatelessWidget {
 
 class _FeedbackCard extends StatelessWidget {
   const _FeedbackCard({
-    required this.icon,
-    required this.iconColor,
+    required this.badge,
     required this.title,
     required this.message,
     required this.actions,
   });
 
-  final IconData icon;
-  final Color iconColor;
+  final Widget badge;
   final String title;
   final String? message;
   final List<Widget> actions;
@@ -359,7 +369,7 @@ class _FeedbackCard extends StatelessWidget {
             spacing: 16,
             runSpacing: 12,
             children: [
-              Icon(icon, size: 56, color: iconColor),
+              badge,
               ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 360),
                 child: Column(

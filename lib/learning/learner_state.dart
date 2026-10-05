@@ -1,3 +1,5 @@
+import 'placement/placement.dart';
+
 /// One child's progress on one concept.
 final class ConceptProgress {
   const ConceptProgress({
@@ -94,6 +96,7 @@ final class LearnerState {
     this.review,
     this.seenPuzzles = const {},
     this.nextSeed = 0,
+    this.placement,
   });
 
   factory LearnerState.fromJson(Map<String, Object?> json) => LearnerState(
@@ -109,6 +112,10 @@ final class LearnerState {
     },
     seenPuzzles: {...(json['seen']! as List).cast<String>()},
     nextSeed: json['nextSeed']! as int,
+    placement: switch (json['placement']) {
+      final Map<String, Object?> p => Placement.fromJson(p),
+      _ => null,
+    },
   );
 
   /// The concept the child is learning (where reviews return to).
@@ -124,6 +131,9 @@ final class LearnerState {
   /// Seed for the next generated puzzle.
   final int nextSeed;
 
+  /// Null until the warm-up game is played or a parent picks a start.
+  final Placement? placement;
+
   /// The concept the next exercise belongs to.
   String get activeConcept => review?.conceptId ?? currentConcept;
 
@@ -133,12 +143,14 @@ final class LearnerState {
     ReviewTrip? Function()? review,
     Set<String>? seenPuzzles,
     int? nextSeed,
+    Placement? Function()? placement,
   }) => LearnerState(
     currentConcept: currentConcept ?? this.currentConcept,
     progress: progress ?? this.progress,
     review: review != null ? review() : this.review,
     seenPuzzles: seenPuzzles ?? this.seenPuzzles,
     nextSeed: nextSeed ?? this.nextSeed,
+    placement: placement != null ? placement() : this.placement,
   );
 
   Map<String, Object?> toJson() => {
@@ -150,5 +162,6 @@ final class LearnerState {
     'review': review?.toJson(),
     'seen': seenPuzzles.toList(),
     'nextSeed': nextSeed,
+    'placement': placement?.toJson(),
   };
 }

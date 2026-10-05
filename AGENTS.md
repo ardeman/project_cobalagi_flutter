@@ -25,6 +25,8 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - A concept id must match a lesson pack (`assets/levels/<id>.json`) and a `PuzzleKind` name, so practice puzzles can be generated for it.
 - Never serve the same puzzle twice: generated puzzles go through `LearningCubit.nextExercise`, which skips fingerprints in `LearnerState.seenPuzzles`.
 - Present a review as a reward ("bonus adventure"), never as a failure, in text, icons and voice.
+- Feedback to children comes from `CheerPicker` (`lib/core/feedback/cheers.dart`): varied, never the same words twice in a row, and never "wrong". Add phrases there (both ARB files), not one-off strings.
+- The warm-up game (`lib/learning/placement/`) must work without reading: every prompt has a voice clip id and pictures for answers. Placement thresholds live in `assets/config/pretest.json`.
 - Layouts adapt via `WindowClass`/`WindowClassBuilder` (`lib/core/responsive/`), not fixed device sizes. Tap targets are at least 64dp.
 - Drag-and-drop must work with touch and mouse (`Draggable`/`DragTarget`), with tap-to-add as an alternative.
 

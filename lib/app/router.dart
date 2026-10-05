@@ -5,6 +5,7 @@ import '../features/adventure_map/view/adventure_map_screen.dart';
 import '../features/learning/view/child_scope.dart';
 import '../features/parent/view/parent_screen.dart';
 import '../features/play/view/play_screen.dart';
+import '../features/pretest/view/pretest_screen.dart';
 import '../features/profiles/view/profiles_screen.dart';
 
 GoRouter createRouter() => GoRouter(
@@ -26,6 +27,11 @@ GoRouter createRouter() => GoRouter(
             GoRoute(
               path: 'play',
               builder: (_, state) => PlayScreen(profileId: _profileId(state)),
+            ),
+            GoRoute(
+              path: 'pretest',
+              builder: (_, state) =>
+                  PretestScreen(profileId: _profileId(state)),
             ),
           ],
         ),

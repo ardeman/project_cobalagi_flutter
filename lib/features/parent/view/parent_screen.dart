@@ -6,9 +6,14 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/plan.dart';
 import '../../../core/settings/settings_cubit.dart';
+import '../../../learning/learner_state.dart';
+import '../../learning/data/curriculum_repository.dart';
+import '../../learning/data/parent_placement.dart';
+import '../../learning/data/progress_repository.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
 import '../../profiles/data/profile.dart';
 import '../../profiles/view/profile_avatar.dart';
+import 'placement_dialog.dart';
 
 /// Reached only through the parent gate.
 class ParentScreen extends StatelessWidget {
@@ -99,19 +104,83 @@ class ParentScreen extends StatelessWidget {
               const SizedBox(height: 32),
               Text(l10n.players, style: headerStyle),
               for (final profile in profiles)
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: ProfileAvatar(avatar: profile.avatar, size: 40),
-                  title: Text(profile.nickname),
-                  trailing: IconButton(
-                    tooltip: l10n.delete,
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () => _confirmDelete(context, profile),
-                  ),
+                _PlayerTile(
+                  key: ValueKey(profile.id),
+                  profile: profile,
+                  onDelete: () => _confirmDelete(context, profile),
                 ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A player row: tap to change where they start; shows the current start.
+class _PlayerTile extends StatefulWidget {
+  const _PlayerTile({super.key, required this.profile, required this.onDelete});
+
+  final Profile profile;
+  final VoidCallback onDelete;
+
+  @override
+  State<_PlayerTile> createState() => _PlayerTileState();
+}
+
+class _PlayerTileState extends State<_PlayerTile> {
+  late final Future<Curriculum> _curriculum = context
+      .read<CurriculumRepository>()
+      .load();
+  ParentPlacement? _placement;
+  LearnerState? _learner;
+
+  @override
+  void initState() {
+    super.initState();
+    _refresh();
+  }
+
+  Future<void> _refresh() async {
+    final progress = context.read<ProgressRepository>();
+    final placement = ParentPlacement(
+      progress: progress,
+      curriculum: await _curriculum,
+    );
+    final learner = await placement.load(widget.profile.id);
+    if (mounted) {
+      setState(() {
+        _placement = placement;
+        _learner = learner;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final placement = _placement;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: ProfileAvatar(avatar: widget.profile.avatar, size: 40),
+      title: Text(widget.profile.nickname),
+      subtitle: placement == null
+          ? null
+          : Text(placementSummary(l10n, placement.curriculum, _learner)),
+      onTap: placement == null
+          ? null
+          : () async {
+              await showPlacementDialog(
+                context,
+                profile: widget.profile,
+                placement: placement,
+              );
+              await _refresh();
+            },
+      trailing: IconButton(
+        tooltip: l10n.delete,
+        icon: const Icon(Icons.delete_outline),
+        onPressed: widget.onDelete,
       ),
     );
   }

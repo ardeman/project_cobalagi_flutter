@@ -3,6 +3,7 @@ import 'dart:math';
 import 'adaptive_config.dart';
 import 'exercise_result.dart';
 import 'learner_state.dart';
+import 'placement/placement.dart';
 import 'skill_graph.dart';
 
 /// What happens after an exercise. The UI frames every one positively;
@@ -77,6 +78,19 @@ final class LearningEngine {
     final start = startConcept ?? graph.first;
     if (!graph.contains(start)) throw SkillGraphException('unknown $start');
     return LearnerState(currentConcept: start);
+  }
+
+  /// Starts (or restarts) the child at [placement]'s concept. Existing progress
+  /// is kept; any review in progress is dropped.
+  LearnerState applyPlacement(LearnerState state, Placement placement) {
+    if (!graph.contains(placement.startConcept)) {
+      throw SkillGraphException('unknown ${placement.startConcept}');
+    }
+    return state.copyWith(
+      currentConcept: placement.startConcept,
+      review: () => null,
+      placement: () => placement,
+    );
   }
 
   ConceptProgress progressOf(LearnerState state, String conceptId) =>
