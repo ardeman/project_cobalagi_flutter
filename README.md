@@ -106,6 +106,19 @@ dart run tool/voice_script.dart en > voice_en.csv   # English
 
 Record each row as an MP3 at the listed path (`assets/audio/<language>/<clipId>.mp3`). Run the script again to see what is still missing.
 
+**ElevenLabs (the chosen voices):** `tool/generate_voice.dart` makes every clip with ElevenLabs, then trims and levels it like the test voices. Shipping the clips needs an ElevenLabs plan with a commercial license (Starter or higher); the free plan is fine for auditioning.
+
+```sh
+export ELEVENLABS_API_KEY=...                  # from elevenlabs.io → API keys; never commit it
+dart run tool/generate_voice.dart --voices    # list voices in your account
+# put the chosen voice_id for "id" and "en" in tool/elevenlabs.json
+dart run tool/generate_voice.dart --sample    # 5 sample lines per language in build/voice_samples/
+dart run tool/generate_voice.dart             # all clips (replaces test voices)
+dart run tool/generate_voice.dart --only cheer_celebrate_1   # redo one clip
+```
+
+Model, voices and settings (`speed`, `stability`, `style`…) live in `tool/elevenlabs.json`. When the test voices are replaced, the tool removes `assets/audio/TEST_VOICES`; then delete the two voice-clip lines in `.gitignore` and commit the clips.
+
 **Test voices (macOS):** to hear the voice flow before real recordings exist, generate every clip with the Mac's built-in voices (Damayanti for Indonesian, Flo for English):
 
 ```sh
