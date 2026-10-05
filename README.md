@@ -10,7 +10,7 @@ Every tier drives the same game world. A short, voice-led placement game picks e
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
 
-> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Voice-over is recorded (ElevenLabs, Indonesian and English) and the app icon is done. Still needed before launch: character artwork, store listing graphics, and Play Console setup.
+> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Voice-over is recorded (ElevenLabs, Indonesian and English) and the app icon is done. The store listing is drafted in `store/`. Still needed before launch: character artwork and Play Console setup.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -87,6 +87,7 @@ test/              Mirrors lib/
 .githooks/         Versioned Git hooks for commit-message validation
 tool/              Developer scripts (voice-over recording script)
 branding/          App icon source (SVG), rendered PNGs and branding/render.sh
+store/             Google Play listing text and graphics per language (id, en-US)
 website/           Static landing page for cobalagi.ardeman.com, plus screenshots
 assets/config/     skills.json (skill map), adaptive.json (learning thresholds),
                    pretest.json (placement rules and warm-up vocabulary)
@@ -170,6 +171,12 @@ One-time setup (already done for this repo): Pages source **GitHub Actions**, cu
 ## App icon
 
 The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-colour version for Android 13 themed icons in `branding/icon_monochrome.svg`. After editing either, run `branding/render.sh`: it renders the PNGs with headless Chrome and generates every platform's icons with `flutter_launcher_icons` (config: `flutter_launcher_icons.yaml`). `branding/play_store_icon.png` is the 512 × 512 icon for the Play Console.
+
+## Store listing
+
+`store/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80) and `full_description.txt` (max 4,000), plus `feature_graphic.png` (1024 × 500) and `screenshots/` (1920 × 1080, 16:9). Upload the same screenshots to the phone, 7-inch and 10-inch tablet sections. The app icon for the listing is `branding/play_store_icon.png`.
+
+`store/render.sh` re-renders the graphics from `website/screenshots/` and the icon art. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
 
 ## Roadmap (MVP)
 

@@ -45,6 +45,10 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - App icons are generated from `branding/` by `branding/render.sh`. Never hand-edit the generated icons under `android/`, `ios/`, `web/`, `macos/` or `windows/`; change the SVG and re-run the script.
 - Keep the foreground art inside the central 66% of `icon.svg` (Android's adaptive-icon safe zone).
 
+## Store listing
+
+- `store/<locale>/` text must stay within Play's limits (title 30, short 80, full 4,000 characters), true for the released app, and free of ranking or promotional words, calls to action and emoji. Keep `id` and `en-US` saying the same thing.
+
 ## Website
 
 - `website/` is the static site for cobalagi.ardeman.com: `index.html` (landing page), `privacy.html` (privacy policy, linked from the Play listing), shared `site.css` and `site.js`, and `screenshots/`. It makes no external requests (no web fonts, analytics or CDNs), to match the app's privacy promise.
