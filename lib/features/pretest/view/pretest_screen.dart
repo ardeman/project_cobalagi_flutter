@@ -68,16 +68,26 @@ class _PretestScreenState extends State<PretestScreen> {
       ),
     );
     final audio = context.read<AudioService>();
-    audio.playVoice(cheer.clip, languageCode: _language);
-    if (!right) {
-      audio.playVoice(
-        VoiceClips.pretestAnswerWas,
-        languageCode: _language,
-        queue: true,
-      );
+    final language = _language;
+    Future<void> speak() async {
+      await audio.playVoice(cheer.clip, languageCode: language);
+      if (!right) {
+        await audio.playVoice(
+          VoiceClips.pretestAnswerWas,
+          languageCode: language,
+          queue: true,
+        );
+      }
+      await audio.whenIdle();
     }
-    // Longer after a wrong tap, so there is time to see the right answer.
-    await Future<void>.delayed(Duration(milliseconds: right ? 1300 : 2600));
+
+    // Move on only after the voice has finished, so the next prompt never
+    // cuts it off, and after long enough to see the answer (longer after a
+    // wrong tap). The timeout keeps a stuck clip from freezing the game.
+    await Future.wait([
+      Future<void>.delayed(Duration(milliseconds: right ? 1300 : 2000)),
+      speak().timeout(const Duration(seconds: 8), onTimeout: () {}),
+    ]);
     if (!mounted) return;
     if (_session.isFinished && !_saved) {
       _saved = true;

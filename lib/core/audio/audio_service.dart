@@ -15,6 +15,10 @@ abstract interface class AudioService {
     bool queue = false,
   });
 
+  /// Completes once the current clip and everything queued after it have
+  /// finished, so a screen can wait before moving on and cutting a clip off.
+  Future<void> whenIdle();
+
   Future<void> dispose();
 }
 
@@ -29,7 +33,23 @@ class AudioplayersAudioService implements AudioService {
   late final StreamSubscription<void> _done;
   final _queue = <String>[];
   var _playing = false;
+  final _idleWaiters = <Completer<void>>[];
   Set<String>? _assets;
+
+  @override
+  Future<void> whenIdle() {
+    if (!_playing && _queue.isEmpty) return Future.value();
+    final waiter = Completer<void>();
+    _idleWaiters.add(waiter);
+    return waiter.future;
+  }
+
+  void _notifyIdle() {
+    for (final waiter in _idleWaiters) {
+      waiter.complete();
+    }
+    _idleWaiters.clear();
+  }
 
   @override
   Future<void> playVoice(
@@ -63,11 +83,16 @@ class AudioplayersAudioService implements AudioService {
 
   void _playNext() {
     _playing = false;
-    if (_queue.isNotEmpty) _start(_queue.removeAt(0));
+    if (_queue.isNotEmpty) {
+      _start(_queue.removeAt(0));
+    } else {
+      _notifyIdle();
+    }
   }
 
   @override
   Future<void> dispose() async {
+    _notifyIdle();
     await _done.cancel();
     await _voice.dispose();
   }
@@ -82,6 +107,9 @@ class SilentAudioService implements AudioService {
     required String languageCode,
     bool queue = false,
   }) async {}
+
+  @override
+  Future<void> whenIdle() async {}
 
   @override
   Future<void> dispose() async {}
