@@ -10,6 +10,11 @@
 //   dart run tool/generate_voice.dart --only cheer_celebrate_1,play_goal
 //   dart run tool/generate_voice.dart --lang id         # one language only
 //   dart run tool/generate_voice.dart --dry-run         # show what would be sent
+//   dart run tool/generate_voice.dart --sample --only pretest_turn_left --model eleven_v4
+//                                     # audition one clip with another model
+//
+// A clip that needs a different model can be pinned in
+// voices.<lang>.clip_models (e.g. Indonesian lines that sound Malay).
 //
 // Voices, model and settings live in tool/elevenlabs.json. Shipping the clips
 // needs an ElevenLabs plan with a commercial license (not the free plan).
@@ -22,6 +27,9 @@ import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'src/voice_files.dart';
 
 const _api = 'https://api.elevenlabs.io/v1';
+
+/// Models that reject `language_code`; they guess the language from the text.
+const _ignoresLanguageCode = {'eleven_multilingual_v2'};
 
 /// A few lines covering a question, a cheer and an instruction.
 const _sampleClips = [
@@ -74,7 +82,8 @@ Future<void> main(List<String> args) async {
     }
     final strings = loadStrings(language);
     for (final MapEntry(key: id, value: arbKey) in VoiceClips.all.entries) {
-      if (sample && !_sampleClips.contains(id)) continue;
+      // Samples: the given clips, or a default few.
+      if (sample && only == null && !_sampleClips.contains(id)) continue;
       if (only != null && !only.contains(id)) continue;
       final out = sample
           ? File('build/voice_samples/$language/$id.mp3')
@@ -82,11 +91,23 @@ Future<void> main(List<String> args) async {
       if (out.existsSync() && !force && !sample && only == null) continue;
 
       final text = strings[arbKey]! as String;
+      // Some clips sound better on another model, e.g. when the default
+      // model drifts into Malay: voices.<lang>.clip_models.
+      final clipModels =
+          (voice!['clip_models'] as Map?)?.cast<String, String>() ?? const {};
+      final model =
+          _option(args, '--model') ??
+          clipModels[id] ??
+          config['model_id']! as String;
       final body = {
         'text': text,
-        'model_id': config['model_id'],
+        'model_id': model,
         'seed': config['seed'],
-        'voice_settings': voice!['settings'],
+        'voice_settings': voice['settings'],
+        // Forces the language, e.g. Indonesian rather than Malay.
+        if (voice['language_code'] case final String code
+            when !_ignoresLanguageCode.contains(model))
+          'language_code': code,
       };
       if (dryRun) {
         stdout.writeln('$language/$id: ${jsonEncode(body)}');

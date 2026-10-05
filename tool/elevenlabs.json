@@ -11,6 +11,11 @@
         "style": 0.3,
         "use_speaker_boost": true,
         "speed": 0.9
+      },
+      "language_code": "id",
+      "clip_models": {
+        "pretest_turn_left": "eleven_v4",
+        "pretest_turn_right": "eleven_v4"
       }
     },
     "en": {
@@ -21,7 +26,8 @@
         "style": 0.3,
         "use_speaker_boost": true,
         "speed": 0.9
-      }
+      },
+      "language_code": "en"
     }
   }
 }
