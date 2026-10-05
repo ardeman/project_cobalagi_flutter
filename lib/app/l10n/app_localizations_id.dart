@@ -44,9 +44,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get play => 'Main';
 
   @override
-  String get comingSoon => 'Segera hadir!';
-
-  @override
   String get askAGrownUp => 'Minta bantuan orang dewasa';
 
   @override
@@ -327,4 +324,26 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get cheerEncourage5 => 'Kamu hebat!';
+
+  @override
+  String get donateExplainer =>
+      'Coba Lagi gratis. Donasi berapa pun membuka fitur pendukung untuk keluargamu dan membantu kami membuat lebih banyak petualangan.';
+
+  @override
+  String get donateUnavailable => 'Donasi tidak tersedia di perangkat ini.';
+
+  @override
+  String get restoreDonation => 'Pulihkan donasi sebelumnya';
+
+  @override
+  String get thanksForSupport => 'Terima kasih sudah mendukung Coba Lagi!';
+
+  @override
+  String get playGoal => 'Bantu aku sampai ke bendera!';
+
+  @override
+  String get playGoalStars => 'Kumpulkan semua bintang, lalu ke bendera!';
+
+  @override
+  String get playGoalLoops => 'Pakai blok ulangi untuk sampai ke bendera!';
 }

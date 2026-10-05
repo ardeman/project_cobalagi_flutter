@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import '../../../core/audio/audio_service.dart';
+import '../../../core/audio/voice_clips.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/learner_state.dart';
 import '../../../learning/learning_engine.dart';
@@ -183,14 +185,33 @@ class _Island extends StatelessWidget {
 }
 
 /// First visit: invite the child to the warm-up game that places them.
-class _Welcome extends StatelessWidget {
+class _Welcome extends StatefulWidget {
   const _Welcome({required this.size, required this.onStart});
 
   final double size;
   final VoidCallback onStart;
 
   @override
+  State<_Welcome> createState() => _WelcomeState();
+}
+
+class _WelcomeState extends State<_Welcome> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      context.read<AudioService>().playVoice(
+        VoiceClips.pretestWelcome,
+        languageCode: Localizations.localeOf(context).languageCode,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final size = widget.size;
+    final onStart = widget.onStart;
     final l10n = AppLocalizations.of(context);
     return Center(
       child: SingleChildScrollView(

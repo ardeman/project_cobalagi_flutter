@@ -43,6 +43,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> {
   @override
   void dispose() {
     _router.dispose();
+    widget.entitlement.dispose();
     widget.audio.dispose();
     super.dispose();
   }

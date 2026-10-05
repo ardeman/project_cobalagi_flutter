@@ -1,13 +1,35 @@
 import 'plan.dart';
 
-/// Source of truth for the unlocked [Plan].
-///
-/// Store billing (Google Play, App Store) implements this in Phase 5. Platforms
-/// without store billing, such as web, stay on [Plan.free].
-abstract interface class EntitlementService {
-  Future<Plan> loadPlan();
+/// A donation the store offers, with its price formatted by the store.
+final class DonationOption {
+  const DonationOption({required this.id, required this.price});
+
+  final String id;
+  final String price;
 }
 
+/// Source of truth for the unlocked [Plan]. The app is free; any donation
+/// unlocks [Plan.full].
+abstract interface class EntitlementService {
+  /// The plan known now; may also start a background restore.
+  Future<Plan> loadPlan();
+
+  /// Plans that change later, e.g. when a donation completes.
+  Stream<Plan> get changes;
+
+  /// Donations on offer, cheapest first; empty where the store is unavailable.
+  Future<List<DonationOption>> donationOptions();
+
+  /// Starts the store's purchase flow. The result arrives on [changes].
+  Future<void> donate(DonationOption option);
+
+  /// Asks the store again for donations made earlier, e.g. after a reinstall.
+  Future<void> restore();
+
+  Future<void> dispose();
+}
+
+/// A fixed plan, for platforms without store billing (such as web) and tests.
 class StaticEntitlementService implements EntitlementService {
   const StaticEntitlementService(this.plan);
 
@@ -15,4 +37,19 @@ class StaticEntitlementService implements EntitlementService {
 
   @override
   Future<Plan> loadPlan() async => plan;
+
+  @override
+  Stream<Plan> get changes => const Stream.empty();
+
+  @override
+  Future<List<DonationOption>> donationOptions() async => const [];
+
+  @override
+  Future<void> donate(DonationOption option) async {}
+
+  @override
+  Future<void> restore() async {}
+
+  @override
+  Future<void> dispose() async {}
 }

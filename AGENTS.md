@@ -55,6 +55,7 @@ Record architectural choices here as one line each: date, decision, reason.
 - 2026-10-05: `path_provider` is allowed without web support: it is imported only on native via `lib/core/storage/database_factory_io.dart`.
 - 2026-10-05: Flame for the game world, Rive (`flame_rive`) for characters later; placeholder shapes until then. Flame is added in Phase 2.
 - 2026-10-05: The app is free. A donation of any amount unlocks the supporter features (`Plan.full`; free: 1 profile, full: `Plan.full.maxProfiles`). Google Play Billing only sells fixed prices, so "any amount" means several one-time donation products at different prices, any of which unlocks `Plan.full`. Checks go through `EntitlementService`/`EntitlementCubit` only. Billing (`in_app_purchase`, no web support) arrives in Phase 5; platforms without store billing stay free.
-- 2026-10-05: Released on Google Play only for now.
-- 2026-10-05: Voice-over uses prerecorded clips, not TTS. Missing clips are skipped silently.
+- 2026-10-05: Released on Google Play only for now. The release manifest removes the INTERNET permission; don't add networking without revisiting this.
+- 2026-10-05: Donations are one-time Play products listed in `assets/config/donations.json`; `DonationEntitlementService` unlocks `Plan.full` for any of them and caches it locally. No server verification. The store sits behind `PurchaseStore` so it can be faked in tests.
+- 2026-10-05: Voice-over uses prerecorded clips, not TTS. Missing clips are skipped silently. Every clip id lives in `VoiceClips` (`lib/core/audio/voice_clips.dart`) with the ARB key of its words; never pass a literal clip id to `playVoice`.
 - 2026-10-05: The pretest sets each child's starting point. Directions levels exist and serve as the review target for Sequencing; children who pass the pretest's left/right check skip them.

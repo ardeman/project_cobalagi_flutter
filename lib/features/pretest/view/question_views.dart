@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import '../../../core/audio/voice_clips.dart';
 import '../../../engine/world/grid_point.dart';
 import '../../../engine/world/level.dart';
 import '../../../learning/placement/pretest_question.dart';
@@ -13,20 +14,26 @@ import 'pretest_pictures.dart';
   AppLocalizations l10n,
   PretestQuestion question,
 ) => switch (question) {
-  ReadingQuestion() => (l10n.promptReading, 'pretest_reading'),
-  CountingQuestion() => (l10n.promptCounting, 'pretest_counting'),
-  SideQuestion(target: Side.left) => (l10n.promptSideLeft, 'pretest_side_left'),
+  ReadingQuestion() => (l10n.promptReading, VoiceClips.pretestReading),
+  CountingQuestion() => (l10n.promptCounting, VoiceClips.pretestCounting),
+  SideQuestion(target: Side.left) => (
+    l10n.promptSideLeft,
+    VoiceClips.pretestSideLeft,
+  ),
   SideQuestion(target: Side.right) => (
     l10n.promptSideRight,
-    'pretest_side_right',
+    VoiceClips.pretestSideRight,
   ),
-  TurnQuestion(turn: Side.left) => (l10n.promptTurnLeft, 'pretest_turn_left'),
+  TurnQuestion(turn: Side.left) => (
+    l10n.promptTurnLeft,
+    VoiceClips.pretestTurnLeft,
+  ),
   TurnQuestion(turn: Side.right) => (
     l10n.promptTurnRight,
-    'pretest_turn_right',
+    VoiceClips.pretestTurnRight,
   ),
-  PatternQuestion() => (l10n.promptPattern, 'pretest_pattern'),
-  SequencingQuestion() => (l10n.promptSequencing, 'pretest_sequencing'),
+  PatternQuestion() => (l10n.promptPattern, VoiceClips.pretestPattern),
+  SequencingQuestion() => (l10n.promptSequencing, VoiceClips.pretestSequencing),
 };
 
 /// Shows [question] and reports the tapped option index.

@@ -5,11 +5,14 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
+import '../../../core/audio/voice_clips.dart';
 import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../engine/generator/solver.dart';
 import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
+import '../../../engine/program/instruction.dart';
+import '../../../engine/world/level.dart';
 import '../../../learning/exercise_result.dart';
 import '../../../learning/learning_engine.dart';
 import '../../editors/icon_blocks/cubit/icon_blocks_cubit.dart';
@@ -88,11 +91,28 @@ class _PlayViewState extends State<_PlayView> {
   var _solved = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _sayGoal());
+  }
+
+  @override
   void dispose() {
     _blocks.close();
     _play.close();
     super.dispose();
   }
+
+  void _say(String clip, {bool queue = false}) {
+    if (!mounted) return;
+    context.read<AudioService>().playVoice(
+      clip,
+      languageCode: Localizations.localeOf(context).languageCode,
+      queue: queue,
+    );
+  }
+
+  void _sayGoal() => _say(_goal(_level).$2);
 
   Future<void> _finish({required bool succeeded}) async {
     if (_finishing) return;
@@ -112,6 +132,7 @@ class _PlayViewState extends State<_PlayView> {
       ),
     );
     if (mounted) {
+      _say(_decisionClip(decision), queue: true);
       setState(() {
         _decision = decision;
         _solved = succeeded;
@@ -145,10 +166,14 @@ class _PlayViewState extends State<_PlayView> {
     if (mood == null) return;
     final cheer = _cheers.next(AppLocalizations.of(context), mood);
     setState(() => _cheer = cheer);
-    context.read<AudioService>().playVoice(
-      cheer.clip,
-      languageCode: Localizations.localeOf(context).languageCode,
-    );
+    // Success: a cheer, then the decision. Failure: what went wrong.
+    _say(switch (state.result!.outcome) {
+      RunOutcome.success => cheer.clip,
+      RunOutcome.bumped => VoiceClips.feedbackBumped,
+      RunOutcome.stoppedShort => VoiceClips.feedbackStoppedShort,
+      RunOutcome.missedStars => VoiceClips.feedbackMissedStars,
+      RunOutcome.tooManySteps => VoiceClips.feedbackTooManySteps,
+    });
     if (state.phase == PlayPhase.succeeded) _finish(succeeded: true);
   }
 
@@ -182,6 +207,8 @@ class _PlayViewState extends State<_PlayView> {
                   children: [
                     _TopBar(
                       plan: widget.exercise.plan,
+                      goal: _goal(_level).$1(AppLocalizations.of(context)),
+                      onListen: _sayGoal,
                       homePath: widget.homePath,
                     ),
                     const SizedBox(height: 12),
@@ -284,6 +311,22 @@ class _PlayViewState extends State<_PlayView> {
     );
   }
 
+  /// The spoken goal of a level: its words and its voice clip.
+  static (String Function(AppLocalizations), String) _goal(Level level) =>
+      level.palette.contains(InstructionKind.repeat)
+      ? ((l) => l.playGoalLoops, VoiceClips.playGoalLoops)
+      : level.stars.isNotEmpty
+      ? ((l) => l.playGoalStars, VoiceClips.playGoalStars)
+      : ((l) => l.playGoal, VoiceClips.playGoal);
+
+  static String _decisionClip(Decision decision) => switch (decision) {
+    Advance() => VoiceClips.decisionAdvance,
+    Practice() => VoiceClips.decisionPractice,
+    Review() => VoiceClips.decisionReview,
+    ReturnFromReview() => VoiceClips.decisionReturn,
+    MapComplete() => VoiceClips.decisionMapComplete,
+  };
+
   static String _decisionMessage(AppLocalizations l10n, Decision decision) =>
       switch (decision) {
         Advance() => l10n.decisionAdvance,
@@ -304,9 +347,16 @@ class _PlayViewState extends State<_PlayView> {
 }
 
 class _TopBar extends StatelessWidget {
-  const _TopBar({required this.plan, required this.homePath});
+  const _TopBar({
+    required this.plan,
+    required this.goal,
+    required this.onListen,
+    required this.homePath,
+  });
 
   final ExercisePlan plan;
+  final String goal;
+  final VoidCallback onListen;
   final String homePath;
 
   @override
@@ -337,6 +387,12 @@ class _TopBar extends StatelessWidget {
             label: Text(l10n.bonusAdventure),
           ),
         ],
+        const Spacer(),
+        IconButton.filledTonal(
+          tooltip: '${l10n.listenAgain}: $goal',
+          onPressed: onListen,
+          icon: const Icon(Icons.volume_up_rounded),
+        ),
       ],
     );
   }

@@ -18,7 +18,6 @@
     }
   },
   "play": "Play",
-  "comingSoon": "Coming soon!",
   "askAGrownUp": "Ask a grown-up",
   "parentGateQuestion": "What is {a} × {b}?",
   "@parentGateQuestion": {
@@ -149,5 +148,12 @@
   "cheerEncourage2": "Nice try!",
   "cheerEncourage3": "Let's keep going!",
   "cheerEncourage4": "Thanks for trying!",
-  "cheerEncourage5": "You're doing great!"
+  "cheerEncourage5": "You're doing great!",
+  "donateExplainer": "Coba Lagi is free. A donation of any size unlocks supporter features for your family and helps us build more adventures.",
+  "donateUnavailable": "Donations aren't available on this device.",
+  "restoreDonation": "Restore an earlier donation",
+  "thanksForSupport": "Thank you for supporting Coba Lagi!",
+  "playGoal": "Help me reach the flag!",
+  "playGoalStars": "Collect all the stars, then go to the flag!",
+  "playGoalLoops": "Use the repeat block to reach the flag!"
 }

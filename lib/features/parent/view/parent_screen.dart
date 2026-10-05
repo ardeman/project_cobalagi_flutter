@@ -13,6 +13,7 @@ import '../../learning/data/progress_repository.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
 import '../../profiles/data/profile.dart';
 import '../../profiles/view/profile_avatar.dart';
+import 'donation_sheet.dart';
 import 'placement_dialog.dart';
 
 /// Reached only through the parent gate.
@@ -84,13 +85,10 @@ class ParentScreen extends StatelessWidget {
                 ),
                 trailing: plan == Plan.free
                     ? FilledButton(
-                        onPressed: () =>
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.comingSoon)),
-                            ),
+                        onPressed: () => showDonationSheet(context),
                         child: Text(l10n.supportCobaLagi),
                       )
-                    : null,
+                    : const Icon(Icons.favorite_rounded, color: Colors.pink),
               ),
               if (kDebugMode)
                 SwitchListTile(

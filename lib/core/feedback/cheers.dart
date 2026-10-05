@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../app/l10n/app_localizations.dart';
+import '../audio/voice_clips.dart';
 
 enum CheerMood {
   /// After a right answer or a solved puzzle.
@@ -86,7 +87,7 @@ class CheerPicker {
       text: texts[i],
       icon: icon,
       color: color,
-      clip: 'cheer_${mood.name}_${i + 1}',
+      clip: VoiceClips.cheer(mood.name, i + 1),
     );
   }
 }

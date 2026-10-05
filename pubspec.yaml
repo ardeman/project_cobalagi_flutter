@@ -15,10 +15,10 @@ dependencies:
     sdk: flutter
 
   audioplayers: ^6.7.1
-  cupertino_icons: ^1.0.8
   flame: ^1.38.2
   flutter_bloc: ^9.1.1
   go_router: ^17.5.0
+  in_app_purchase: ^3.3.1 # Android/iOS only; web stays on the free plan
   intl: ^0.20.2
   path_provider: ^2.1.6 # native only; web storage uses sembast_web
   sembast: ^3.8.7
@@ -33,5 +33,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
+    - assets/audio/en/
+    - assets/audio/id/
     - assets/config/
     - assets/levels/

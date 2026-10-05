@@ -164,12 +164,6 @@ abstract class AppLocalizations {
   /// **'Play'**
   String get play;
 
-  /// No description provided for @comingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Coming soon!'**
-  String get comingSoon;
-
   /// No description provided for @askAGrownUp.
   ///
   /// In en, this message translates to:
@@ -709,6 +703,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'re doing great!'**
   String get cheerEncourage5;
+
+  /// No description provided for @donateExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Coba Lagi is free. A donation of any size unlocks supporter features for your family and helps us build more adventures.'**
+  String get donateExplainer;
+
+  /// No description provided for @donateUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Donations aren\'t available on this device.'**
+  String get donateUnavailable;
+
+  /// No description provided for @restoreDonation.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore an earlier donation'**
+  String get restoreDonation;
+
+  /// No description provided for @thanksForSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you for supporting Coba Lagi!'**
+  String get thanksForSupport;
+
+  /// No description provided for @playGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Help me reach the flag!'**
+  String get playGoal;
+
+  /// No description provided for @playGoalStars.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect all the stars, then go to the flag!'**
+  String get playGoalStars;
+
+  /// No description provided for @playGoalLoops.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the repeat block to reach the flag!'**
+  String get playGoalLoops;
 }
 
 class _AppLocalizationsDelegate

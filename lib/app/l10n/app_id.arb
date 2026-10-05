@@ -11,7 +11,6 @@
   "ok": "Oke",
   "greeting": "Hai, {name}!",
   "play": "Main",
-  "comingSoon": "Segera hadir!",
   "askAGrownUp": "Minta bantuan orang dewasa",
   "parentGateQuestion": "Berapa {a} × {b}?",
   "parentGateWrong": "Belum tepat. Coba lagi.",
@@ -101,5 +100,12 @@
   "cheerEncourage2": "Usaha yang bagus!",
   "cheerEncourage3": "Ayo lanjut!",
   "cheerEncourage4": "Terima kasih sudah mencoba!",
-  "cheerEncourage5": "Kamu hebat!"
+  "cheerEncourage5": "Kamu hebat!",
+  "donateExplainer": "Coba Lagi gratis. Donasi berapa pun membuka fitur pendukung untuk keluargamu dan membantu kami membuat lebih banyak petualangan.",
+  "donateUnavailable": "Donasi tidak tersedia di perangkat ini.",
+  "restoreDonation": "Pulihkan donasi sebelumnya",
+  "thanksForSupport": "Terima kasih sudah mendukung Coba Lagi!",
+  "playGoal": "Bantu aku sampai ke bendera!",
+  "playGoalStars": "Kumpulkan semua bintang, lalu ke bendera!",
+  "playGoalLoops": "Pakai blok ulangi untuk sampai ke bendera!"
 }

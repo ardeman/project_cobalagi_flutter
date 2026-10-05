@@ -44,9 +44,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get play => 'Play';
 
   @override
-  String get comingSoon => 'Coming soon!';
-
-  @override
   String get askAGrownUp => 'Ask a grown-up';
 
   @override
@@ -328,4 +325,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cheerEncourage5 => 'You\'re doing great!';
+
+  @override
+  String get donateExplainer =>
+      'Coba Lagi is free. A donation of any size unlocks supporter features for your family and helps us build more adventures.';
+
+  @override
+  String get donateUnavailable => 'Donations aren\'t available on this device.';
+
+  @override
+  String get restoreDonation => 'Restore an earlier donation';
+
+  @override
+  String get thanksForSupport => 'Thank you for supporting Coba Lagi!';
+
+  @override
+  String get playGoal => 'Help me reach the flag!';
+
+  @override
+  String get playGoalStars => 'Collect all the stars, then go to the flag!';
+
+  @override
+  String get playGoalLoops => 'Use the repeat block to reach the flag!';
 }

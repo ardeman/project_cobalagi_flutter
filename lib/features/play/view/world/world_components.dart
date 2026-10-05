@@ -26,8 +26,23 @@ class BoardComponent extends PositionComponent {
   static final _bush = Paint()..color = const Color(0xFF6CC071);
   static final _bushShade = Paint()..color = const Color(0xFF4FA457);
 
+  /// The board never changes, so it is drawn once and replayed each frame.
+  late final Picture _picture = () {
+    final recorder = PictureRecorder();
+    _draw(Canvas(recorder));
+    return recorder.endRecording();
+  }();
+
   @override
-  void render(Canvas canvas) {
+  void render(Canvas canvas) => canvas.drawPicture(_picture);
+
+  @override
+  void onRemove() {
+    _picture.dispose();
+    super.onRemove();
+  }
+
+  void _draw(Canvas canvas) {
     for (var y = 0; y < level.height; y++) {
       for (var x = 0; x < level.width; x++) {
         final cell = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1, 1);

@@ -1,4 +1,9 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Children's app: no network access in release builds (Google Play
+         Families). Debug and profile builds add it back for Flutter tooling.
+         Billing talks to the Play Store app, so it needs no network here. -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
     <application
         android:label="Coba Lagi"
         android:name="${applicationName}"

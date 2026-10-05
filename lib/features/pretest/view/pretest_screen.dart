@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
+import '../../../core/audio/voice_clips.dart';
 import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/placement/pretest_question.dart';
@@ -44,7 +45,7 @@ class _PretestScreenState extends State<PretestScreen> {
     if (!mounted) return;
     final question = _session.current;
     final clip = question == null
-        ? 'pretest_done'
+        ? VoiceClips.pretestDone
         : promptFor(AppLocalizations.of(context), question).$2;
     context.read<AudioService>().playVoice(clip, languageCode: _language);
   }
