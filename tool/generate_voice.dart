@@ -1,7 +1,7 @@
 // Generates the app's voice clips with ElevenLabs text-to-speech.
 //
-// Set your API key in the environment (it is never written to disk):
-//   export ELEVENLABS_API_KEY=...
+// Put your API key in .env (git-ignored; copy .env.example), or export
+// ELEVENLABS_API_KEY in the terminal, which takes priority.
 //
 //   dart run tool/generate_voice.dart --voices          # list your voices
 //   dart run tool/generate_voice.dart --sample          # audition sample lines
@@ -34,9 +34,11 @@ const _sampleClips = [
 
 Future<void> main(List<String> args) async {
   final dryRun = args.contains('--dry-run');
-  final key = Platform.environment['ELEVENLABS_API_KEY'] ?? '';
+  final key = setting('ELEVENLABS_API_KEY') ?? '';
   if (key.isEmpty && !dryRun) {
-    stderr.writeln('Set ELEVENLABS_API_KEY first (see the top of this file).');
+    stderr.writeln(
+      'Set ELEVENLABS_API_KEY in .env (copy .env.example) or the environment.',
+    );
     exitCode = 64;
     return;
   }

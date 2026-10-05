@@ -109,7 +109,7 @@ Record each row as an MP3 at the listed path (`assets/audio/<language>/<clipId>.
 **ElevenLabs (the chosen voices):** `tool/generate_voice.dart` makes every clip with ElevenLabs, then trims and levels it like the test voices. Shipping the clips needs an ElevenLabs plan with a commercial license (Starter or higher); the free plan is fine for auditioning.
 
 ```sh
-export ELEVENLABS_API_KEY=...                  # from elevenlabs.io → API keys; never commit it
+cp .env.example .env                          # then put your key in .env (git-ignored)
 dart run tool/generate_voice.dart --voices    # list voices in your account
 # put the chosen voice_id for "id" and "en" in tool/elevenlabs.json
 dart run tool/generate_voice.dart --sample    # 5 sample lines per language in build/voice_samples/

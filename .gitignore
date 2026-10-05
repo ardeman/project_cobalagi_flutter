@@ -49,3 +49,8 @@ app.*.map.json
 # two lines and commit the recorded MP3s.
 /assets/audio/*/*.mp3
 /assets/audio/TEST_VOICES
+
+# Local secrets for developer tools (see .env.example).
+.env
+.env.*
+!.env.example

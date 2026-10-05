@@ -41,3 +41,27 @@ Future<void> runChecked(String command, List<String> args) async {
     throw ProcessException(command, args, '${result.stderr}', result.exitCode);
   }
 }
+
+/// A setting from the environment, or else from the git-ignored `.env` file.
+String? setting(String name) {
+  final fromEnvironment = Platform.environment[name];
+  if (fromEnvironment != null && fromEnvironment.isNotEmpty) {
+    return fromEnvironment;
+  }
+  final file = File('.env');
+  if (!file.existsSync()) return null;
+  for (final line in file.readAsLinesSync()) {
+    final trimmed = line.trim();
+    if (trimmed.isEmpty || trimmed.startsWith('#')) continue;
+    final eq = trimmed.indexOf('=');
+    if (eq < 0 || trimmed.substring(0, eq).trim() != name) continue;
+    var value = trimmed.substring(eq + 1).trim();
+    if (value.length >= 2 &&
+        (value.startsWith('"') && value.endsWith('"') ||
+            value.startsWith("'") && value.endsWith("'"))) {
+      value = value.substring(1, value.length - 1);
+    }
+    return value.isEmpty ? null : value;
+  }
+  return null;
+}
