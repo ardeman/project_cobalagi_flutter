@@ -8,6 +8,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 
 ## Conventions
 
+- Use Conventional Commit subjects; see `README.md` for the format and hook setup.
 - Follow [Effective Dart](https://dart.dev/effective-dart) and the lints in `analysis_options.yaml`. Fix lint findings; don't silence them with `// ignore:` unless you add a comment saying why.
 - Files use `snake_case.dart` and types use `UpperCamelCase`. Use one public widget per file once `lib/` grows past `main.dart`.
 - Use `const` constructors wherever you can. Prefer `StatelessWidget` and keep state as local as possible.
