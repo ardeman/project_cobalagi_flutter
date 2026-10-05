@@ -6,6 +6,7 @@ import 'core/entitlement/entitlement_service.dart';
 import 'core/entitlement/plan.dart';
 import 'core/settings/settings_repository.dart';
 import 'core/storage/app_database.dart';
+import 'features/play/data/level_repository.dart';
 import 'features/profiles/data/profile_repository.dart';
 
 Future<void> main() async {
@@ -18,6 +19,7 @@ Future<void> main() async {
       // Replaced by store billing in Phase 5.
       entitlement: const StaticEntitlementService(Plan.free),
       audio: AudioplayersAudioService(),
+      levels: LevelRepository(),
     ),
   );
 }

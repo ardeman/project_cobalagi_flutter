@@ -7,6 +7,7 @@ import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
 import '../core/settings/settings_cubit.dart';
 import '../core/settings/settings_repository.dart';
+import '../features/play/data/level_repository.dart';
 import '../features/profiles/cubit/profiles_cubit.dart';
 import '../features/profiles/data/profile_repository.dart';
 import 'l10n/app_localizations.dart';
@@ -20,12 +21,14 @@ class CobaLagiApp extends StatefulWidget {
     required this.settings,
     required this.entitlement,
     required this.audio,
+    required this.levels,
   });
 
   final ProfileRepository profiles;
   final SettingsRepository settings;
   final EntitlementService entitlement;
   final AudioService audio;
+  final LevelRepository levels;
 
   @override
   State<CobaLagiApp> createState() => _CobaLagiAppState();
@@ -43,7 +46,10 @@ class _CobaLagiAppState extends State<CobaLagiApp> {
 
   @override
   Widget build(BuildContext context) => MultiRepositoryProvider(
-    providers: [RepositoryProvider.value(value: widget.audio)],
+    providers: [
+      RepositoryProvider.value(value: widget.audio),
+      RepositoryProvider.value(value: widget.levels),
+    ],
     child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => SettingsCubit(widget.settings)..load()),

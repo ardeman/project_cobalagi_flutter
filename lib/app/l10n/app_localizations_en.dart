@@ -100,4 +100,69 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get playerLimitReached =>
       'This version has room for one player. Ask a grown-up.';
+
+  @override
+  String get levels => 'Levels';
+
+  @override
+  String levelNumber(int number) {
+    return 'Level $number';
+  }
+
+  @override
+  String get run => 'Go!';
+
+  @override
+  String get step => 'One step';
+
+  @override
+  String get reset => 'Start over';
+
+  @override
+  String get undo => 'Remove last block';
+
+  @override
+  String get clearBlocks => 'Remove all blocks';
+
+  @override
+  String get blockForward => 'Forward';
+
+  @override
+  String get blockTurnLeft => 'Turn left';
+
+  @override
+  String get blockTurnRight => 'Turn right';
+
+  @override
+  String get blockRepeat => 'Repeat';
+
+  @override
+  String get successTitle => 'Hooray!';
+
+  @override
+  String get nextLevel => 'Next';
+
+  @override
+  String get playAgain => 'Play again';
+
+  @override
+  String get tryAgain => 'Try again!';
+
+  @override
+  String get feedbackBumped => 'Oops, something is in the way.';
+
+  @override
+  String get feedbackStoppedShort => 'Almost! Keep going to the flag.';
+
+  @override
+  String get feedbackMissedStars => 'Collect all the stars first.';
+
+  @override
+  String get feedbackTooManySteps => 'That\'s a lot of steps! Try fewer.';
+
+  @override
+  String get allLevelsDone => 'You finished every level!';
+
+  @override
+  String get home => 'Home';
 }

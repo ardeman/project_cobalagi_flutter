@@ -17,6 +17,9 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - A feature folder is split into `data/` (models, repositories), `cubit/` (state) and `view/` (widgets).
 - `lib/engine/` and `lib/learning/` are pure Dart: no Flutter imports, so they can be tested headless.
 - Every editor (icon blocks, word blocks, typed code) compiles to the shared `Program` in `lib/engine/`. Never add an editor-specific path into the world or interpreter.
+- An editor lives in `lib/features/editors/<name>/`: its own block model, a compile function to `Program` that copies block ids, and its own cubit. `PlayCubit` only receives the compiled `Program`.
+- The Flame world (`lib/features/play/view/world/`) holds no game logic. It mirrors `PlayState` through `WorldGame.apply` and reports each finished animation with `PlayCubit.eventShown`.
+- Every hand-made level must be solvable with its own palette; `test/features/play/level_assets_test.dart` checks this.
 - User-facing text goes in both `lib/app/l10n/app_en.arb` and `app_id.arb`; never hardcode strings. Voice clips live at `assets/audio/<id|en>/<clipId>.mp3`.
 - Learning thresholds and skill prerequisites belong in `assets/config/`, not in code.
 - Layouts adapt via `WindowClass`/`WindowClassBuilder` (`lib/core/responsive/`), not fixed device sizes. Tap targets are at least 64dp.
@@ -42,7 +45,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 
 Record architectural choices here as one line each: date, decision, reason.
 
-- 2026-10-05: `flutter_bloc` + `flame_bloc` for state. `flutter_riverpod` 3.4.3 fails pub.dev's web check (imports `flutter_test` → `dart:io`).
+- 2026-10-05: `flutter_bloc` for state (`flame_bloc` not needed so far: the world mirrors `PlayState` via `WorldGame.apply`). `flutter_riverpod` 3.4.3 fails pub.dev's web check (imports `flutter_test` → `dart:io`).
 - 2026-10-05: `go_router` for routing; `sembast` (+ `sembast_web` on IndexedDB) for local storage behind repositories.
 - 2026-10-05: `path_provider` is allowed without web support: it is imported only on native via `lib/core/storage/database_factory_io.dart`.
 - 2026-10-05: Flame for the game world, Rive (`flame_rive`) for characters later; placeholder shapes until then. Flame is added in Phase 2.

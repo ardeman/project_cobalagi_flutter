@@ -1,0 +1,59 @@
+{
+  "levels": [
+    {
+      "id": "sequencing-01",
+      "concept": "sequencing",
+      "facing": "east",
+      "palette": ["move", "turnLeft", "turnRight"],
+      "rows": [
+        "#######",
+        "#S...*#",
+        "#####.#",
+        "#G....#",
+        "#######"
+      ]
+    },
+    {
+      "id": "sequencing-02",
+      "concept": "sequencing",
+      "facing": "east",
+      "palette": ["move", "turnLeft", "turnRight"],
+      "rows": [
+        "########",
+        "#S.#####",
+        "##.#####",
+        "##...###",
+        "####*###",
+        "####...#",
+        "######G#",
+        "########"
+      ]
+    },
+    {
+      "id": "sequencing-03",
+      "concept": "sequencing",
+      "facing": "west",
+      "palette": ["move", "turnLeft", "turnRight"],
+      "rows": [
+        "########",
+        "#*.S..G#",
+        "########"
+      ]
+    },
+    {
+      "id": "sequencing-04",
+      "concept": "sequencing",
+      "facing": "north",
+      "palette": ["move", "turnLeft", "turnRight"],
+      "rows": [
+        "#######",
+        "#...*.#",
+        "#.###.#",
+        "#.#G#.#",
+        "#S#.#.#",
+        "###...#",
+        "#######"
+      ]
+    }
+  ]
+}

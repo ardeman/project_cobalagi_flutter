@@ -12,7 +12,9 @@
   "greeting": "Hi, {name}!",
   "@greeting": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "play": "Play",
@@ -21,8 +23,12 @@
   "parentGateQuestion": "What is {a} × {b}?",
   "@parentGateQuestion": {
     "placeholders": {
-      "a": {"type": "int"},
-      "b": {"type": "int"}
+      "a": {
+        "type": "int"
+      },
+      "b": {
+        "type": "int"
+      }
     }
   },
   "parentGateWrong": "Not quite. Try again.",
@@ -36,7 +42,9 @@
   "planFull": "Full version: up to {count} players",
   "@planFull": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "unlockFullVersion": "Unlock full version",
@@ -45,8 +53,38 @@
   "deletePlayerConfirm": "Delete {name} and all their progress?",
   "@deletePlayerConfirm": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
-  "playerLimitReached": "This version has room for one player. Ask a grown-up."
+  "playerLimitReached": "This version has room for one player. Ask a grown-up.",
+  "levels": "Levels",
+  "levelNumber": "Level {number}",
+  "@levelNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "run": "Go!",
+  "step": "One step",
+  "reset": "Start over",
+  "undo": "Remove last block",
+  "clearBlocks": "Remove all blocks",
+  "blockForward": "Forward",
+  "blockTurnLeft": "Turn left",
+  "blockTurnRight": "Turn right",
+  "blockRepeat": "Repeat",
+  "successTitle": "Hooray!",
+  "nextLevel": "Next",
+  "playAgain": "Play again",
+  "tryAgain": "Try again!",
+  "feedbackBumped": "Oops, something is in the way.",
+  "feedbackStoppedShort": "Almost! Keep going to the flag.",
+  "feedbackMissedStars": "Collect all the stars first.",
+  "feedbackTooManySteps": "That's a lot of steps! Try fewer.",
+  "allLevelsDone": "You finished every level!",
+  "home": "Home"
 }

@@ -64,7 +64,7 @@ class ProfilesScreen extends StatelessWidget {
                     for (final profile in state.profiles)
                       _Tile(
                         label: profile.nickname,
-                        onTap: () => context.go('/play/${profile.id}'),
+                        onTap: () => context.go('/child/${profile.id}'),
                         child: ProfileAvatar(
                           avatar: profile.avatar,
                           size: tileSize * 0.6,

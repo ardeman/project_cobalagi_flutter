@@ -1,0 +1,97 @@
+import 'package:cobalagi/app/l10n/app_localizations.dart';
+import 'package:cobalagi/engine/program/instruction.dart';
+import 'package:cobalagi/features/editors/icon_blocks/cubit/icon_blocks_cubit.dart';
+import 'package:cobalagi/features/editors/icon_blocks/data/icon_block.dart';
+import 'package:cobalagi/features/editors/icon_blocks/view/icon_block_editor.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+Future<IconBlocksCubit> pumpEditor(
+  WidgetTester tester, {
+  int? maxBlocks,
+}) async {
+  final cubit = IconBlocksCubit(maxBlocks: maxBlocks);
+  addTearDown(cubit.close);
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: BlocProvider.value(
+          value: cubit,
+          child: const SizedBox(
+            width: 600,
+            height: 500,
+            child: IconBlockEditor(
+              palette: {
+                InstructionKind.move,
+                InstructionKind.turnLeft,
+                InstructionKind.turnRight,
+              },
+              blockSize: 64,
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+  return cubit;
+}
+
+Finder paletteBlock(IconData icon) => find.byIcon(icon).first;
+
+void main() {
+  testWidgets('tapping palette blocks appends them', (tester) async {
+    final cubit = await pumpEditor(tester);
+    await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
+    await tester.tap(paletteBlock(Icons.turn_left_rounded));
+    await tester.pump();
+    expect(cubit.state.map((b) => b.type), [
+      IconBlockType.forward,
+      IconBlockType.turnLeft,
+    ]);
+    expect(find.byIcon(Icons.arrow_upward_rounded), findsNWidgets(2));
+  });
+
+  testWidgets('dragging a palette block into the program adds it', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester);
+    final start = tester.getCenter(paletteBlock(Icons.turn_right_rounded));
+    final gesture = await tester.startGesture(start);
+    await gesture.moveBy(const Offset(0, 50));
+    await gesture.moveTo(start + const Offset(0, 250));
+    await gesture.up();
+    await tester.pump();
+    expect(cubit.state.single.type, IconBlockType.turnRight);
+  });
+
+  testWidgets('dragging a placed block onto the palette removes it', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester)
+      ..add(IconBlockType.forward)
+      ..add(IconBlockType.turnLeft);
+    await tester.pump();
+    final placed = find.byIcon(Icons.turn_left_rounded).last;
+    final gesture = await tester.startGesture(tester.getCenter(placed));
+    await gesture.moveBy(const Offset(0, -20));
+    await gesture.moveTo(
+      tester.getCenter(paletteBlock(Icons.arrow_upward_rounded)),
+    );
+    await gesture.up();
+    await tester.pump();
+    expect(cubit.state.single.type, IconBlockType.forward);
+  });
+
+  testWidgets('the palette is disabled at the block limit', (tester) async {
+    final cubit = await pumpEditor(tester, maxBlocks: 1);
+    await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
+    await tester.pump();
+    await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
+    await tester.pump();
+    expect(cubit.state, hasLength(1));
+    expect(find.text('1 / 1'), findsOneWidget);
+  });
+}

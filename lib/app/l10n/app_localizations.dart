@@ -265,6 +265,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This version has room for one player. Ask a grown-up.'**
   String get playerLimitReached;
+
+  /// No description provided for @levels.
+  ///
+  /// In en, this message translates to:
+  /// **'Levels'**
+  String get levels;
+
+  /// No description provided for @levelNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {number}'**
+  String levelNumber(int number);
+
+  /// No description provided for @run.
+  ///
+  /// In en, this message translates to:
+  /// **'Go!'**
+  String get run;
+
+  /// No description provided for @step.
+  ///
+  /// In en, this message translates to:
+  /// **'One step'**
+  String get step;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Start over'**
+  String get reset;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove last block'**
+  String get undo;
+
+  /// No description provided for @clearBlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove all blocks'**
+  String get clearBlocks;
+
+  /// No description provided for @blockForward.
+  ///
+  /// In en, this message translates to:
+  /// **'Forward'**
+  String get blockForward;
+
+  /// No description provided for @blockTurnLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn left'**
+  String get blockTurnLeft;
+
+  /// No description provided for @blockTurnRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn right'**
+  String get blockTurnRight;
+
+  /// No description provided for @blockRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat'**
+  String get blockRepeat;
+
+  /// No description provided for @successTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hooray!'**
+  String get successTitle;
+
+  /// No description provided for @nextLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get nextLevel;
+
+  /// No description provided for @playAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get playAgain;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again!'**
+  String get tryAgain;
+
+  /// No description provided for @feedbackBumped.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops, something is in the way.'**
+  String get feedbackBumped;
+
+  /// No description provided for @feedbackStoppedShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost! Keep going to the flag.'**
+  String get feedbackStoppedShort;
+
+  /// No description provided for @feedbackMissedStars.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect all the stars first.'**
+  String get feedbackMissedStars;
+
+  /// No description provided for @feedbackTooManySteps.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s a lot of steps! Try fewer.'**
+  String get feedbackTooManySteps;
+
+  /// No description provided for @allLevelsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'You finished every level!'**
+  String get allLevelsDone;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
 }
 
 class _AppLocalizationsDelegate

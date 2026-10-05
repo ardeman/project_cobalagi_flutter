@@ -100,4 +100,70 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get playerLimitReached =>
       'Versi ini hanya untuk satu pemain. Minta bantuan orang dewasa.';
+
+  @override
+  String get levels => 'Level';
+
+  @override
+  String levelNumber(int number) {
+    return 'Level $number';
+  }
+
+  @override
+  String get run => 'Jalan!';
+
+  @override
+  String get step => 'Satu langkah';
+
+  @override
+  String get reset => 'Mulai lagi';
+
+  @override
+  String get undo => 'Hapus blok terakhir';
+
+  @override
+  String get clearBlocks => 'Hapus semua blok';
+
+  @override
+  String get blockForward => 'Maju';
+
+  @override
+  String get blockTurnLeft => 'Belok kiri';
+
+  @override
+  String get blockTurnRight => 'Belok kanan';
+
+  @override
+  String get blockRepeat => 'Ulangi';
+
+  @override
+  String get successTitle => 'Hore!';
+
+  @override
+  String get nextLevel => 'Lanjut';
+
+  @override
+  String get playAgain => 'Main lagi';
+
+  @override
+  String get tryAgain => 'Coba lagi!';
+
+  @override
+  String get feedbackBumped => 'Ups, ada yang menghalangi.';
+
+  @override
+  String get feedbackStoppedShort => 'Hampir! Terus jalan sampai bendera.';
+
+  @override
+  String get feedbackMissedStars => 'Kumpulkan semua bintang dulu.';
+
+  @override
+  String get feedbackTooManySteps =>
+      'Langkahnya terlalu banyak! Coba lebih sedikit.';
+
+  @override
+  String get allLevelsDone => 'Kamu sudah menyelesaikan semua level!';
+
+  @override
+  String get home => 'Beranda';
 }

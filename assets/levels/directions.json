@@ -1,0 +1,65 @@
+{
+  "levels": [
+    {
+      "id": "directions-01",
+      "concept": "directions",
+      "facing": "east",
+      "palette": ["move"],
+      "rows": [
+        "######",
+        "#S..G#",
+        "######"
+      ]
+    },
+    {
+      "id": "directions-02",
+      "concept": "directions",
+      "facing": "east",
+      "palette": ["move", "turnLeft"],
+      "rows": [
+        "#####",
+        "###G#",
+        "###.#",
+        "#S..#",
+        "#####"
+      ]
+    },
+    {
+      "id": "directions-03",
+      "concept": "directions",
+      "facing": "east",
+      "palette": ["move", "turnRight"],
+      "rows": [
+        "#####",
+        "#S..#",
+        "###.#",
+        "###G#",
+        "#####"
+      ]
+    },
+    {
+      "id": "directions-04",
+      "concept": "directions",
+      "facing": "north",
+      "palette": ["move", "turnLeft", "turnRight"],
+      "rows": [
+        "#####",
+        "#S.G#",
+        "#####"
+      ]
+    },
+    {
+      "id": "directions-05",
+      "concept": "directions",
+      "facing": "east",
+      "palette": ["move", "turnLeft", "turnRight"],
+      "rows": [
+        "######",
+        "#S.*##",
+        "###..#",
+        "####G#",
+        "######"
+      ]
+    }
+  ]
+}
