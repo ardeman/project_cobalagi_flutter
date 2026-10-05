@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../learning/data/progress_repository.dart';
 import '../data/profile.dart';
 import '../data/profile_repository.dart';
 
@@ -18,9 +19,12 @@ class ProfilesState {
 }
 
 class ProfilesCubit extends Cubit<ProfilesState> {
-  ProfilesCubit(this._repository) : super(const ProfilesState());
+  ProfilesCubit(this._repository, {ProgressRepository? progress})
+    : _progress = progress,
+      super(const ProfilesState());
 
   final ProfileRepository _repository;
+  final ProgressRepository? _progress;
 
   Future<void> load() async =>
       emit(ProfilesState(profiles: await _repository.loadAll(), loaded: true));
@@ -39,6 +43,7 @@ class ProfilesCubit extends Cubit<ProfilesState> {
 
   Future<void> delete(int id) async {
     await _repository.delete(id);
+    await _progress?.deleteFor(id);
     emit(
       ProfilesState(
         profiles: [

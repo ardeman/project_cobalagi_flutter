@@ -1,0 +1,17 @@
+{
+  "advanceAt": 0.8,
+  "practiceAt": 0.5,
+  "masteryWindow": 5,
+  "minExercises": 3,
+  "reviewAfterFailures": 2,
+  "reviewLength": 2,
+  "offerSkipAfterRuns": 4,
+  "score": {
+    "extraRunPenalty": 0.15,
+    "hintPenalty": 0.2,
+    "slowAfterSeconds": 120,
+    "slowPenalty": 0.1,
+    "minSuccessScore": 0.2
+  },
+  "difficulty": { "start": 1, "max": 5 }
+}

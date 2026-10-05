@@ -102,14 +102,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'This version has room for one player. Ask a grown-up.';
 
   @override
-  String get levels => 'Levels';
-
-  @override
-  String levelNumber(int number) {
-    return 'Level $number';
-  }
-
-  @override
   String get run => 'Go!';
 
   @override
@@ -143,9 +135,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get nextLevel => 'Next';
 
   @override
-  String get playAgain => 'Play again';
-
-  @override
   String get tryAgain => 'Try again!';
 
   @override
@@ -161,8 +150,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedbackTooManySteps => 'That\'s a lot of steps! Try fewer.';
 
   @override
-  String get allLevelsDone => 'You finished every level!';
+  String get home => 'Home';
 
   @override
-  String get home => 'Home';
+  String get conceptDirections => 'Directions';
+
+  @override
+  String get conceptSequencing => 'Step by step';
+
+  @override
+  String get conceptLoops => 'Loops';
+
+  @override
+  String get decisionAdvance => 'New island unlocked!';
+
+  @override
+  String get decisionPractice => 'Let\'s try another one!';
+
+  @override
+  String get bonusAdventure => 'Bonus adventure!';
+
+  @override
+  String get decisionReview => 'Let\'s hunt for treasure on an earlier island.';
+
+  @override
+  String get decisionReturn => 'Back to your adventure!';
+
+  @override
+  String get decisionMapComplete => 'You explored every island!';
+
+  @override
+  String get goodTry => 'Good try!';
+
+  @override
+  String get skipPuzzle => 'Try a different one';
+
+  @override
+  String get hint => 'Show me the way';
+
+  @override
+  String get repeatMore => 'One more time';
+
+  @override
+  String get repeatFewer => 'One time fewer';
+
+  @override
+  String get dropBlocksHere => 'Put blocks here';
 }

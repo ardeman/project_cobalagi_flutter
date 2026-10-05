@@ -27,6 +27,21 @@ final class IconBlock {
   /// Repeat count; ignored by other block types.
   final int count;
   final List<IconBlock> children;
+
+  IconBlock copyWith({int? count, List<IconBlock>? children}) => IconBlock(
+    id: id,
+    type: type,
+    count: count ?? this.count,
+    children: children ?? this.children,
+  );
+
+  /// This block and every block nested inside it.
+  Iterable<IconBlock> get selfAndDescendants sync* {
+    yield this;
+    for (final child in children) {
+      yield* child.selfAndDescendants;
+    }
+  }
 }
 
 /// Compiles the editor's blocks into the shared instruction set.

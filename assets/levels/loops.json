@@ -1,0 +1,85 @@
+{
+  "levels": [
+    {
+      "id": "loops-01",
+      "concept": "loops",
+      "facing": "west",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 3,
+      "rows": [
+        "#########",
+        "#G.....S#",
+        "#########"
+      ]
+    },
+    {
+      "id": "loops-02",
+      "concept": "loops",
+      "facing": "south",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 3,
+      "rows": [
+        "###",
+        "#S#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#G#",
+        "###"
+      ]
+    },
+    {
+      "id": "loops-03",
+      "concept": "loops",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 6,
+      "rows": [
+        "######",
+        "####G#",
+        "###..#",
+        "##..##",
+        "#S.###",
+        "######"
+      ]
+    },
+    {
+      "id": "loops-04",
+      "concept": "loops",
+      "facing": "west",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 6,
+      "rows": [
+        "#######",
+        "####.S#",
+        "###..##",
+        "##..###",
+        "#..####",
+        "#G#####",
+        "#######"
+      ]
+    }
+  ]
+}

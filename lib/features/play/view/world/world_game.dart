@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/animation.dart';
+import 'package:flutter/painting.dart';
 
 import '../../../../engine/interpreter/run_event.dart';
 import '../../../../engine/world/grid_point.dart';
@@ -99,6 +100,31 @@ class WorldGame extends FlameGame {
         }
       case PlayPhase.failed:
         break;
+    }
+  }
+
+  /// Shows the route as footprints that appear one by one, then fade away.
+  void showHint(List<GridPoint> route) {
+    if (!isLoaded) return;
+    for (var i = 0; i < route.length; i++) {
+      world.add(
+        CircleComponent(
+          radius: 0.12,
+          position: tileCenter(route[i]),
+          anchor: Anchor.center,
+          paint: Paint()..color = const Color(0xCCFF7A59),
+          scale: Vector2.zero(),
+        )..addAll([
+          ScaleEffect.to(
+            Vector2.all(1),
+            EffectController(duration: 0.15, startDelay: i * 0.12),
+          ),
+          OpacityEffect.fadeOut(
+            EffectController(duration: 0.6, startDelay: 2.5 + i * 0.05),
+          ),
+          RemoveEffect(delay: 3.4 + i * 0.05),
+        ]),
+      );
     }
   }
 

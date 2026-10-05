@@ -7,7 +7,8 @@ import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
 import '../core/settings/settings_cubit.dart';
 import '../core/settings/settings_repository.dart';
-import '../features/play/data/level_repository.dart';
+import '../features/learning/data/curriculum_repository.dart';
+import '../features/learning/data/progress_repository.dart';
 import '../features/profiles/cubit/profiles_cubit.dart';
 import '../features/profiles/data/profile_repository.dart';
 import 'l10n/app_localizations.dart';
@@ -21,14 +22,16 @@ class CobaLagiApp extends StatefulWidget {
     required this.settings,
     required this.entitlement,
     required this.audio,
-    required this.levels,
+    required this.curriculum,
+    required this.progress,
   });
 
   final ProfileRepository profiles;
   final SettingsRepository settings;
   final EntitlementService entitlement;
   final AudioService audio;
-  final LevelRepository levels;
+  final CurriculumRepository curriculum;
+  final ProgressRepository progress;
 
   @override
   State<CobaLagiApp> createState() => _CobaLagiAppState();
@@ -48,7 +51,8 @@ class _CobaLagiAppState extends State<CobaLagiApp> {
   Widget build(BuildContext context) => MultiRepositoryProvider(
     providers: [
       RepositoryProvider.value(value: widget.audio),
-      RepositoryProvider.value(value: widget.levels),
+      RepositoryProvider.value(value: widget.curriculum),
+      RepositoryProvider.value(value: widget.progress),
     ],
     child: MultiBlocProvider(
       providers: [
@@ -56,7 +60,10 @@ class _CobaLagiAppState extends State<CobaLagiApp> {
         BlocProvider(
           create: (_) => EntitlementCubit(widget.entitlement)..load(),
         ),
-        BlocProvider(create: (_) => ProfilesCubit(widget.profiles)..load()),
+        BlocProvider(
+          create: (_) =>
+              ProfilesCubit(widget.profiles, progress: widget.progress)..load(),
+        ),
       ],
       child: BlocBuilder<SettingsCubit, Locale?>(
         builder: (context, locale) => MaterialApp.router(

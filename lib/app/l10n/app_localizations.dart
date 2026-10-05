@@ -266,18 +266,6 @@ abstract class AppLocalizations {
   /// **'This version has room for one player. Ask a grown-up.'**
   String get playerLimitReached;
 
-  /// No description provided for @levels.
-  ///
-  /// In en, this message translates to:
-  /// **'Levels'**
-  String get levels;
-
-  /// No description provided for @levelNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Level {number}'**
-  String levelNumber(int number);
-
   /// No description provided for @run.
   ///
   /// In en, this message translates to:
@@ -344,12 +332,6 @@ abstract class AppLocalizations {
   /// **'Next'**
   String get nextLevel;
 
-  /// No description provided for @playAgain.
-  ///
-  /// In en, this message translates to:
-  /// **'Play again'**
-  String get playAgain;
-
   /// No description provided for @tryAgain.
   ///
   /// In en, this message translates to:
@@ -380,17 +362,101 @@ abstract class AppLocalizations {
   /// **'That\'s a lot of steps! Try fewer.'**
   String get feedbackTooManySteps;
 
-  /// No description provided for @allLevelsDone.
-  ///
-  /// In en, this message translates to:
-  /// **'You finished every level!'**
-  String get allLevelsDone;
-
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
+
+  /// No description provided for @conceptDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get conceptDirections;
+
+  /// No description provided for @conceptSequencing.
+  ///
+  /// In en, this message translates to:
+  /// **'Step by step'**
+  String get conceptSequencing;
+
+  /// No description provided for @conceptLoops.
+  ///
+  /// In en, this message translates to:
+  /// **'Loops'**
+  String get conceptLoops;
+
+  /// No description provided for @decisionAdvance.
+  ///
+  /// In en, this message translates to:
+  /// **'New island unlocked!'**
+  String get decisionAdvance;
+
+  /// No description provided for @decisionPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s try another one!'**
+  String get decisionPractice;
+
+  /// No description provided for @bonusAdventure.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus adventure!'**
+  String get bonusAdventure;
+
+  /// No description provided for @decisionReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s hunt for treasure on an earlier island.'**
+  String get decisionReview;
+
+  /// No description provided for @decisionReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to your adventure!'**
+  String get decisionReturn;
+
+  /// No description provided for @decisionMapComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'You explored every island!'**
+  String get decisionMapComplete;
+
+  /// No description provided for @goodTry.
+  ///
+  /// In en, this message translates to:
+  /// **'Good try!'**
+  String get goodTry;
+
+  /// No description provided for @skipPuzzle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different one'**
+  String get skipPuzzle;
+
+  /// No description provided for @hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me the way'**
+  String get hint;
+
+  /// No description provided for @repeatMore.
+  ///
+  /// In en, this message translates to:
+  /// **'One more time'**
+  String get repeatMore;
+
+  /// No description provided for @repeatFewer.
+  ///
+  /// In en, this message translates to:
+  /// **'One time fewer'**
+  String get repeatFewer;
+
+  /// No description provided for @dropBlocksHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Put blocks here'**
+  String get dropBlocksHere;
 }
 
 class _AppLocalizationsDelegate

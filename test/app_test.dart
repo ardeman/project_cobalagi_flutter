@@ -3,7 +3,8 @@ import 'package:cobalagi/core/audio/audio_service.dart';
 import 'package:cobalagi/core/entitlement/entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/plan.dart';
 import 'package:cobalagi/core/settings/settings_repository.dart';
-import 'package:cobalagi/features/play/data/level_repository.dart';
+import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
+import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/features/profiles/data/profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,7 +25,8 @@ Future<void> pumpApp(WidgetTester tester) async {
       settings: SettingsRepository(db),
       entitlement: const StaticEntitlementService(Plan.free),
       audio: const SilentAudioService(),
-      levels: LevelRepository(),
+      curriculum: CurriculumRepository(),
+      progress: ProgressRepository(db),
     ),
   );
   await tester.pumpAndSettle();

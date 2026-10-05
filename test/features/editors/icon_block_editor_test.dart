@@ -28,6 +28,7 @@ Future<IconBlocksCubit> pumpEditor(
                 InstructionKind.move,
                 InstructionKind.turnLeft,
                 InstructionKind.turnRight,
+                InstructionKind.repeat,
               },
               blockSize: 64,
             ),
@@ -93,5 +94,27 @@ void main() {
     await tester.pump();
     expect(cubit.state, hasLength(1));
     expect(find.text('1 / 1'), findsOneWidget);
+  });
+
+  testWidgets('dragging a block into a repeat nests it; + raises the count', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester);
+    await tester.tap(paletteBlock(Icons.repeat_rounded));
+    await tester.pump();
+    expect(cubit.state.single.type, IconBlockType.repeat);
+
+    final start = tester.getCenter(paletteBlock(Icons.arrow_upward_rounded));
+    final inner = tester.getCenter(find.byIcon(Icons.add_rounded));
+    final gesture = await tester.startGesture(start);
+    await gesture.moveBy(const Offset(0, 30));
+    await gesture.moveTo(inner);
+    await gesture.up();
+    await tester.pump();
+    expect(cubit.state.single.children.single.type, IconBlockType.forward);
+
+    await tester.tap(find.byIcon(Icons.add_circle_rounded));
+    await tester.pump();
+    expect(cubit.state.single.count, 3);
   });
 }

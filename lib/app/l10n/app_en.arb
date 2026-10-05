@@ -59,15 +59,6 @@
     }
   },
   "playerLimitReached": "This version has room for one player. Ask a grown-up.",
-  "levels": "Levels",
-  "levelNumber": "Level {number}",
-  "@levelNumber": {
-    "placeholders": {
-      "number": {
-        "type": "int"
-      }
-    }
-  },
   "run": "Go!",
   "step": "One step",
   "reset": "Start over",
@@ -79,12 +70,25 @@
   "blockRepeat": "Repeat",
   "successTitle": "Hooray!",
   "nextLevel": "Next",
-  "playAgain": "Play again",
   "tryAgain": "Try again!",
   "feedbackBumped": "Oops, something is in the way.",
   "feedbackStoppedShort": "Almost! Keep going to the flag.",
   "feedbackMissedStars": "Collect all the stars first.",
   "feedbackTooManySteps": "That's a lot of steps! Try fewer.",
-  "allLevelsDone": "You finished every level!",
-  "home": "Home"
+  "home": "Home",
+  "conceptDirections": "Directions",
+  "conceptSequencing": "Step by step",
+  "conceptLoops": "Loops",
+  "decisionAdvance": "New island unlocked!",
+  "decisionPractice": "Let's try another one!",
+  "bonusAdventure": "Bonus adventure!",
+  "decisionReview": "Let's hunt for treasure on an earlier island.",
+  "decisionReturn": "Back to your adventure!",
+  "decisionMapComplete": "You explored every island!",
+  "goodTry": "Good try!",
+  "skipPuzzle": "Try a different one",
+  "hint": "Show me the way",
+  "repeatMore": "One more time",
+  "repeatFewer": "One time fewer",
+  "dropBlocksHere": "Put blocks here"
 }

@@ -19,9 +19,9 @@ void main() {
       IconBlockType.turnLeft,
     ]);
 
-    c.move(c.state.first.id, 3); // to the end
+    c.move(c.state.first.id, index: 3); // to the end
     expect(types(c).last, IconBlockType.turnRight);
-    c.move(c.state.last.id, 0); // back to the front
+    c.move(c.state.last.id, index: 0); // back to the front
     expect(types(c).first, IconBlockType.turnRight);
 
     c
@@ -61,5 +61,50 @@ void main() {
     final repeat = nested.body.single as Repeat;
     expect(repeat.times, 3);
     expect(repeat.body.single.blockId, 'f');
+  });
+
+  test('blocks nest inside a repeat, but a repeat cannot nest', () {
+    final c = IconBlocksCubit()..add(IconBlockType.repeat);
+    final loop = c.state.single.id;
+    expect(c.add(IconBlockType.forward, parentId: loop), isTrue);
+    expect(c.add(IconBlockType.turnLeft, parentId: loop), isTrue);
+    expect(c.add(IconBlockType.repeat, parentId: loop), isFalse);
+    c.setCount(loop, 4);
+
+    final repeat = c.program.body.single as Repeat;
+    expect(repeat.times, 4);
+    expect(repeat.body.map((i) => i.kind), [
+      InstructionKind.move,
+      InstructionKind.turnLeft,
+    ]);
+    expect(c.blockCount, 3);
+  });
+
+  test('blocks move into and out of a repeat', () {
+    final c = IconBlocksCubit()
+      ..add(IconBlockType.forward)
+      ..add(IconBlockType.repeat);
+    final forward = c.state[0].id;
+    final loop = c.state[1].id;
+
+    c.move(forward, parentId: loop, index: 0);
+    expect(c.state.single.children.single.id, forward);
+
+    c.move(forward, index: 0);
+    expect(c.state.map((b) => b.id), [forward, loop]);
+    expect(c.state[1].children, isEmpty);
+
+    c.add(IconBlockType.turnRight, parentId: loop);
+    c.remove(c.state[1].children.single.id);
+    expect(c.state[1].children, isEmpty);
+  });
+
+  test('repeat counts stay within 1 to 9', () {
+    final c = IconBlocksCubit()..add(IconBlockType.repeat);
+    final loop = c.state.single.id;
+    c.setCount(loop, 12);
+    expect(c.state.single.count, 2);
+    c.setCount(loop, 9);
+    expect(c.state.single.count, 9);
   });
 }

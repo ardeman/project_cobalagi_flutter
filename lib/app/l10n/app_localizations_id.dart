@@ -102,14 +102,6 @@ class AppLocalizationsId extends AppLocalizations {
       'Versi ini hanya untuk satu pemain. Minta bantuan orang dewasa.';
 
   @override
-  String get levels => 'Level';
-
-  @override
-  String levelNumber(int number) {
-    return 'Level $number';
-  }
-
-  @override
   String get run => 'Jalan!';
 
   @override
@@ -143,9 +135,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get nextLevel => 'Lanjut';
 
   @override
-  String get playAgain => 'Main lagi';
-
-  @override
   String get tryAgain => 'Coba lagi!';
 
   @override
@@ -162,8 +151,50 @@ class AppLocalizationsId extends AppLocalizations {
       'Langkahnya terlalu banyak! Coba lebih sedikit.';
 
   @override
-  String get allLevelsDone => 'Kamu sudah menyelesaikan semua level!';
+  String get home => 'Beranda';
 
   @override
-  String get home => 'Beranda';
+  String get conceptDirections => 'Arah';
+
+  @override
+  String get conceptSequencing => 'Langkah demi langkah';
+
+  @override
+  String get conceptLoops => 'Perulangan';
+
+  @override
+  String get decisionAdvance => 'Pulau baru terbuka!';
+
+  @override
+  String get decisionPractice => 'Ayo coba yang lain!';
+
+  @override
+  String get bonusAdventure => 'Petualangan bonus!';
+
+  @override
+  String get decisionReview => 'Ayo cari harta karun di pulau sebelumnya.';
+
+  @override
+  String get decisionReturn => 'Kembali ke petualanganmu!';
+
+  @override
+  String get decisionMapComplete => 'Kamu sudah menjelajahi semua pulau!';
+
+  @override
+  String get goodTry => 'Usaha yang bagus!';
+
+  @override
+  String get skipPuzzle => 'Coba yang lain';
+
+  @override
+  String get hint => 'Tunjukkan jalannya';
+
+  @override
+  String get repeatMore => 'Tambah satu kali';
+
+  @override
+  String get repeatFewer => 'Kurangi satu kali';
+
+  @override
+  String get dropBlocksHere => 'Taruh blok di sini';
 }

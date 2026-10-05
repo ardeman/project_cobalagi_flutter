@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 
 import '../../../engine/world/level.dart';
 
-/// Hand-made level packs, played in this order.
-const levelPacks = ['directions', 'sequencing'];
+/// Hand-made lesson packs, one per concept, named after the concept id.
+const levelPacks = ['directions', 'sequencing', 'loops'];
 
 /// Parses a pack file: `{"levels": [<level JSON>, ...]}`.
 List<Level> parseLevelPack(String source) {
@@ -20,13 +20,15 @@ class LevelRepository {
   LevelRepository({AssetBundle? bundle}) : _bundle = bundle ?? rootBundle;
 
   final AssetBundle _bundle;
-  Future<List<Level>>? _levels;
+  Future<Map<String, List<Level>>>? _lessons;
 
-  /// All hand-made levels in play order. Loaded once, then cached.
-  Future<List<Level>> loadAll() => _levels ??= _load();
+  /// Lessons per concept id, in play order. Loaded once, then cached.
+  Future<Map<String, List<Level>>> loadLessons() => _lessons ??= _load();
 
-  Future<List<Level>> _load() async => [
+  Future<Map<String, List<Level>>> _load() async => {
     for (final pack in levelPacks)
-      ...parseLevelPack(await _bundle.loadString('assets/levels/$pack.json')),
-  ];
+      pack: parseLevelPack(
+        await _bundle.loadString('assets/levels/$pack.json'),
+      ),
+  };
 }

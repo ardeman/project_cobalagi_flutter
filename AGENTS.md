@@ -21,7 +21,10 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - The Flame world (`lib/features/play/view/world/`) holds no game logic. It mirrors `PlayState` through `WorldGame.apply` and reports each finished animation with `PlayCubit.eventShown`.
 - Every hand-made level must be solvable with its own palette; `test/features/play/level_assets_test.dart` checks this.
 - User-facing text goes in both `lib/app/l10n/app_en.arb` and `app_id.arb`; never hardcode strings. Voice clips live at `assets/audio/<id|en>/<clipId>.mp3`.
-- Learning thresholds and skill prerequisites belong in `assets/config/`, not in code.
+- Learning thresholds and skill prerequisites belong in `assets/config/`, not in code. `AdaptiveConfig` has no defaults on purpose.
+- A concept id must match a lesson pack (`assets/levels/<id>.json`) and a `PuzzleKind` name, so practice puzzles can be generated for it.
+- Never serve the same puzzle twice: generated puzzles go through `LearningCubit.nextExercise`, which skips fingerprints in `LearnerState.seenPuzzles`.
+- Present a review as a reward ("bonus adventure"), never as a failure, in text, icons and voice.
 - Layouts adapt via `WindowClass`/`WindowClassBuilder` (`lib/core/responsive/`), not fixed device sizes. Tap targets are at least 64dp.
 - Drag-and-drop must work with touch and mouse (`Draggable`/`DragTarget`), with tap-to-add as an alternative.
 
