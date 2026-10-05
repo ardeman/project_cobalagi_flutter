@@ -52,6 +52,7 @@ flutter run            # choose a device; or: flutter run -d chrome
 | Format | `dart format .` |
 | Static analysis | `flutter analyze` |
 | Tests | `flutter test` |
+| On-device tests (real app and audio; not part of Checks) | `flutter test integration_test -d macos` |
 | Enable commit-message hook (once per clone) | `git config --local core.hooksPath .githooks` |
 | Release build | `flutter build <apk\|appbundle\|ipa\|web\|macos\|linux\|windows>` |
 
@@ -84,6 +85,7 @@ lib/
   features/        One folder per feature (profiles, adventure_map, play, editors,
                    learning, pretest, parent)
 test/              Mirrors lib/
+integration_test/  Tests that drive the real app on a device (e.g. warm-up voice timing)
 .githooks/         Versioned Git hooks for commit-message validation
 tool/              Developer scripts (voice-over recording script)
 branding/          App icon source (SVG), rendered PNGs and branding/render.sh
