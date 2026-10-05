@@ -328,7 +328,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get donateExplainer =>
-      'Coba Lagi is free. A donation of any size unlocks supporter features for your family and helps us build more adventures.';
+      'Coba Lagi is free. A donation of any size unlocks sponsor features for your family and helps us build more adventures.';
 
   @override
   String get donateUnavailable => 'Donations aren\'t available on this device.';

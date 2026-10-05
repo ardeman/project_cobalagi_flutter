@@ -149,12 +149,12 @@
   "cheerEncourage3": "Let's keep going!",
   "cheerEncourage4": "Thanks for trying!",
   "cheerEncourage5": "You're doing great!",
-  "donateExplainer": "Coba Lagi is free. A donation of any size unlocks supporter features for your family and helps us build more adventures.",
+  "donateExplainer": "Coba Lagi is free. A donation of any size unlocks sponsor features for your family and helps us build more adventures.",
   "donateUnavailable": "Donations aren't available on this device.",
   "restoreDonation": "Restore an earlier donation",
   "haveUnlockCode": "Have a code?",
   "@haveUnlockCode": {
-    "description": "Opens a field for a code that unlocks the supporter plan without a donation."
+    "description": "Opens a field for a code that unlocks the sponsor plan without a donation."
   },
   "unlockCode": "Code",
   "useUnlockCode": "Use code",

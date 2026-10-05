@@ -163,7 +163,7 @@ After adding or replacing clips, Android builds may keep using an old asset list
 
 **Play Console:**
 
-- **Donations:** create one-time in-app products whose ids match `assets/config/donations.json` (`supporter_small`, `supporter_medium`, `supporter_large`), with prices of your choice. Any of them unlocks the supporter plan. Test with license testers.
+- **Donations:** create one-time in-app products whose ids match `assets/config/donations.json` (`supporter_small`, `supporter_medium`, `supporter_large`), with prices of your choice. Any of them unlocks the sponsor plan. Test with license testers.
 - **Families policy:** target audience is children, with no ads and no data collection. The release build has no internet permission. Privacy policy URL: `https://cobalagi.ardeman.com/privacy.html`.
 
 ## macOS
@@ -202,7 +202,7 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 | 2. Play + Tier 1 ✅ | Flame world with placeholder shapes, icon-block editor, run/step/reset, Directions and Sequencing levels |
 | 3. Learning loop ✅ | Attempt tracking, mastery, advance/practice/review, generated variations, Loops levels, adventure map |
 | 4. Pretest ✅ | Reading check and pre-skills, voice-led and adaptive; placement; parent override |
-| 5. Hardening ✅ (code) | Donations through Google Play Billing (any donation unlocks supporter features), release config, voice clips, tablet performance |
+| 5. Hardening ✅ (code) | Donations through Google Play Billing (any donation unlocks sponsor features), release config, voice clips, tablet performance |
 
 Later: Rive characters, Tiers 2 and 3, conditions, variables, functions.
 

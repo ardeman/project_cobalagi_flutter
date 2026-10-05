@@ -327,7 +327,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get donateExplainer =>
-      'Coba Lagi gratis. Donasi berapa pun membuka fitur pendukung untuk keluargamu dan membantu kami membuat lebih banyak petualangan.';
+      'Coba Lagi gratis. Donasi berapa pun membuka fitur sponsor untuk keluargamu dan membantu kami membuat lebih banyak petualangan.';
 
   @override
   String get donateUnavailable => 'Donasi tidak tersedia di perangkat ini.';

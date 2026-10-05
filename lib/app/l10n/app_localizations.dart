@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @donateExplainer.
   ///
   /// In en, this message translates to:
-  /// **'Coba Lagi is free. A donation of any size unlocks supporter features for your family and helps us build more adventures.'**
+  /// **'Coba Lagi is free. A donation of any size unlocks sponsor features for your family and helps us build more adventures.'**
   String get donateExplainer;
 
   /// No description provided for @donateUnavailable.
@@ -722,7 +722,7 @@ abstract class AppLocalizations {
   /// **'Restore an earlier donation'**
   String get restoreDonation;
 
-  /// Opens a field for a code that unlocks the supporter plan without a donation.
+  /// Opens a field for a code that unlocks the sponsor plan without a donation.
   ///
   /// In en, this message translates to:
   /// **'Have a code?'**
