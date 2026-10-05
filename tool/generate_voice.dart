@@ -123,10 +123,7 @@ Future<void> main(List<String> args) async {
     );
   } else if (replaceTestVoices && failed == 0 && only == null) {
     testVoicesMarker.deleteSync();
-    stdout.writeln(
-      'Test voices replaced. To commit the clips, delete the two voice-clip '
-      'lines in .gitignore.',
-    );
+    stdout.writeln('Test voices replaced; the clips can now be committed.');
   }
   if (failed > 0) exitCode = 1;
 }

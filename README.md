@@ -10,7 +10,7 @@ Every tier drives the same game world. A short, voice-led placement game picks e
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
 
-> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Still needed before launch: voice recordings, an app icon and artwork, and Play Console setup.
+> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Voice-over is recorded (ElevenLabs, Indonesian and English). Still needed before launch: an app icon and artwork, and Play Console setup.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -117,7 +117,7 @@ dart run tool/generate_voice.dart             # all clips (replaces test voices)
 dart run tool/generate_voice.dart --only cheer_celebrate_1   # redo one clip
 ```
 
-Model, voices and settings (`speed`, `stability`, `style`…) live in `tool/elevenlabs.json`. When the test voices are replaced, the tool removes `assets/audio/TEST_VOICES`; then delete the two voice-clip lines in `.gitignore` and commit the clips.
+Model, voices and settings (`speed`, `stability`, `style`…) live in `tool/elevenlabs.json`. When the test voices are replaced, the tool removes `assets/audio/TEST_VOICES`. The shipped clips use Cahaya (Indonesian) and Jessica (English) and are committed in `assets/audio/`.
 
 **Test voices (macOS):** to hear the voice flow before real recordings exist, generate every clip with the Mac's built-in voices (Damayanti for Indonesian, Flo for English):
 
@@ -126,7 +126,7 @@ dart run tool/test_voices.dart          # create missing clips (needs ffmpeg)
 dart run tool/test_voices.dart --clean  # remove them again
 ```
 
-Apple's license doesn't cover shipping these voices, so they are git-ignored, marked by `assets/audio/TEST_VOICES`, and **release builds refuse to build while that marker exists**. When real recordings arrive, run `--clean`, delete the two voice-clip lines in `.gitignore`, and commit the recordings.
+Apple's license doesn't cover shipping these voices, so they are marked by the git-ignored `assets/audio/TEST_VOICES`, and **release builds refuse to build while that marker exists**. Don't commit clips while the marker is present; restore the real ones with `git checkout assets/audio` (or regenerate them) and run `--clean`.
 
 After adding or replacing clips, Android builds may keep using an old asset list. Clear it with `rm -rf build/app/intermediates/flutter .dart_tool/flutter_build` (or `flutter clean`) before building.
 

@@ -4,12 +4,24 @@
   "seed": 1,
   "voices": {
     "id": {
-      "voice_id": "",
-      "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.3, "use_speaker_boost": true, "speed": 0.9 }
+      "voice_id": "iWydkXKoiVtvdn4vLKp9",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0.3,
+        "use_speaker_boost": true,
+        "speed": 0.9
+      }
     },
     "en": {
-      "voice_id": "",
-      "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.3, "use_speaker_boost": true, "speed": 0.9 }
+      "voice_id": "cgSgspJ2msm6clMCkdW9",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "style": 0.3,
+        "use_speaker_boost": true,
+        "speed": 0.9
+      }
     }
   }
 }

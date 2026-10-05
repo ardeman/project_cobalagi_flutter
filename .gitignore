@@ -44,10 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Voice clips: tool/test_voices.dart writes macOS test voices here, which must
-# never be committed or released. When real recordings arrive, delete these
-# two lines and commit the recorded MP3s.
-/assets/audio/*/*.mp3
+# Marker for macOS test voices (tool/test_voices.dart). While it exists, the
+# clips in assets/audio/ are test voices: never commit them or this marker.
 /assets/audio/TEST_VOICES
 
 # Local secrets for developer tools (see .env.example).
