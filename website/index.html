@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coba Lagi · Belajar coding sambil bermain</title>
+  <meta name="description" content="Coba Lagi: petualangan coding gratis untuk anak, dalam Bahasa Indonesia dan English. Tanpa iklan, tanpa pelacakan.">
+  <meta name="theme-color" content="#00a6a6">
+  <meta property="og:title" content="Coba Lagi · Belajar coding sambil bermain">
+  <meta property="og:description" content="Petualangan coding gratis untuk anak, dalam Bahasa Indonesia dan English.">
+  <meta property="og:image" content="https://cobalagi.ardeman.com/screenshots/play-loops.png">
+  <meta property="og:url" content="https://cobalagi.ardeman.com/">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='34' r='24' fill='%23ff7a59'/%3E%3Cpath d='M32 4l8 10H24z' fill='%23ff7a59'/%3E%3Ccircle cx='24' cy='26' r='6' fill='%23fff'/%3E%3Ccircle cx='40' cy='26' r='6' fill='%23fff'/%3E%3Ccircle cx='24' cy='24' r='3' fill='%23263238'/%3E%3Ccircle cx='40' cy='24' r='3' fill='%23263238'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --teal: #00a6a6;
+      --teal-deep: #006d6d;
+      --coral: #ff7a59;
+      --sun: #ffc83d;
+      --sky: #bfe6ff;
+      --sand: #fff1c9;
+      --leaf: #6cc071;
+      --bg: #f6fbfb;
+      --surface: #ffffff;
+      --surface-2: #eaf4f4;
+      --text: #12302f;
+      --muted: #4d6866;
+      --line: #d5e6e5;
+      --shadow: 0 18px 40px -18px rgba(0, 70, 70, 0.35);
+      --radius: 28px;
+      --font: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI Variable Display", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0d1f1f;
+        --surface: #142b2b;
+        --surface-2: #1b3838;
+        --text: #e6f4f3;
+        --muted: #9fbcba;
+        --line: #284646;
+        --teal-deep: #5fd6d6;
+        --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #0d1f1f;
+      --surface: #142b2b;
+      --surface-2: #1b3838;
+      --text: #e6f4f3;
+      --muted: #9fbcba;
+      --line: #284646;
+      --teal-deep: #5fd6d6;
+      --shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.7);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 18px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    img { max-width: 100%; height: auto; display: block; }
+    a { color: var(--teal-deep); }
+    .wrap { width: min(1120px, 100% - 32px); margin-inline: auto; }
+
+    /* Header */
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .bar { display: flex; align-items: center; gap: 16px; height: 68px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--text); text-decoration: none; }
+    .brand svg { width: 38px; height: 38px; }
+    nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+    nav a { color: var(--muted); text-decoration: none; font-weight: 600; }
+    nav a:hover { color: var(--text); }
+    .lang {
+      border: 2px solid var(--line); background: var(--surface); color: var(--text);
+      font: 700 0.95rem var(--font); border-radius: 999px; padding: 6px 14px; cursor: pointer;
+    }
+    .lang:hover { border-color: var(--teal); }
+    @media (max-width: 720px) { nav a { display: none; } }
+
+    /* Hero */
+    .hero { position: relative; overflow: hidden; padding: 64px 0 72px; }
+    .hero::before, .hero::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(2px); z-index: -1;
+    }
+    .hero::before { width: 520px; height: 520px; right: -140px; top: -160px; background: radial-gradient(circle, var(--sky), transparent 70%); }
+    .hero::after { width: 380px; height: 380px; left: -160px; bottom: -180px; background: radial-gradient(circle, var(--sand), transparent 70%); }
+    .hero-grid { display: grid; grid-template-columns: 1fr 1.15fr; gap: 48px; align-items: center; }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+    .kicker {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--surface); border: 1px solid var(--line);
+      padding: 6px 14px; border-radius: 999px; font-weight: 700; color: var(--teal-deep); font-size: 0.9rem;
+    }
+    h1 { font-size: clamp(2.4rem, 5.5vw, 3.8rem); line-height: 1.05; margin: 18px 0 16px; letter-spacing: -0.02em; }
+    h1 .accent { color: var(--coral); }
+    .lead { font-size: 1.2rem; color: var(--muted); margin: 0 0 28px; max-width: 34ch; }
+    .cta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 24px; border-radius: 999px; font: 800 1.05rem var(--font);
+      text-decoration: none; border: 0;
+    }
+    .btn-primary { background: var(--teal); color: #fff; box-shadow: var(--shadow); cursor: default; }
+    .btn-primary small { font-weight: 600; opacity: 0.85; }
+    .btn-ghost { color: var(--teal-deep); background: transparent; border: 2px solid var(--line); }
+    .btn-ghost:hover { border-color: var(--teal); }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; padding: 0; list-style: none; }
+    .chips li {
+      background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+      padding: 6px 14px; font-weight: 700; font-size: 0.9rem;
+    }
+    .chips li::before { content: "✓ "; color: var(--leaf); }
+
+    .tablet {
+      background: #1d2b2b; padding: 14px; border-radius: 36px; box-shadow: var(--shadow);
+      transform: rotate(-1.5deg);
+    }
+    .tablet img { border-radius: 22px; }
+
+    /* Sections */
+    section { padding: 72px 0; }
+    .section-head { max-width: 640px; margin-bottom: 36px; }
+    h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.01em; }
+    .section-head p { color: var(--muted); margin: 0; font-size: 1.1rem; }
+
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+      padding: 26px; box-shadow: 0 1px 0 var(--line);
+    }
+    .card h3 { margin: 14px 0 6px; font-size: 1.2rem; }
+    .card p { margin: 0; color: var(--muted); }
+    .icon {
+      width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center;
+    }
+    .icon svg { width: 30px; height: 30px; }
+    .i-green { background: #e3f4e4; color: #2e7d32; }
+    .i-blue { background: #e1f1fd; color: #1565c0; }
+    .i-orange { background: #fff0db; color: #e65100; }
+    .i-purple { background: #f3e5f7; color: #7b1fa2; }
+    .i-teal { background: #ddf3f3; color: #00796b; }
+    .i-coral { background: #ffe8e1; color: #d84315; }
+
+    .steps { display: grid; gap: 56px; }
+    .step { display: grid; grid-template-columns: 1fr 1.25fr; gap: 40px; align-items: center; }
+    .step:nth-child(even) { grid-template-columns: 1.25fr 1fr; }
+    .step:nth-child(even) .step-text { order: 2; }
+    @media (max-width: 800px) {
+      .step, .step:nth-child(even) { grid-template-columns: 1fr; }
+      .step:nth-child(even) .step-text { order: 0; }
+    }
+    .num {
+      display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+      background: var(--sun); color: #5a3d00; font-weight: 900; font-size: 1.2rem;
+    }
+    .step h3 { font-size: 1.6rem; margin: 12px 0 8px; }
+    .step p { color: var(--muted); margin: 0; }
+    .shot {
+      border-radius: 22px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow);
+      background: var(--surface);
+    }
+
+    .shot.dialog { max-width: 360px; width: 100%; justify-self: center; border-radius: 32px; }
+    .parents { background: var(--surface-2); border-radius: 40px; padding: 56px; }
+    @media (max-width: 700px) { .parents { padding: 32px 20px; border-radius: 28px; } }
+    .parents-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+    @media (max-width: 900px) { .parents-grid { grid-template-columns: 1fr; } }
+    .checks { list-style: none; padding: 0; margin: 0 0 24px; display: grid; gap: 14px; }
+    .checks li { display: grid; grid-template-columns: 28px 1fr; gap: 10px; }
+    .checks li::before {
+      content: ""; width: 24px; height: 24px; margin-top: 3px; border-radius: 50%;
+      background: var(--teal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 12.5l4 4 8-9' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat;
+    }
+    .privacy { border-left: 6px solid var(--teal); }
+    .privacy h3 { margin-top: 0; }
+
+    footer { padding: 40px 0 56px; color: var(--muted); font-size: 0.95rem; }
+    .foot { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); padding-top: 24px; }
+    .foot p { margin: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .tablet { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap bar">
+      <a class="brand" href="#top" aria-label="Coba Lagi">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="33" cy="37" r="23" fill="#000" opacity=".12"/>
+          <circle cx="32" cy="34" r="23" fill="#ff7a59"/>
+          <circle cx="32" cy="41" r="11" fill="#ffb199"/>
+          <path d="M32 5l8 10H24z" fill="#ff7a59"/>
+          <circle cx="24" cy="26" r="6" fill="#fff"/><circle cx="40" cy="26" r="6" fill="#fff"/>
+          <circle cx="24" cy="24" r="3" fill="#263238"/><circle cx="40" cy="24" r="3" fill="#263238"/>
+        </svg>
+        Coba Lagi
+      </a>
+      <nav aria-label="Menu">
+        <a href="#features" data-en="Features">Fitur</a>
+        <a href="#how" data-en="How it works">Cara kerja</a>
+        <a href="#parents" data-en="Parents">Orang tua</a>
+        <button class="lang" id="lang" type="button" aria-label="Switch to English">EN</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="kicker" data-en="A coding adventure for kids">Petualangan coding untuk anak</span>
+          <h1 data-en="Learn to code <span class=&quot;accent&quot;>through play.</span>">Belajar coding <span class="accent">sambil bermain.</span></h1>
+          <p class="lead" data-en="Children put picture blocks in order to guide their little friend to the flag. Free, in Bahasa Indonesia and English.">Anak menyusun blok bergambar untuk menuntun teman kecilnya sampai ke bendera. Gratis, dalam Bahasa Indonesia dan English.</p>
+          <div class="cta">
+            <span class="btn btn-primary" data-en="Coming soon <small>to Google Play</small>">Segera hadir <small>di Google Play</small></span>
+            <a class="btn btn-ghost" href="#how" data-en="See how it works">Lihat cara kerjanya</a>
+          </div>
+          <ul class="chips">
+            <li data-en="Free">Gratis</li>
+            <li data-en="No ads">Tanpa iklan</li>
+            <li data-en="No tracking">Tanpa pelacakan</li>
+            <li data-en="Ages 4+">Usia 4+</li>
+          </ul>
+        </div>
+        <div class="tablet">
+          <img src="screenshots/play-loops-id.png" width="1280" height="740"
+               data-en-src="screenshots/play-loops.png"
+               alt="Teka-teki Perulangan: blok ulangi berisi blok maju, dengan jejak petunjuk di jalan menuju bendera"
+               data-en-alt="A Loops puzzle: a repeat block holding a forward block, with hint footprints on the path to the flag">
+        </div>
+      </div>
+    </div>
+
+    <section id="features">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 data-en="Why Coba Lagi?">Kenapa Coba Lagi?</h2>
+          <p data-en="Made for curious kids, built so parents can relax.">Dibuat untuk anak yang penasaran, dirancang agar orang tua tenang.</p>
+        </div>
+        <div class="features">
+          <article class="card">
+            <div class="icon i-green"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3l7 7h-4.5v10h-5V10H5z"/></svg></div>
+            <h3 data-en="Playable before reading">Bisa dimainkan sebelum bisa membaca</h3>
+            <p data-en="Picture blocks and spoken instructions for ages 4–7. Word blocks and real code are on the way.">Blok bergambar dan petunjuk suara untuk usia 4–7. Blok kata dan kode sungguhan menyusul.</p>
+          </article>
+          <article class="card">
+            <div class="icon i-blue"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2zm-2 18h4v1a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1z"/></svg></div>
+            <h3 data-en="Adapts to your child">Menyesuaikan dengan anakmu</h3>
+            <p data-en="After every puzzle, Coba Lagi decides: move on, practise with a fresh puzzle, or take a bonus adventure to review.">Setelah tiap teka-teki, Coba Lagi memilih: lanjut, berlatih dengan teka-teki baru, atau petualangan bonus untuk mengulang.</p>
+          </article>
+          <article class="card">
+            <div class="icon i-orange"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17l-6.1 3.4 1.5-6.8L2.2 9l6.9-.7z"/></svg></div>
+            <h3 data-en="Always a new puzzle">Teka-teki yang selalu baru</h3>
+            <p data-en="Practice puzzles are generated and checked to be solvable, so a child never gets the same one twice.">Teka-teki latihan dibuat otomatis dan diperiksa pasti bisa diselesaikan, jadi anak tidak pernah mendapat yang sama dua kali.</p>
+          </article>
+          <article class="card">
+            <div class="icon i-purple"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 5h9v2H9.9a14 14 0 0 1-2.2 4.6 11 11 0 0 0 2.4 1.8l-.8 1.9a13 13 0 0 1-3-2.2A14 14 0 0 1 3.6 15l-1-1.7a12 12 0 0 0 2.8-1.8A12 12 0 0 1 3.8 9h2.1a10 10 0 0 0 1 1.6A12 12 0 0 0 8 7H4zm11.5 4h2l4.5 11h-2.2l-1-2.6h-4.6l-1 2.6H11zm-.6 6.4h3.2l-1.6-4.1z"/></svg></div>
+            <h3 data-en="Two languages">Dua bahasa</h3>
+            <p data-en="The whole app speaks Bahasa Indonesia and English, and you can switch any time.">Seluruh aplikasi tersedia dalam Bahasa Indonesia dan English, dan bisa diganti kapan saja.</p>
+          </article>
+          <article class="card">
+            <div class="icon i-teal"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5zm-1.2 13.6l5.7-5.7-1.4-1.4-4.3 4.3-2.1-2.1-1.4 1.4z"/></svg></div>
+            <h3 data-en="Safe by design">Aman sejak awal</h3>
+            <p data-en="No ads, no tracking, no accounts. Everything stays on your device.">Tanpa iklan, tanpa pelacakan, tanpa akun. Semua data tetap di perangkatmu.</p>
+          </article>
+          <article class="card">
+            <div class="icon i-coral"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.3 3.2 4.5 6.9 4.5c2 0 3.5 1.1 5.1 3 1.6-1.9 3.1-3 5.1-3 3.7 0 5.8 3.8 4.4 7.2C19.5 16.4 12 21 12 21z"/></svg></div>
+            <h3 data-en="Mistakes are part of learning">Salah itu bagian dari belajar</h3>
+            <p data-en="The name means “try again”: every attempt is met with encouragement, never with “wrong”.">Namanya berarti “coba lagi”: setiap percobaan disambut dengan semangat, tidak pernah dengan kata “salah”.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="how">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 data-en="How it works">Cara kerjanya</h2>
+          <p data-en="Three steps, then your child leads the way.">Tiga langkah, lalu anakmu yang memimpin.</p>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-text">
+              <span class="num">1</span>
+              <h3 data-en="Play the warm-up">Main pemanasan</h3>
+              <p data-en="A short, picture-based game with voice finds the right starting point: reading, counting, left and right, patterns and order. It feels like play, not a test.">Permainan singkat bergambar dengan suara menemukan titik awal yang pas: membaca, berhitung, kiri dan kanan, pola, dan urutan. Rasanya seperti bermain, bukan ujian.</p>
+            </div>
+            <div class="shot">
+              <img src="screenshots/warm-up-pattern-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/warm-up-pattern.png"
+                   alt="Permainan pemanasan menanyakan bentuk apa yang berikutnya dalam sebuah pola"
+                   data-en-alt="The warm-up game asking which shape comes next in a pattern">
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-text">
+              <span class="num">2</span>
+              <h3 data-en="Explore the islands">Jelajahi pulau-pulau</h3>
+              <p data-en="Directions, then Step by step, then Loops. Stars show how far your child has come.">Arah, lalu Langkah demi langkah, lalu Perulangan. Bintang menunjukkan sejauh mana anakmu melangkah.</p>
+            </div>
+            <div class="shot">
+              <img src="screenshots/adventure-map-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/adventure-map.png"
+                   alt="Peta petualangan dengan tiga pulau dan bintang kemajuan"
+                   data-en-alt="The adventure map with three islands and progress stars">
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-text">
+              <span class="num">3</span>
+              <h3 data-en="Build, run, try again">Susun, jalankan, coba lagi</h3>
+              <p data-en="Drag or tap blocks, press Go!, and watch your friend move. Stuck? The light bulb shows the way.">Seret atau ketuk blok, tekan Jalan!, dan lihat temanmu bergerak. Bingung? Lampu petunjuk menunjukkan jalannya.</p>
+            </div>
+            <div class="shot">
+              <img src="screenshots/solved-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/solved.png"
+                   alt="Teka-teki yang berhasil diselesaikan, dengan sorakan dan tombol Lanjut"
+                   data-en-alt="A solved puzzle with a cheer and a Next button">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="parents">
+      <div class="wrap parents">
+        <div class="section-head">
+          <h2 data-en="For parents">Untuk orang tua</h2>
+          <p data-en="You stay in charge, without hovering.">Kamu tetap memegang kendali, tanpa harus terus mengawasi.</p>
+        </div>
+        <div class="parents-grid">
+          <div>
+            <ul class="checks">
+              <li data-en="The parent area sits behind a grown-up question that young children can't answer.">Area orang tua dilindungi pertanyaan untuk orang dewasa yang belum bisa dijawab anak kecil.</li>
+              <li data-en="Choose a child's starting island, or let them replay the warm-up game.">Pilih pulau awal anak, atau biarkan mereka mengulang permainan pemanasan.</li>
+              <li data-en="Free for one player. A donation of any size unlocks supporter features, such as up to six players.">Gratis untuk satu pemain. Donasi berapa pun membuka fitur pendukung, misalnya hingga enam pemain.</li>
+              <li data-en="Donations go through Google Play and can only be made from the parent area.">Donasi diproses lewat Google Play dan hanya bisa dilakukan dari area orang tua.</li>
+            </ul>
+            <div class="card privacy">
+              <h3 data-en="Privacy">Privasi</h3>
+              <p data-en="Coba Lagi collects no personal data. Nicknames and progress are stored only on your device. The released app has no internet access, and donations are handled by Google Play. This website uses no cookies or trackers either.">Coba Lagi tidak mengumpulkan data pribadi. Nama panggilan dan progres hanya tersimpan di perangkatmu. Aplikasi versi rilis tidak memiliki akses internet, dan donasi ditangani oleh Google Play. Situs ini juga tidak memakai cookie maupun pelacak.</p>
+            </div>
+          </div>
+          <div class="shot dialog">
+            <img src="screenshots/parent-placement-id.png" width="628" height="832" loading="lazy"
+                 data-en-src="screenshots/parent-placement.png"
+                 alt="Area orang tua: memilih pulau awal untuk seorang anak"
+                 data-en-alt="Parent area: choosing a child's starting island">
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap foot">
+      <p>© 2026 Ardeman · Coba Lagi</p>
+      <p data-en="Source available under the <a href=&quot;https://polyformproject.org/licenses/noncommercial/1.0.0&quot;>PolyForm Noncommercial License 1.0.0</a>.">Kode sumber tersedia di bawah <a href="https://polyformproject.org/licenses/noncommercial/1.0.0">PolyForm Noncommercial License 1.0.0</a>.</p>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var KEY = 'cobalagi-lang';
+      var TITLES = {
+        id: 'Coba Lagi · Belajar coding sambil bermain',
+        en: 'Coba Lagi · Learn to code through play'
+      };
+      function load() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+      function save(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+      var texts = document.querySelectorAll('[data-en]');
+      var alts = document.querySelectorAll('[data-en-alt]');
+      var srcs = document.querySelectorAll('[data-en-src]');
+      texts.forEach(function (n) { n.dataset.id = n.innerHTML; });
+      alts.forEach(function (n) { n.dataset.idAlt = n.alt; });
+      srcs.forEach(function (n) { n.dataset.idSrc = n.getAttribute('src'); });
+
+      var button = document.getElementById('lang');
+      function apply(lang) {
+        var en = lang === 'en';
+        document.documentElement.lang = lang;
+        document.title = TITLES[lang];
+        texts.forEach(function (n) { n.innerHTML = en ? n.dataset.en : n.dataset.id; });
+        alts.forEach(function (n) { n.alt = en ? n.dataset.enAlt : n.dataset.idAlt; });
+        srcs.forEach(function (n) { n.src = en ? n.dataset.enSrc : n.dataset.idSrc; });
+        button.textContent = en ? 'ID' : 'EN';
+        button.setAttribute('aria-label', en ? 'Ganti ke Bahasa Indonesia' : 'Switch to English');
+      }
+
+      var preferred = (navigator.languages || [navigator.language || '']).some(function (l) {
+        return /^id(-|$)/i.test(l);
+      }) ? 'id' : 'en';
+      // ?lang=id or ?lang=en, e.g. for sharing a link in one language.
+      var asked = new URLSearchParams(location.search).get('lang');
+      var current = asked === 'id' || asked === 'en' ? asked : load() || preferred;
+      apply(current);
+      button.addEventListener('click', function () {
+        current = current === 'en' ? 'id' : 'en';
+        save(current);
+        apply(current);
+      });
+    })();
+  </script>
+</body>
+</html>

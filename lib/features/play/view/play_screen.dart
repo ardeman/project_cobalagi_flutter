@@ -212,9 +212,19 @@ class _PlayViewState extends State<_PlayView> {
                       homePath: widget.homePath,
                     ),
                     const SizedBox(height: 12),
-                    Expanded(child: _worldPanel(context)),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(24),
+                        child: GameWidget(game: _game),
+                      ),
+                    ),
                     const SizedBox(height: 12),
-                    _RunControls(onHint: _decision == null ? _showHint : null),
+                    // Feedback replaces the controls, so it never hides the
+                    // world, and the controls aren't usable meanwhile anyway.
+                    _feedbackCard(context) ??
+                        _RunControls(
+                          onHint: _decision == null ? _showHint : null,
+                        ),
                   ],
                 );
                 final editor = BlocBuilder<PlayCubit, PlayState>(
@@ -252,13 +262,13 @@ class _PlayViewState extends State<_PlayView> {
     ),
   );
 
-  Widget _worldPanel(BuildContext context) {
+  /// The card after a run or a finished exercise, or null while editing.
+  Widget? _feedbackCard(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final play = context.watch<PlayCubit>().state;
-    final Widget? card;
     if (_decision case final decision?) {
       final cheer = _cheer!;
-      card = _FeedbackCard(
+      return _FeedbackCard(
         badge: decision is Review && !_solved
             ? const Icon(
                 Icons.diamond_rounded,
@@ -276,9 +286,10 @@ class _PlayViewState extends State<_PlayView> {
           ),
         ],
       );
-    } else if (play.phase == PlayPhase.failed) {
+    }
+    if (play.phase == PlayPhase.failed) {
       final cheer = _cheer!;
-      card = _FeedbackCard(
+      return _FeedbackCard(
         badge: CheerBadge(cheer: cheer, size: 56),
         title: cheer.text,
         message: _failureMessage(l10n, play.result!.outcome),
@@ -296,19 +307,8 @@ class _PlayViewState extends State<_PlayView> {
           ),
         ],
       );
-    } else {
-      card = null;
     }
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          GameWidget(game: _game),
-          ?card,
-        ],
-      ),
-    );
+    return null;
   }
 
   /// The spoken goal of a level: its words and its voice clip.
@@ -412,42 +412,34 @@ class _FeedbackCard extends StatelessWidget {
   final List<Widget> actions;
 
   @override
-  Widget build(BuildContext context) => Align(
-    alignment: Alignment.bottomCenter,
+  Widget build(BuildContext context) => Card(
+    margin: EdgeInsets.zero,
     child: Padding(
-      padding: const EdgeInsets.all(16),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Wrap(
-            crossAxisAlignment: WrapCrossAlignment.center,
-            alignment: WrapAlignment.center,
-            spacing: 16,
-            runSpacing: 12,
-            children: [
-              badge,
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 360),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    if (message != null)
-                      Text(
-                        message!,
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                  ],
-                ),
-              ),
-              ...actions,
-            ],
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.center,
+        spacing: 16,
+        runSpacing: 12,
+        children: [
+          badge,
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 360),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.headlineMedium),
+                if (message != null)
+                  Text(
+                    message!,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+              ],
+            ),
           ),
-        ),
+          ...actions,
+        ],
       ),
     ),
   );

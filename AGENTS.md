@@ -40,6 +40,12 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - **App identity:** don't change the package name `cobalagi` or the ID `com.ardeman.cobalagi` without being asked.
 - **Version:** bump `version:` in `pubspec.yaml` only when asked.
 
+## Website
+
+- `website/` is the static landing page for cobalagi.ardeman.com: one self-contained `index.html` plus `screenshots/`. It makes no external requests (no web fonts, analytics or CDNs), to match the app's privacy promise.
+- Every text has Indonesian in the HTML and English in `data-en` (`data-en-alt`, `data-en-src` for images). Screenshots come in pairs: `<name>-id.png` and `<name>.png`.
+- Claims on the page must stay true for the released app. Update them when features change.
+
 ## Keeping docs current
 
 - When you change a command, the layout or the setup, update `README.md`. When you change a convention or rule, update this file.

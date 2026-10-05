@@ -3,14 +3,27 @@
 A coding-learning app for children of all ages, in Bahasa Indonesia and English.
 
 - **Tier 1** (pre-readers, about 4–7): icon blocks and voice instructions.
-- **Tier 2** (early readers, about 7–10): word blocks such as `move 3`.
-- **Tier 3** (about 10–14+): blocks that flip to real code, then typed code.
+- **Tier 2** (early readers, about 7–10, planned): word blocks such as `move 3`.
+- **Tier 3** (about 10–14+, planned): blocks that flip to real code, then typed code.
 
 Every tier drives the same game world. A short, voice-led placement game picks each child's starting point, and the app then chooses to advance, practise or review after every lesson.
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
 
-> **Status:** Phases 0–4 are done: the app shell (profiles, parent gate, language switch, free/supporter plan check), the game engine, the Tier 1 icon-block editor with repeat blocks, the adaptive learning loop across Directions → Sequencing → Loops with an adventure map, and the voice-led warm-up game that places each child (parents can override), and Phase 5's release groundwork: donations through Google Play Billing, release signing, and the voice-over pipeline. Still needed before launch: voice recordings, app icon and artwork, Play Console setup.
+> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Still needed before launch: voice recordings, an app icon and artwork, and Play Console setup.
+
+Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
+
+## Screenshots
+
+| | |
+| --- | --- |
+| ![Adventure map with three islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: a repeat block holding a forward block, with hint footprints on the path](website/screenshots/play-loops.png) |
+| **Adventure map:** one island per concept, with stars for mastery. | **Loops puzzle:** a repeat block, the block limit, and a hint showing the route. |
+| ![A solved puzzle with a cheer and a Next button](website/screenshots/solved.png) | ![Warm-up game asking what comes next in a pattern of shapes](website/screenshots/warm-up-pattern.png) |
+| **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** picture-based, voice-led placement for children who can't read yet. |
+| ![Parent area dialog for choosing a child's starting island](website/screenshots/parent-placement.png) | ![The adventure map in Bahasa Indonesia](website/screenshots/adventure-map-id.png) |
+| **Parent area:** behind a grown-up check; set the starting island or replay the warm-up. | **Bahasa Indonesia:** every screen in Indonesian and English. |
 
 | | |
 | --- | --- |
@@ -68,10 +81,12 @@ lib/
   core/            Shared services: storage, settings, entitlement, audio, responsive
   engine/          Pure Dart: instruction set (program/), levels (world/), interpreter, solver + puzzle generator
   learning/        Pure Dart: skill graph, mastery scoring, advance/practice/review rules
-  features/        One folder per feature (profiles, home, parent, …)
+  features/        One folder per feature (profiles, adventure_map, play, editors,
+                   learning, pretest, parent)
 test/              Mirrors lib/
 .githooks/         Versioned Git hooks for commit-message validation
-.githooks/         Versioned Git hooks for commit-message validation
+tool/              Developer scripts (voice-over recording script)
+website/           Static landing page for cobalagi.ardeman.com, plus screenshots
 assets/config/     skills.json (skill map), adaptive.json (learning thresholds),
                    pretest.json (placement rules and warm-up vocabulary)
 assets/levels/     Hand-made lesson packs (JSON), one per concept
@@ -143,5 +158,11 @@ Each topic has one home. Update that file instead of copying its content somewhe
 | `README.md` | Everyone | Overview, setup, commands, layout |
 | `AGENTS.md` | AI coding agents (and humans who want the rules) | Conventions, guardrails, definition of done |
 | `CLAUDE.md`, `GEMINI.md` | Claude Code, Gemini CLI | Only an import of `AGENTS.md` |
+| `LICENSE.md` | Everyone | Terms for using the code (PolyForm Noncommercial 1.0.0) |
+| `website/` | Visitors of cobalagi.ardeman.com | The landing page and its screenshots (also used by this README) |
 
 Codex, Cursor, GitHub Copilot, Windsurf, Jules, Aider, Zed and other agents that follow the [AGENTS.md](https://agents.md) convention read `AGENTS.md` directly.
+
+## License
+
+Coba Lagi is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you may read, learn from and modify it for noncommercial purposes. Commercial use needs permission from Ardeman. Third-party packages keep their own licenses.
