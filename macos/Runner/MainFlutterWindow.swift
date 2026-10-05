@@ -4,9 +4,12 @@ import FlutterMacOS
 class MainFlutterWindow: NSWindow {
   override func awakeFromNib() {
     let flutterViewController = FlutterViewController()
-    let windowFrame = self.frame
     self.contentViewController = flutterViewController
-    self.setFrame(windowFrame, display: true)
+    // Landscape like the tablet; never smaller than the side-by-side layout.
+    self.title = "Coba Lagi"
+    self.setContentSize(NSSize(width: 1280, height: 800))
+    self.contentMinSize = NSSize(width: 960, height: 600)
+    self.center()
 
     RegisterGeneratedPlugins(registry: flutterViewController)
 
