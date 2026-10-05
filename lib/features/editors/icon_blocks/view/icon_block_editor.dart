@@ -151,11 +151,15 @@ class _BlockRow extends StatelessWidget {
     required this.parentId,
     required this.blocks,
     required this.style,
+    this.trailing,
   });
 
   final String? parentId;
   final List<IconBlock> blocks;
   final _BlockStyle style;
+
+  /// Shown after the last block, e.g. a drop spot for adding at the end.
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) => Wrap(
@@ -173,6 +177,7 @@ class _BlockRow extends StatelessWidget {
             index: i,
           ),
         ),
+      ?trailing,
     ],
   );
 }
@@ -278,6 +283,14 @@ class _RepeatBlock extends StatelessWidget {
       (b) => b.id == style.activeBlockId,
     );
     final hasIssue = style.issueBlockIds.contains(block.id);
+    // Drops here land at the end of the repeat (the drop area around it
+    // appends).
+    final addSpot = Icon(
+      Icons.add_rounded,
+      size: size * 0.6,
+      color: color.withValues(alpha: 0.6),
+      semanticLabel: AppLocalizations.of(context).dropBlocksHere,
+    );
 
     return AnimatedContainer(
       key: ValueKey(block.id),
@@ -340,18 +353,14 @@ class _RepeatBlock extends StatelessWidget {
                   borderRadius: BorderRadius.circular(size * 0.2),
                 ),
                 child: block.children.isEmpty
-                    ? Icon(
-                        Icons.add_rounded,
-                        size: size * 0.6,
-                        color: color.withValues(alpha: 0.6),
-                        semanticLabel: AppLocalizations.of(
-                          context,
-                        ).dropBlocksHere,
-                      )
+                    ? addSpot
                     : _BlockRow(
                         parentId: block.id,
                         blocks: block.children,
                         style: style,
+                        // Without this there is nowhere to drop a block at
+                        // the end once the repeat holds blocks.
+                        trailing: style.enabled ? addSpot : null,
                       ),
               ),
             ),

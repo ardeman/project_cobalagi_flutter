@@ -137,4 +137,30 @@ void main() {
     };
     expect(tops.length, greaterThan(1), reason: 'blocks wrap onto rows');
   });
+
+  testWidgets('blocks can be dropped at the end of a repeat that has blocks', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester)
+      ..add(IconBlockType.repeat);
+    final loop = cubit.state.single.id;
+    cubit.add(IconBlockType.forward, parentId: loop);
+    await tester.pump();
+
+    // The drop spot after the last block inside the repeat.
+    final end = find.bySemanticsLabel('Put blocks here');
+    expect(end, findsOneWidget);
+    final start = tester.getCenter(paletteBlock(Icons.turn_left_rounded));
+    final gesture = await tester.startGesture(start);
+    await gesture.moveBy(const Offset(0, 30));
+    await gesture.moveTo(tester.getCenter(end));
+    await gesture.up();
+    await tester.pump();
+
+    expect(cubit.state, hasLength(1), reason: 'nothing added outside the loop');
+    expect(cubit.state.single.children.map((b) => b.type), [
+      IconBlockType.forward,
+      IconBlockType.turnLeft,
+    ]);
+  });
 }
