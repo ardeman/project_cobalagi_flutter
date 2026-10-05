@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:cobalagi/core/entitlement/donation_entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/plan.dart';
 import 'package:cobalagi/core/entitlement/purchase_store.dart';
+import 'package:cobalagi/core/entitlement/unlock_code.dart';
 import 'package:cobalagi/core/settings/settings_repository.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
 
@@ -43,6 +47,8 @@ class FakeStore implements PurchaseStore {
       completed.add(purchase.productId);
 }
 
+String hashOf(String code) => sha256.convert(utf8.encode(code)).toString();
+
 void main() {
   late FakeStore store;
   late SettingsRepository settings;
@@ -57,6 +63,7 @@ void main() {
       productIds: {'small', 'large'},
       store: store,
       settings: settings,
+      unlockCodes: UnlockCodes({hashOf('TESTCODE1234')}),
     );
   });
 
@@ -116,4 +123,38 @@ void main() {
       expect(store.completed, ['small', 'other_app_item']);
     },
   );
+
+  group('unlock codes', () {
+    test('a valid code unlocks the supporter plan and is remembered', () async {
+      final plans = <Plan>[];
+      service.changes.listen(plans.add);
+      expect(await service.redeem(' testcode-1234 '), isTrue);
+      await pumpEventQueue();
+      expect(plans, [Plan.full]);
+      expect(await settings.loadSupporter(), isTrue);
+      expect(await service.loadPlan(), Plan.full);
+    });
+
+    test('other codes do not unlock', () async {
+      final plans = <Plan>[];
+      service.changes.listen(plans.add);
+      for (final code in ['', '---', 'TESTCODE123', 'TESTCODE12345']) {
+        expect(await service.redeem(code), isFalse, reason: code);
+      }
+      await pumpEventQueue();
+      expect(plans, isEmpty);
+      expect(await settings.loadSupporter(), isFalse);
+    });
+
+    test('the shipped config lists only SHA-256 hashes, never codes', () {
+      final config =
+          jsonDecode(File('assets/config/donations.json').readAsStringSync())
+              as Map<String, Object?>;
+      final hashes = (config['unlock_code_sha256']! as List).cast<String>();
+      expect(hashes, isNotEmpty);
+      for (final hash in hashes) {
+        expect(hash, matches(RegExp(r'^[0-9a-f]{64}$')));
+      }
+    });
+  });
 }

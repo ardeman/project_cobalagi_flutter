@@ -152,6 +152,13 @@
   "donateExplainer": "Coba Lagi is free. A donation of any size unlocks supporter features for your family and helps us build more adventures.",
   "donateUnavailable": "Donations aren't available on this device.",
   "restoreDonation": "Restore an earlier donation",
+  "haveUnlockCode": "Have a code?",
+  "@haveUnlockCode": {
+    "description": "Opens a field for a code that unlocks the supporter plan without a donation."
+  },
+  "unlockCode": "Code",
+  "useUnlockCode": "Use code",
+  "unlockCodeRejected": "That code doesn't work. Check it and try again.",
   "thanksForSupport": "Thank you for supporting Coba Lagi!",
   "playGoal": "Help me reach the flag!",
   "playGoalStars": "Collect all the stars, then go to the flag!",

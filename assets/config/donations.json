@@ -1,3 +1,6 @@
 {
-  "products": ["supporter_small", "supporter_medium", "supporter_large"]
+  "products": ["supporter_small", "supporter_medium", "supporter_large"],
+  "unlock_code_sha256": [
+    "f9229d309b4b57b7628a3345ec58d52bae9b334cb2cf1f4c49cb69251cf2992b"
+  ]
 }

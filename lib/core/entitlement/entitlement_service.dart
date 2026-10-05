@@ -26,6 +26,10 @@ abstract interface class EntitlementService {
   /// Asks the store again for donations made earlier, e.g. after a reinstall.
   Future<void> restore();
 
+  /// Unlocks [Plan.full] when [code] is a valid unlock code; the result also
+  /// arrives on [changes]. Returns whether the code was accepted.
+  Future<bool> redeem(String code);
+
   Future<void> dispose();
 }
 
@@ -49,6 +53,9 @@ class StaticEntitlementService implements EntitlementService {
 
   @override
   Future<void> restore() async {}
+
+  @override
+  Future<bool> redeem(String code) async => false;
 
   @override
   Future<void> dispose() async {}

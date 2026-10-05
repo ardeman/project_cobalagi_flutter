@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'app/app.dart';
 import 'core/audio/audio_service.dart';
 import 'core/entitlement/entitlement_factory.dart';
+import 'core/entitlement/unlock_code.dart';
 import 'core/settings/settings_repository.dart';
 import 'core/storage/app_database.dart';
 import 'features/learning/data/curriculum_repository.dart';
@@ -25,6 +26,9 @@ Future<void> main() async {
       settings: settings,
       entitlement: createEntitlementService(
         productIds: {...(donations['products']! as List).cast<String>()},
+        unlockCodes: UnlockCodes({
+          ...(donations['unlock_code_sha256']! as List).cast<String>(),
+        }),
         settings: settings,
       ),
       audio: AudioplayersAudioService(),

@@ -722,6 +722,30 @@ abstract class AppLocalizations {
   /// **'Restore an earlier donation'**
   String get restoreDonation;
 
+  /// Opens a field for a code that unlocks the supporter plan without a donation.
+  ///
+  /// In en, this message translates to:
+  /// **'Have a code?'**
+  String get haveUnlockCode;
+
+  /// No description provided for @unlockCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get unlockCode;
+
+  /// No description provided for @useUnlockCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Use code'**
+  String get useUnlockCode;
+
+  /// No description provided for @unlockCodeRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'That code doesn\'t work. Check it and try again.'**
+  String get unlockCodeRejected;
+
   /// No description provided for @thanksForSupport.
   ///
   /// In en, this message translates to:

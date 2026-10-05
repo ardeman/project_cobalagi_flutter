@@ -80,13 +80,87 @@ class _DonationSheetState extends State<_DonationSheet> {
               ),
             const SizedBox(height: 12),
             if (plan == Plan.free)
-              TextButton(
-                onPressed: service.restore,
-                child: Text(l10n.restoreDonation),
+              Wrap(
+                spacing: 12,
+                alignment: WrapAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: service.restore,
+                    child: Text(l10n.restoreDonation),
+                  ),
+                  TextButton(
+                    onPressed: () => showDialog<void>(
+                      context: context,
+                      builder: (_) => BlocProvider.value(
+                        value: context.read<EntitlementCubit>(),
+                        child: const _UnlockCodeDialog(),
+                      ),
+                    ),
+                    child: Text(l10n.haveUnlockCode),
+                  ),
+                ],
               ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Unlocks the supporter plan with a code, e.g. one given to store reviewers.
+class _UnlockCodeDialog extends StatefulWidget {
+  const _UnlockCodeDialog();
+
+  @override
+  State<_UnlockCodeDialog> createState() => _UnlockCodeDialogState();
+}
+
+class _UnlockCodeDialogState extends State<_UnlockCodeDialog> {
+  final _code = TextEditingController();
+  var _rejected = false;
+
+  Future<void> _submit() async {
+    final accepted = await context.read<EntitlementCubit>().redeem(_code.text);
+    if (!mounted) return;
+    if (accepted) {
+      Navigator.pop(context);
+    } else {
+      setState(() => _rejected = true);
+    }
+  }
+
+  @override
+  void dispose() {
+    _code.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(l10n.haveUnlockCode),
+      content: TextField(
+        controller: _code,
+        autofocus: true,
+        textCapitalization: TextCapitalization.characters,
+        autocorrect: false,
+        decoration: InputDecoration(
+          labelText: l10n.unlockCode,
+          errorText: _rejected ? l10n.unlockCodeRejected : null,
+        ),
+        onChanged: (_) {
+          if (_rejected) setState(() => _rejected = false);
+        },
+        onSubmitted: (_) => _submit(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(onPressed: _submit, child: Text(l10n.useUnlockCode)),
+      ],
     );
   }
 }

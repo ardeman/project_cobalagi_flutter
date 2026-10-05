@@ -16,6 +16,9 @@ class EntitlementCubit extends Cubit<Plan> {
 
   Future<void> load() async => emit(await service.loadPlan());
 
+  /// Tries an unlock code; the new plan arrives through [service] changes.
+  Future<bool> redeem(String code) => service.redeem(code);
+
   /// Lets developers try the supporter plan without paying. Debug builds only.
   void debugOverride(Plan plan) {
     assert(kDebugMode, 'debugOverride is for debug builds only');

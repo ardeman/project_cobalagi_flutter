@@ -336,6 +336,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get restoreDonation => 'Pulihkan donasi sebelumnya';
 
   @override
+  String get haveUnlockCode => 'Punya kode?';
+
+  @override
+  String get unlockCode => 'Kode';
+
+  @override
+  String get useUnlockCode => 'Pakai kode';
+
+  @override
+  String get unlockCodeRejected =>
+      'Kode itu tidak berlaku. Periksa lagi, lalu coba sekali lagi.';
+
+  @override
   String get thanksForSupport => 'Terima kasih sudah mendukung Coba Lagi!';
 
   @override

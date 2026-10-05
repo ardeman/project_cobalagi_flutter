@@ -337,6 +337,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreDonation => 'Restore an earlier donation';
 
   @override
+  String get haveUnlockCode => 'Have a code?';
+
+  @override
+  String get unlockCode => 'Code';
+
+  @override
+  String get useUnlockCode => 'Use code';
+
+  @override
+  String get unlockCodeRejected =>
+      'That code doesn\'t work. Check it and try again.';
+
+  @override
   String get thanksForSupport => 'Thank you for supporting Coba Lagi!';
 
   @override
