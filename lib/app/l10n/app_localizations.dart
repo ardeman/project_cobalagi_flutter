@@ -769,6 +769,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not open yet'**
   String get levelLocked;
+
+  /// No description provided for @answerWas.
+  ///
+  /// In en, this message translates to:
+  /// **'The answer is this one!'**
+  String get answerWas;
 }
 
 class _AppLocalizationsDelegate

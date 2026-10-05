@@ -166,5 +166,6 @@
       }
     }
   },
-  "levelLocked": "Not open yet"
+  "levelLocked": "Not open yet",
+  "answerWas": "The answer is this one!"
 }

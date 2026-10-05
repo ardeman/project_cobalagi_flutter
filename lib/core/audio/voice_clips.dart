@@ -13,6 +13,7 @@ abstract final class VoiceClips {
   static const pretestPattern = 'pretest_pattern';
   static const pretestSequencing = 'pretest_sequencing';
   static const pretestDone = 'pretest_done';
+  static const pretestAnswerWas = 'pretest_answer_was';
 
   static const playGoal = 'play_goal';
   static const playGoalStars = 'play_goal_stars';
@@ -48,6 +49,7 @@ abstract final class VoiceClips {
     pretestPattern: 'promptPattern',
     pretestSequencing: 'promptSequencing',
     pretestDone: 'pretestDone',
+    pretestAnswerWas: 'answerWas',
     playGoal: 'playGoal',
     playGoalStars: 'playGoalStars',
     playGoalLoops: 'playGoalLoops',

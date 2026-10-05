@@ -111,5 +111,6 @@
   "backToIsland": "Kembali ke pulau",
   "continueAdventure": "Lanjutkan petualangan",
   "levelNumber": "Level {number}",
-  "levelLocked": "Belum terbuka"
+  "levelLocked": "Belum terbuka",
+  "answerWas": "Jawabannya yang ini!"
 }

@@ -12,8 +12,9 @@ import '../../../learning/placement/pretest_session.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import 'question_views.dart';
 
-/// The voice-led warm-up game that places a child on the map. Every answer
-/// gets a varied, positive response, so it never feels like a test.
+/// The voice-led warm-up game that places a child on the map. After each
+/// answer the right option lights up green; a wrong tap wobbles in orange and
+/// the child hears which answer was right, always with encouraging words.
 class PretestScreen extends StatefulWidget {
   const PretestScreen({super.key, required this.profileId});
 
@@ -29,8 +30,8 @@ class _PretestScreenState extends State<PretestScreen> {
       .startPretest();
   final _cheers = CheerPicker();
 
-  /// Shown briefly after each answer.
-  Cheer? _cheer;
+  /// Shown briefly after each answer, over the question just answered.
+  ({PretestQuestion question, int chosen, bool right, Cheer cheer})? _feedback;
   var _saved = false;
 
   @override
@@ -51,22 +52,39 @@ class _PretestScreenState extends State<PretestScreen> {
   }
 
   Future<void> _answer(int option) async {
-    if (_cheer != null) return;
+    if (_feedback != null) return;
+    final question = _session.current!;
     final right = _session.answer(option);
     final cheer = _cheers.next(
       AppLocalizations.of(context),
       right ? CheerMood.celebrate : CheerMood.encourage,
     );
-    setState(() => _cheer = cheer);
-    context.read<AudioService>().playVoice(cheer.clip, languageCode: _language);
-    await Future<void>.delayed(const Duration(milliseconds: 1100));
+    setState(
+      () => _feedback = (
+        question: question,
+        chosen: option,
+        right: right,
+        cheer: cheer,
+      ),
+    );
+    final audio = context.read<AudioService>();
+    audio.playVoice(cheer.clip, languageCode: _language);
+    if (!right) {
+      audio.playVoice(
+        VoiceClips.pretestAnswerWas,
+        languageCode: _language,
+        queue: true,
+      );
+    }
+    // Longer after a wrong tap, so there is time to see the right answer.
+    await Future<void>.delayed(Duration(milliseconds: right ? 1300 : 2600));
     if (!mounted) return;
     if (_session.isFinished && !_saved) {
       _saved = true;
       await context.read<LearningCubit>().completePretest(_session.levels);
     }
     if (!mounted) return;
-    setState(() => _cheer = null);
+    setState(() => _feedback = null);
     _speak();
   }
 
@@ -74,6 +92,7 @@ class _PretestScreenState extends State<PretestScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final question = _session.current;
+    final feedback = _feedback;
     return Scaffold(
       appBar: AppBar(
         leading: CloseButton(
@@ -94,11 +113,23 @@ class _PretestScreenState extends State<PretestScreen> {
                 padding: const EdgeInsets.all(24),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
-                  child: _cheer != null
-                      ? _CheerView(
-                          key: ValueKey(_cheer),
-                          cheer: _cheer!,
-                          size: size,
+                  child: feedback != null
+                      ? Column(
+                          key: ValueKey('feedback-${_session.questionsAsked}'),
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _FeedbackBanner(cheer: feedback.cheer),
+                            SizedBox(height: size * 0.2),
+                            QuestionView(
+                              question: feedback.question,
+                              size: size,
+                              onAnswer: null,
+                              chosen: feedback.chosen,
+                              answerLabel: l10n.answerWas,
+                            ),
+                            // Room for the label under the right answer.
+                            SizedBox(height: size * 0.6),
+                          ],
                         )
                       : question == null
                       ? _Done(
@@ -183,18 +214,24 @@ class _Footprints extends StatelessWidget {
   }
 }
 
-class _CheerView extends StatelessWidget {
-  const _CheerView({super.key, required this.cheer, required this.size});
+/// The cheer after an answer.
+class _FeedbackBanner extends StatelessWidget {
+  const _FeedbackBanner({required this.cheer});
 
   final Cheer cheer;
-  final double size;
 
   @override
-  Widget build(BuildContext context) => Column(
+  Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      CheerBadge(cheer: cheer, size: size),
-      Text(cheer.text, style: Theme.of(context).textTheme.displaySmall),
+      CheerBadge(cheer: cheer, size: 72),
+      const SizedBox(width: 16),
+      Flexible(
+        child: Text(
+          cheer.text,
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
+      ),
     ],
   );
 }

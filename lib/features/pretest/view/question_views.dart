@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../app/l10n/app_localizations.dart';
@@ -43,9 +45,19 @@ class QuestionView extends StatelessWidget {
     required this.question,
     required this.size,
     required this.onAnswer,
+    this.chosen,
+    this.answerLabel,
   });
 
   final PretestQuestion question;
+
+  /// After an answer: the tapped option. The right option lights up green;
+  /// a wrong tap wobbles in orange.
+  final int? chosen;
+
+  /// After a wrong tap, shown under the right option, e.g. "The answer is
+  /// this one!".
+  final String? answerLabel;
 
   /// Base size of pictures and option cards.
   final double size;
@@ -168,6 +180,18 @@ class QuestionView extends StatelessWidget {
         _OptionCard(
           size: question is SequencingQuestion ? size * 1.6 : size,
           onTap: onAnswer == null ? null : () => onAnswer!(i),
+          mark: switch (chosen) {
+            null => _Mark.none,
+            _ when i == question.correct => _Mark.right,
+            final c when c == i => _Mark.wrong,
+            _ => _Mark.faded,
+          },
+          label:
+              chosen != null &&
+                  chosen != question.correct &&
+                  i == question.correct
+              ? answerLabel
+              : null,
           child: options[i],
         ),
     ];
@@ -215,31 +239,131 @@ class _Board extends StatelessWidget {
   );
 }
 
+/// How an option looks after the child answers.
+enum _Mark { none, right, wrong, faded }
+
+const _rightColor = Color(0xFF43A047);
+const _wrongColor = Color(0xFFFB8C00);
+
 class _OptionCard extends StatelessWidget {
   const _OptionCard({
     required this.size,
     required this.onTap,
+    required this.mark,
     required this.child,
+    this.label,
   });
 
   final double size;
   final VoidCallback? onTap;
+  final _Mark mark;
+  final Widget child;
+
+  /// Shown under the card, pointing up at it, without moving other cards.
+  final String? label;
+
+  @override
+  Widget build(BuildContext context) {
+    final height = size * (size > 300 ? 0.45 : 1);
+    final border = switch (mark) {
+      _Mark.right => _rightColor,
+      _Mark.wrong => _wrongColor,
+      _ => Colors.transparent,
+    };
+    Widget card = SizedBox(
+      width: size,
+      height: height,
+      child: Card(
+        elevation: 3,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+          side: BorderSide(color: border, width: 8),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          child: Center(
+            child: Padding(padding: const EdgeInsets.all(8), child: child),
+          ),
+        ),
+      ),
+    );
+    if (mark == _Mark.right || mark == _Mark.wrong) {
+      card = Stack(
+        clipBehavior: Clip.none,
+        children: [
+          card,
+          Positioned(
+            right: -10,
+            top: -10,
+            child: CircleAvatar(
+              radius: 24,
+              backgroundColor: border,
+              child: Icon(
+                mark == _Mark.right ? Icons.check_rounded : Icons.close_rounded,
+                color: Colors.white,
+                size: 32,
+              ),
+            ),
+          ),
+          if (label case final text?)
+            Positioned(
+              top: height + 10,
+              left: -size,
+              right: -size,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.arrow_upward_rounded,
+                    color: _rightColor,
+                    size: 32,
+                  ),
+                  Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      color: _rightColor,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      );
+    }
+    return switch (mark) {
+      _Mark.faded => Opacity(opacity: 0.35, child: card),
+      _Mark.wrong => _Wobble(child: card),
+      _Mark.right => TweenAnimationBuilder<double>(
+        tween: Tween(begin: 1, end: 1.08),
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.elasticOut,
+        builder: (_, scale, child) =>
+            Transform.scale(scale: scale, child: child),
+        child: card,
+      ),
+      _Mark.none => card,
+    };
+  }
+}
+
+/// A short side-to-side shake for a wrong tap.
+class _Wobble extends StatelessWidget {
+  const _Wobble({required this.child});
+
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => SizedBox(
-    width: size,
-    height: size * (size > 300 ? 0.45 : 1),
-    child: Card(
-      elevation: 3,
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Center(
-          child: Padding(padding: const EdgeInsets.all(8), child: child),
-        ),
-      ),
+  Widget build(BuildContext context) => TweenAnimationBuilder<double>(
+    tween: Tween(begin: 0, end: 1),
+    duration: const Duration(milliseconds: 600),
+    builder: (_, t, child) => Transform.translate(
+      offset: Offset(math.sin(t * math.pi * 6) * 14 * (1 - t), 0),
+      child: child,
     ),
+    child: child,
   );
 }
 

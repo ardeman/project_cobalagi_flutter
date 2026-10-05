@@ -48,7 +48,8 @@ void main() {
     while (find.text("Let's go!").evaluate().isEmpty) {
       expect(answered, lessThan(15), reason: 'at most 15 questions');
       await tester.tap(find.byType(Card).first);
-      await tester.pump(const Duration(milliseconds: 1200));
+      // Feedback stays up to 2.6 s after a wrong answer.
+      await tester.pump(const Duration(milliseconds: 2800));
       await tester.runAsync(() => Future<void>.delayed(Duration.zero));
       await tester.pump(const Duration(milliseconds: 400));
       answered++;

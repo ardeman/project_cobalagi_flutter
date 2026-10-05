@@ -360,4 +360,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get levelLocked => 'Belum terbuka';
+
+  @override
+  String get answerWas => 'Jawabannya yang ini!';
 }

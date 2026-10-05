@@ -361,4 +361,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get levelLocked => 'Not open yet';
+
+  @override
+  String get answerWas => 'The answer is this one!';
 }
