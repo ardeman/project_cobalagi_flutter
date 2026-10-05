@@ -244,14 +244,17 @@ class _PlacedBlock extends StatelessWidget {
             width: candidates.isEmpty ? 0 : size * 0.5,
             height: size,
           ),
-          Draggable<IconBlock>(
-            data: block,
-            feedback: Material(
-              type: MaterialType.transparency,
-              child: IconBlockTile(type: block.type, size: size * 1.1),
+          // Flexible keeps a wide repeat block within the row, so it wraps.
+          Flexible(
+            child: Draggable<IconBlock>(
+              data: block,
+              feedback: Material(
+                type: MaterialType.transparency,
+                child: IconBlockTile(type: block.type, size: size * 1.1),
+              ),
+              childWhenDragging: Opacity(opacity: 0.3, child: body),
+              child: body,
             ),
-            childWhenDragging: Opacity(opacity: 0.3, child: body),
-            child: body,
           ),
         ],
       ),
@@ -311,43 +314,46 @@ class _RepeatBlock extends StatelessWidget {
             ],
           ),
           SizedBox(width: style.gap),
-          DragTarget<Object>(
-            onWillAcceptWithDetails: (d) =>
-                style.enabled &&
-                d.data != block &&
-                d.data != IconBlockType.repeat &&
-                (d.data is IconBlock || !cubit.isFull),
-            onAcceptWithDetails: (d) => cubit.drop(
-              d.data,
-              parentId: block.id,
-              index: block.children.length,
-            ),
-            builder: (context, candidates, _) => Container(
-              constraints: BoxConstraints(
-                minWidth: size * 1.4,
-                minHeight: size * 1.2,
+          // The blocks inside wrap within the width that is left.
+          Flexible(
+            child: DragTarget<Object>(
+              onWillAcceptWithDetails: (d) =>
+                  style.enabled &&
+                  d.data != block &&
+                  d.data != IconBlockType.repeat &&
+                  (d.data is IconBlock || !cubit.isFull),
+              onAcceptWithDetails: (d) => cubit.drop(
+                d.data,
+                parentId: block.id,
+                index: block.children.length,
               ),
-              padding: EdgeInsets.all(style.gap * 0.5),
-              decoration: BoxDecoration(
-                color: candidates.isEmpty
-                    ? Colors.white.withValues(alpha: 0.6)
-                    : color.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(size * 0.2),
+              builder: (context, candidates, _) => Container(
+                constraints: BoxConstraints(
+                  minWidth: size * 1.4,
+                  minHeight: size * 1.2,
+                ),
+                padding: EdgeInsets.all(style.gap * 0.5),
+                decoration: BoxDecoration(
+                  color: candidates.isEmpty
+                      ? Colors.white.withValues(alpha: 0.6)
+                      : color.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(size * 0.2),
+                ),
+                child: block.children.isEmpty
+                    ? Icon(
+                        Icons.add_rounded,
+                        size: size * 0.6,
+                        color: color.withValues(alpha: 0.6),
+                        semanticLabel: AppLocalizations.of(
+                          context,
+                        ).dropBlocksHere,
+                      )
+                    : _BlockRow(
+                        parentId: block.id,
+                        blocks: block.children,
+                        style: style,
+                      ),
               ),
-              child: block.children.isEmpty
-                  ? Icon(
-                      Icons.add_rounded,
-                      size: size * 0.6,
-                      color: color.withValues(alpha: 0.6),
-                      semanticLabel: AppLocalizations.of(
-                        context,
-                      ).dropBlocksHere,
-                    )
-                  : _BlockRow(
-                      parentId: block.id,
-                      blocks: block.children,
-                      style: style,
-                    ),
             ),
           ),
         ],

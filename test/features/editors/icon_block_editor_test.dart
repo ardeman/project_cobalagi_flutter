@@ -117,4 +117,24 @@ void main() {
     await tester.pump();
     expect(cubit.state.single.count, 3);
   });
+
+  testWidgets('a full repeat block wraps its blocks instead of overflowing', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester)
+      ..add(IconBlockType.repeat);
+    final loop = cubit.state.single.id;
+    for (var i = 0; i < 8; i++) {
+      cubit.add(IconBlockType.forward, parentId: loop);
+    }
+    await tester.pump();
+
+    expect(tester.takeException(), isNull, reason: 'no overflow');
+    final tops = {
+      for (final e
+          in find.byIcon(Icons.arrow_upward_rounded).evaluate().skip(1))
+        tester.getTopLeft(find.byWidget(e.widget).first).dy,
+    };
+    expect(tops.length, greaterThan(1), reason: 'blocks wrap onto rows');
+  });
 }
