@@ -80,11 +80,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String planFull(int count) {
-    return 'Full version: up to $count players';
+    return 'Supporter: up to $count players';
   }
 
   @override
-  String get unlockFullVersion => 'Unlock full version';
+  String get supportCobaLagi => 'Support Coba Lagi';
 
   @override
   String get debugPlanOverride => 'Debug: use full version';

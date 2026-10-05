@@ -1,4 +1,4 @@
-/// What the family has unlocked. Sold as a one-time purchase.
+/// What the family has unlocked. The app is free; any donation unlocks [full].
 enum Plan {
   free,
   full;

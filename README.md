@@ -87,7 +87,7 @@ android/ ios/ web/ macos/ linux/ windows/
 | 2. Play + Tier 1 ✅ | Flame world with placeholder shapes, icon-block editor, run/step/reset, Directions and Sequencing levels |
 | 3. Learning loop | Attempt tracking, mastery, advance/practice/review, generated variations, Loops levels, adventure map |
 | 4. Pretest | Reading check and pre-skills, voice-led and adaptive; placement; parent override |
-| 5. Hardening | Google Play billing for the full version, release config, voice clips, tablet performance |
+| 5. Hardening | Donations through Google Play Billing (any donation unlocks supporter features), release config, voice clips, tablet performance |
 
 Later: Rive characters, Tiers 2 and 3, conditions, variables, functions.
 

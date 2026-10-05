@@ -233,14 +233,14 @@ abstract class AppLocalizations {
   /// No description provided for @planFull.
   ///
   /// In en, this message translates to:
-  /// **'Full version: up to {count} players'**
+  /// **'Supporter: up to {count} players'**
   String planFull(int count);
 
-  /// No description provided for @unlockFullVersion.
+  /// No description provided for @supportCobaLagi.
   ///
   /// In en, this message translates to:
-  /// **'Unlock full version'**
-  String get unlockFullVersion;
+  /// **'Support Coba Lagi'**
+  String get supportCobaLagi;
 
   /// No description provided for @debugPlanOverride.
   ///

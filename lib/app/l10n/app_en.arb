@@ -39,7 +39,7 @@
   "languageEnglish": "English",
   "plan": "Version",
   "planFree": "Free: 1 player",
-  "planFull": "Full version: up to {count} players",
+  "planFull": "Supporter: up to {count} players",
   "@planFull": {
     "placeholders": {
       "count": {
@@ -47,7 +47,7 @@
       }
     }
   },
-  "unlockFullVersion": "Unlock full version",
+  "supportCobaLagi": "Support Coba Lagi",
   "debugPlanOverride": "Debug: use full version",
   "players": "Players",
   "deletePlayerConfirm": "Delete {name} and all their progress?",

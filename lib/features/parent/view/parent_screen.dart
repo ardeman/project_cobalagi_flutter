@@ -83,7 +83,7 @@ class ParentScreen extends StatelessWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text(l10n.comingSoon)),
                             ),
-                        child: Text(l10n.unlockFullVersion),
+                        child: Text(l10n.supportCobaLagi),
                       )
                     : null,
               ),

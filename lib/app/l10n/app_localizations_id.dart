@@ -80,11 +80,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String planFull(int count) {
-    return 'Versi lengkap: hingga $count pemain';
+    return 'Pendukung: hingga $count pemain';
   }
 
   @override
-  String get unlockFullVersion => 'Buka versi lengkap';
+  String get supportCobaLagi => 'Dukung Coba Lagi';
 
   @override
   String get debugPlanOverride => 'Debug: pakai versi lengkap';
