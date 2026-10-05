@@ -90,4 +90,26 @@ void main() {
       expect(lessons.every((l) => l.concept == concept.id), isTrue);
     }
   });
+
+  test('a replay is logged but never changes what comes next', () async {
+    final cubit = await newCubit();
+    final first = cubit.nextExercise();
+    await cubit.record(resultFor(first));
+    final before = cubit.state.learner!;
+
+    final replay = cubit.replayExercise('directions-01')!;
+    expect(replay.plan.mode, ExerciseMode.replay);
+    expect(replay.level.id, 'directions-01');
+    final decision = await cubit.recordReplay(resultFor(replay));
+
+    expect(decision, isNull);
+    final after = cubit.state.learner!;
+    expect(after.currentConcept, before.currentConcept);
+    expect(
+      after.progress['directions']!.scores,
+      before.progress['directions']!.scores,
+    );
+    expect(await progress.attempts(1), hasLength(2));
+    expect(cubit.replayExercise('not-a-level'), isNull);
+  });
 }

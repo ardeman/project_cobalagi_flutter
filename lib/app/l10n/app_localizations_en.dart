@@ -347,4 +347,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playGoalLoops => 'Use the repeat block to reach the flag!';
+
+  @override
+  String get backToIsland => 'Back to the island';
+
+  @override
+  String get continueAdventure => 'Continue the adventure';
+
+  @override
+  String levelNumber(int number) {
+    return 'Level $number';
+  }
+
+  @override
+  String get levelLocked => 'Not open yet';
 }

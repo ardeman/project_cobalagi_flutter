@@ -155,5 +155,16 @@
   "thanksForSupport": "Thank you for supporting Coba Lagi!",
   "playGoal": "Help me reach the flag!",
   "playGoalStars": "Collect all the stars, then go to the flag!",
-  "playGoalLoops": "Use the repeat block to reach the flag!"
+  "playGoalLoops": "Use the repeat block to reach the flag!",
+  "backToIsland": "Back to the island",
+  "continueAdventure": "Continue the adventure",
+  "levelNumber": "Level {number}",
+  "@levelNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "levelLocked": "Not open yet"
 }

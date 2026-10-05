@@ -8,6 +8,7 @@ final class ConceptProgress {
     this.failStreak = 0,
     required this.difficulty,
     this.attemptedLessons = const {},
+    this.solvedLessons = const {},
   });
 
   factory ConceptProgress.fromJson(Map<String, Object?> json) =>
@@ -19,6 +20,10 @@ final class ConceptProgress {
         failStreak: json['failStreak']! as int,
         difficulty: json['difficulty']! as int,
         attemptedLessons: {...(json['lessons']! as List).cast<String>()},
+        // Older saves have no 'solved' list.
+        solvedLessons: {
+          ...((json['solved'] as List?) ?? const []).cast<String>(),
+        },
       );
 
   /// Recent exercise scores, newest last, at most the mastery window.
@@ -33,8 +38,12 @@ final class ConceptProgress {
   /// Difficulty for generated practice puzzles.
   final int difficulty;
 
-  /// Hand-made lessons already played, solved or skipped.
+  /// Hand-made lessons already played, solved or skipped. These can be
+  /// replayed from the island.
   final Set<String> attemptedLessons;
+
+  /// Hand-made lessons solved at least once (a star on the island).
+  final Set<String> solvedLessons;
 
   /// Average of recent scores, 0 to 1.
   double get mastery =>
@@ -46,12 +55,14 @@ final class ConceptProgress {
     int? failStreak,
     int? difficulty,
     Set<String>? attemptedLessons,
+    Set<String>? solvedLessons,
   }) => ConceptProgress(
     scores: scores ?? this.scores,
     exercises: exercises ?? this.exercises,
     failStreak: failStreak ?? this.failStreak,
     difficulty: difficulty ?? this.difficulty,
     attemptedLessons: attemptedLessons ?? this.attemptedLessons,
+    solvedLessons: solvedLessons ?? this.solvedLessons,
   );
 
   Map<String, Object?> toJson() => {
@@ -60,6 +71,7 @@ final class ConceptProgress {
     'failStreak': failStreak,
     'difficulty': difficulty,
     'lessons': attemptedLessons.toList(),
+    'solved': solvedLessons.toList(),
   };
 }
 

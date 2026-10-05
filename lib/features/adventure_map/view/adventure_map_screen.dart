@@ -86,6 +86,9 @@ class AdventureMapScreen extends StatelessWidget {
                             locked:
                                 i > currentIndex &&
                                 !learner.progress.containsKey(concepts[i].id),
+                            onTap: () => context.go(
+                              '/child/$profileId/island/${concepts[i].id}',
+                            ),
                           ),
                         ],
                       ],
@@ -124,6 +127,7 @@ class _Island extends StatelessWidget {
     required this.stars,
     required this.current,
     required this.locked,
+    required this.onTap,
   });
 
   final String conceptId;
@@ -132,54 +136,64 @@ class _Island extends StatelessWidget {
   final bool current;
   final bool locked;
 
+  /// Opens the island's levels; ignored while the island is locked.
+  final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) {
     final color = locked ? Colors.grey.shade400 : conceptColor(conceptId);
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-            border: Border.all(
-              width: size * 0.06,
-              color: current ? const Color(0xFFFFD54F) : Colors.white,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: (current ? const Color(0xFFFFD54F) : Colors.black)
-                    .withValues(alpha: current ? 0.6 : 0.15),
-                blurRadius: current ? size * 0.2 : size * 0.06,
-                offset: Offset(0, size * 0.04),
-              ),
-            ],
-          ),
-          child: Icon(
-            locked ? Icons.lock_rounded : conceptIcon(conceptId),
-            size: size * 0.5,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
+    return Semantics(
+      button: !locked,
+      child: GestureDetector(
+        onTap: locked ? null : onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (var i = 0; i < 3; i++)
-              Icon(
-                i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
-                size: size * 0.2,
-                color: const Color(0xFFFFC83D),
+            Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  width: size * 0.06,
+                  color: current ? const Color(0xFFFFD54F) : Colors.white,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: (current ? const Color(0xFFFFD54F) : Colors.black)
+                        .withValues(alpha: current ? 0.6 : 0.15),
+                    blurRadius: current ? size * 0.2 : size * 0.06,
+                    offset: Offset(0, size * 0.04),
+                  ),
+                ],
               ),
+              child: Icon(
+                locked ? Icons.lock_rounded : conceptIcon(conceptId),
+                size: size * 0.5,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < 3; i++)
+                  Icon(
+                    i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
+                    size: size * 0.2,
+                    color: const Color(0xFFFFC83D),
+                  ),
+              ],
+            ),
+            Text(
+              conceptName(AppLocalizations.of(context), conceptId),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
           ],
         ),
-        Text(
-          conceptName(AppLocalizations.of(context), conceptId),
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-      ],
+      ),
     );
   }
 }

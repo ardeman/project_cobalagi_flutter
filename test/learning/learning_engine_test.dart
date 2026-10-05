@@ -230,4 +230,62 @@ void main() {
     final r = result('loops', runs: 2, hints: 1);
     expect(ExerciseResult.fromJson(r.toJson()).toJson(), r.toJson());
   });
+
+  group('replays', () {
+    test('solving a lesson earns its star; skipping does not', () {
+      var state = engine.initialState();
+      (state, _) = play(state, [
+        result('directions', mode: ExerciseMode.lesson, level: 'd1'),
+        result(
+          'directions',
+          mode: ExerciseMode.lesson,
+          level: 'd2',
+          succeeded: false,
+        ),
+      ]);
+      final progress = engine.progressOf(state, 'directions');
+      expect(progress.attemptedLessons, {'d1', 'd2'});
+      expect(progress.solvedLessons, {'d1'});
+    });
+
+    test('a replay earns a star and changes nothing else', () {
+      var state = engine.initialState(startConcept: 'sequencing');
+      (state, _) = play(state, [
+        result(
+          'directions',
+          mode: ExerciseMode.lesson,
+          level: 'd2',
+          succeeded: false,
+        ),
+      ]);
+      final before = engine.progressOf(state, 'directions');
+      state = engine.recordReplay(
+        state,
+        result('directions', mode: ExerciseMode.replay, level: 'd2'),
+      );
+      final after = engine.progressOf(state, 'directions');
+      expect(after.solvedLessons, {'d2'});
+      expect(after.scores, before.scores);
+      expect(after.exercises, before.exercises);
+      expect(after.difficulty, before.difficulty);
+      expect(state.currentConcept, 'sequencing');
+
+      final unchanged = engine.recordReplay(
+        state,
+        result(
+          'directions',
+          mode: ExerciseMode.replay,
+          level: 'd3',
+          succeeded: false,
+        ),
+      );
+      expect(identical(unchanged, state), isTrue);
+    });
+
+    test('progress saved before stars existed still loads', () {
+      final json = const ConceptProgress(difficulty: 2).toJson()
+        ..remove('solved');
+      expect(ConceptProgress.fromJson(json).solvedLessons, isEmpty);
+    });
+  });
 }

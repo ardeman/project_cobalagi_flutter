@@ -745,6 +745,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use the repeat block to reach the flag!'**
   String get playGoalLoops;
+
+  /// No description provided for @backToIsland.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to the island'**
+  String get backToIsland;
+
+  /// No description provided for @continueAdventure.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue the adventure'**
+  String get continueAdventure;
+
+  /// No description provided for @levelNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {number}'**
+  String levelNumber(int number);
+
+  /// No description provided for @levelLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Not open yet'**
+  String get levelLocked;
 }
 
 class _AppLocalizationsDelegate

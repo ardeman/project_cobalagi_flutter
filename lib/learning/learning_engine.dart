@@ -131,6 +131,21 @@ final class LearningEngine {
         nextSeed: max(state.nextSeed, seed + 1),
       );
 
+  /// Records a replay: a solved lesson earns its star, and nothing else
+  /// changes, so replaying can't move a child forward or back.
+  LearnerState recordReplay(LearnerState state, ExerciseResult result) {
+    if (!result.succeeded) return state;
+    final old = progressOf(state, result.conceptId);
+    return state.copyWith(
+      progress: {
+        ...state.progress,
+        result.conceptId: old.copyWith(
+          solvedLessons: {...old.solvedLessons, result.levelId},
+        ),
+      },
+    );
+  }
+
   /// Updates progress with [result] and decides what comes next.
   (LearnerState, Decision) record(LearnerState state, ExerciseResult result) {
     final updated = _withResult(state, result);
@@ -212,6 +227,9 @@ final class LearningEngine {
       attemptedLessons: result.mode == ExerciseMode.lesson
           ? {...old.attemptedLessons, result.levelId}
           : old.attemptedLessons,
+      solvedLessons: result.mode == ExerciseMode.lesson && result.succeeded
+          ? {...old.solvedLessons, result.levelId}
+          : old.solvedLessons,
     );
     return state.copyWith(
       progress: {...state.progress, result.conceptId: progress},

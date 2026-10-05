@@ -107,5 +107,9 @@
   "thanksForSupport": "Terima kasih sudah mendukung Coba Lagi!",
   "playGoal": "Bantu aku sampai ke bendera!",
   "playGoalStars": "Kumpulkan semua bintang, lalu ke bendera!",
-  "playGoalLoops": "Pakai blok ulangi untuk sampai ke bendera!"
+  "playGoalLoops": "Pakai blok ulangi untuk sampai ke bendera!",
+  "backToIsland": "Kembali ke pulau",
+  "continueAdventure": "Lanjutkan petualangan",
+  "levelNumber": "Level {number}",
+  "levelLocked": "Belum terbuka"
 }

@@ -24,6 +24,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - Learning thresholds and skill prerequisites belong in `assets/config/`, not in code. `AdaptiveConfig` has no defaults on purpose.
 - A concept id must match a lesson pack (`assets/levels/<id>.json`) and a `PuzzleKind` name, so practice puzzles can be generated for it.
 - Never serve the same puzzle twice: generated puzzles go through `LearningCubit.nextExercise`, which skips fingerprints in `LearnerState.seenPuzzles`.
+- Replays (lessons replayed from an island, `ExerciseMode.replay`) never change mastery, difficulty or the current concept; they only earn a lesson's star. Record them with `LearningCubit.recordReplay`, not `record`.
 - Present a review as a reward ("bonus adventure"), never as a failure, in text, icons and voice.
 - Feedback to children comes from `CheerPicker` (`lib/core/feedback/cheers.dart`): varied, never the same words twice in a row, and never "wrong". Add phrases there (both ARB files), not one-off strings.
 - The warm-up game (`lib/learning/placement/`) must work without reading: every prompt has a voice clip id and pictures for answers. Placement thresholds live in `assets/config/pretest.json`.

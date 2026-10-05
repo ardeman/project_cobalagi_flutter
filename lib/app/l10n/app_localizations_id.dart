@@ -346,4 +346,18 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get playGoalLoops => 'Pakai blok ulangi untuk sampai ke bendera!';
+
+  @override
+  String get backToIsland => 'Kembali ke pulau';
+
+  @override
+  String get continueAdventure => 'Lanjutkan petualangan';
+
+  @override
+  String levelNumber(int number) {
+    return 'Level $number';
+  }
+
+  @override
+  String get levelLocked => 'Belum terbuka';
 }

@@ -93,6 +93,34 @@ class LearningCubit extends Cubit<LearningState> {
   /// A served-puzzle update not yet emitted.
   LearnerState? _pending;
 
+  /// A lesson to play again from its island, or null if [levelId] isn't one.
+  Exercise? replayExercise(String levelId) {
+    final level = curriculum.lesson(levelId);
+    if (level == null) return null;
+    return Exercise(
+      plan: ExercisePlan(
+        conceptId: level.concept,
+        mode: ExerciseMode.replay,
+        difficulty: engine.progressOf(state.learner!, level.concept).difficulty,
+        lessonId: levelId,
+      ),
+      level: level,
+      key: '${_served++}-replay-$levelId',
+    );
+  }
+
+  /// Records a replay. It never changes what comes next, so there is no
+  /// decision.
+  Future<Decision?> recordReplay(ExerciseResult result) async {
+    final current = _pending ?? state.learner!;
+    _pending = null;
+    final learner = engine.recordReplay(current, result);
+    emit(LearningState(learner: learner, lastDecision: state.lastDecision));
+    await _progress.logAttempt(profileId, result);
+    await _progress.save(profileId, learner);
+    return null;
+  }
+
   /// A fresh warm-up game with new questions.
   PretestSession startPretest() => PretestSession(
     PretestGenerator.fromJson(curriculum.vocabulary, Random()),

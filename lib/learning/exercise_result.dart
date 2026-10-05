@@ -11,6 +11,10 @@ enum ExerciseMode {
 
   /// A generated puzzle of a prerequisite, shown as a "bonus adventure".
   review,
+
+  /// A lesson played again from its island, just for fun: it never changes
+  /// mastery or what comes next.
+  replay,
 }
 
 /// What happened in one exercise (one puzzle), recorded when the child solves
