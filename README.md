@@ -134,7 +134,7 @@ Record each row as an MP3 at the listed path (`assets/audio/<language>/<clipId>.
 **Play Console:**
 
 - **Donations:** create one-time in-app products whose ids match `assets/config/donations.json` (`supporter_small`, `supporter_medium`, `supporter_large`), with prices of your choice. Any of them unlocks the supporter plan. Test with license testers.
-- **Families policy:** target audience is children, with no ads and no data collection. The release build has no internet permission.
+- **Families policy:** target audience is children, with no ads and no data collection. The release build has no internet permission. Privacy policy URL: `https://cobalagi.ardeman.com/privacy.html`.
 
 ## Roadmap (MVP)
 
@@ -159,7 +159,7 @@ Each topic has one home. Update that file instead of copying its content somewhe
 | `AGENTS.md` | AI coding agents (and humans who want the rules) | Conventions, guardrails, definition of done |
 | `CLAUDE.md`, `GEMINI.md` | Claude Code, Gemini CLI | Only an import of `AGENTS.md` |
 | `LICENSE.md` | Everyone | Terms for using the code (PolyForm Noncommercial 1.0.0) |
-| `website/` | Visitors of cobalagi.ardeman.com | The landing page and its screenshots (also used by this README) |
+| `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots (also used by this README) |
 
 Codex, Cursor, GitHub Copilot, Windsurf, Jules, Aider, Zed and other agents that follow the [AGENTS.md](https://agents.md) convention read `AGENTS.md` directly.
 
