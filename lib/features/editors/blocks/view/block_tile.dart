@@ -1,39 +1,39 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/l10n/app_localizations.dart';
-import '../data/icon_block.dart';
+import '../data/block.dart';
 
-extension IconBlockTypeStyle on IconBlockType {
+extension BlockTypeStyle on BlockType {
   IconData get icon => switch (this) {
-    IconBlockType.forward => Icons.arrow_upward_rounded,
-    IconBlockType.turnLeft => Icons.turn_left_rounded,
-    IconBlockType.turnRight => Icons.turn_right_rounded,
-    IconBlockType.repeat => Icons.repeat_rounded,
-    IconBlockType.star => Icons.star_rounded,
+    BlockType.forward => Icons.arrow_upward_rounded,
+    BlockType.turnLeft => Icons.turn_left_rounded,
+    BlockType.turnRight => Icons.turn_right_rounded,
+    BlockType.repeat => Icons.repeat_rounded,
+    BlockType.star => Icons.star_rounded,
   };
 
   Color get color => switch (this) {
-    IconBlockType.forward => const Color(0xFF43A047),
-    IconBlockType.turnLeft => const Color(0xFF1E88E5),
-    IconBlockType.turnRight => const Color(0xFFFB8C00),
-    IconBlockType.repeat => const Color(0xFF8E24AA),
-    IconBlockType.star => const Color(0xFFD81B60),
+    BlockType.forward => const Color(0xFF43A047),
+    BlockType.turnLeft => const Color(0xFF1E88E5),
+    BlockType.turnRight => const Color(0xFFFB8C00),
+    BlockType.repeat => const Color(0xFF8E24AA),
+    BlockType.star => const Color(0xFFD81B60),
   };
 
   /// Spoken by screen readers; pre-readers rely on the icon alone.
   String label(AppLocalizations l10n) => switch (this) {
-    IconBlockType.forward => l10n.blockForward,
-    IconBlockType.turnLeft => l10n.blockTurnLeft,
-    IconBlockType.turnRight => l10n.blockTurnRight,
-    IconBlockType.repeat => l10n.blockRepeat,
-    IconBlockType.star => l10n.blockStar,
+    BlockType.forward => l10n.blockForward,
+    BlockType.turnLeft => l10n.blockTurnLeft,
+    BlockType.turnRight => l10n.blockTurnRight,
+    BlockType.repeat => l10n.blockRepeat,
+    BlockType.star => l10n.blockStar,
   };
 }
 
 /// A square icon block. [highlighted] marks the block that is running;
 /// [hasIssue] marks a block the child needs to fix.
-class IconBlockTile extends StatelessWidget {
-  const IconBlockTile({
+class BlockTile extends StatelessWidget {
+  const BlockTile({
     super.key,
     required this.type,
     required this.size,
@@ -41,7 +41,7 @@ class IconBlockTile extends StatelessWidget {
     this.hasIssue = false,
   });
 
-  final IconBlockType type;
+  final BlockType type;
   final double size;
   final bool highlighted;
   final bool hasIssue;

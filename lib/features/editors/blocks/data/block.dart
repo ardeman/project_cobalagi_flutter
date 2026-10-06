@@ -1,8 +1,9 @@
 import '../../../../engine/program/instruction.dart';
 import '../../../../engine/program/program.dart';
 
-/// Tier 1 blocks: icons only, one step per block.
-enum IconBlockType {
+/// Block types of the block editor, one step per block. Tier 1 shows them
+/// as pictures, Tier 2 as words.
+enum BlockType {
   forward(InstructionKind.move),
   turnLeft(InstructionKind.turnLeft),
   turnRight(InstructionKind.turnRight),
@@ -11,13 +12,13 @@ enum IconBlockType {
   /// The child's own block: runs the star row.
   star(InstructionKind.call);
 
-  const IconBlockType(this.kind);
+  const BlockType(this.kind);
 
   final InstructionKind kind;
 }
 
-final class IconBlock {
-  const IconBlock({
+final class Block {
+  const Block({
     required this.id,
     required this.type,
     this.count = 2,
@@ -25,13 +26,13 @@ final class IconBlock {
   });
 
   final String id;
-  final IconBlockType type;
+  final BlockType type;
 
   /// Repeat count; ignored by other block types.
   final int count;
-  final List<IconBlock> children;
+  final List<Block> children;
 
-  IconBlock copyWith({int? count, List<IconBlock>? children}) => IconBlock(
+  Block copyWith({int? count, List<Block>? children}) => Block(
     id: id,
     type: type,
     count: count ?? this.count,
@@ -39,7 +40,7 @@ final class IconBlock {
   );
 
   /// This block and every block nested inside it.
-  Iterable<IconBlock> get selfAndDescendants sync* {
+  Iterable<Block> get selfAndDescendants sync* {
     yield this;
     for (final child in children) {
       yield* child.selfAndDescendants;
@@ -49,15 +50,15 @@ final class IconBlock {
 
 /// Everything the child has built: the main row, and the star row that a
 /// star block runs.
-final class IconProgram {
-  const IconProgram({
+final class BlockProgram {
+  const BlockProgram({
     this.main = const [],
     this.star = const [],
     this.tapToStar = false,
   });
 
-  final List<IconBlock> main;
-  final List<IconBlock> star;
+  final List<Block> main;
+  final List<Block> star;
 
   /// Where tapped palette blocks go: the star row, or else the main row.
   final bool tapToStar;
@@ -65,11 +66,11 @@ final class IconProgram {
   /// Nothing to run: the main row is empty.
   bool get isEmpty => main.isEmpty;
 
-  IconProgram copyWith({
-    List<IconBlock>? main,
-    List<IconBlock>? star,
+  BlockProgram copyWith({
+    List<Block>? main,
+    List<Block>? star,
     bool? tapToStar,
-  }) => IconProgram(
+  }) => BlockProgram(
     main: main ?? this.main,
     star: star ?? this.star,
     tapToStar: tapToStar ?? this.tapToStar,
@@ -77,20 +78,18 @@ final class IconProgram {
 }
 
 /// Compiles the editor's blocks into the shared instruction set.
-Program compileIconBlocks(
-  List<IconBlock> blocks, {
-  List<IconBlock> star = const [],
-}) => Program(
-  [for (final block in blocks) _compile(block)],
-  procedure: [for (final block in star) _compile(block)],
-);
+Program compileBlocks(List<Block> blocks, {List<Block> star = const []}) =>
+    Program(
+      [for (final block in blocks) _compile(block)],
+      procedure: [for (final block in star) _compile(block)],
+    );
 
-Instruction _compile(IconBlock block) => switch (block.type) {
-  IconBlockType.forward => Move(blockId: block.id),
-  IconBlockType.turnLeft => TurnLeft(blockId: block.id),
-  IconBlockType.turnRight => TurnRight(blockId: block.id),
-  IconBlockType.repeat => Repeat(block.count, [
+Instruction _compile(Block block) => switch (block.type) {
+  BlockType.forward => Move(blockId: block.id),
+  BlockType.turnLeft => TurnLeft(blockId: block.id),
+  BlockType.turnRight => TurnRight(blockId: block.id),
+  BlockType.repeat => Repeat(block.count, [
     for (final child in block.children) _compile(child),
   ], blockId: block.id),
-  IconBlockType.star => Call(blockId: block.id),
+  BlockType.star => Call(blockId: block.id),
 };

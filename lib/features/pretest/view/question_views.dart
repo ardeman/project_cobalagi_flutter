@@ -7,8 +7,8 @@ import '../../../core/audio/voice_clips.dart';
 import '../../../engine/world/grid_point.dart';
 import '../../../engine/world/level.dart';
 import '../../../learning/placement/pretest_question.dart';
-import '../../editors/icon_blocks/data/icon_block.dart';
-import '../../editors/icon_blocks/view/icon_block_tile.dart';
+import '../../editors/blocks/data/block.dart';
+import '../../editors/blocks/view/block_tile.dart';
 import 'pretest_pictures.dart';
 
 /// The spoken and written prompt for a question, plus its voice clip id.
@@ -121,8 +121,8 @@ class QuestionView extends StatelessWidget {
                     : Icons.turn_right_rounded,
                 size: size * 0.5,
                 color: turn == Side.left
-                    ? IconBlockType.turnLeft.color
-                    : IconBlockType.turnRight.color,
+                    ? BlockType.turnLeft.color
+                    : BlockType.turnRight.color,
               ),
             ],
           ),
@@ -163,10 +163,8 @@ class QuestionView extends StatelessWidget {
               alignment: WrapAlignment.center,
               children: [
                 for (final kind in steps)
-                  IconBlockTile(
-                    type: IconBlockType.values.firstWhere(
-                      (t) => t.kind == kind,
-                    ),
+                  BlockTile(
+                    type: BlockType.values.firstWhere((t) => t.kind == kind),
                     size: size * 0.28,
                   ),
               ],

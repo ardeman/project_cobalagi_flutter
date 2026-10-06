@@ -16,9 +16,9 @@ import '../../../engine/program/instruction.dart';
 import '../../../engine/world/level.dart';
 import '../../../learning/exercise_result.dart';
 import '../../../learning/learning_engine.dart';
-import '../../editors/icon_blocks/cubit/icon_blocks_cubit.dart';
-import '../../editors/icon_blocks/data/icon_block.dart';
-import '../../editors/icon_blocks/view/icon_block_editor.dart';
+import '../../editors/blocks/cubit/blocks_cubit.dart';
+import '../../editors/blocks/data/block.dart';
+import '../../editors/blocks/view/block_editor.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../cubit/play_cubit.dart';
@@ -54,12 +54,12 @@ class PlayView extends StatefulWidget {
   State<PlayView> createState() => _PlayViewState();
 }
 
-int _count(IconProgram program) =>
-    compileIconBlocks(program.main, star: program.star).blockCount;
+int _count(BlockProgram program) =>
+    compileBlocks(program.main, star: program.star).blockCount;
 
 class _PlayViewState extends State<PlayView> {
   late final _level = widget.exercise.level;
-  late final _blocks = IconBlocksCubit(maxBlocks: _level.maxBlocks);
+  late final _blocks = BlocksCubit(maxBlocks: _level.maxBlocks);
   late final _play = PlayCubit(_level);
   late final _game = WorldGame(
     level: _level,
@@ -183,12 +183,12 @@ class _PlayViewState extends State<PlayView> {
         BlocListener<PlayCubit, PlayState>(listener: _onPlayChanged),
         // Editing the program after a run puts the world back at the start.
         // A click when a block lands in the program.
-        BlocListener<IconBlocksCubit, IconProgram>(
+        BlocListener<BlocksCubit, BlockProgram>(
           listenWhen: (before, after) => _count(after) > _count(before),
           listener: (_, _) =>
               context.read<AudioService>().playEffect(SoundEffect.drop),
         ),
-        BlocListener<IconBlocksCubit, Object>(
+        BlocListener<BlocksCubit, Object>(
           listener: (_, _) {
             final play = _play.state;
             if (play.phase != PlayPhase.editing || play.issues.isNotEmpty) {
@@ -230,7 +230,7 @@ class _PlayViewState extends State<PlayView> {
                   ],
                 );
                 final editor = BlocBuilder<PlayCubit, PlayState>(
-                  builder: (context, play) => IconBlockEditor(
+                  builder: (context, play) => BlockEditor(
                     palette: _level.palette,
                     blockSize: compact ? 56.0 : 72.0,
                     activeBlockId: play.activeBlockId,
@@ -465,7 +465,7 @@ class _RunControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final play = context.watch<PlayCubit>().state;
-    final blocks = context.watch<IconBlocksCubit>();
+    final blocks = context.watch<BlocksCubit>();
     final hasBlocks = !blocks.state.isEmpty;
     final running = play.phase == PlayPhase.running;
     final canGo = hasBlocks && (play.phase == PlayPhase.editing || running);

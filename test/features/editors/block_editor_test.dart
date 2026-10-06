@@ -1,19 +1,19 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
-import 'package:cobalagi/features/editors/icon_blocks/cubit/icon_blocks_cubit.dart';
-import 'package:cobalagi/features/editors/icon_blocks/data/icon_block.dart';
-import 'package:cobalagi/features/editors/icon_blocks/view/icon_block_editor.dart';
+import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
+import 'package:cobalagi/features/editors/blocks/data/block.dart';
+import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Future<IconBlocksCubit> pumpEditor(
+Future<BlocksCubit> pumpEditor(
   WidgetTester tester, {
   int? maxBlocks,
   bool star = false,
   bool showHowTo = false,
 }) async {
-  final cubit = IconBlocksCubit(maxBlocks: maxBlocks);
+  final cubit = BlocksCubit(maxBlocks: maxBlocks);
   addTearDown(cubit.close);
   await tester.pumpWidget(
     MaterialApp(
@@ -25,7 +25,7 @@ Future<IconBlocksCubit> pumpEditor(
           child: SizedBox(
             width: 600,
             height: 500,
-            child: IconBlockEditor(
+            child: BlockEditor(
               palette: {
                 InstructionKind.move,
                 InstructionKind.turnLeft,
@@ -52,8 +52,8 @@ void main() {
     await tester.tap(paletteBlock(Icons.turn_left_rounded));
     await tester.pump();
     expect(cubit.state.main.map((b) => b.type), [
-      IconBlockType.forward,
-      IconBlockType.turnLeft,
+      BlockType.forward,
+      BlockType.turnLeft,
     ]);
     expect(find.byIcon(Icons.arrow_upward_rounded), findsNWidgets(2));
   });
@@ -68,15 +68,15 @@ void main() {
     await gesture.moveTo(start + const Offset(0, 250));
     await gesture.up();
     await tester.pump();
-    expect(cubit.state.main.single.type, IconBlockType.turnRight);
+    expect(cubit.state.main.single.type, BlockType.turnRight);
   });
 
   testWidgets('dragging a placed block onto the palette removes it', (
     tester,
   ) async {
     final cubit = await pumpEditor(tester)
-      ..add(IconBlockType.forward)
-      ..add(IconBlockType.turnLeft);
+      ..add(BlockType.forward)
+      ..add(BlockType.turnLeft);
     await tester.pump();
     final placed = find.byIcon(Icons.turn_left_rounded).last;
     final gesture = await tester.startGesture(tester.getCenter(placed));
@@ -86,7 +86,7 @@ void main() {
     );
     await gesture.up();
     await tester.pump();
-    expect(cubit.state.main.single.type, IconBlockType.forward);
+    expect(cubit.state.main.single.type, BlockType.forward);
   });
 
   testWidgets('the palette is disabled at the block limit', (tester) async {
@@ -105,7 +105,7 @@ void main() {
     final cubit = await pumpEditor(tester);
     await tester.tap(paletteBlock(Icons.repeat_rounded));
     await tester.pump();
-    expect(cubit.state.main.single.type, IconBlockType.repeat);
+    expect(cubit.state.main.single.type, BlockType.repeat);
 
     final start = tester.getCenter(paletteBlock(Icons.arrow_upward_rounded));
     final inner = tester.getCenter(find.byIcon(Icons.add_rounded));
@@ -114,7 +114,7 @@ void main() {
     await gesture.moveTo(inner);
     await gesture.up();
     await tester.pump();
-    expect(cubit.state.main.single.children.single.type, IconBlockType.forward);
+    expect(cubit.state.main.single.children.single.type, BlockType.forward);
 
     await tester.tap(find.byIcon(Icons.add_circle_rounded));
     await tester.pump();
@@ -125,10 +125,10 @@ void main() {
     tester,
   ) async {
     final cubit = await pumpEditor(tester)
-      ..add(IconBlockType.repeat);
+      ..add(BlockType.repeat);
     final loop = cubit.state.main.single.id;
     for (var i = 0; i < 8; i++) {
-      cubit.add(IconBlockType.forward, parentId: loop);
+      cubit.add(BlockType.forward, parentId: loop);
     }
     await tester.pump();
 
@@ -145,9 +145,9 @@ void main() {
     tester,
   ) async {
     final cubit = await pumpEditor(tester)
-      ..add(IconBlockType.repeat);
+      ..add(BlockType.repeat);
     final loop = cubit.state.main.single.id;
-    cubit.add(IconBlockType.forward, parentId: loop);
+    cubit.add(BlockType.forward, parentId: loop);
     await tester.pump();
 
     // The drop spot after the last block inside the repeat.
@@ -166,8 +166,8 @@ void main() {
       reason: 'nothing added outside the loop',
     );
     expect(cubit.state.main.single.children.map((b) => b.type), [
-      IconBlockType.forward,
-      IconBlockType.turnLeft,
+      BlockType.forward,
+      BlockType.turnLeft,
     ]);
   });
 
@@ -192,10 +192,10 @@ void main() {
     await tester.tap(paletteBlock(Icons.star_rounded));
     await tester.pump();
     expect(cubit.state.star.map((b) => b.type), [
-      IconBlockType.forward,
-      IconBlockType.turnRight,
+      BlockType.forward,
+      BlockType.turnRight,
     ]);
-    expect(cubit.state.main.single.type, IconBlockType.star);
+    expect(cubit.state.main.single.type, BlockType.star);
     expect(cubit.program.procedure, hasLength(2));
   });
 

@@ -14,9 +14,9 @@ import 'package:cobalagi/core/entitlement/plan.dart';
 import 'package:cobalagi/core/settings/settings_repository.dart';
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
-import 'package:cobalagi/features/editors/icon_blocks/cubit/icon_blocks_cubit.dart';
-import 'package:cobalagi/features/editors/icon_blocks/data/icon_block.dart';
-import 'package:cobalagi/features/editors/icon_blocks/view/icon_block_editor.dart';
+import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
+import 'package:cobalagi/features/editors/blocks/data/block.dart';
+import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
 import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/features/play/data/level_repository.dart';
@@ -182,12 +182,12 @@ Future<void> _buildAnswer(WidgetTester tester, String levelId) async {
       }
       if (main.length + shape.length <= level.maxBlocks!) {
         final cubit = tester
-            .element(find.byType(IconBlockEditor))
-            .read<IconBlocksCubit>();
-        IconBlockType type(InstructionKind kind) =>
-            IconBlockType.values.firstWhere((t) => t.kind == kind);
+            .element(find.byType(BlockEditor))
+            .read<BlocksCubit>();
+        BlockType type(InstructionKind kind) =>
+            BlockType.values.firstWhere((t) => t.kind == kind);
         for (final kind in shape) {
-          cubit.add(type(kind), parentId: IconBlocksCubit.starRow);
+          cubit.add(type(kind), parentId: BlocksCubit.starRow);
         }
         for (final kind in main) {
           cubit.add(type(kind));

@@ -16,8 +16,8 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - State lives in Cubits (`flutter_bloc`). Services reach widgets through `RepositoryProvider`/`BlocProvider`, built in `lib/app/app.dart`; there is no service locator.
 - A feature folder is split into `data/` (models, repositories), `cubit/` (state) and `view/` (widgets).
 - `lib/engine/` and `lib/learning/` are pure Dart: no Flutter imports, so they can be tested headless.
-- Every editor (icon blocks, word blocks, typed code) compiles to the shared `Program` in `lib/engine/`. Never add an editor-specific path into the world or interpreter.
-- An editor lives in `lib/features/editors/<name>/`: its own block model, a compile function to `Program` that copies block ids, and its own cubit. `PlayCubit` only receives the compiled `Program`.
+- Every editor (blocks, later typed code) compiles to the shared `Program` in `lib/engine/`. Never add an editor-specific path into the world or interpreter.
+- An editor lives in `lib/features/editors/<name>/`: its own block model, a compile function to `Program` that copies block ids, and its own cubit. `PlayCubit` only receives the compiled `Program`. The block editor (`lib/features/editors/blocks/`) serves Tier 1 (picture blocks) and Tier 2 (word blocks) as two looks of the same blocks.
 - The Flame world (`lib/features/play/view/world/`) holds no game logic. It mirrors `PlayState` through `WorldGame.apply` and reports each finished animation with `PlayCubit.eventShown`.
 - Every hand-made level must be solvable with its own palette; `test/features/play/level_assets_test.dart` checks this.
 - User-facing text goes in both `lib/app/l10n/app_en.arb` and `app_id.arb`; never hardcode strings. Voice clips live at `assets/audio/<id|en>/<clipId>.mp3`; sound effects at `assets/audio/sfx/<name>.mp3`, one per `SoundEffect`, each with a prompt in `tool/sound_effects.json`; music at `assets/audio/music/<name>.mp3`, one per `MusicTrack`, prompted in `tool/music.json`.

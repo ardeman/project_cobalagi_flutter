@@ -4,15 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/l10n/app_localizations.dart';
 import '../../../../engine/program/instruction.dart';
 import '../../../../engine/program/validation.dart';
-import '../cubit/icon_blocks_cubit.dart';
-import '../data/icon_block.dart';
-import 'icon_block_tile.dart';
+import '../cubit/blocks_cubit.dart';
+import '../data/block.dart';
+import 'block_tile.dart';
 
-/// Tier 1 editor: drag (touch or mouse) or tap palette blocks to build a row.
+/// Block editor: drag (touch or mouse) or tap palette blocks to build a row.
 /// Drag a placed block to reorder it, into a repeat block to repeat it, or
 /// back onto the palette to remove it.
-class IconBlockEditor extends StatefulWidget {
-  const IconBlockEditor({
+class BlockEditor extends StatefulWidget {
+  const BlockEditor({
     super.key,
     required this.palette,
     required this.blockSize,
@@ -33,10 +33,10 @@ class IconBlockEditor extends StatefulWidget {
   final bool enabled;
 
   @override
-  State<IconBlockEditor> createState() => _IconBlockEditorState();
+  State<BlockEditor> createState() => _BlockEditorState();
 }
 
-class _IconBlockEditorState extends State<IconBlockEditor> {
+class _BlockEditorState extends State<BlockEditor> {
   final _stack = GlobalKey();
   final _firstBlock = GlobalKey();
   final _program = GlobalKey();
@@ -44,11 +44,11 @@ class _IconBlockEditorState extends State<IconBlockEditor> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final cubit = context.watch<IconBlocksCubit>();
+    final cubit = context.watch<BlocksCubit>();
     final blocks = cubit.state.main;
     final scheme = Theme.of(context).colorScheme;
     final types = [
-      for (final type in IconBlockType.values)
+      for (final type in BlockType.values)
         if (widget.palette.contains(type.kind)) type,
     ];
     final gap = widget.blockSize * 0.18;
@@ -64,7 +64,7 @@ class _IconBlockEditorState extends State<IconBlockEditor> {
     final column = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        DragTarget<IconBlock>(
+        DragTarget<Block>(
           onAcceptWithDetails: (d) => cubit.remove(d.data.id),
           builder: (context, candidates, _) => AnimatedContainer(
             duration: const Duration(milliseconds: 150),
@@ -110,7 +110,7 @@ class _IconBlockEditorState extends State<IconBlockEditor> {
             onTap: () => cubit.pickRow(star: false),
             child: DragTarget<Object>(
               onWillAcceptWithDetails: (d) =>
-                  widget.enabled && (d.data is IconBlock || !cubit.isFull),
+                  widget.enabled && (d.data is Block || !cubit.isFull),
               onAcceptWithDetails: (d) =>
                   cubit.drop(d.data, index: blocks.length),
               builder: (context, candidates, _) => AnimatedContainer(
@@ -216,7 +216,7 @@ class _BlockRow extends StatelessWidget {
   });
 
   final String? parentId;
-  final List<IconBlock> blocks;
+  final List<Block> blocks;
   final _BlockStyle style;
 
   /// Shown after the last block, e.g. a drop spot for adding at the end.
@@ -232,7 +232,7 @@ class _BlockRow extends StatelessWidget {
         _PlacedBlock(
           block: blocks[i],
           style: style,
-          onDrop: (data) => context.read<IconBlocksCubit>().drop(
+          onDrop: (data) => context.read<BlocksCubit>().drop(
             data,
             parentId: parentId,
             index: i,
@@ -252,20 +252,20 @@ class _PaletteBlock extends StatelessWidget {
     required this.onTap,
   });
 
-  final IconBlockType type;
+  final BlockType type;
   final double size;
   final bool enabled;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final tile = IconBlockTile(type: type, size: size);
+    final tile = BlockTile(type: type, size: size);
     if (!enabled) return Opacity(opacity: 0.4, child: tile);
-    return Draggable<IconBlockType>(
+    return Draggable<BlockType>(
       data: type,
       feedback: Material(
         type: MaterialType.transparency,
-        child: IconBlockTile(type: type, size: size * 1.1),
+        child: BlockTile(type: type, size: size * 1.1),
       ),
       childWhenDragging: Opacity(opacity: 0.5, child: tile),
       child: GestureDetector(onTap: onTap, child: tile),
@@ -280,7 +280,7 @@ class _PlacedBlock extends StatelessWidget {
     required this.onDrop,
   });
 
-  final IconBlock block;
+  final Block block;
   final _BlockStyle style;
 
   /// Something was dropped on this block: insert it before this block.
@@ -289,9 +289,9 @@ class _PlacedBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = style.size;
-    final Widget body = block.type == IconBlockType.repeat
+    final Widget body = block.type == BlockType.repeat
         ? _RepeatBlock(block: block, style: style)
-        : IconBlockTile(
+        : BlockTile(
             key: ValueKey(block.id),
             type: block.type,
             size: size,
@@ -313,11 +313,11 @@ class _PlacedBlock extends StatelessWidget {
           ),
           // Flexible keeps a wide repeat block within the row, so it wraps.
           Flexible(
-            child: Draggable<IconBlock>(
+            child: Draggable<Block>(
               data: block,
               feedback: Material(
                 type: MaterialType.transparency,
-                child: IconBlockTile(type: block.type, size: size * 1.1),
+                child: BlockTile(type: block.type, size: size * 1.1),
               ),
               childWhenDragging: Opacity(opacity: 0.3, child: body),
               child: body,
@@ -333,14 +333,14 @@ class _PlacedBlock extends StatelessWidget {
 class _RepeatBlock extends StatelessWidget {
   const _RepeatBlock({required this.block, required this.style});
 
-  final IconBlock block;
+  final Block block;
   final _BlockStyle style;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<IconBlocksCubit>();
+    final cubit = context.read<BlocksCubit>();
     final size = style.size;
-    final color = IconBlockType.repeat.color;
+    final color = BlockType.repeat.color;
     final active = block.selfAndDescendants.any(
       (b) => b.id == style.activeBlockId,
     );
@@ -376,7 +376,7 @@ class _RepeatBlock extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              IconBlockTile(type: IconBlockType.repeat, size: size * 0.8),
+              BlockTile(type: BlockType.repeat, size: size * 0.8),
               SizedBox(height: style.gap * 0.5),
               _CountStepper(
                 count: block.count,
@@ -395,8 +395,8 @@ class _RepeatBlock extends StatelessWidget {
               onWillAcceptWithDetails: (d) =>
                   style.enabled &&
                   d.data != block &&
-                  d.data != IconBlockType.repeat &&
-                  (d.data is IconBlock || !cubit.isFull),
+                  d.data != BlockType.repeat &&
+                  (d.data is Block || !cubit.isFull),
               onAcceptWithDetails: (d) => cubit.drop(
                 d.data,
                 parentId: block.id,
@@ -442,7 +442,7 @@ class _StarRow extends StatelessWidget {
     required this.picked,
   });
 
-  final List<IconBlock> blocks;
+  final List<Block> blocks;
   final _BlockStyle style;
 
   /// Tapped palette blocks go here; shown with a thicker border.
@@ -450,9 +450,9 @@ class _StarRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<IconBlocksCubit>();
+    final cubit = context.read<BlocksCubit>();
     final size = style.size;
-    final color = IconBlockType.star.color;
+    final color = BlockType.star.color;
     final addSpot = Icon(
       Icons.add_rounded,
       size: size * 0.6,
@@ -462,13 +462,12 @@ class _StarRow extends StatelessWidget {
     return DragTarget<Object>(
       onWillAcceptWithDetails: (d) =>
           style.enabled &&
-          d.data != IconBlockType.star &&
-          (d.data is! IconBlock ||
-              (d.data as IconBlock).type != IconBlockType.star) &&
-          (d.data is IconBlock || !cubit.isFull),
+          d.data != BlockType.star &&
+          (d.data is! Block || (d.data as Block).type != BlockType.star) &&
+          (d.data is Block || !cubit.isFull),
       onAcceptWithDetails: (d) => cubit.drop(
         d.data,
-        parentId: IconBlocksCubit.starRow,
+        parentId: BlocksCubit.starRow,
         index: blocks.length,
       ),
       builder: (context, candidates, _) => AnimatedContainer(
@@ -486,7 +485,7 @@ class _StarRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            IconBlockTile(type: IconBlockType.star, size: size * 0.8),
+            BlockTile(type: BlockType.star, size: size * 0.8),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: style.gap),
               child: Icon(
@@ -497,7 +496,7 @@ class _StarRow extends StatelessWidget {
             ),
             Expanded(
               child: _BlockRow(
-                parentId: IconBlocksCubit.starRow,
+                parentId: BlocksCubit.starRow,
                 blocks: blocks,
                 style: style,
                 trailing: style.enabled || blocks.isEmpty ? addSpot : null,
@@ -644,10 +643,7 @@ class _HowToHandState extends State<_HowToHand>
               top: at.dy - size * 0.45,
               child: Opacity(
                 opacity: 0.75,
-                child: IconBlockTile(
-                  type: IconBlockType.forward,
-                  size: size * 0.9,
-                ),
+                child: BlockTile(type: BlockType.forward, size: size * 0.9),
               ),
             ),
           Positioned(

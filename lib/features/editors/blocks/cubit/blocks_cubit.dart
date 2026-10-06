@@ -2,13 +2,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../engine/program/program.dart';
 import '../../../../engine/program/validation.dart';
-import '../data/icon_block.dart';
+import '../data/block.dart';
 
-/// The child's program in the Tier 1 editor: a main row of blocks, where a
+/// The child's program in the block editor: a main row of blocks, where a
 /// repeat block holds its own row, plus a star row that star blocks run.
-/// Tier 1 allows no repeat inside a repeat and no star inside the star row.
-class IconBlocksCubit extends Cubit<IconProgram> {
-  IconBlocksCubit({this.maxBlocks}) : super(const IconProgram());
+/// No repeat goes inside a repeat and no star inside the star row.
+class BlocksCubit extends Cubit<BlockProgram> {
+  BlocksCubit({this.maxBlocks}) : super(const BlockProgram());
 
   /// Parent id for the star row, in [add], [move] and [drop].
   static const starRow = '*';
@@ -17,7 +17,7 @@ class IconBlocksCubit extends Cubit<IconProgram> {
   final int? maxBlocks;
   var _nextId = 0;
 
-  Program get program => compileIconBlocks(state.main, star: state.star);
+  Program get program => compileBlocks(state.main, star: state.star);
 
   int get blockCount => program.blockCount;
 
@@ -26,9 +26,9 @@ class IconBlocksCubit extends Cubit<IconProgram> {
   /// Inserts a new block into [parentId] (null: the main row; [starRow]: the
   /// star row) at [index] (default: the end). Returns false if it isn't
   /// allowed there.
-  bool add(IconBlockType type, {String? parentId, int? index}) {
+  bool add(BlockType type, {String? parentId, int? index}) {
     if (isFull || !_fits(type, parentId)) return false;
-    final block = IconBlock(id: 'b${_nextId++}', type: type);
+    final block = Block(id: 'b${_nextId++}', type: type);
     emit(_insert(state, parentId, index, block));
     return true;
   }
@@ -36,9 +36,9 @@ class IconBlocksCubit extends Cubit<IconProgram> {
   /// Adds a tapped palette block to the row the child picked last, the main
   /// row unless they tapped the star row. A star tapped while the star row is
   /// picked goes to the main row.
-  bool tap(IconBlockType type) => add(
+  bool tap(BlockType type) => add(
     type,
-    parentId: state.tapToStar && type != IconBlockType.star ? starRow : null,
+    parentId: state.tapToStar && type != BlockType.star ? starRow : null,
   );
 
   /// Picks the row that tapped palette blocks go to.
@@ -60,9 +60,9 @@ class IconBlocksCubit extends Cubit<IconProgram> {
   /// Adds a palette block or moves a placed one, depending on [data].
   void drop(Object data, {String? parentId, required int index}) {
     switch (data) {
-      case IconBlockType type:
+      case BlockType type:
         add(type, parentId: parentId, index: index);
-      case IconBlock block:
+      case Block block:
         move(block.id, parentId: parentId, index: index);
     }
   }
@@ -86,22 +86,22 @@ class IconBlocksCubit extends Cubit<IconProgram> {
     }
   }
 
-  void clear() => emit(IconProgram(tapToStar: state.tapToStar));
+  void clear() => emit(BlockProgram(tapToStar: state.tapToStar));
 
-  bool _fits(IconBlockType type, String? parentId) {
+  bool _fits(BlockType type, String? parentId) {
     if (parentId == null) return true;
-    if (parentId == starRow) return type != IconBlockType.star;
+    if (parentId == starRow) return type != BlockType.star;
     final parent = _find(parentId);
-    if (parent?.type != IconBlockType.repeat) return false;
-    if (type == IconBlockType.repeat) return false;
+    if (parent?.type != BlockType.repeat) return false;
+    if (type == BlockType.repeat) return false;
     // A repeat inside the star row may not hold a star either.
-    return type != IconBlockType.star || !_inStar(parentId);
+    return type != BlockType.star || !_inStar(parentId);
   }
 
   bool _inStar(String id) =>
       state.star.any((b) => b.selfAndDescendants.any((d) => d.id == id));
 
-  IconBlock? _find(String id) {
+  Block? _find(String id) {
     for (final block in [...state.main, ...state.star]) {
       for (final b in block.selfAndDescendants) {
         if (b.id == id) return b;
@@ -120,7 +120,7 @@ class IconBlocksCubit extends Cubit<IconProgram> {
   }
 
   static (String?, int)? _locateIn(
-    List<IconBlock> blocks,
+    List<Block> blocks,
     String id, [
     String? parentId,
   ]) {
@@ -132,16 +132,16 @@ class IconBlocksCubit extends Cubit<IconProgram> {
     return null;
   }
 
-  IconProgram _removed(String id) => state.copyWith(
+  BlockProgram _removed(String id) => state.copyWith(
     main: _remove(state.main, id),
     star: _remove(state.star, id),
   );
 
-  static IconProgram _insert(
-    IconProgram program,
+  static BlockProgram _insert(
+    BlockProgram program,
     String? parentId,
     int? index,
-    IconBlock block,
+    Block block,
   ) => switch (parentId) {
     null => program.copyWith(main: _insertIn(program.main, null, index, block)),
     starRow => program.copyWith(
@@ -153,11 +153,11 @@ class IconBlocksCubit extends Cubit<IconProgram> {
     ),
   };
 
-  static List<IconBlock> _insertIn(
-    List<IconBlock> blocks,
+  static List<Block> _insertIn(
+    List<Block> blocks,
     String? parentId,
     int? index,
-    IconBlock block,
+    Block block,
   ) {
     if (parentId == null) {
       final at = (index ?? blocks.length).clamp(0, blocks.length);
@@ -172,15 +172,15 @@ class IconBlocksCubit extends Cubit<IconProgram> {
     );
   }
 
-  static List<IconBlock> _remove(List<IconBlock> blocks, String id) => [
+  static List<Block> _remove(List<Block> blocks, String id) => [
     for (final b in blocks)
       if (b.id != id) b.copyWith(children: _remove(b.children, id)),
   ];
 
-  static List<IconBlock> _update(
-    List<IconBlock> blocks,
+  static List<Block> _update(
+    List<Block> blocks,
     String id,
-    IconBlock Function(IconBlock) change,
+    Block Function(Block) change,
   ) => [
     for (final b in blocks)
       b.id == id
