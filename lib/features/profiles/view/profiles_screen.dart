@@ -35,15 +35,21 @@ class ProfilesScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.whoIsPlaying),
         actions: [
-          IconButton(
-            tooltip: l10n.parentArea,
-            icon: const Icon(Icons.lock_outline),
-            onPressed: () async {
-              if (await showParentGate(context) && context.mounted) {
-                context.push('/parent');
-              }
-            },
+          // Labelled, so parents find it and it doesn't look like the lock
+          // on a full "new player" tile.
+          Tooltip(
+            message: l10n.parentArea,
+            child: TextButton.icon(
+              icon: const Icon(Icons.family_restroom_rounded),
+              label: Text(l10n.parentArea),
+              onPressed: () async {
+                if (await showParentGate(context) && context.mounted) {
+                  context.push('/parent');
+                }
+              },
+            ),
           ),
+          const SizedBox(width: 8),
         ],
       ),
       body: !state.loaded
