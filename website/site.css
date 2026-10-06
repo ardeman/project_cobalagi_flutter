@@ -160,6 +160,27 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.15; margin: 0 0 12p
   background: var(--surface);
 }
 
+
+.islands { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+@media (max-width: 900px) { .islands { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .islands { grid-template-columns: 1fr; } }
+.island {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  overflow: hidden; box-shadow: 0 1px 0 var(--line);
+}
+.island img { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--line); }
+.island h3 { margin: 16px 20px 4px; font-size: 1.15rem; }
+.island p { margin: 0 20px 20px; color: var(--muted); }
+.reader { margin-top: 56px; }
+.reader h3 { font-size: 1.6rem; margin: 0 0 8px; }
+.phones-head { margin: 56px 0 24px; }
+.phones-head h3 { font-size: 1.6rem; margin: 0 0 8px; }
+.phones { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.phones img {
+  width: min(30%, 240px); height: auto; border-radius: 28px; border: 8px solid #1d2b2b;
+  box-shadow: var(--shadow);
+}
+@media (max-width: 560px) { .phones img { width: 46%; } }
 .shot.dialog { max-width: 360px; width: 100%; justify-self: center; border-radius: 32px; }
 .parents { background: var(--surface-2); border-radius: 40px; padding: 56px; }
 @media (max-width: 700px) { .parents { padding: 32px 20px; border-radius: 28px; } }
