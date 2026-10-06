@@ -151,6 +151,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Sponsors see the full progress report: puzzles solved, time played and progress on each island.';
 
   @override
+  String get soundEffects => 'Sound effects';
+
+  @override
+  String get soundEffectsHint => 'Voices always play.';
+
+  @override
   String get supportCobaLagi => 'Support Coba Lagi';
 
   @override

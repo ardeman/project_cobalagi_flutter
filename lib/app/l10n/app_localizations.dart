@@ -320,6 +320,18 @@ abstract class AppLocalizations {
   /// **'Sponsors see the full progress report: puzzles solved, time played and progress on each island.'**
   String get progressSponsorOnly;
 
+  /// No description provided for @soundEffects.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound effects'**
+  String get soundEffects;
+
+  /// No description provided for @soundEffectsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Voices always play.'**
+  String get soundEffectsHint;
+
   /// No description provided for @supportCobaLagi.
   ///
   /// In en, this message translates to:

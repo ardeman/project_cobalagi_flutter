@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 
+import 'sound_effects.dart';
+
 /// Plays prerecorded voice clips from `assets/audio/<languageCode>/<clipId>.mp3`.
 /// Clip ids are listed in `VoiceClips`.
 abstract interface class AudioService {
@@ -18,6 +20,14 @@ abstract interface class AudioService {
   /// Completes once the current clip and everything queued after it have
   /// finished, so a screen can wait before moving on and cutting a clip off.
   Future<void> whenIdle();
+
+  /// Plays a short sound over any voice. Ignored while [effectsOn] is false;
+  /// missing sounds are skipped silently.
+  void playEffect(SoundEffect effect);
+
+  /// Sound effects on or off (a parent setting). Voices always play.
+  bool get effectsOn;
+  set effectsOn(bool on);
 
   Future<void> dispose();
 }
@@ -35,6 +45,38 @@ class AudioplayersAudioService implements AudioService {
   var _playing = false;
   final _idleWaiters = <Completer<void>>[];
   Set<String>? _assets;
+
+  /// A few players, so quick steps can overlap without cutting each other.
+  final _effects = List.generate(3, (_) => AudioPlayer());
+  var _nextEffect = 0;
+
+  @override
+  var effectsOn = true;
+
+  Future<bool> _hasAsset(String path) async {
+    _assets ??= (await AssetManifest.loadFromAssetBundle(
+      _bundle,
+    )).listAssets().toSet();
+    return _assets!.contains('assets/$path');
+  }
+
+  @override
+  void playEffect(SoundEffect effect) {
+    if (!effectsOn) return;
+    unawaited(_playEffect(effect));
+  }
+
+  Future<void> _playEffect(SoundEffect effect) async {
+    if (!await _hasAsset(effect.asset)) return;
+    final player = _effects[_nextEffect];
+    _nextEffect = (_nextEffect + 1) % _effects.length;
+    try {
+      await player.stop();
+      await player.play(AssetSource(effect.asset), volume: 0.6);
+    } on Object {
+      // A sound that can't play must never break the game.
+    }
+  }
 
   @override
   Future<void> whenIdle() {
@@ -58,10 +100,7 @@ class AudioplayersAudioService implements AudioService {
     bool queue = false,
   }) async {
     final path = 'audio/$languageCode/$clipId.mp3';
-    _assets ??= (await AssetManifest.loadFromAssetBundle(
-      _bundle,
-    )).listAssets().toSet();
-    if (!_assets!.contains('assets/$path')) return;
+    if (!await _hasAsset(path)) return;
     if (queue && _playing) {
       _queue.add(path);
       return;
@@ -95,6 +134,9 @@ class AudioplayersAudioService implements AudioService {
     _notifyIdle();
     await _done.cancel();
     await _voice.dispose();
+    for (final player in _effects) {
+      await player.dispose();
+    }
   }
 }
 
@@ -110,6 +152,15 @@ class SilentAudioService implements AudioService {
 
   @override
   Future<void> whenIdle() async {}
+
+  @override
+  void playEffect(SoundEffect effect) {}
+
+  @override
+  bool get effectsOn => false;
+
+  @override
+  set effectsOn(bool on) {}
 
   @override
   Future<void> dispose() async {}

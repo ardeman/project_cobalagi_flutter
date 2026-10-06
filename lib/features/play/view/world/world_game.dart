@@ -6,6 +6,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/painting.dart';
 
+import '../../../../core/audio/sound_effects.dart';
 import '../../../../engine/interpreter/run_event.dart';
 import '../../../../engine/world/grid_point.dart';
 import '../../../../engine/world/level.dart';
@@ -14,11 +15,19 @@ import 'world_components.dart';
 
 /// Renders a level and replays run events as animations. Holds no game logic:
 /// [apply] mirrors [PlayState], and [onEventShown] reports each finished event.
+/// [onSound] plays the sound that goes with an animation as it starts.
 class WorldGame extends FlameGame {
-  WorldGame({required this.level, required this.onEventShown});
+  WorldGame({
+    required this.level,
+    required this.onEventShown,
+    this.onSound = _silent,
+  });
 
   final Level level;
   final VoidCallback onEventShown;
+  final void Function(SoundEffect) onSound;
+
+  static void _silent(SoundEffect _) {}
 
   late ActorComponent _actor;
   final _stars = <GridPoint, StarComponent>{};
@@ -85,6 +94,7 @@ class WorldGame extends FlameGame {
       case PlayPhase.succeeded:
         if (_celebrated != state.runs) {
           _celebrated = state.runs;
+          onSound(SoundEffect.goal);
           _actor.add(
             SequenceEffect([
               ScaleEffect.to(
@@ -131,6 +141,7 @@ class WorldGame extends FlameGame {
   void _animate(RunEvent event, void Function() done) {
     switch (event) {
       case Moved(:final to):
+        onSound(SoundEffect.step);
         _actor.add(
           MoveToEffect(
             tileCenter(to),
@@ -139,6 +150,7 @@ class WorldGame extends FlameGame {
           ),
         );
       case Turned(:final from, :final to):
+        onSound(SoundEffect.turn);
         _actor.add(
           RotateEffect.by(
             to == from.left ? -pi / 2 : pi / 2,
@@ -147,6 +159,7 @@ class WorldGame extends FlameGame {
           ),
         );
       case Bumped(:final facing):
+        onSound(SoundEffect.bump);
         final nudge = Vector2(facing.dx * 0.28, facing.dy * 0.28);
         _actor.add(
           SequenceEffect([
@@ -158,6 +171,7 @@ class WorldGame extends FlameGame {
           ], onComplete: done),
         );
       case Collected(:final star):
+        onSound(SoundEffect.star);
         final component = _stars.remove(star);
         if (component == null) return done();
         component.add(

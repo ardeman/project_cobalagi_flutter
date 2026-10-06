@@ -1,0 +1,55 @@
+import 'package:cobalagi/core/audio/sound_effects.dart';
+import 'package:cobalagi/engine/program/instruction.dart';
+import 'package:cobalagi/engine/program/program.dart';
+import 'package:cobalagi/engine/world/direction.dart';
+import 'package:cobalagi/engine/world/level.dart';
+import 'package:cobalagi/features/play/cubit/play_cubit.dart';
+import 'package:cobalagi/features/play/view/world/world_game.dart';
+import 'package:flame_test/flame_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+final level = Level.fromRows(
+  id: 't',
+  concept: 'sequencing',
+  rows: ['S*G'],
+  startFacing: Direction.east,
+  palette: {InstructionKind.move, InstructionKind.turnLeft},
+);
+
+void main() {
+  test('the world plays a sound with each event and on success', () async {
+    final sounds = <SoundEffect>[];
+    final play = PlayCubit(level);
+    final game = await initializeGame(
+      () => WorldGame(
+        level: level,
+        onEventShown: play.eventShown,
+        onSound: sounds.add,
+      ),
+    );
+    play.stream.listen(game.apply);
+    play.run(
+      const Program([
+        TurnLeft(),
+        TurnLeft(),
+        TurnLeft(),
+        TurnLeft(),
+        Move(),
+        Move(),
+      ]),
+    );
+    for (var i = 0; i < 100 && play.state.phase == PlayPhase.running; i++) {
+      await Future<void>.delayed(Duration.zero);
+      game.update(0.1);
+    }
+    await Future<void>.delayed(Duration.zero);
+    expect(play.state.phase, PlayPhase.succeeded);
+    expect(sounds, [
+      for (var i = 0; i < 4; i++) SoundEffect.turn,
+      SoundEffect.step,
+      SoundEffect.star,
+      SoundEffect.step,
+      SoundEffect.goal,
+    ]);
+  });
+}

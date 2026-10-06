@@ -1,0 +1,29 @@
+{
+  "prompt_influence": 0.6,
+  "effects": {
+    "step": {
+      "seconds": 0.5,
+      "text": "a single soft cartoon footstep hop, light and cute, for a children's game"
+    },
+    "turn": {
+      "seconds": 0.5,
+      "text": "a quick soft cartoon swish, gentle whoosh, for a children's game"
+    },
+    "bump": {
+      "seconds": 0.6,
+      "text": "a soft gentle cartoon boing bump, funny not scary, for a children's game"
+    },
+    "star": {
+      "seconds": 0.8,
+      "text": "a bright sparkly chime when picking up a star, magical and happy, for a children's game"
+    },
+    "goal": {
+      "seconds": 2.0,
+      "text": "a short cheerful victory jingle with bells and a little fanfare, for a children's game, no voice"
+    },
+    "drop": {
+      "seconds": 0.5,
+      "text": "a soft wooden block click snapping into place, satisfying, for a children's game"
+    }
+  }
+}

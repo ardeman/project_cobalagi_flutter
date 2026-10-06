@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import '../../../core/audio/sound_effects_cubit.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/plan.dart';
 import '../../../core/settings/settings_cubit.dart';
@@ -75,6 +76,16 @@ class ParentScreen extends StatelessWidget {
                 selected: {languageCode},
                 onSelectionChanged: (s) =>
                     context.read<SettingsCubit>().setLanguageCode(s.first),
+              ),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.music_note_rounded),
+                title: Text(l10n.soundEffects),
+                subtitle: Text(l10n.soundEffectsHint),
+                value: context.watch<SoundEffectsCubit>().state,
+                onChanged: (on) =>
+                    context.read<SoundEffectsCubit>().set(on: on),
               ),
               const SizedBox(height: 32),
               Text(l10n.plan, style: headerStyle),

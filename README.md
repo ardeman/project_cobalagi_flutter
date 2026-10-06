@@ -125,6 +125,13 @@ dart run tool/generate_voice.dart --only cheer_celebrate_1   # redo one clip
 
 Model, voices and settings (`speed`, `stability`, `style`…) live in `tool/elevenlabs.json`. When the test voices are replaced, the tool removes `assets/audio/TEST_VOICES`. The shipped clips use Cahaya (Indonesian) and Jessica (English) and are committed in `assets/audio/`.
 
+**Sound effects:** `tool/generate_sfx.dart` makes the game sounds (`SoundEffect`: step, turn, bump, star, goal, drop) with ElevenLabs' sound-effects model, from the prompts in `tool/sound_effects.json`, into `assets/audio/sfx/`. The API key needs the *Sound Effects* permission.
+
+```sh
+dart run tool/generate_sfx.dart               # missing effects
+dart run tool/generate_sfx.dart --only goal   # redo one
+```
+
 **Test voices (macOS):** to hear the voice flow before real recordings exist, generate every clip with the Mac's built-in voices (Damayanti for Indonesian, Flo for English):
 
 ```sh

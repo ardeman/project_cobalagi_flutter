@@ -20,7 +20,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - An editor lives in `lib/features/editors/<name>/`: its own block model, a compile function to `Program` that copies block ids, and its own cubit. `PlayCubit` only receives the compiled `Program`.
 - The Flame world (`lib/features/play/view/world/`) holds no game logic. It mirrors `PlayState` through `WorldGame.apply` and reports each finished animation with `PlayCubit.eventShown`.
 - Every hand-made level must be solvable with its own palette; `test/features/play/level_assets_test.dart` checks this.
-- User-facing text goes in both `lib/app/l10n/app_en.arb` and `app_id.arb`; never hardcode strings. Voice clips live at `assets/audio/<id|en>/<clipId>.mp3`.
+- User-facing text goes in both `lib/app/l10n/app_en.arb` and `app_id.arb`; never hardcode strings. Voice clips live at `assets/audio/<id|en>/<clipId>.mp3`; sound effects at `assets/audio/sfx/<name>.mp3`, one per `SoundEffect`, each with a prompt in `tool/sound_effects.json`.
 - Learning thresholds and skill prerequisites belong in `assets/config/`, not in code. `AdaptiveConfig` has no defaults on purpose.
 - A concept id must match a lesson pack (`assets/levels/<id>.json`) and a `PuzzleKind` name, so practice puzzles can be generated for it.
 - Never serve the same puzzle twice: generated puzzles go through `LearningCubit.nextExercise`, which skips fingerprints in `LearnerState.seenPuzzles`.
@@ -80,3 +80,5 @@ Record architectural choices here as one line each: date, decision, reason.
 - 2026-10-05: Unlock codes (Parent area → Support Coba Lagi → "Have a code?") unlock `Plan.full` like a donation, so Google Play reviewers can reach the sponsor features. Only SHA-256 hashes go in `assets/config/donations.json` (`unlock_code_sha256`), because the repo is public; never commit a code itself. Uses `crypto` (dart.dev; Android, iOS, web). Codes work on every platform; desktop and web use `NoPurchaseStore`.
 - 2026-10-06: `package_info_plus` (Flutter Favorite; Android, iOS, web, desktop) shows the installed version and build at the bottom of the Parent area, so testers can say which build they use.
 - 2026-10-06: The parent progress report (Parent area → tap a player) is a sponsor feature; the free plan sees the starting island and a locked card. `ProgressReport` (`lib/learning/progress_report.dart`) owns the island star rule, shared with the adventure map.
+- 2026-10-06: Sound effects (`SoundEffect`, `AudioService.playEffect`) are made with ElevenLabs' sound-effects model and can be turned off in the Parent area; voices always play. The Flame world plays them through its `onSound` callback when it shows an event, so it still holds no game logic.
+- 2026-10-06: `flame_test` is a dev dependency only (tests the world without a widget tree). pub.dev lists no web support, which doesn't matter because it never ships.

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
+import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
@@ -16,6 +17,7 @@ import '../../../engine/world/level.dart';
 import '../../../learning/exercise_result.dart';
 import '../../../learning/learning_engine.dart';
 import '../../editors/icon_blocks/cubit/icon_blocks_cubit.dart';
+import '../../editors/icon_blocks/data/icon_block.dart';
 import '../../editors/icon_blocks/view/icon_block_editor.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
@@ -47,11 +49,18 @@ class PlayView extends StatefulWidget {
   State<PlayView> createState() => _PlayViewState();
 }
 
+int _count(IconProgram program) =>
+    compileIconBlocks(program.main, star: program.star).blockCount;
+
 class _PlayViewState extends State<PlayView> {
   late final _level = widget.exercise.level;
   late final _blocks = IconBlocksCubit(maxBlocks: _level.maxBlocks);
   late final _play = PlayCubit(_level);
-  late final _game = WorldGame(level: _level, onEventShown: _play.eventShown);
+  late final _game = WorldGame(
+    level: _level,
+    onEventShown: _play.eventShown,
+    onSound: context.read<AudioService>().playEffect,
+  );
   final _clock = Stopwatch()..start();
   var _hints = 0;
   var _finishing = false;
@@ -165,6 +174,12 @@ class _PlayViewState extends State<PlayView> {
       listeners: [
         BlocListener<PlayCubit, PlayState>(listener: _onPlayChanged),
         // Editing the program after a run puts the world back at the start.
+        // A click when a block lands in the program.
+        BlocListener<IconBlocksCubit, IconProgram>(
+          listenWhen: (before, after) => _count(after) > _count(before),
+          listener: (_, _) =>
+              context.read<AudioService>().playEffect(SoundEffect.drop),
+        ),
         BlocListener<IconBlocksCubit, Object>(
           listener: (_, _) {
             final play = _play.state;

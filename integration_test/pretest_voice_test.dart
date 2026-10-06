@@ -5,6 +5,7 @@
 //   flutter test integration_test/pretest_voice_test.dart -d macos
 import 'package:cobalagi/app/app.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
+import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/core/entitlement/entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/plan.dart';
@@ -44,6 +45,15 @@ class RecordingAudio implements AudioService {
   Future<void> whenIdle() => _inner.whenIdle().then(
     (_) => log.add((event: 'idle', clip: '', at: DateTime.now())),
   );
+
+  @override
+  void playEffect(SoundEffect effect) => _inner.playEffect(effect);
+
+  @override
+  bool get effectsOn => _inner.effectsOn;
+
+  @override
+  set effectsOn(bool on) => _inner.effectsOn = on;
 
   @override
   Future<void> dispose() => _inner.dispose();

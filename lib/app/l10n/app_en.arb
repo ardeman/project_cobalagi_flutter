@@ -110,6 +110,8 @@
     }
   },
   "progressSponsorOnly": "Sponsors see the full progress report: puzzles solved, time played and progress on each island.",
+  "soundEffects": "Sound effects",
+  "soundEffectsHint": "Voices always play.",
   "supportCobaLagi": "Support Coba Lagi",
   "debugPlanOverride": "Debug: use full version",
   "players": "Players",

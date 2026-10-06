@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/audio/audio_service.dart';
+import '../core/audio/sound_effects_cubit.dart';
 import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
 import '../core/settings/settings_cubit.dart';
@@ -58,6 +59,10 @@ class _CobaLagiAppState extends State<CobaLagiApp> {
     child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => SettingsCubit(widget.settings)..load()),
+        BlocProvider(
+          create: (_) =>
+              SoundEffectsCubit(widget.settings, widget.audio)..load(),
+        ),
         BlocProvider(
           create: (_) => EntitlementCubit(widget.entitlement)..load(),
         ),

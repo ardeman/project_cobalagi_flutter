@@ -1,5 +1,6 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
+import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
@@ -32,6 +33,12 @@ class HeldAudio implements AudioService {
 
   @override
   Future<void> whenIdle() => _idle.future;
+
+  @override
+  void playEffect(SoundEffect effect) {}
+
+  @override
+  bool effectsOn = true;
 
   @override
   Future<void> dispose() async {}
