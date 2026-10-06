@@ -73,7 +73,11 @@ nav a:hover { color: var(--text); }
   font: 700 0.95rem var(--font); border-radius: 999px; padding: 6px 14px; cursor: pointer;
 }
 .lang:hover { border-color: var(--teal); }
-@media (max-width: 720px) { nav a { display: none; } }
+/* The GitHub link stays on phones, as an icon. */
+nav .github { display: inline-grid; place-items: center; width: 36px; height: 36px; color: var(--muted); }
+nav .github:hover { color: var(--text); }
+nav .github svg { width: 24px; height: 24px; }
+@media (max-width: 720px) { nav a:not(.github) { display: none; } }
 
 /* Hero */
 .hero { position: relative; overflow: hidden; padding: 64px 0 72px; }
@@ -273,3 +277,12 @@ footer { padding: 40px 0 56px; color: var(--muted); font-size: 0.95rem; }
 .doc li { margin: 6px 0; }
 .doc .summary { background: var(--surface-2); border-radius: var(--radius); padding: 24px 28px; }
 .doc .summary p { margin: 0; color: var(--text); font-weight: 600; }
+
+/* Release notes (changelog.html) */
+.release { border-top: 1px solid var(--line); padding-top: 8px; }
+.release h2 { display: flex; align-items: baseline; gap: 12px; }
+.release .build {
+  font-size: 0.85rem; font-weight: 700; color: var(--teal-deep);
+  background: var(--surface-2); border-radius: 999px; padding: 2px 10px;
+}
+.release .updated { margin: 0 0 8px; }

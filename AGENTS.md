@@ -53,12 +53,12 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 
 - `store/<locale>/` text must stay within Play's limits (title 30, short 80, full 4,000, release notes 500 characters; `test/store/store_text_test.dart` checks them), true for the released app, and free of ranking or promotional words, calls to action and emoji. The title and short description also may not mention price or ads ("free", "gratis", "no ads"); say that in the full description only. Keep `id` and `en-US` saying the same thing.
 - Google Play takes at most 8 screenshots per device type. `store/render.sh` keeps each set at 8; to show more, put related screens on one slide (`pair_slide`, `phone_pair_slide`) instead of dropping one.
-- Every build gets release notes in `store/<locale>/changelogs/<versionCode>.txt` (fastlane's layout), written when the version is bumped.
+- Every build gets release notes in `store/<locale>/changelogs/<versionCode>.txt` (fastlane's layout) and an entry in `store/releases.json` (version and date), written when the version is bumped. Then run `dart run tool/website_changelog.dart`: `website/changelog.html` is generated from them and must never be edited by hand (`test/store/website_changelog_test.dart` fails while it is stale).
 - Write changelogs in simple, everyday language for parents: say what changed and how it affects using the app. Avoid technical jargon and implementation details. Keep both languages equivalent.
 
 ## Website
 
-- `website/` is the static site for cobalagi.ardeman.com: `index.html` (landing page), `privacy.html` (privacy policy, linked from the Play listing), shared `site.css` and `site.js`, and `screenshots/`. It makes no external requests (no web fonts, analytics or CDNs), to match the app's privacy promise.
+- `website/` is the static site for cobalagi.ardeman.com: `index.html` (landing page), `privacy.html` (privacy policy, linked from the Play listing), `changelog.html` (release notes, generated), shared `site.css` and `site.js`, and `screenshots/`. It makes no external requests (no web fonts, analytics or CDNs), to match the app's privacy promise.
 - Every text has Indonesian in the HTML and English in `data-en` (`data-en-alt`, `data-en-src` for images). Screenshots come in pairs: `<name>-id.png` and `<name>.png`.
 - Pushing a change under `website/` to `master` publishes it live (`.github/workflows/pages.yml`).
 - Claims on the pages must stay true for the released app. When the app starts storing or sending different data, update `privacy.html` and its date in the same change.

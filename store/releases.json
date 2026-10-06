@@ -1,0 +1,12 @@
+{
+  "_comment": "One entry per build (versionCode), added when the version is bumped. tool/website_changelog.dart turns these and store/<locale>/changelogs/ into website/changelog.html.",
+  "releases": [
+    { "build": 1, "version": "1.0.0", "date": "2026-10-05" },
+    { "build": 2, "version": "1.0.0", "date": "2026-10-06" },
+    { "build": 3, "version": "1.0.0", "date": "2026-10-06" },
+    { "build": 4, "version": "1.0.1", "date": "2026-10-06" },
+    { "build": 5, "version": "1.0.1", "date": "2026-10-06" },
+    { "build": 6, "version": "1.0.2", "date": "2026-10-06" },
+    { "build": 7, "version": "1.0.3", "date": "2026-10-07" }
+  ]
+}
