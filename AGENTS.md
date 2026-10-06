@@ -27,7 +27,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - Replays (lessons replayed from an island, `ExerciseMode.replay`) never change mastery, difficulty or the current concept; they only earn a lesson's star. Record them with `LearningCubit.recordReplay`, not `record`.
 - Present a review as a reward ("bonus adventure"), never as a failure, in text, icons and voice.
 - Feedback to children comes from `CheerPicker` (`lib/core/feedback/cheers.dart`): varied, never the same words twice in a row, and never "wrong". Add phrases there (both ARB files), not one-off strings.
-- The warm-up game (`lib/learning/placement/`) must work without reading: every prompt has a voice clip id and pictures for answers. Placement thresholds live in `assets/config/pretest.json`. After a wrong answer it shows the right one (green ✓ with "The answer is this one!" under it, orange wobble on the tapped card) with encouraging words, never "wrong".
+- The warm-up game (`lib/learning/placement/`) must work without reading: every prompt has a voice clip id and pictures for answers. Placement thresholds and the number of second chances per skill (`secondChances`: extra questions at the same level after a wrong answer) live in `assets/config/pretest.json`. After a wrong answer it shows the right one (green ✓ with "The answer is this one!" under it, orange wobble on the tapped card) with encouraging words, never "wrong".
 - Layouts adapt via `WindowClass`/`WindowClassBuilder` (`lib/core/responsive/`), not fixed device sizes. Tap targets are at least 64dp.
 - Drag-and-drop must work with touch and mouse (`Draggable`/`DragTarget`), with tap-to-add as an alternative.
 

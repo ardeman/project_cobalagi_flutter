@@ -124,6 +124,7 @@ class LearningCubit extends Cubit<LearningState> {
   /// A fresh warm-up game with new questions.
   PretestSession startPretest() => PretestSession(
     PretestGenerator.fromJson(curriculum.vocabulary, Random()),
+    secondChances: curriculum.pretestSecondChances,
   );
 
   /// Places the child from the warm-up game result and saves it.

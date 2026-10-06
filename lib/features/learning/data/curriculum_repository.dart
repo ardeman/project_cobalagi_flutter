@@ -16,6 +16,7 @@ final class Curriculum {
     required this.lessons,
     required this.placementRules,
     required this.vocabulary,
+    required this.pretestSecondChances,
   });
 
   final LearningEngine engine;
@@ -23,6 +24,9 @@ final class Curriculum {
 
   /// Object and color ids the warm-up game may use.
   final Map<String, Object?> vocabulary;
+
+  /// Extra warm-up questions per skill after a wrong answer.
+  final int pretestSecondChances;
 
   /// Lessons per concept id, in play order.
   final Map<String, List<Level>> lessons;
@@ -69,6 +73,7 @@ class CurriculumRepository {
       lessons: await _levels.loadLessons(),
       placementRules: rules,
       vocabulary: pretest['vocabulary']! as Map<String, Object?>,
+      pretestSecondChances: pretest['secondChances']! as int,
     );
   }
 }

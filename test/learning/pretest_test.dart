@@ -96,27 +96,48 @@ void main() {
   });
 
   group('session', () {
-    test('all wrong asks one question per skill', () {
-      final session = PretestSession(generator(1));
+    test('all wrong asks two questions per skill (one second chance)', () {
+      final session = PretestSession(generator(1), secondChances: 1);
       playTo(session, {});
-      expect(session.questionsAsked, PretestSkill.values.length);
+      expect(session.questionsAsked, 2 * PretestSkill.values.length);
       expect(session.levels.values.every((l) => l == 0), isTrue);
     });
 
     test('all right asks three per skill and scores the top level', () {
-      final session = PretestSession(generator(2));
+      final session = PretestSession(generator(2), secondChances: 1);
       playTo(session, {for (final s in PretestSkill.values) s: 3});
       expect(session.questionsAsked, 15);
       expect(session.levels.values.every((l) => l == 3), isTrue);
       expect(session.progress, 1);
     });
 
-    test('stops a skill at the first wrong answer', () {
-      final session = PretestSession(generator(3));
+    test('stops a skill at the second wrong answer', () {
+      final session = PretestSession(generator(3), secondChances: 1);
       playTo(session, {PretestSkill.counting: 1, PretestSkill.pattern: 2});
       expect(session.levels[PretestSkill.counting], 1);
       expect(session.levels[PretestSkill.pattern], 2);
-      expect(session.questionsAsked, 5 + 1 + 2);
+      // Two misses per skill, plus the right answers.
+      expect(session.questionsAsked, 5 * 2 + 1 + 2);
+    });
+
+    test('a second chance at the same level can still move up', () {
+      final session = PretestSession(generator(4), secondChances: 1);
+      final first = session.current!;
+      // Miss once at level 1, then answer right three times.
+      session.answer((first.correct + 1) % first.optionCount);
+      expect(session.current!.skill, first.skill);
+      expect(session.current!.level, 1);
+      for (var i = 0; i < 3; i++) {
+        session.answer(session.current!.correct);
+      }
+      expect(session.levels[first.skill], 3);
+      expect(session.current!.skill, isNot(first.skill));
+    });
+
+    test('without second chances one wrong answer ends a skill', () {
+      final session = PretestSession(generator(5), secondChances: 0);
+      playTo(session, {});
+      expect(session.questionsAsked, PretestSkill.values.length);
     });
   });
 

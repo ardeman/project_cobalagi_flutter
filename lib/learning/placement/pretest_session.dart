@@ -1,13 +1,20 @@
 import 'pretest_generator.dart';
 import 'pretest_question.dart';
 
-/// The adaptive warm-up game: each skill starts at level 1, goes up a level
-/// after a right answer and stops after a wrong one or at the top level. That
-/// is 5 to 15 questions in all.
+/// The adaptive warm-up game: each skill starts at level 1 and goes up a
+/// level after a right answer, until the top level. After a wrong answer the
+/// child gets [secondChances] more questions at the same level per skill, so
+/// one stray tap doesn't place them too low; the next wrong answer ends the
+/// skill.
 final class PretestSession {
-  PretestSession(this._generator) {
+  PretestSession(this._generator, {required this.secondChances}) {
     _current = _generator.question(_skills.first, 1);
+    _chancesLeft = secondChances;
   }
+
+  /// Extra questions per skill after a wrong answer (pretest.json).
+  final int secondChances;
+  var _chancesLeft = 0;
 
   static const _skills = PretestSkill.values;
 
@@ -42,9 +49,13 @@ final class PretestSession {
     if (right) _levels[question.skill] = _level;
     if (right && _level < maxSkillLevel) {
       _level++;
+    } else if (!right && _chancesLeft > 0) {
+      // Another question at the same level.
+      _chancesLeft--;
     } else {
       _skillIndex++;
       _level = 1;
+      _chancesLeft = secondChances;
     }
     if (_skillIndex == _skills.length) {
       _current = null;
