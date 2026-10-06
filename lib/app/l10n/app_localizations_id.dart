@@ -184,6 +184,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get blockRepeat => 'Ulangi';
 
   @override
+  String get blockStar => 'Blok buatanku';
+
+  @override
   String get nextLevel => 'Lanjut';
 
   @override

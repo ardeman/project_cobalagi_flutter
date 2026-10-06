@@ -434,7 +434,7 @@ class _RunControls extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final play = context.watch<PlayCubit>().state;
     final blocks = context.watch<IconBlocksCubit>();
-    final hasBlocks = blocks.state.isNotEmpty;
+    final hasBlocks = !blocks.state.isEmpty;
     final running = play.phase == PlayPhase.running;
     final canGo = hasBlocks && (play.phase == PlayPhase.editing || running);
 

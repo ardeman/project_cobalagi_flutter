@@ -6,7 +6,10 @@ enum IconBlockType {
   forward(InstructionKind.move),
   turnLeft(InstructionKind.turnLeft),
   turnRight(InstructionKind.turnRight),
-  repeat(InstructionKind.repeat);
+  repeat(InstructionKind.repeat),
+
+  /// The child's own block: runs the star row.
+  star(InstructionKind.call);
 
   const IconBlockType(this.kind);
 
@@ -44,9 +47,43 @@ final class IconBlock {
   }
 }
 
+/// Everything the child has built: the main row, and the star row that a
+/// star block runs.
+final class IconProgram {
+  const IconProgram({
+    this.main = const [],
+    this.star = const [],
+    this.tapToStar = false,
+  });
+
+  final List<IconBlock> main;
+  final List<IconBlock> star;
+
+  /// Where tapped palette blocks go: the star row, or else the main row.
+  final bool tapToStar;
+
+  /// Nothing to run: the main row is empty.
+  bool get isEmpty => main.isEmpty;
+
+  IconProgram copyWith({
+    List<IconBlock>? main,
+    List<IconBlock>? star,
+    bool? tapToStar,
+  }) => IconProgram(
+    main: main ?? this.main,
+    star: star ?? this.star,
+    tapToStar: tapToStar ?? this.tapToStar,
+  );
+}
+
 /// Compiles the editor's blocks into the shared instruction set.
-Program compileIconBlocks(List<IconBlock> blocks) =>
-    Program([for (final block in blocks) _compile(block)]);
+Program compileIconBlocks(
+  List<IconBlock> blocks, {
+  List<IconBlock> star = const [],
+}) => Program(
+  [for (final block in blocks) _compile(block)],
+  procedure: [for (final block in star) _compile(block)],
+);
 
 Instruction _compile(IconBlock block) => switch (block.type) {
   IconBlockType.forward => Move(blockId: block.id),
@@ -55,4 +92,5 @@ Instruction _compile(IconBlock block) => switch (block.type) {
   IconBlockType.repeat => Repeat(block.count, [
     for (final child in block.children) _compile(child),
   ], blockId: block.id),
+  IconBlockType.star => Call(blockId: block.id),
 };

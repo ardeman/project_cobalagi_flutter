@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 Future<IconBlocksCubit> pumpEditor(
   WidgetTester tester, {
   int? maxBlocks,
+  bool star = false,
 }) async {
   final cubit = IconBlocksCubit(maxBlocks: maxBlocks);
   addTearDown(cubit.close);
@@ -20,7 +21,7 @@ Future<IconBlocksCubit> pumpEditor(
       home: Scaffold(
         body: BlocProvider.value(
           value: cubit,
-          child: const SizedBox(
+          child: SizedBox(
             width: 600,
             height: 500,
             child: IconBlockEditor(
@@ -28,7 +29,7 @@ Future<IconBlocksCubit> pumpEditor(
                 InstructionKind.move,
                 InstructionKind.turnLeft,
                 InstructionKind.turnRight,
-                InstructionKind.repeat,
+                if (star) InstructionKind.call else InstructionKind.repeat,
               },
               blockSize: 64,
             ),
@@ -48,7 +49,7 @@ void main() {
     await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
     await tester.tap(paletteBlock(Icons.turn_left_rounded));
     await tester.pump();
-    expect(cubit.state.map((b) => b.type), [
+    expect(cubit.state.main.map((b) => b.type), [
       IconBlockType.forward,
       IconBlockType.turnLeft,
     ]);
@@ -65,7 +66,7 @@ void main() {
     await gesture.moveTo(start + const Offset(0, 250));
     await gesture.up();
     await tester.pump();
-    expect(cubit.state.single.type, IconBlockType.turnRight);
+    expect(cubit.state.main.single.type, IconBlockType.turnRight);
   });
 
   testWidgets('dragging a placed block onto the palette removes it', (
@@ -83,7 +84,7 @@ void main() {
     );
     await gesture.up();
     await tester.pump();
-    expect(cubit.state.single.type, IconBlockType.forward);
+    expect(cubit.state.main.single.type, IconBlockType.forward);
   });
 
   testWidgets('the palette is disabled at the block limit', (tester) async {
@@ -92,7 +93,7 @@ void main() {
     await tester.pump();
     await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
     await tester.pump();
-    expect(cubit.state, hasLength(1));
+    expect(cubit.state.main, hasLength(1));
     expect(find.text('1 / 1'), findsOneWidget);
   });
 
@@ -102,7 +103,7 @@ void main() {
     final cubit = await pumpEditor(tester);
     await tester.tap(paletteBlock(Icons.repeat_rounded));
     await tester.pump();
-    expect(cubit.state.single.type, IconBlockType.repeat);
+    expect(cubit.state.main.single.type, IconBlockType.repeat);
 
     final start = tester.getCenter(paletteBlock(Icons.arrow_upward_rounded));
     final inner = tester.getCenter(find.byIcon(Icons.add_rounded));
@@ -111,11 +112,11 @@ void main() {
     await gesture.moveTo(inner);
     await gesture.up();
     await tester.pump();
-    expect(cubit.state.single.children.single.type, IconBlockType.forward);
+    expect(cubit.state.main.single.children.single.type, IconBlockType.forward);
 
     await tester.tap(find.byIcon(Icons.add_circle_rounded));
     await tester.pump();
-    expect(cubit.state.single.count, 3);
+    expect(cubit.state.main.single.count, 3);
   });
 
   testWidgets('a full repeat block wraps its blocks instead of overflowing', (
@@ -123,7 +124,7 @@ void main() {
   ) async {
     final cubit = await pumpEditor(tester)
       ..add(IconBlockType.repeat);
-    final loop = cubit.state.single.id;
+    final loop = cubit.state.main.single.id;
     for (var i = 0; i < 8; i++) {
       cubit.add(IconBlockType.forward, parentId: loop);
     }
@@ -143,7 +144,7 @@ void main() {
   ) async {
     final cubit = await pumpEditor(tester)
       ..add(IconBlockType.repeat);
-    final loop = cubit.state.single.id;
+    final loop = cubit.state.main.single.id;
     cubit.add(IconBlockType.forward, parentId: loop);
     await tester.pump();
 
@@ -157,10 +158,42 @@ void main() {
     await gesture.up();
     await tester.pump();
 
-    expect(cubit.state, hasLength(1), reason: 'nothing added outside the loop');
-    expect(cubit.state.single.children.map((b) => b.type), [
+    expect(
+      cubit.state.main,
+      hasLength(1),
+      reason: 'nothing added outside the loop',
+    );
+    expect(cubit.state.main.single.children.map((b) => b.type), [
       IconBlockType.forward,
       IconBlockType.turnLeft,
     ]);
+  });
+
+  testWidgets('the star row shows only when the palette has a star', (
+    tester,
+  ) async {
+    await pumpEditor(tester);
+    expect(find.byIcon(Icons.star_rounded), findsNothing);
+    await pumpEditor(tester, star: true);
+    // The palette block and the star row's label.
+    expect(find.byIcon(Icons.star_rounded), findsNWidgets(2));
+  });
+
+  testWidgets('tapping the star row sends tapped blocks there', (tester) async {
+    final cubit = await pumpEditor(tester, star: true);
+    await tester.tap(find.byIcon(Icons.arrow_forward_rounded));
+    await tester.pump();
+    expect(cubit.state.tapToStar, isTrue);
+    await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
+    await tester.tap(paletteBlock(Icons.turn_right_rounded));
+    // A star tapped now still goes to the main row.
+    await tester.tap(paletteBlock(Icons.star_rounded));
+    await tester.pump();
+    expect(cubit.state.star.map((b) => b.type), [
+      IconBlockType.forward,
+      IconBlockType.turnRight,
+    ]);
+    expect(cubit.state.main.single.type, IconBlockType.star);
+    expect(cubit.program.procedure, hasLength(2));
   });
 }

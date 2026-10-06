@@ -404,6 +404,12 @@ abstract class AppLocalizations {
   /// **'Repeat'**
   String get blockRepeat;
 
+  /// No description provided for @blockStar.
+  ///
+  /// In en, this message translates to:
+  /// **'My block'**
+  String get blockStar;
+
   /// No description provided for @nextLevel.
   ///
   /// In en, this message translates to:

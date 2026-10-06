@@ -31,13 +31,14 @@ class IconBlockEditor extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final cubit = context.watch<IconBlocksCubit>();
-    final blocks = cubit.state;
+    final blocks = cubit.state.main;
     final scheme = Theme.of(context).colorScheme;
     final types = [
       for (final type in IconBlockType.values)
         if (palette.contains(type.kind)) type,
     ];
     final gap = blockSize * 0.18;
+    final showStar = palette.contains(InstructionKind.call);
     final style = _BlockStyle(
       size: blockSize,
       gap: gap,
@@ -70,34 +71,53 @@ class IconBlockEditor extends StatelessWidget {
                     type: type,
                     size: blockSize,
                     enabled: enabled && !cubit.isFull,
-                    onTap: () => cubit.add(type),
+                    onTap: () => cubit.tap(type),
                   ),
               ],
             ),
           ),
         ),
         SizedBox(height: gap),
+        if (showStar) ...[
+          GestureDetector(
+            onTap: () => cubit.pickRow(star: true),
+            child: _StarRow(
+              blocks: cubit.state.star,
+              style: style,
+              picked: cubit.state.tapToStar,
+            ),
+          ),
+          SizedBox(height: gap),
+        ],
         Expanded(
-          child: DragTarget<Object>(
-            onWillAcceptWithDetails: (d) =>
-                enabled && (d.data is IconBlock || !cubit.isFull),
-            onAcceptWithDetails: (d) =>
-                cubit.drop(d.data, index: blocks.length),
-            builder: (context, candidates, _) => AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              padding: EdgeInsets.all(gap),
-              decoration: BoxDecoration(
-                color: scheme.surfaceContainerLowest,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  width: 3,
-                  color: candidates.isEmpty
-                      ? scheme.outlineVariant
-                      : scheme.primary,
+          child: GestureDetector(
+            onTap: () => cubit.pickRow(star: false),
+            child: DragTarget<Object>(
+              onWillAcceptWithDetails: (d) =>
+                  enabled && (d.data is IconBlock || !cubit.isFull),
+              onAcceptWithDetails: (d) =>
+                  cubit.drop(d.data, index: blocks.length),
+              builder: (context, candidates, _) => AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: EdgeInsets.all(gap),
+                decoration: BoxDecoration(
+                  color: scheme.surfaceContainerLowest,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    // The thicker border marks where tapped blocks go.
+                    width: showStar && !cubit.state.tapToStar ? 5 : 3,
+                    color: candidates.isEmpty
+                        ? scheme.outlineVariant
+                        : scheme.primary,
+                  ),
                 ),
-              ),
-              child: SingleChildScrollView(
-                child: _BlockRow(parentId: null, blocks: blocks, style: style),
+                child: SingleChildScrollView(
+                  child: _BlockRow(
+                    parentId: null,
+                    blocks: blocks,
+                    style: style,
+                  ),
+                ),
               ),
             ),
           ),
@@ -119,7 +139,10 @@ class IconBlockEditor extends StatelessWidget {
             SizedBox(width: gap),
             IconButton.filledTonal(
               tooltip: l10n.clearBlocks,
-              onPressed: enabled && blocks.isNotEmpty ? cubit.clear : null,
+              onPressed:
+                  enabled && (blocks.isNotEmpty || cubit.state.star.isNotEmpty)
+                  ? cubit.clear
+                  : null,
               icon: const Icon(Icons.delete_sweep_rounded),
             ),
           ],
@@ -366,6 +389,83 @@ class _RepeatBlock extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The child's own block: what a star block runs. Built like the main row,
+/// but a star can't go inside it.
+class _StarRow extends StatelessWidget {
+  const _StarRow({
+    required this.blocks,
+    required this.style,
+    required this.picked,
+  });
+
+  final List<IconBlock> blocks;
+  final _BlockStyle style;
+
+  /// Tapped palette blocks go here; shown with a thicker border.
+  final bool picked;
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<IconBlocksCubit>();
+    final size = style.size;
+    final color = IconBlockType.star.color;
+    final addSpot = Icon(
+      Icons.add_rounded,
+      size: size * 0.6,
+      color: color.withValues(alpha: 0.6),
+      semanticLabel: AppLocalizations.of(context).dropBlocksHere,
+    );
+    return DragTarget<Object>(
+      onWillAcceptWithDetails: (d) =>
+          style.enabled &&
+          d.data != IconBlockType.star &&
+          (d.data is! IconBlock ||
+              (d.data as IconBlock).type != IconBlockType.star) &&
+          (d.data is IconBlock || !cubit.isFull),
+      onAcceptWithDetails: (d) => cubit.drop(
+        d.data,
+        parentId: IconBlocksCubit.starRow,
+        index: blocks.length,
+      ),
+      builder: (context, candidates, _) => AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.all(style.gap),
+        decoration: BoxDecoration(
+          color: candidates.isEmpty
+              ? color.withValues(alpha: 0.08)
+              : color.withValues(alpha: 0.22),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            width: picked ? 5 : 3,
+            color: color.withValues(alpha: picked ? 1 : 0.5),
+          ),
+        ),
+        child: Row(
+          children: [
+            IconBlockTile(type: IconBlockType.star, size: size * 0.8),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: style.gap),
+              child: Icon(
+                Icons.arrow_forward_rounded,
+                size: size * 0.5,
+                color: color,
+              ),
+            ),
+            Expanded(
+              child: _BlockRow(
+                parentId: IconBlocksCubit.starRow,
+                blocks: blocks,
+                style: style,
+                trailing: style.enabled || blocks.isEmpty ? addSpot : null,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

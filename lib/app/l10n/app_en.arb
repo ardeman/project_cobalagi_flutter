@@ -131,6 +131,7 @@
   "blockTurnLeft": "Turn left",
   "blockTurnRight": "Turn right",
   "blockRepeat": "Repeat",
+  "blockStar": "My block",
   "nextLevel": "Next",
   "tryAgain": "Try again!",
   "feedbackBumped": "Oops, something is in the way.",

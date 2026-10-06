@@ -196,6 +196,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get blockRepeat => 'Repeat';
 
   @override
+  String get blockStar => 'My block';
+
+  @override
   String get nextLevel => 'Next';
 
   @override

@@ -9,6 +9,7 @@ extension IconBlockTypeStyle on IconBlockType {
     IconBlockType.turnLeft => Icons.turn_left_rounded,
     IconBlockType.turnRight => Icons.turn_right_rounded,
     IconBlockType.repeat => Icons.repeat_rounded,
+    IconBlockType.star => Icons.star_rounded,
   };
 
   Color get color => switch (this) {
@@ -16,6 +17,7 @@ extension IconBlockTypeStyle on IconBlockType {
     IconBlockType.turnLeft => const Color(0xFF1E88E5),
     IconBlockType.turnRight => const Color(0xFFFB8C00),
     IconBlockType.repeat => const Color(0xFF8E24AA),
+    IconBlockType.star => const Color(0xFFD81B60),
   };
 
   /// Spoken by screen readers; pre-readers rely on the icon alone.
@@ -24,6 +26,7 @@ extension IconBlockTypeStyle on IconBlockType {
     IconBlockType.turnLeft => l10n.blockTurnLeft,
     IconBlockType.turnRight => l10n.blockTurnRight,
     IconBlockType.repeat => l10n.blockRepeat,
+    IconBlockType.star => l10n.blockStar,
   };
 }
 
