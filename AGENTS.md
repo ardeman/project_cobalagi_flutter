@@ -48,7 +48,8 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 
 ## Store listing
 
-- `store/<locale>/` text must stay within Play's limits (title 30, short 80, full 4,000 characters), true for the released app, and free of ranking or promotional words, calls to action and emoji. Keep `id` and `en-US` saying the same thing.
+- `store/<locale>/` text must stay within Play's limits (title 30, short 80, full 4,000, release notes 500 characters; `test/store/store_text_test.dart` checks them), true for the released app, and free of ranking or promotional words, calls to action and emoji. Keep `id` and `en-US` saying the same thing.
+- Every build gets release notes in `store/<locale>/changelogs/<versionCode>.txt` (fastlane's layout), written when the version is bumped.
 
 ## Website
 

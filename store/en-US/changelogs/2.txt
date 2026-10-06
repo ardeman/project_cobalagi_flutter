@@ -1,0 +1,2 @@
+• The app version now shows at the bottom of the parent area, so it's easy to mention in feedback.
+• The plans are now called Regular and Sponsor.

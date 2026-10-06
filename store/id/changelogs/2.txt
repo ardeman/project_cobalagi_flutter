@@ -1,0 +1,2 @@
+• Versi aplikasi sekarang tampil di bagian bawah area orang tua, supaya mudah dilaporkan saat memberi masukan.
+• Nama paket diganti menjadi Reguler dan Sponsor.
