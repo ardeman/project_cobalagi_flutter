@@ -440,10 +440,10 @@ class _PlayViewState extends State<PlayView> {
         badge: decision is Review && !_solved
             ? const Icon(
                 Icons.diamond_rounded,
-                size: 56,
+                size: 44,
                 color: Color(0xFF26C6DA),
               )
-            : CheerBadge(cheer: cheer, size: 56),
+            : CheerBadge(cheer: cheer, size: 44),
         title: cheer.text,
         message: replay ? null : _decisionMessage(l10n, decision),
         actions: [
@@ -460,7 +460,7 @@ class _PlayViewState extends State<PlayView> {
     if (play.phase == PlayPhase.failed) {
       final cheer = _cheer!;
       return _FeedbackCard(
-        badge: CheerBadge(cheer: cheer, size: 56),
+        badge: CheerBadge(cheer: cheer, size: 44),
         title: cheer.text,
         message: _failureMessage(l10n, play.result!.outcome),
         actions: [
@@ -749,21 +749,34 @@ class _FeedbackCard extends StatelessWidget {
         spacing: 16,
         runSpacing: 12,
         children: [
-          badge,
-          ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 360),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: Theme.of(context).textTheme.headlineMedium),
-                if (message != null)
-                  Text(
-                    message!,
-                    style: Theme.of(context).textTheme.titleMedium,
+          // Badge and words centre as one group; the glyph sits inside its
+          // box, so a small gap keeps them visually together.
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              badge,
+              const SizedBox(width: 12),
+              Flexible(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      if (message != null)
+                        Text(
+                          message!,
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
           ...actions,
         ],

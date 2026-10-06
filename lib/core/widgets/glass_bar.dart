@@ -43,6 +43,9 @@ class GlassBar extends StatelessWidget {
       ),
     );
     return Stack(
+      // The content gets the bar's own width, so it lines up like it would
+      // without the glass behind it.
+      fit: StackFit.passthrough,
       children: [
         Positioned.fill(
           // Fully transparent paints nothing, so a clear bar costs no blur.

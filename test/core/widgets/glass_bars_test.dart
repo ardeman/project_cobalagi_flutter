@@ -29,7 +29,7 @@ void main() {
         home: Scaffold(
           body: GlassFrame(
             top: const SizedBox(height: 80),
-            bottom: const SizedBox(height: 80),
+            bottom: const SizedBox(key: Key('bottom'), height: 80),
             builder: (context, insets) => ListView(
               padding: insets,
               children: [
@@ -42,6 +42,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    // Bar content spans the bar, so centred content stays centred.
+    expect(tester.getSize(find.byKey(const Key('bottom'))).width, 400);
     // The first row starts below the top bar; more rows wait below.
     expect(tester.getTopLeft(find.text('row 0')).dy, 80);
     expect(frosted(tester, GlassEdge.top), isFalse);
