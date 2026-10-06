@@ -1,0 +1,5 @@
+- Setiap pulau kini punya dunianya sendiri: taman, pantai, kristal, salju, dan gurun, masing-masing dengan garis akhirnya.
+- Petunjuk menunjukkan jalan dengan blok kecil berwarna sesuai bloknya, dalam urutan pemasangannya.
+- Tab Kode kini hanya muncul untuk anak yang sudah bisa membaca. Orang tua bisa menyalakan atau mematikannya untuk tiap anak.
+- Blok kini selalu bergambar.
+- Memperbaiki keyboard yang tertutup saat mengetik kode di ponsel.

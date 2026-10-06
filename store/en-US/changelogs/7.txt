@@ -1,0 +1,5 @@
+- Every island now has its own world: a garden, a beach, crystals, snow and a desert, each with its own finish.
+- The hint shows the way with small blocks in their own colours, in the order to place them.
+- The Code tab now appears only for children who can read. Parents can turn it on or off per child.
+- Blocks are always pictures now.
+- Fixed the keyboard closing when typing code on phones.

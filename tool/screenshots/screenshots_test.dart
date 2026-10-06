@@ -389,8 +389,8 @@ void main() {
       PackageInfo.setMockInitialValues(
         appName: 'Coba Lagi',
         packageName: 'com.ardeman.cobalagi',
-        version: '1.0.2',
-        buildNumber: '6',
+        version: '1.0.3',
+        buildNumber: '7',
         buildSignature: '',
       );
       tester.view.physicalSize = _size * 2;
@@ -490,6 +490,20 @@ void main() {
             }
             await shoot('${prefix}hint-$level');
           });
+        }
+
+        // The two islands without a play screenshot, for the website.
+        if (prefix.isEmpty) {
+          for (final (concept, level) in [
+            ('directions', 'directions-03'),
+            ('sequencing', 'sequencing-03'),
+          ]) {
+            testWidgets('island $concept', (tester) async {
+              await device(tester);
+              await _open(tester, '/child/1/replay/$level');
+              await shoot('island-$concept');
+            });
+          }
         }
 
         testWidgets('solved', (tester) async {
