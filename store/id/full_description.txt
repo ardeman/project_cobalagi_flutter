@@ -3,10 +3,11 @@ Coba Lagi mengajak anak belajar dasar-dasar coding sambil bermain. Anak menyusun
 DIMULAI DENGAN PERMAINAN PEMANASAN
 Permainan singkat bergambar menemukan titik awal yang pas untuk anakmu: membaca, berhitung, kiri dan kanan, pola, dan urutan. Rasanya seperti bermain, bukan ujian.
 
-TIGA PULAU UNTUK DIJELAJAHI
+EMPAT PULAU UNTUK DIJELAJAHI
 • Arah: maju, belok kiri, belok kanan
 • Langkah demi langkah: menyusun urutan langkah yang tepat
 • Perulangan: memakai blok ulangi agar langkah lebih sedikit
+• Blok Ajaib: membuat blok sendiri, lalu memakainya berkali-kali
 Bintang di peta menunjukkan kemajuan anak di setiap pulau.
 
 BELAJAR SESUAI KEMAMPUAN ANAK
@@ -18,6 +19,7 @@ Namanya berarti "coba lagi". Setiap percobaan disambut dengan semangat, tidak pe
 UNTUK ORANG TUA
 • Area orang tua dilindungi pertanyaan untuk orang dewasa
 • Pilih pulau awal anak atau ulangi permainan pemanasan
+• Sponsor bisa melihat laporan perkembangan tiap anak
 • Bisa dipakai tanpa internet
 
 GRATIS, TANPA IKLAN

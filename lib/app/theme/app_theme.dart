@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 abstract final class AppTheme {
@@ -18,7 +19,12 @@ abstract final class AppTheme {
     );
     const buttonSize = Size(64, 64);
     const buttonPadding = EdgeInsets.symmetric(horizontal: 32, vertical: 16);
-    const buttonText = TextStyle(fontSize: 22, fontWeight: FontWeight.w700);
+    // Based on the platform's label style, so buttons use the app's font.
+    final typography = Typography.material2021(platform: defaultTargetPlatform);
+    final buttonText =
+        (brightness == Brightness.light ? typography.black : typography.white)
+            .labelLarge!
+            .copyWith(fontSize: 22, fontWeight: FontWeight.w700);
 
     return ThemeData(
       colorScheme: scheme,

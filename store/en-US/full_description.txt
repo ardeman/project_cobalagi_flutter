@@ -3,10 +3,11 @@ Coba Lagi helps children learn the basics of coding through play. Kids put pictu
 IT STARTS WITH A WARM-UP GAME
 A short, picture-based game finds the right starting point for your child: reading, counting, left and right, patterns and order. It feels like play, not a test.
 
-THREE ISLANDS TO EXPLORE
+FOUR ISLANDS TO EXPLORE
 • Directions: forward, turn left, turn right
 • Step by step: putting steps in the right order
 • Loops: using the repeat block to do more with fewer blocks
+• Magic Block: building your own block, then using it again and again
 Stars on the map show how far your child has come on each island.
 
 LEARNING AT YOUR CHILD'S PACE
@@ -18,6 +19,7 @@ The name means "try again". Every attempt is met with encouragement, never with 
 FOR PARENTS
 • The parent area sits behind a question meant for grown-ups
 • Choose a child's starting island or replay the warm-up game
+• Sponsors can see a progress report for each child
 • Works without an internet connection
 
 FREE, WITH NO ADS

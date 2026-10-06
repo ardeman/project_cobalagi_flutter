@@ -67,25 +67,32 @@ render_locale() { # locale suffix tagline captions...
   local locale="$1" s="$2" tagline="$3"; shift 3
   mkdir -p "store/$locale/screenshots"
   feature "$tagline" "play-loops$s.png" "store/$locale/feature_graphic.png"
+  rm -f "store/$locale/screenshots/"*.png
   slide "adventure-map$s.png"   "$1" "store/$locale/screenshots/1-adventure-map.png"
   slide "play-loops$s.png"      "$2" "store/$locale/screenshots/2-play-loops.png"
-  slide "solved$s.png"          "$3" "store/$locale/screenshots/3-solved.png"
-  slide "warm-up-pattern$s.png" "$4" "store/$locale/screenshots/4-warm-up.png"
-  dialog_slide "parent-placement$s.png" "$5" "store/$locale/screenshots/5-parents.png"
+  slide "play-functions$s.png"  "$3" "store/$locale/screenshots/3-play-functions.png"
+  slide "solved$s.png"          "$4" "store/$locale/screenshots/4-solved.png"
+  slide "warm-up-pattern$s.png" "$5" "store/$locale/screenshots/5-warm-up.png"
+  dialog_slide "parent-placement$s.png" "$6" "store/$locale/screenshots/6-parents.png"
+  dialog_slide "parent-progress$s.png"  "$7" "store/$locale/screenshots/7-progress.png"
 }
 
 render_locale id "-id" "Belajar coding sambil bermain" \
   "Jelajahi pulau-pulau coding" \
   "Blok bergambar, tanpa perlu membaca" \
+  "Buat blok sendiri, pakai berkali-kali" \
   "Setiap percobaan disambut dengan semangat" \
   "Permainan pemanasan menemukan titik awal" \
-  "Orang tua tetap memegang kendali"
+  "Orang tua tetap memegang kendali" \
+  "Fitur sponsor: laporan perkembangan anak"
 
 render_locale en-US "" "Learn to code through play" \
   "Explore the coding islands" \
   "Picture blocks, no reading needed" \
+  "Build your own block, use it again and again" \
   "Every try is met with encouragement" \
   "A warm-up game finds the right start" \
-  "Parents stay in charge"
+  "Parents stay in charge" \
+  "Sponsor feature: your child's progress"
 
 echo "Store graphics rendered."

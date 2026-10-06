@@ -18,12 +18,14 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 
 | | |
 | --- | --- |
-| ![Adventure map with three islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: a repeat block holding a forward block, with hint footprints on the path](website/screenshots/play-loops.png) |
+| ![Adventure map with four islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: a repeat block holding a forward block, with hint footprints on the path](website/screenshots/play-loops.png) |
 | **Adventure map:** one island per concept, with stars for mastery. | **Loops puzzle:** a repeat block, the block limit, and a hint showing the route. |
 | ![A solved puzzle with a cheer and a Next button](website/screenshots/solved.png) | ![Warm-up game asking what comes next in a pattern of shapes](website/screenshots/warm-up-pattern.png) |
 | **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** picture-based, voice-led placement for children who can't read yet. |
 | ![Parent area dialog for choosing a child's starting island](website/screenshots/parent-placement.png) | ![The adventure map in Bahasa Indonesia](website/screenshots/adventure-map-id.png) |
 | **Parent area:** behind a grown-up check; set the starting island or replay the warm-up. | **Bahasa Indonesia:** every screen in Indonesian and English. |
+| ![A Magic Block puzzle: the star row holds a stair step, called four times](website/screenshots/play-functions.png) | ![A child's progress report with puzzles, play time and islands](website/screenshots/parent-progress.png) |
+| **Magic Block:** build your own block once, then use it again and again. | **Progress report** (sponsor feature): puzzles, play time and every island. |
 
 | | |
 | --- | --- |
@@ -87,7 +89,7 @@ lib/
 test/              Mirrors lib/
 integration_test/  Tests that drive the real app on a device (e.g. warm-up voice timing)
 .githooks/         Versioned Git hooks for commit-message validation
-tool/              Developer scripts (voice-over recording script)
+tool/              Developer scripts (voice clips, screenshot renders)
 branding/          App icon source (SVG), rendered PNGs and branding/render.sh
 store/             Google Play listing text and graphics per language (id, en-US)
 website/           Static landing page for cobalagi.ardeman.com, plus screenshots
@@ -191,7 +193,7 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 
 `store/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80) and `full_description.txt` (max 4,000), plus `feature_graphic.png` (1024 × 500) and `screenshots/` (1920 × 1080, 16:9). Upload the same screenshots to the phone, 7-inch and 10-inch tablet sections. The app icon for the listing is `branding/play_store_icon.png`.
 
-`store/render.sh` re-renders the graphics from `website/screenshots/` and the icon art. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
+`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders the adventure map, Magic Block and progress screenshots from the real app with sample data into `website/screenshots/` (the others were captured on a device). `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
 
 ## Roadmap (MVP)
 

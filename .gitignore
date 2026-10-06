@@ -52,3 +52,6 @@ app.*.map.json
 .env
 .env.*
 !.env.example
+
+# Screenshot renders; tool/screenshots/export.sh copies them to website/.
+/tool/screenshots/out/
