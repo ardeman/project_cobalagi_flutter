@@ -170,7 +170,11 @@ After adding or replacing clips, Android builds may keep using an old asset list
 
    Without this file, release builds are debug-signed: fine for testing, rejected by Google Play.
 
-3. Bump `version:` in `pubspec.yaml`, then build the bundle to upload:
+3. Increase the build number (after `+` in `version:` in `pubspec.yaml`) for
+   every new Google Play upload, even if the visible app version stays the same.
+   Previously uploaded version codes cannot be reused; see
+   [Android versioning](https://developer.android.com/studio/publish/versioning).
+   Write release notes for the new build, then build the bundle to upload:
 
    ```sh
    flutter build appbundle --release
