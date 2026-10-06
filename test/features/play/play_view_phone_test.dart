@@ -184,4 +184,31 @@ void main() {
     expect(source.top - panel.top, lessThan(48));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'on a phone, the code field keeps focus when the keyboard opens',
+    (tester) async {
+      await _pumpPhone(tester);
+      await tester.tap(find.byTooltip('Code'));
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.byKey(const Key('typedCodeSource')));
+      await tester.pump();
+      bool focused() => tester
+          .state<EditableTextState>(find.byType(EditableText))
+          .widget
+          .focusNode
+          .hasFocus;
+      expect(focused(), isTrue);
+      // The keyboard slides up and the layout gives the code the screen.
+      tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+      addTearDown(tester.view.resetViewInsets);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(focused(), isTrue);
+      expect(tester.testTextInput.hasAnyClients, isTrue);
+      // The code gets the room: the world and Go step aside while typing.
+      expect(find.text('Go!'), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

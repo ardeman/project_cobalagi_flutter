@@ -338,18 +338,6 @@ abstract class AppLocalizations {
   /// **'Voices always play.'**
   String get soundEffectsHint;
 
-  /// No description provided for @wordBlocks.
-  ///
-  /// In en, this message translates to:
-  /// **'Word blocks'**
-  String get wordBlocks;
-
-  /// No description provided for @wordBlocksHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Blocks show words, for children who can read. Set by the warm-up game.'**
-  String get wordBlocksHint;
-
   /// No description provided for @supportCobaLagi.
   ///
   /// In en, this message translates to:

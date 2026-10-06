@@ -17,7 +17,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - A feature folder is split into `data/` (models, repositories), `cubit/` (state) and `view/` (widgets).
 - `lib/engine/` and `lib/learning/` are pure Dart: no Flutter imports, so they can be tested headless.
 - Every editor (blocks, later typed code) compiles to the shared `Program` in `lib/engine/`. Never add an editor-specific path into the world or interpreter.
-- An editor lives in `lib/features/editors/<name>/`: its own block model, a compile function to `Program` that copies block ids, and its own cubit. `PlayCubit` only receives the compiled `Program`. The block editor (`lib/features/editors/blocks/`) serves Tier 1 (picture blocks) and Tier 2 (word blocks) as two looks of the same blocks.
+- An editor lives in `lib/features/editors/<name>/`: its own block model, a compile function to `Program` that copies block ids, and its own cubit. `PlayCubit` only receives the compiled `Program`. The block editor (`lib/features/editors/blocks/`) shows picture blocks only; readers use typed code (`lib/features/editors/typed/`) instead of word blocks.
 - The Flame world (`lib/features/play/view/world/`) holds no game logic. It mirrors `PlayState` through `WorldGame.apply` and reports each finished animation with `PlayCubit.eventShown`.
 - Every hand-made level must be solvable with its own palette; `test/features/play/level_assets_test.dart` checks this.
 - User-facing text goes in both `lib/app/l10n/app_en.arb` and `app_id.arb`; never hardcode strings. Voice clips live at `assets/audio/<id|en>/<clipId>.mp3`; sound effects at `assets/audio/sfx/<name>.mp3`, one per `SoundEffect`, each with a prompt in `tool/sound_effects.json`; music at `assets/audio/music/<name>.mp3`, one per `MusicTrack`, prompted in `tool/music.json`.
@@ -95,3 +95,4 @@ Record architectural choices here as one line each: date, decision, reason.
 
 - 2026-10-06: Variables start with one Step Box storing an integer from 1 to 9. Shared `SetSteps` and `MoveSteps` instructions reset the value each run, validate saving before use and emit `StepsStored` for playback; blocks and code share the same semantics.
 - 2026-10-06: Liquid-glass bars and pop-ups: content scrolls under app bars and phone bottom bars, which blur only while something is beneath (`GlassBar`); dialogs blur the screen behind a translucent panel, sheets are clipped glass. High contrast stays opaque. `GlassFrame` reports its bars as `MediaQuery` padding so revealed content (new blocks) stops clear of them.
+- 2026-10-06: Word blocks (Tier 2) are dropped: blocks are always pictures, and readers switch to typed code. `Placement.readsWords` stays in saved progress as the warm-up's reading result.

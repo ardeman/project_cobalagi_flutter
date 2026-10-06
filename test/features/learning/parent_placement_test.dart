@@ -54,20 +54,4 @@ void main() {
       expect(reloaded.progress['directions']!.exercises, 1);
     },
   );
-
-  test(
-    'a parent can switch word blocks on and off, keeping the start',
-    () async {
-      await placement.setStart(1, 'loops');
-      await placement.setWordBlocks(1, words: true);
-      var learner = (await progress.load(1))!;
-      expect(learner.placement!.readsWords, isTrue);
-      expect(learner.currentConcept, 'loops');
-      expect(learner.placement!.startConcept, 'loops');
-
-      await placement.setWordBlocks(1, words: false);
-      learner = (await progress.load(1))!;
-      expect(learner.placement!.readsWords, isFalse);
-    },
-  );
 }

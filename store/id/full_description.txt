@@ -12,8 +12,8 @@ ENAM PULAU UNTUK DIJELAJAHI
 • Kotak Langkah: menyimpan jumlah langkah lalu memakainya lagi
 Bintang di peta menunjukkan kemajuan anak di setiap pulau. Pelajaran yang sudah selesai bisa dimainkan lagi dari pulaunya.
 
-BLOK BERGAMBAR, BLOK BERTULISAN, DAN KODE
-Anak yang masih belajar membaca memakai blok bergambar. Anak yang sudah bisa membaca dapat memakai blok yang sama dengan tulisan, atau pindah ke tab Kode dan mengetik program yang sama. Blok bisa diseret atau diketuk untuk menambahkannya, di tablet maupun ponsel.
+BLOK BERGAMBAR DAN KODE
+Anak yang masih belajar membaca memakai blok bergambar. Anak yang sudah bisa membaca dapat pindah ke tab Kode dan mengetik program yang sama. Blok bisa diseret atau diketuk untuk menambahkannya, di tablet maupun ponsel.
 
 BELAJAR SESUAI KEMAMPUAN ANAK
 Setelah tiap teka-teki, Coba Lagi memilih langkah berikutnya: lanjut ke pulau berikutnya, berlatih dengan teka-teki lain, atau petualangan bonus untuk mengulang materi sebelumnya. Teka-teki latihan dibuat otomatis dan selalu diperiksa bisa diselesaikan, jadi anak tidak pernah mendapat teka-teki yang sama dua kali.

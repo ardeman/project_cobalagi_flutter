@@ -1,4 +1,4 @@
-/// The shared instruction set. Every editor (icon blocks, word blocks, typed
+/// The shared instruction set. Every editor (picture blocks, typed
 /// code) compiles to these, and only these are executed by the interpreter.
 enum InstructionKind {
   move,

@@ -2,11 +2,10 @@
 
 A coding-learning app for children of all ages, in Bahasa Indonesia and English.
 
-- **Tier 1** (pre-readers, about 4–7): icon blocks and voice instructions.
-- **Tier 2** (early readers, about 7–10): word blocks such as `move 3`.
-- **Tier 3** (about 10–14+): blocks that can switch to typed code.
+- **Picture blocks** (pre-readers, about 4–7): icon blocks and voice instructions.
+- **Typed code** (readers, about 7–14+): the same program typed as text, a tap away from the blocks.
 
-Every tier drives the same game world. A short, voice-led placement game picks each child's starting point, and the app then chooses to advance, practise or review after every lesson.
+Blocks and code drive the same game world. A short, voice-led placement game picks each child's starting point, and the app then chooses to advance, practise or review after every lesson.
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
 
@@ -18,8 +17,8 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 
 | | |
 | --- | --- |
-| ![Adventure map with five islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: a repeat block holding a forward block, with hint footprints on the path](website/screenshots/play-loops.png) |
-| **Adventure map:** one island per concept, with stars for mastery. | **Loops puzzle:** a repeat block, the block limit, and a hint showing the route. |
+| ![Adventure map with six islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: the hint shows the route as small blocks in their colours](website/screenshots/hint-loops-03.png) |
+| **Adventure map:** one island per concept, with stars for mastery. | **Hint:** the route shown as the level's own blocks, in their colours and order. |
 | ![A solved puzzle with a cheer and a Next button](website/screenshots/solved.png) | ![Warm-up game asking what comes next in a pattern of shapes](website/screenshots/warm-up-pattern.png) |
 | **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** picture-based, voice-led placement for children who can't read yet. |
 | ![Parent area dialog for choosing a child's starting island](website/screenshots/parent-placement.png) | ![The adventure map in Bahasa Indonesia](website/screenshots/adventure-map-id.png) |
@@ -231,11 +230,11 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 | --- | --- |
 | 0. Foundation ✅ | Packages, theme, Indonesian/English, routing, local storage, responsive layout, audio, profiles, parent gate, free/full plan check |
 | 1. Engine ✅ | Instruction set, world, interpreter, level JSON, solver (unit-tested, no UI) |
-| 2. Play + Tier 1 ✅ | Flame world with placeholder shapes, icon-block editor, run/step/reset, Directions and Sequencing levels |
+| 2. Play + picture blocks ✅ | Flame world with placeholder shapes, icon-block editor, run/step/reset, Directions and Sequencing levels |
 | 3. Learning loop ✅ | Attempt tracking, mastery, advance/practice/review, generated variations, Loops levels, adventure map |
 | 4. Pretest ✅ | Reading check and pre-skills, voice-led and adaptive; placement; parent override |
 | 5. Hardening ✅ (code) | Donations through Google Play Billing (any donation unlocks sponsor features), release config, voice clips, tablet performance |
-| 6. After MVP ✅ | Magic Block island (own block), parent progress report, sound effects and music, splash, how-to hint, warm-up second chance, Tier 2 word blocks for readers |
+| 6. After MVP ✅ | Magic Block island (own block), parent progress report, sound effects and music, splash, how-to hint, warm-up second chance |
 | 7. Conditions ✅ | Look Ahead island, six lessons, generated practice and an eye block that runs its contents only when the cell ahead is clear |
 | 8. Typed code ✅ | Switch between blocks and code on every island, command buttons, line feedback and step highlighting, with the same engine and lesson limits |
 | 9. Variables ✅ | Step Box island, six lessons, generated practice, stored-distance blocks and typed assignments |

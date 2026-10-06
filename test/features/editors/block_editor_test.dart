@@ -14,7 +14,6 @@ Future<BlocksCubit> pumpEditor(
   int? maxBlocks,
   bool star = false,
   bool showHowTo = false,
-  bool words = false,
   bool conditions = false,
 }) async {
   final cubit = BlocksCubit(maxBlocks: maxBlocks);
@@ -39,7 +38,6 @@ Future<BlocksCubit> pumpEditor(
               },
               blockSize: 64,
               showHowTo: showHowTo,
-              words: words,
             ),
           ),
         ),
@@ -52,75 +50,70 @@ Future<BlocksCubit> pumpEditor(
 Finder paletteBlock(IconData icon) => find.byIcon(icon).first;
 
 void main() {
-  for (final words in [false, true]) {
-    testWidgets('Step Box buttons save 1–9 with 64dp targets ($words)', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(400, 800);
-      tester.view.devicePixelRatio = 1;
-      addTearDown(tester.view.reset);
-      final cubit = BlocksCubit(maxBlocks: 2);
-      addTearDown(cubit.close);
-      await tester.pumpWidget(
-        MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: BlocProvider.value(
-              value: cubit,
-              child: BlockEditor(
-                palette: const {
-                  InstructionKind.setSteps,
-                  InstructionKind.moveSteps,
-                },
-                blockSize: 64,
-                words: words,
-              ),
+  testWidgets('Step Box buttons save 1–9 with 64dp targets', (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final cubit = BlocksCubit(maxBlocks: 2);
+    addTearDown(cubit.close);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: BlockEditor(
+              palette: const {
+                InstructionKind.setSteps,
+                InstructionKind.moveSteps,
+              },
+              blockSize: 64,
             ),
           ),
         ),
-      );
-      await tester.tap(paletteBlock(Icons.inventory_2_rounded));
+      ),
+    );
+    await tester.tap(paletteBlock(Icons.inventory_2_rounded));
+    await tester.pump();
+    expect(cubit.state.main.single.count, 2);
+    final fewer = find.byTooltip('Save a smaller number');
+    final more = find.byTooltip('Save a bigger number');
+    expect(tester.getSize(fewer).width, greaterThanOrEqualTo(64));
+    expect(tester.getSize(more).height, greaterThanOrEqualTo(64));
+    await tester.tap(fewer);
+    await tester.pump();
+    expect(cubit.state.main.single.count, 1);
+    expect(
+      tester
+          .widget<IconButton>(
+            find.widgetWithIcon(IconButton, Icons.remove_circle_rounded),
+          )
+          .onPressed,
+      isNull,
+    );
+    for (var i = 0; i < 8; i++) {
+      await tester.tap(more);
       await tester.pump();
-      expect(cubit.state.main.single.count, 2);
-      final fewer = find.byTooltip('Save a smaller number');
-      final more = find.byTooltip('Save a bigger number');
-      expect(tester.getSize(fewer).width, greaterThanOrEqualTo(64));
-      expect(tester.getSize(more).height, greaterThanOrEqualTo(64));
-      await tester.tap(fewer);
-      await tester.pump();
-      expect(cubit.state.main.single.count, 1);
-      expect(
-        tester
-            .widget<IconButton>(
-              find.widgetWithIcon(IconButton, Icons.remove_circle_rounded),
-            )
-            .onPressed,
-        isNull,
-      );
-      for (var i = 0; i < 8; i++) {
-        await tester.tap(more);
-        await tester.pump();
-      }
-      expect(cubit.state.main.single.count, 9);
-      expect(
-        tester
-            .widget<IconButton>(
-              find.widgetWithIcon(IconButton, Icons.add_circle_rounded),
-            )
-            .onPressed,
-        isNull,
-      );
-      await tester.tap(paletteBlock(Icons.forward_rounded));
-      await tester.pump();
-      final Program program = cubit.program;
-      expect((program.body.first as SetSteps).value, 9);
-      expect(program.body.last, isA<MoveSteps>());
-      expect(program.body.first.blockId, cubit.state.main.first.id);
-      expect(program.body.last.blockId, cubit.state.main.last.id);
-      expect(tester.takeException(), isNull);
-    });
-  }
+    }
+    expect(cubit.state.main.single.count, 9);
+    expect(
+      tester
+          .widget<IconButton>(
+            find.widgetWithIcon(IconButton, Icons.add_circle_rounded),
+          )
+          .onPressed,
+      isNull,
+    );
+    await tester.tap(paletteBlock(Icons.forward_rounded));
+    await tester.pump();
+    final Program program = cubit.program;
+    expect((program.body.first as SetSteps).value, 9);
+    expect(program.body.last, isA<MoveSteps>());
+    expect(program.body.first.blockId, cubit.state.main.first.id);
+    expect(program.body.last.blockId, cubit.state.main.last.id);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('in a scrolling page the editor shows each new block', (
     tester,
@@ -335,22 +328,18 @@ void main() {
     expect((cubit.program.body.single as IfPathClear).body.single, isA<Move>());
   });
 
-  for (final words in [false, true]) {
-    testWidgets('a condition inside a repeat fits a phone (words: $words)', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(360, 760);
-      tester.view.devicePixelRatio = 1;
-      final cubit = await pumpEditor(tester, conditions: true, words: words);
-      cubit.add(BlockType.repeat);
-      final loop = cubit.state.main.single.id;
-      cubit.add(BlockType.ifPathClear, parentId: loop);
-      final eye = cubit.state.main.single.children.single.id;
-      cubit.add(BlockType.forward, parentId: eye);
-      await tester.pump();
-      // Layout errors are reported by the widget test framework.
-    });
-  }
+  testWidgets('a condition inside a repeat fits a phone', (tester) async {
+    tester.view.physicalSize = const Size(360, 760);
+    tester.view.devicePixelRatio = 1;
+    final cubit = await pumpEditor(tester, conditions: true);
+    cubit.add(BlockType.repeat);
+    final loop = cubit.state.main.single.id;
+    cubit.add(BlockType.ifPathClear, parentId: loop);
+    final eye = cubit.state.main.single.children.single.id;
+    cubit.add(BlockType.forward, parentId: eye);
+    await tester.pump();
+    // Layout errors are reported by the widget test framework.
+  });
 
   testWidgets('tapping palette blocks appends them', (tester) async {
     final cubit = await pumpEditor(tester);
@@ -559,18 +548,5 @@ void main() {
     await pumpEditor(tester);
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.byIcon(Icons.touch_app_rounded), findsNothing);
-  });
-
-  testWidgets('word blocks show their words and add like pictures', (
-    tester,
-  ) async {
-    final cubit = await pumpEditor(tester, words: true);
-    expect(find.text('forward'), findsOneWidget);
-    expect(find.text('turn left'), findsOneWidget);
-    await tester.tap(find.text('forward'));
-    await tester.pump();
-    expect(cubit.state.main.single.type, BlockType.forward);
-    // The palette block and the placed one.
-    expect(find.text('forward'), findsNWidgets(2));
   });
 }

@@ -13,11 +13,11 @@ import '../../../core/audio/voice_clips.dart';
 import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../engine/generator/solver.dart';
-import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
 import '../../../engine/program/instruction.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
+import 'package:cobalagi/features/play/view/hint_marks.dart';
 import 'package:cobalagi/features/editors/typed/data/typed_program.dart';
 import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import '../../../engine/world/level.dart';
@@ -43,13 +43,9 @@ class PlayView extends StatefulWidget {
     required this.onFinished,
     required this.onNext,
     this.showHowTo = false,
-    this.words = false,
   });
 
   final Exercise exercise;
-
-  /// Tier 2: word blocks instead of picture blocks.
-  final bool words;
 
   /// For a child who hasn't solved a puzzle yet: a hand shows how to add a
   /// block, then the Go button pulses, until the first run.
@@ -161,11 +157,14 @@ class _PlayViewState extends State<PlayView> {
     final solution = solve(_level);
     if (solution == null) return;
     setState(() => _hints++);
-    _game.showHint([
-      _level.start,
-      for (final event in runProgram(solution, _level).events)
-        if (event is Moved) event.to,
-    ]);
+    // The route as the level's own blocks, in their colours.
+    _game.showHint(
+      hintMarks(
+        _level,
+        solution,
+        labelFont: Theme.of(context).textTheme.titleLarge?.fontFamily,
+      ),
+    );
   }
 
   void _onPlayChanged(BuildContext context, PlayState state) {
@@ -329,16 +328,12 @@ class _PlayViewState extends State<PlayView> {
                                 showTips: !tight,
                                 fitContent: fit,
                                 showHowTo: widget.showHowTo && play.runs == 0,
-                                words: widget.words,
                               );
                       },
                     );
-                if (tight && _codeMode && keyboardOpen) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: editorFor(fit: false),
-                  );
-                }
+                // Typing code on a phone: the code gets the room. The tree
+                // keeps its shape, so the code field keeps the keyboard.
+                final typing = tight && _codeMode && keyboardOpen;
                 if (stacked) {
                   // Phones: the world and the editor scroll as one page
                   // under a glass top bar and glass controls at the bottom.
@@ -347,10 +342,12 @@ class _PlayViewState extends State<PlayView> {
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                       child: topBar,
                     ),
-                    bottom: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                      child: controls,
-                    ),
+                    bottom: typing
+                        ? null
+                        : Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                            child: controls,
+                          ),
                     builder: (context, insets) => LayoutBuilder(
                       builder: (context, box) => SingleChildScrollView(
                         controller: _page,
@@ -359,18 +356,23 @@ class _PlayViewState extends State<PlayView> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            SizedBox(
-                              // Large, with the editor peeking below.
-                              height: max(
-                                0,
-                                min(
-                                  (box.maxHeight - insets.vertical) * 0.75,
-                                  box.maxWidth - 32,
+                            // Hidden, not removed, while typing: the world
+                            // keeps running and comes back as it was.
+                            Offstage(
+                              offstage: typing,
+                              child: SizedBox(
+                                // Large, with the editor peeking below.
+                                height: max(
+                                  0,
+                                  min(
+                                    (box.maxHeight - insets.vertical) * 0.75,
+                                    box.maxWidth - 32,
+                                  ),
                                 ),
+                                child: panel,
                               ),
-                              child: panel,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: typing ? 0 : 12),
                             editorFor(fit: true),
                           ],
                         ),

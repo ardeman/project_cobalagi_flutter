@@ -113,8 +113,6 @@
   "music": "Background music",
   "soundEffects": "Sound effects",
   "soundEffectsHint": "Voices always play.",
-  "wordBlocks": "Word blocks",
-  "wordBlocksHint": "Blocks show words, for children who can read. Set by the warm-up game.",
   "supportCobaLagi": "Support Coba Lagi",
   "debugPlanOverride": "Debug: use full version",
   "players": "Players",

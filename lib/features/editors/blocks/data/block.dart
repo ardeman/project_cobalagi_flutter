@@ -1,8 +1,7 @@
 import '../../../../engine/program/instruction.dart';
 import '../../../../engine/program/program.dart';
 
-/// Block types of the block editor, one step per block. Tier 1 shows them
-/// as pictures, Tier 2 as words.
+/// Block types of the block editor, one step per block, shown as pictures.
 enum BlockType {
   forward(InstructionKind.move),
   turnLeft(InstructionKind.turnLeft),

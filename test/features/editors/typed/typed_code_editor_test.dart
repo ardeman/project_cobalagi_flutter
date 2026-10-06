@@ -4,6 +4,7 @@ import 'package:cobalagi/core/audio/audio_service.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/world/direction.dart';
 import 'package:cobalagi/engine/world/level.dart';
+import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
 import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
 import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
@@ -71,7 +72,6 @@ void main() {
                 homePath: '/',
                 onFinished: (_) async => null,
                 onNext: () {},
-                words: true,
               ),
             ),
           ),
@@ -98,9 +98,16 @@ void main() {
           );
           await tester.pump();
         } else {
-          await tester.tap(find.text('save steps').first);
+          // Palette blocks; the box beside the world shares the picture.
+          Finder palette(IconData icon) => find
+              .descendant(
+                of: find.byType(BlockEditor),
+                matching: find.byIcon(icon),
+              )
+              .first;
+          await tester.tap(palette(Icons.inventory_2_rounded));
           await tester.pump();
-          await tester.tap(find.text('use steps').first);
+          await tester.tap(palette(Icons.forward_rounded));
           await tester.pump();
         }
         await tester.tap(find.byTooltip('One step'));
@@ -261,13 +268,12 @@ void main() {
                 return null;
               },
               onNext: () {},
-              words: true,
             ),
           ),
         ),
       );
       await tester.pump(const Duration(milliseconds: 100));
-      await tester.tap(find.text('forward').first);
+      await tester.tap(find.byIcon(Icons.arrow_upward_rounded).first);
       await tester.pump();
       await tester.tap(find.text('Code'));
       await tester.pump();
@@ -277,7 +283,8 @@ void main() {
       await tester.pump();
       await tester.tap(find.text('Blocks'));
       await tester.pump();
-      expect(find.text('forward'), findsNWidgets(2));
+      // The palette block and the one the code put back.
+      expect(find.byIcon(Icons.arrow_upward_rounded), findsNWidgets(2));
       await tester.tap(find.text('Code'));
       await tester.pump();
       expect(

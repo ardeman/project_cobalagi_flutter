@@ -474,6 +474,19 @@ void main() {
           await shoot('${prefix}play-code');
         });
 
+        for (final level in ['loops-03', 'variables-04']) {
+          testWidgets('hint $level', (tester) async {
+            await device(tester);
+            await _open(tester, '/child/1/replay/$level');
+            await tester.tap(find.byIcon(Icons.lightbulb_rounded));
+            // Every block of the hint has appeared.
+            for (var i = 0; i < 40; i++) {
+              await tester.pump(const Duration(milliseconds: 100));
+            }
+            await shoot('${prefix}hint-$level');
+          });
+        }
+
         testWidgets('solved', (tester) async {
           await device(tester);
           await _showSolved(tester, language);

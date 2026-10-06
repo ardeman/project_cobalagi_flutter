@@ -28,7 +28,8 @@ final class Placement {
   /// Pretest result per skill, 0 to 3; empty when a parent set the start.
   final Map<PretestSkill, int> levels;
 
-  /// Whether the child can read words, for choosing word blocks (Tier 2).
+  /// Whether the child can read words, from the warm-up game. Kept for
+  /// choosing what readers see; the blocks themselves are always pictures.
   final bool readsWords;
   final DateTime at;
   final bool byParent;
