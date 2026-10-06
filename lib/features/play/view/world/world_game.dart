@@ -95,6 +95,7 @@ class WorldGame extends FlameGame {
         if (_celebrated != state.runs) {
           _celebrated = state.runs;
           onSound(SoundEffect.goal);
+          world.add(CelebrationComponent(level.goal));
           _actor.add(
             SequenceEffect([
               ScaleEffect.to(

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/particles.dart';
 
 import '../../../../engine/world/direction.dart';
 import '../../../../engine/world/grid_point.dart';
@@ -191,4 +192,54 @@ class ActorComponent extends PositionComponent {
         ..drawCircle(Offset(0.5 + dx, 0.33), 0.042, _pupil);
     }
   }
+}
+
+/// Confetti and little stars bursting from [at] when a puzzle is solved.
+/// Purely decorative; removes itself when the burst is over.
+class CelebrationComponent extends ParticleSystemComponent {
+  CelebrationComponent(GridPoint at, {Random? random})
+    : super(position: tileCenter(at), particle: _burst(random ?? Random()));
+
+  static const _colors = [
+    Color(0xFFFFD54F),
+    Color(0xFFFF7043),
+    Color(0xFF4FC3F7),
+    Color(0xFF81C784),
+    Color(0xFFBA68C8),
+    Color(0xFFF06292),
+  ];
+
+  static Particle _burst(Random random) => Particle.generate(
+    count: 48,
+    lifespan: 1.6,
+    generator: (i) {
+      final angle = random.nextDouble() * 2 * pi;
+      final speed = 1.5 + random.nextDouble() * 3;
+      final paint = Paint()..color = _colors[i % _colors.length];
+      final size = 0.06 + random.nextDouble() * 0.07;
+      return AcceleratedParticle(
+        speed: Vector2(cos(angle) * speed, sin(angle) * speed - 2.5),
+        acceleration: Vector2(0, 6),
+        child: i.isEven
+            ? CircleParticle(radius: size, paint: paint)
+            : ComputedParticle(
+                renderer: (canvas, particle) {
+                  // A spinning square of confetti.
+                  canvas
+                    ..save()
+                    ..rotate(particle.progress * 4 * pi)
+                    ..drawRect(
+                      Rect.fromCenter(
+                        center: Offset.zero,
+                        width: size * 2,
+                        height: size * 1.2,
+                      ),
+                      paint,
+                    )
+                    ..restore();
+                },
+              ),
+      );
+    },
+  );
 }
