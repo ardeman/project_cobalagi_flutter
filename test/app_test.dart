@@ -33,8 +33,21 @@ class CodeEntitlementService extends StaticEntitlementService {
   }
 }
 
+/// Remembers the music and effects settings the app applies.
+class RecordingAudio extends SilentAudioService {
+  bool? music;
+  bool? effects;
+
+  @override
+  set musicOn(bool on) => music = on;
+
+  @override
+  set effectsOn(bool on) => effects = on;
+}
+
 Future<void> pumpApp(
   WidgetTester tester, {
+  AudioService audio = const SilentAudioService(),
   EntitlementService entitlement = const StaticEntitlementService(Plan.free),
   AppUpdateService updates = const NoAppUpdateService(),
   Size size = const Size(2560, 1600),
@@ -53,7 +66,7 @@ Future<void> pumpApp(
       settings: SettingsRepository(db),
       entitlement: entitlement,
       updates: updates,
-      audio: const SilentAudioService(),
+      audio: audio,
       curriculum: CurriculumRepository(),
       progress: ProgressRepository(db),
     ),
@@ -197,6 +210,14 @@ void main() {
       tester.getTopLeft(find.text('Language')).dy,
       greaterThanOrEqualTo(tester.getBottomLeft(find.byType(AppBar)).dy),
     );
+  });
+
+  testWidgets('music and effects settings apply at launch', (tester) async {
+    final audio = RecordingAudio();
+    await pumpApp(tester, audio: audio);
+    // Before anyone opens the parent area.
+    expect(audio.music, isTrue);
+    expect(audio.effects, isTrue);
   });
 
   testWidgets('the parent area shows the app version', (tester) async {

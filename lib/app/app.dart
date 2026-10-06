@@ -78,11 +78,15 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
     child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => SettingsCubit(widget.settings)..load()),
+        // Not lazy: these apply the saved settings to the audio at launch,
+        // not first when the parent area reads them.
         BlocProvider(
+          lazy: false,
           create: (_) =>
               SoundEffectsCubit(widget.settings, widget.audio)..load(),
         ),
         BlocProvider(
+          lazy: false,
           create: (_) => MusicCubit(widget.settings, widget.audio)..load(),
         ),
         BlocProvider(
