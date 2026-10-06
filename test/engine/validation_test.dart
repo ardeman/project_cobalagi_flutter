@@ -58,4 +58,48 @@ void main() {
       5,
     );
   });
+
+  test('reports an empty own block and a call inside it', () {
+    final functions = Level.fromRows(
+      id: 'f',
+      concept: 'functions',
+      rows: ['S...G'],
+      startFacing: Direction.east,
+      palette: {InstructionKind.move, InstructionKind.call},
+    );
+    expect(
+      validateProgram(const Program([Call(blockId: 'c')]), functions).single,
+      isA<EmptyProcedure>().having((i) => i.blockId, 'blockId', 'c'),
+    );
+    expect(
+      validateProgram(
+        const Program(
+          [Call()],
+          procedure: [
+            Move(),
+            Call(blockId: 'x'),
+          ],
+        ),
+        functions,
+      ).single,
+      isA<CallInProcedure>().having((i) => i.blockId, 'blockId', 'x'),
+    );
+    expect(
+      validateProgram(
+        const Program([Call(), Call()], procedure: [Move(steps: 2)]),
+        functions,
+      ),
+      isEmpty,
+    );
+  });
+
+  test('a call is only allowed where the palette has it', () {
+    expect(
+      validateProgram(
+        const Program([Call(blockId: 'c')], procedure: [Move()]),
+        level,
+      ).single,
+      isA<DisallowedInstruction>(),
+    );
+  });
 }

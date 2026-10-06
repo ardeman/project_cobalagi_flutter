@@ -26,6 +26,16 @@ final class EmptyRepeat extends ProgramIssue {
   const EmptyRepeat(super.blockId);
 }
 
+/// A call to the child's own block while that block is still empty.
+final class EmptyProcedure extends ProgramIssue {
+  const EmptyProcedure(super.blockId);
+}
+
+/// The child's own block calls itself.
+final class CallInProcedure extends ProgramIssue {
+  const CallInProcedure(super.blockId);
+}
+
 final class CountOutOfRange extends ProgramIssue {
   const CountOutOfRange(this.value, super.blockId);
 
@@ -43,7 +53,7 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
     issues.add(TooManyBlocks(program.blockCount, max));
   }
 
-  void visit(List<Instruction> body) {
+  void visit(List<Instruction> body, {bool inProcedure = false}) {
     for (final instruction in body) {
       if (!level.palette.contains(instruction.kind)) {
         issues.add(
@@ -58,13 +68,18 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
             issues.add(CountOutOfRange(times, instruction.blockId));
           }
           if (body.isEmpty) issues.add(EmptyRepeat(instruction.blockId));
-          visit(body);
-        case Move() || TurnLeft() || TurnRight():
+          visit(body, inProcedure: inProcedure);
+        case Call() when inProcedure:
+          issues.add(CallInProcedure(instruction.blockId));
+        case Call() when program.procedure.isEmpty:
+          issues.add(EmptyProcedure(instruction.blockId));
+        case Call() || Move() || TurnLeft() || TurnRight():
           break;
       }
     }
   }
 
   visit(program.body);
+  visit(program.procedure, inProcedure: true);
   return issues;
 }

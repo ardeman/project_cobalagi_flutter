@@ -109,4 +109,49 @@ void main() {
     expect(a.steps, b.steps);
     expect(a.events.length, b.events.length);
   });
+
+  group('the child\'s own block', () {
+    final stairs = level(['S.##', '#..#', '##.G']);
+    // Forward, turn right, forward, turn left: one stair down.
+    const step = [
+      Move(blockId: 'p1'),
+      TurnRight(blockId: 'p2'),
+      Move(blockId: 'p3'),
+      TurnLeft(blockId: 'p4'),
+    ];
+
+    test('a call runs the procedure, with the procedure\'s block ids', () {
+      final result = runProgram(
+        const Program([
+          Call(blockId: 'c1'),
+          Call(blockId: 'c2'),
+          Move(blockId: 'm'),
+        ], procedure: step),
+        stairs,
+      );
+      expect(result.outcome, RunOutcome.success);
+      expect(
+        result.events.map((e) => e.blockId).toSet(),
+        containsAll(['p1', 'p2', 'p3', 'p4', 'm']),
+      );
+    });
+
+    test('blocks in the procedure count toward the limit', () {
+      expect(const Program([Call(), Call()], procedure: step).blockCount, 6);
+    });
+
+    test('a procedure that calls itself stops instead of hanging', () {
+      final result = runProgram(
+        const Program([Call()], procedure: [Call()]),
+        stairs,
+      );
+      expect(result.outcome, RunOutcome.tooManySteps);
+    });
+
+    test('a call with an empty procedure does nothing', () {
+      final result = runProgram(const Program([Call()]), stairs);
+      expect(result.outcome, RunOutcome.stoppedShort);
+      expect(result.events, isEmpty);
+    });
+  });
 }

@@ -145,6 +145,8 @@ GeneratedPuzzle? _buildPuzzle(
           for (var i = 0; i < times; i++) {
             walk(body);
           }
+        case Call():
+          walk(solution.procedure);
       }
     }
   }

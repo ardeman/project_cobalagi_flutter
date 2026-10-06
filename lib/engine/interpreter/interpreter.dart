@@ -8,6 +8,10 @@ import 'run_event.dart';
 /// Each single-cell move and each turn counts as one step.
 const defaultStepLimit = 1000;
 
+/// How deep calls may nest before the run stops, so a procedure that calls
+/// itself ends instead of hanging. Validation already reports such programs.
+const maxCallDepth = 8;
+
 /// Runs [program] on [level] and returns every event plus the outcome.
 ///
 /// Deterministic: the same program and level always give the same result. The
@@ -18,7 +22,7 @@ RunResult runProgram(
   Level level, {
   int stepLimit = defaultStepLimit,
 }) {
-  final run = _Run(level, stepLimit);
+  final run = _Run(level, stepLimit, program.procedure);
   RunOutcome outcome;
   try {
     run.execute(program.body);
@@ -51,12 +55,14 @@ final class _Halt implements Exception {
 }
 
 final class _Run {
-  _Run(this.level, this.stepLimit)
+  _Run(this.level, this.stepLimit, this.procedure)
     : position = level.start,
       facing = level.startFacing;
 
   final Level level;
   final int stepLimit;
+  final List<Instruction> procedure;
+  var _depth = 0;
   final events = <RunEvent>[];
   final collected = <GridPoint>{};
   GridPoint position;
@@ -81,6 +87,12 @@ final class _Run {
           for (var i = 0; i < times; i++) {
             execute(body);
           }
+        case Call():
+          if (++_depth > maxCallDepth) {
+            throw const _Halt(RunOutcome.tooManySteps);
+          }
+          execute(procedure);
+          _depth--;
       }
     }
   }

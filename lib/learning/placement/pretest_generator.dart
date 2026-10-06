@@ -234,7 +234,8 @@ final class PretestGenerator {
         InstructionKind.move => const Move(),
         InstructionKind.turnLeft => const TurnLeft(),
         InstructionKind.turnRight => const TurnRight(),
-        InstructionKind.repeat => throw ArgumentError('no repeat here'),
+        InstructionKind.repeat ||
+        InstructionKind.call => throw ArgumentError('only moves and turns'),
       },
   ]);
 

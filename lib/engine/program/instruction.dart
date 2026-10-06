@@ -1,6 +1,6 @@
 /// The shared instruction set. Every editor (icon blocks, word blocks, typed
 /// code) compiles to these, and only these are executed by the interpreter.
-enum InstructionKind { move, turnLeft, turnRight, repeat }
+enum InstructionKind { move, turnLeft, turnRight, repeat, call }
 
 sealed class Instruction {
   const Instruction({this.blockId});
@@ -49,4 +49,13 @@ final class Repeat extends Instruction {
   @override
   int get blockCount =>
       1 + body.fold(0, (sum, instruction) => sum + instruction.blockCount);
+}
+
+/// Runs the program's [Program.procedure]: the child's own block (shown as a
+/// star). The procedure itself may not contain a call.
+final class Call extends Instruction {
+  const Call({super.blockId});
+
+  @override
+  InstructionKind get kind => InstructionKind.call;
 }
