@@ -46,6 +46,18 @@
       }
     }
   },
+  "appVersion": "App version {version} ({build})",
+  "@appVersion": {
+    "description": "Installed app version at the bottom of the parent area.",
+    "placeholders": {
+      "version": {
+        "type": "String"
+      },
+      "build": {
+        "type": "String"
+      }
+    }
+  },
   "supportCobaLagi": "Support Coba Lagi",
   "debugPlanOverride": "Debug: use full version",
   "players": "Players",

@@ -10,6 +10,7 @@ import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/features/profiles/data/profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sembast/sembast_memory.dart';
 
 /// Free until [redeem] gets [goodCode].
@@ -115,6 +116,20 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Language'), findsOneWidget);
+  });
+
+  testWidgets('the parent area shows the app version', (tester) async {
+    PackageInfo.setMockInitialValues(
+      appName: 'Coba Lagi',
+      packageName: 'com.ardeman.cobalagi',
+      version: '1.0.0',
+      buildNumber: '2',
+      buildSignature: '',
+    );
+    await pumpApp(tester);
+    await passParentGate(tester);
+    await tester.scrollUntilVisible(find.text('App version 1.0.0 (2)'), 200);
+    expect(find.text('App version 1.0.0 (2)'), findsOneWidget);
   });
 
   testWidgets('an unlock code in the parent area unlocks the supporter plan', (

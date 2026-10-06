@@ -81,6 +81,11 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String appVersion(String version, String build) {
+    return 'Versi aplikasi $version ($build)';
+  }
+
+  @override
   String get supportCobaLagi => 'Dukung Coba Lagi';
 
   @override

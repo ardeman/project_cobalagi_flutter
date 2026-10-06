@@ -81,6 +81,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String appVersion(String version, String build) {
+    return 'App version $version ($build)';
+  }
+
+  @override
   String get supportCobaLagi => 'Support Coba Lagi';
 
   @override

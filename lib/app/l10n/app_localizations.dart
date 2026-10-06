@@ -230,6 +230,12 @@ abstract class AppLocalizations {
   /// **'Sponsor: up to {count} players'**
   String planFull(int count);
 
+  /// Installed app version at the bottom of the parent area.
+  ///
+  /// In en, this message translates to:
+  /// **'App version {version} ({build})'**
+  String appVersion(String version, String build);
+
   /// No description provided for @supportCobaLagi.
   ///
   /// In en, this message translates to:
