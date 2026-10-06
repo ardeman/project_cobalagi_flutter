@@ -8,6 +8,8 @@
 import 'dart:io';
 
 import 'package:cobalagi/app/app.dart';
+import 'package:cobalagi/features/pretest/view/question_views.dart';
+import 'package:cobalagi/learning/placement/pretest_question.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
 import 'package:cobalagi/core/entitlement/entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/plan.dart';
@@ -275,6 +277,48 @@ Future<void> _buildLoopAnswer(WidgetTester tester, String levelId) async {
   throw StateError('no loop answer for $levelId');
 }
 
+/// Advances the real warm-up to its first picture-pattern question.
+Future<void> _openWarmUpPattern(WidgetTester tester) async {
+  await _open(tester, '/child/2/pretest');
+  for (var i = 0; i < 30; i++) {
+    final view = tester.widget<QuestionView>(find.byType(QuestionView));
+    if (view.question is PatternQuestion) return;
+    view.onAnswer!(view.question.correct);
+    await _settle(tester);
+  }
+  throw StateError('warm-up did not reach a pattern question');
+}
+
+Future<void> _openPlacement(WidgetTester tester, String language) async {
+  await _open(tester, '/parent');
+  final context = tester.element(find.byType(Scaffold).first);
+  GoRouter.of(context).push('/parent/progress/1');
+  await _settle(tester);
+  await tester.tap(
+    find.text(language == 'id' ? 'Ubah pulau awal' : 'Change starting island'),
+  );
+  await _settle(tester);
+}
+
+Future<void> _showSolved(WidgetTester tester, String language) async {
+  await _open(tester, '/child/1/replay/loops-03');
+  await _buildLoopAnswer(tester, 'loops-03');
+  await tester.tap(find.text(language == 'id' ? 'Jalan!' : 'Go!'));
+  for (var i = 0; i < 200; i++) {
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 5)),
+    );
+    if (find
+        .text(language == 'id' ? 'Kembali ke pulau' : 'Back to the island')
+        .evaluate()
+        .isNotEmpty) {
+      return;
+    }
+  }
+  throw StateError('loop answer did not reach the solved screen');
+}
+
 void main() {
   setUpAll(_loadFonts);
 
@@ -318,7 +362,7 @@ void main() {
       PackageInfo.setMockInitialValues(
         appName: 'Coba Lagi',
         packageName: 'com.ardeman.cobalagi',
-        version: '1.0.0',
+        version: '1.0.1',
         buildNumber: '4',
         buildSignature: '',
       );
@@ -346,112 +390,74 @@ void main() {
       await tester.pump(const Duration(seconds: 2));
     });
 
-    testWidgets('adventure map ($language)', (tester) async {
-      await pumpApp(tester);
-      await _open(tester, '/child/1');
-      await shoot('adventure-map');
-    });
+    for (final (prefix, size) in [('', _size), ('phone-', _phone)]) {
+      group('${prefix.isEmpty ? 'tablet' : 'phone'} $language', () {
+        Future<void> device(WidgetTester tester, {Plan plan = Plan.free}) =>
+            pumpApp(tester, plan: plan, size: size);
 
-    testWidgets('profiles ($language)', (tester) async {
-      await pumpApp(tester);
-      await _open(tester, '/');
-      await shoot('profiles');
-    });
+        testWidgets('map', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1');
+          await shoot('${prefix}adventure-map');
+        });
 
-    testWidgets('magic block ($language)', (tester) async {
-      await pumpApp(tester);
-      await _open(tester, '/child/1/replay/functions-02');
-      await _buildAnswer(tester, 'functions-02');
-      await shoot('play-functions');
-    });
+        testWidgets('profiles', (tester) async {
+          await device(tester);
+          await _open(tester, '/');
+          await shoot('${prefix}profiles');
+        });
 
-    testWidgets('look ahead ($language)', (tester) async {
-      await pumpApp(tester);
-      await _open(tester, '/child/1/replay/conditions-02');
-      await _buildConditionAnswer(tester);
-      await shoot('play-conditions');
-    });
+        testWidgets('loops puzzle', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/replay/loops-03');
+          await _buildLoopAnswer(tester, 'loops-03');
+          await shoot('${prefix}play-loops');
+        });
 
-    testWidgets('progress report ($language)', (tester) async {
-      // Tall enough for every island; shown as a framed card in the store.
-      await pumpApp(tester, plan: Plan.full, size: const Size(760, 820));
-      await _open(tester, '/parent');
-      final context = tester.element(find.byType(Scaffold).first);
-      GoRouter.of(context).push('/parent/progress/1');
-      await _settle(tester);
-      await shoot('parent-progress');
-    });
+        testWidgets('magic block', (tester) async {
+          await device(tester);
+          final level = prefix.isEmpty ? 'functions-02' : 'functions-01';
+          await _open(tester, '/child/1/replay/$level');
+          await _buildAnswer(tester, level);
+          await shoot('${prefix}play-functions');
+        });
 
-    group('phone', () {
-      Future<void> phone(WidgetTester tester, {Plan plan = Plan.free}) =>
-          pumpApp(tester, plan: plan, size: _phone);
+        testWidgets('look ahead', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/replay/conditions-02');
+          await _buildConditionAnswer(tester);
+          await shoot('${prefix}play-conditions');
+        });
 
-      testWidgets('map ($language)', (tester) async {
-        await phone(tester);
-        await _open(tester, '/child/1');
-        await shoot('phone-adventure-map');
+        testWidgets('solved', (tester) async {
+          await device(tester);
+          await _showSolved(tester, language);
+          await shoot('${prefix}solved');
+        });
+
+        testWidgets('warm-up', (tester) async {
+          await device(tester);
+          await _openWarmUpPattern(tester);
+          await shoot(prefix.isEmpty ? 'warm-up-pattern' : 'phone-warm-up');
+        });
+
+        testWidgets('parent placement', (tester) async {
+          await device(tester, plan: Plan.full);
+          await _openPlacement(tester, language);
+          await shoot('${prefix}parent-placement');
+        });
+
+        testWidgets('progress', (tester) async {
+          await device(tester, plan: Plan.full);
+          await _open(tester, '/parent');
+          final context = tester.element(find.byType(Scaffold).first);
+          GoRouter.of(context).push('/parent/progress/1');
+          await _settle(tester);
+          await tester.drag(find.byType(ListView), const Offset(0, -280));
+          await _settle(tester);
+          await shoot('${prefix}parent-progress');
+        });
       });
-
-      testWidgets('profiles ($language)', (tester) async {
-        await phone(tester);
-        await _open(tester, '/');
-        await shoot('phone-profiles');
-      });
-
-      testWidgets('loops puzzle ($language)', (tester) async {
-        await phone(tester);
-        await _open(tester, '/child/1/replay/loops-03');
-        await _buildLoopAnswer(tester, 'loops-03');
-        await shoot('phone-play-loops');
-      });
-
-      testWidgets('magic block ($language)', (tester) async {
-        await phone(tester);
-        await _open(tester, '/child/1/replay/functions-01');
-        await _buildAnswer(tester, 'functions-01');
-        await shoot('phone-play-functions');
-      });
-
-      testWidgets('look ahead ($language)', (tester) async {
-        await phone(tester);
-        await _open(tester, '/child/1/replay/conditions-02');
-        await _buildConditionAnswer(tester);
-        await shoot('phone-play-conditions');
-      });
-
-      testWidgets('solved ($language)', (tester) async {
-        await phone(tester);
-        await _open(tester, '/child/1/replay/loops-03');
-        await _buildLoopAnswer(tester, 'loops-03');
-        await tester.tap(find.text(language == 'id' ? 'Jalan!' : 'Go!'));
-        // Play the run until the cheer card shows, mid-confetti.
-        for (var i = 0; i < 200; i++) {
-          await tester.pump(const Duration(milliseconds: 50));
-          if (find.byIcon(Icons.celebration_rounded).evaluate().isNotEmpty ||
-              find
-                  .text(language == 'id' ? 'Lanjut' : 'Next')
-                  .evaluate()
-                  .isNotEmpty) {
-            break;
-          }
-        }
-        await shoot('phone-solved');
-      });
-
-      testWidgets('warm-up ($language)', (tester) async {
-        await phone(tester);
-        await _open(tester, '/child/2/pretest');
-        await shoot('phone-warm-up');
-      });
-
-      testWidgets('progress ($language)', (tester) async {
-        await phone(tester, plan: Plan.full);
-        await _open(tester, '/parent');
-        final context = tester.element(find.byType(Scaffold).first);
-        GoRouter.of(context).push('/parent/progress/1');
-        await _settle(tester);
-        await shoot('phone-parent-progress');
-      });
-    });
+    }
   }
 }

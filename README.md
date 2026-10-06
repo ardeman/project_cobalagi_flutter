@@ -206,7 +206,7 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 
 `store/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80), `full_description.txt` (max 4,000) and `changelogs/<versionCode>.txt` with each build's release notes (max 500), plus `feature_graphic.png` (1024 × 500), `screenshots/` (1920 × 1080, 16:9) for the 7-inch and 10-inch tablet sections and `phone_screenshots/` (1080 × 1920, 9:16) for the phone section. The app icon for the listing is `branding/play_store_icon.png`.
 
-`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders screenshots from the real app with sample data into `website/screenshots/`: the tablet map, Magic Block, Look Ahead and progress screenshots, and every `phone-*` screenshot in portrait (the other tablet ones were captured on a device). `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
+`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders every screenshot from the real app with sample data into `website/screenshots/`, in Indonesian and English. Tablet and phone store sets each contain eight matching features: the map, Loops, Magic Block, Look Ahead, a solved puzzle, the warm-up game, parent controls and the progress report. `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
 
 ## Roadmap (MVP)
 

@@ -11,6 +11,7 @@ Future<void> pumpQuestion(
   WidgetTester tester,
   PretestQuestion question, {
   int? chosen,
+  double size = 150,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -20,7 +21,7 @@ Future<void> pumpQuestion(
         body: Center(
           child: QuestionView(
             question: question,
-            size: 150,
+            size: size,
             onAnswer: chosen == null ? (_) {} : null,
             chosen: chosen,
             answerLabel: 'The answer is this one!',
@@ -33,6 +34,28 @@ Future<void> pumpQuestion(
 }
 
 void main() {
+  testWidgets('left and right choices fit a narrow phone with large targets', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(312, 760);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final side = PretestGenerator(
+      objects: const ['sun', 'star', 'house', 'car'],
+      colors: const ['red', 'blue', 'green'],
+      random: Random(1),
+    ).question(PretestSkill.direction, 1);
+    await pumpQuestion(tester, side, size: 110);
+    expect(tester.takeException(), isNull);
+    final cards = find.byType(Card);
+    expect(cards, findsNWidgets(2));
+    for (final card in [cards.at(0), cards.at(1)]) {
+      expect(tester.getSize(card).width, greaterThanOrEqualTo(64));
+      expect(tester.getTopLeft(card).dx, greaterThanOrEqualTo(0));
+      expect(tester.getTopRight(card).dx, lessThanOrEqualTo(312));
+    }
+  });
+
   final question = PretestGenerator(
     objects: const ['sun', 'star', 'house', 'car'],
     colors: const ['red', 'blue', 'green'],

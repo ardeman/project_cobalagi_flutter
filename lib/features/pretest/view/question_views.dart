@@ -197,12 +197,22 @@ class QuestionView extends StatelessWidget {
     // Side questions place their two options left and right of a house.
     if (question is SideQuestion) {
       return Row(
+        mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           cards[0],
-          SizedBox(width: size * 0.3),
-          PretestPicture(picture: const Picture('house'), size: size),
-          SizedBox(width: size * 0.3),
+          Flexible(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: size * 0.1),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: PretestPicture(
+                  picture: const Picture('house'),
+                  size: size,
+                ),
+              ),
+            ),
+          ),
           cards[1],
         ],
       );

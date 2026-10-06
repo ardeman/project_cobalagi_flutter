@@ -52,9 +52,11 @@ render_phone() { # locale suffix captions...
   phone_slide "phone-adventure-map$s.png"   "$1" "$dir/1-adventure-map.png"
   phone_slide "phone-play-loops$s.png"      "$2" "$dir/2-play-loops.png"
   phone_slide "phone-play-functions$s.png"  "$3" "$dir/3-play-functions.png"
-  phone_slide "phone-solved$s.png"          "$4" "$dir/4-solved.png"
-  phone_slide "phone-warm-up$s.png"         "$5" "$dir/5-warm-up.png"
-  phone_slide "phone-parent-progress$s.png" "$6" "$dir/6-progress.png"
+  phone_slide "phone-play-conditions$s.png" "$4" "$dir/4-play-conditions.png"
+  phone_slide "phone-solved$s.png"          "$5" "$dir/5-solved.png"
+  phone_slide "phone-warm-up$s.png"         "$6" "$dir/6-warm-up.png"
+  phone_slide "phone-parent-placement$s.png" "$7" "$dir/7-parents.png"
+  phone_slide "phone-parent-progress$s.png" "$8" "$dir/8-progress.png"
 }
 
 # slide <image> <caption> <out>: caption above a framed 1280 x 740 screenshot.
@@ -62,14 +64,6 @@ slide() {
   shot 1920 1080 "<div style=\"display:flex;flex-direction:column;align-items:center;gap:44px;padding-top:70px\">
       <h1 style=\"font-size:76px\">$2</h1>
       <div class=\"tablet\"><img src=\"file://$ROOT/website/screenshots/$1\" width=\"1280\" height=\"740\"></div>
-    </div>" "$3"
-}
-
-# dialog_slide <image> <caption> <out>: caption beside a framed dialog card.
-dialog_slide() {
-  shot 1920 1080 "<div style=\"display:flex;align-items:center;justify-content:center;gap:110px;height:1080px\">
-      <h1 style=\"font-size:84px;max-width:720px;line-height:1.1\">$2</h1>
-      <div class=\"tablet\" style=\"border-radius:56px\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"height:820px;border-radius:40px\"></div>
     </div>" "$3"
 }
 
@@ -95,16 +89,18 @@ render_locale() { # locale suffix tagline captions...
   slide "adventure-map$s.png"   "$1" "store/$locale/screenshots/1-adventure-map.png"
   slide "play-loops$s.png"      "$2" "store/$locale/screenshots/2-play-loops.png"
   slide "play-functions$s.png"  "$3" "store/$locale/screenshots/3-play-functions.png"
-  slide "solved$s.png"          "$4" "store/$locale/screenshots/4-solved.png"
-  slide "warm-up-pattern$s.png" "$5" "store/$locale/screenshots/5-warm-up.png"
-  dialog_slide "parent-placement$s.png" "$6" "store/$locale/screenshots/6-parents.png"
-  dialog_slide "parent-progress$s.png"  "$7" "store/$locale/screenshots/7-progress.png"
+  slide "play-conditions$s.png" "$4" "store/$locale/screenshots/4-play-conditions.png"
+  slide "solved$s.png"          "$5" "store/$locale/screenshots/5-solved.png"
+  slide "warm-up-pattern$s.png" "$6" "store/$locale/screenshots/6-warm-up.png"
+  slide "parent-placement$s.png" "$7" "store/$locale/screenshots/7-parents.png"
+  slide "parent-progress$s.png"  "$8" "store/$locale/screenshots/8-progress.png"
 }
 
 render_locale id "-id" "Belajar coding sambil bermain" \
   "Jelajahi pulau-pulau coding" \
   "Blok bergambar, tanpa perlu membaca" \
   "Buat blok sendiri, pakai berkali-kali" \
+  "Periksa jalan sebelum melangkah" \
   "Setiap percobaan disambut dengan semangat" \
   "Permainan pemanasan menemukan titik awal" \
   "Orang tua tetap memegang kendali" \
@@ -114,6 +110,7 @@ render_locale en-US "" "Learn to code through play" \
   "Explore the coding islands" \
   "Picture blocks, no reading needed" \
   "Build your own block, use it again and again" \
+  "Check the path before taking a step" \
   "Every try is met with encouragement" \
   "A warm-up game finds the right start" \
   "Parents stay in charge" \
@@ -123,16 +120,20 @@ render_phone id "-id" \
   "Jelajahi pulau-pulau coding" \
   "Blok bergambar, tanpa perlu membaca" \
   "Buat blok sendiri, pakai berkali-kali" \
+  "Periksa jalan sebelum melangkah" \
   "Setiap percobaan disambut dengan semangat" \
   "Permainan pemanasan menemukan titik awal" \
+  "Orang tua tetap memegang kendali" \
   "Fitur sponsor: laporan perkembangan anak"
 
 render_phone en-US "" \
   "Explore the coding islands" \
   "Picture blocks, no reading needed" \
   "Build your own block, use it again and again" \
+  "Check the path before taking a step" \
   "Every try is met with encouragement" \
   "A warm-up game finds the right start" \
+  "Parents stay in charge" \
   "Sponsor feature: your child's progress"
 
 echo "Store graphics rendered."
