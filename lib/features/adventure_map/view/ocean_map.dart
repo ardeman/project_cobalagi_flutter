@@ -2,8 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../../../app/l10n/app_localizations.dart';
-import '../../learning/view/concepts.dart';
+import 'package:cobalagi/app/l10n/app_localizations.dart';
+import 'package:cobalagi/features/learning/view/concepts.dart';
 
 /// One island on the [OceanMap].
 final class MapIsland {
@@ -243,126 +243,130 @@ class _Island extends StatelessWidget {
     return Semantics(
       button: !locked,
       label: conceptName(l10n, island.conceptId),
-      child: GestureDetector(
-        onTap: onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: size * 1.6,
-              height: size * 1.05,
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                clipBehavior: Clip.none,
-                children: [
-                  // Shallow water, sand and grass.
-                  _Ellipse(
-                    width: size * 1.6,
-                    height: size * 0.62,
-                    color: Colors.white.withValues(alpha: 0.35),
-                  ),
-                  Positioned(
-                    bottom: size * 0.06,
-                    child: _Ellipse(
-                      width: size * 1.36,
-                      height: size * 0.5,
-                      color: const Color(0xFFF6D88E),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          canRequestFocus: !locked,
+          borderRadius: BorderRadius.circular(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: size * 1.6,
+                height: size * 1.05,
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
+                  clipBehavior: Clip.none,
+                  children: [
+                    // Shallow water, sand and grass.
+                    _Ellipse(
+                      width: size * 1.6,
+                      height: size * 0.62,
+                      color: Colors.white.withValues(alpha: 0.35),
                     ),
-                  ),
-                  Positioned(
-                    bottom: size * 0.14,
-                    child: _Ellipse(
-                      width: size * 1.0,
-                      height: size * 0.32,
-                      color: locked
-                          ? const Color(0xFFB7C4B0)
-                          : const Color(0xFF7DCB6E),
+                    Positioned(
+                      bottom: size * 0.06,
+                      child: _Ellipse(
+                        width: size * 1.36,
+                        height: size * 0.5,
+                        color: const Color(0xFFF6D88E),
+                      ),
                     ),
-                  ),
-                  // The emblem standing on the island.
-                  Positioned(
-                    bottom: size * 0.22,
-                    child: Container(
-                      width: emblem,
-                      height: emblem,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          width: emblem * 0.08,
-                          color: island.current
-                              ? const Color(0xFFFFD54F)
-                              : Colors.white,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
+                    Positioned(
+                      bottom: size * 0.14,
+                      child: _Ellipse(
+                        width: size * 1.0,
+                        height: size * 0.32,
+                        color: locked
+                            ? const Color(0xFFB7C4B0)
+                            : const Color(0xFF7DCB6E),
+                      ),
+                    ),
+                    // The emblem standing on the island.
+                    Positioned(
+                      bottom: size * 0.22,
+                      child: Container(
+                        width: emblem,
+                        height: emblem,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            width: emblem * 0.08,
                             color: island.current
-                                ? const Color(0xAAFFD54F)
-                                : Colors.black26,
-                            blurRadius: island.current ? 18 : 6,
-                            offset: const Offset(0, 3),
+                                ? const Color(0xFFFFD54F)
+                                : Colors.white,
                           ),
-                        ],
-                      ),
-                      child: Icon(
-                        locked
-                            ? Icons.lock_rounded
-                            : conceptIcon(island.conceptId),
-                        size: emblem * 0.55,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  // Fog over islands the child can't reach yet.
-                  if (locked)
-                    Positioned(
-                      bottom: size * 0.5,
-                      right: size * 0.1,
-                      child: Icon(
-                        Icons.cloud_rounded,
-                        size: size * 0.5,
-                        color: Colors.white.withValues(alpha: 0.9),
+                          boxShadow: [
+                            BoxShadow(
+                              color: island.current
+                                  ? const Color(0xAAFFD54F)
+                                  : Colors.black26,
+                              blurRadius: island.current ? 18 : 6,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          locked
+                              ? Icons.lock_rounded
+                              : conceptIcon(island.conceptId),
+                          size: emblem * 0.55,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  if (island.current)
-                    Positioned(
-                      bottom: size * 0.22 + emblem * 0.7,
-                      child: _Bobbing(child: marker),
+                    // Fog over islands the child can't reach yet.
+                    if (locked)
+                      Positioned(
+                        bottom: size * 0.5,
+                        right: size * 0.1,
+                        child: Icon(
+                          Icons.cloud_rounded,
+                          size: size * 0.5,
+                          color: Colors.white.withValues(alpha: 0.9),
+                        ),
+                      ),
+                    if (island.current)
+                      Positioned(
+                        bottom: size * 0.22 + emblem * 0.7,
+                        child: _Bobbing(child: marker),
+                      ),
+                  ],
+                ),
+              ),
+              SizedBox(height: size * 0.04),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  for (var i = 0; i < 3; i++)
+                    Icon(
+                      i < island.stars
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
+                      size: size * 0.2,
+                      color: const Color(0xFFFFC83D),
+                      shadows: const [
+                        Shadow(color: Colors.black26, blurRadius: 2),
+                      ],
                     ),
                 ],
               ),
-            ),
-            SizedBox(height: size * 0.04),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < 3; i++)
-                  Icon(
-                    i < island.stars
-                        ? Icons.star_rounded
-                        : Icons.star_outline_rounded,
-                    size: size * 0.2,
-                    color: const Color(0xFFFFC83D),
-                    shadows: const [
-                      Shadow(color: Colors.black26, blurRadius: 2),
-                    ],
-                  ),
-              ],
-            ),
-            Text(
-              conceptName(l10n, island.conceptId),
-              textAlign: TextAlign.center,
-              style: textStyle,
-            ),
-            Text(
-              '${island.solvedLessons}/${island.totalLessons}',
-              style: textStyle?.copyWith(
-                fontSize: (textStyle.fontSize ?? 16) * 0.85,
-                fontWeight: FontWeight.w600,
+              Text(
+                conceptName(l10n, island.conceptId),
+                textAlign: TextAlign.center,
+                style: textStyle,
               ),
-            ),
-          ],
+              Text(
+                '${island.solvedLessons}/${island.totalLessons}',
+                style: textStyle?.copyWith(
+                  fontSize: (textStyle.fontSize ?? 16) * 0.85,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -406,7 +410,18 @@ class _BobbingState extends State<_Bobbing>
   late final _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 900),
-  )..repeat(reverse: true);
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (MediaQuery.disableAnimationsOf(context)) {
+      _controller.stop();
+      _controller.value = 0;
+    } else {
+      _controller.repeat(reverse: true);
+    }
+  }
 
   @override
   void dispose() {

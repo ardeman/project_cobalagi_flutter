@@ -1,6 +1,7 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/adventure_map/view/ocean_map.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 MapIsland island(String id, {bool current = false, bool locked = false}) =>
@@ -13,7 +14,11 @@ MapIsland island(String id, {bool current = false, bool locked = false}) =>
       locked: locked,
     );
 
-Future<List<String>> pumpMap(WidgetTester tester, Size size) async {
+Future<List<String>> pumpMap(
+  WidgetTester tester,
+  Size size, {
+  bool disableAnimations = false,
+}) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
@@ -23,6 +28,12 @@ Future<List<String>> pumpMap(WidgetTester tester, Size size) async {
       locale: const Locale('en'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
+      builder: (context, child) => MediaQuery(
+        data: MediaQuery.of(
+          context,
+        ).copyWith(disableAnimations: disableAnimations),
+        child: child!,
+      ),
       home: Scaffold(
         body: OceanMap(
           marker: const Icon(Icons.face, key: Key('marker')),
@@ -42,6 +53,47 @@ Future<List<String>> pumpMap(WidgetTester tester, Size size) async {
 }
 
 void main() {
+  testWidgets('keyboard navigation opens only unlocked islands', (
+    tester,
+  ) async {
+    final opened = await pumpMap(tester, const Size(1280, 740));
+
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+    await tester.pump();
+    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+    await tester.pump();
+
+    expect(opened, ['directions', 'sequencing', 'directions']);
+  });
+
+  testWidgets('reduced motion stops bobbing and responds to setting changes', (
+    tester,
+  ) async {
+    final marker = find.byKey(const Key('marker'));
+    await pumpMap(tester, const Size(1280, 740));
+    final start = tester.getTopLeft(marker);
+    await tester.pump(const Duration(milliseconds: 450));
+    expect(tester.getTopLeft(marker).dy, lessThan(start.dy));
+
+    await pumpMap(tester, const Size(1280, 740), disableAnimations: true);
+    final still = tester.getTopLeft(marker);
+    await tester.pump(const Duration(milliseconds: 450));
+    expect(tester.getTopLeft(marker), still);
+    expect(tester.hasRunningAnimations, isFalse);
+
+    await pumpMap(tester, const Size(1280, 740));
+    await tester.pump(const Duration(milliseconds: 450));
+    expect(tester.getTopLeft(marker).dy, lessThan(still.dy));
+  });
+
   for (final (name, size) in [
     ('tablet', const Size(1280, 740)),
     ('phone', const Size(400, 760)),
