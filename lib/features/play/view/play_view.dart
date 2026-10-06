@@ -292,7 +292,9 @@ class _PlayViewState extends State<PlayView> {
 
   /// The spoken goal of a level: its words and its voice clip.
   static (String Function(AppLocalizations), String) _goal(Level level) =>
-      level.palette.contains(InstructionKind.repeat)
+      level.palette.contains(InstructionKind.call)
+      ? ((l) => l.playGoalFunctions, VoiceClips.playGoalFunctions)
+      : level.palette.contains(InstructionKind.repeat)
       ? ((l) => l.playGoalLoops, VoiceClips.playGoalLoops)
       : level.stars.isNotEmpty
       ? ((l) => l.playGoalStars, VoiceClips.playGoalStars)

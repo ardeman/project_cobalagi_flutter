@@ -229,6 +229,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conceptLoops => 'Loops';
 
   @override
+  String get conceptFunctions => 'Magic Block';
+
+  @override
   String get decisionAdvance => 'New island unlocked!';
 
   @override
@@ -433,6 +436,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playGoalLoops => 'Use the repeat block to reach the flag!';
+
+  @override
+  String get playGoalFunctions =>
+      'Fill the star block, then use it again and again to reach the flag!';
 
   @override
   String get backToIsland => 'Back to the island';

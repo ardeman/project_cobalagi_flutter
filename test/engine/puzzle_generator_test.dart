@@ -35,6 +35,12 @@ void main() {
           if (kind == PuzzleKind.loops) {
             expect(usesRepeat(puzzle.solution.body), isTrue);
             expect(solve(level)!.blockCount, greaterThan(level.maxBlocks!));
+          } else if (kind == PuzzleKind.functions) {
+            expect(puzzle.solution.body, contains(isA<Call>()));
+            expect(puzzle.solution.procedure, isNotEmpty);
+            expect(level.palette, contains(InstructionKind.call));
+            expect(level.palette, isNot(contains(InstructionKind.repeat)));
+            expect(solve(level)!.blockCount, greaterThan(level.maxBlocks!));
           } else {
             expect(level.palette, isNot(contains(InstructionKind.repeat)));
           }

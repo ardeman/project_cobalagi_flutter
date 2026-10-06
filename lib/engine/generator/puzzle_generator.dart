@@ -9,7 +9,7 @@ import '../world/level.dart';
 import 'solver.dart';
 
 /// Puzzle families the generator can produce, one per early skill-map concept.
-enum PuzzleKind { directions, sequencing, loops }
+enum PuzzleKind { directions, sequencing, loops, functions }
 
 const minDifficulty = 1;
 const maxDifficulty = 5;
@@ -45,6 +45,7 @@ GeneratedPuzzle generatePuzzle(
       PuzzleKind.directions => _directions(random, difficulty),
       PuzzleKind.sequencing => _sequencing(random, difficulty),
       PuzzleKind.loops => _loops(random, difficulty),
+      PuzzleKind.functions => _functions(random, difficulty),
     };
     final puzzle = _buildPuzzle(
       kind,
@@ -65,6 +66,8 @@ const _sequencePalette = {
 };
 
 const _loopPalette = {..._sequencePalette, InstructionKind.repeat};
+
+const _functionPalette = {..._sequencePalette, InstructionKind.call};
 
 Instruction _turn(Random random) =>
     random.nextBool() ? const TurnLeft() : const TurnRight();
@@ -120,6 +123,29 @@ Program _loops(Random random, int difficulty) {
   ]);
 }
 
+/// A shape that comes back several times, like stairs. The block limit only
+/// fits building the shape once in the star block and calling it; from
+/// difficulty 3 the calls come with a lead-in and moves in between, so a plain
+/// loop wouldn't do either.
+Program _functions(Random random, int difficulty) {
+  final turn = _turn(random);
+  final back = turn is TurnLeft ? const TurnRight() : const TurnLeft();
+  final unit = <Instruction>[
+    ..._moves(difficulty == 1 ? 1 : 1 + random.nextInt(2)),
+    turn,
+    ..._moves(1 + random.nextInt(2)),
+    back,
+  ];
+  final calls = 3 + random.nextInt(2);
+  return Program([
+    if (difficulty >= 3) ..._moves(1 + random.nextInt(2)),
+    for (var c = 0; c < calls; c++) ...[
+      if (c > 0 && difficulty >= 4) ..._moves(1 + random.nextInt(2)),
+      const Call(),
+    ],
+  ], procedure: unit);
+}
+
 GeneratedPuzzle? _buildPuzzle(
   PuzzleKind kind,
   Program solution,
@@ -165,7 +191,12 @@ GeneratedPuzzle? _buildPuzzle(
   final shift = GridPoint(1 - minX, 1 - minY);
   GridPoint shifted(GridPoint p) => GridPoint(p.x + shift.x, p.y + shift.y);
 
-  final palette = kind == PuzzleKind.loops ? _loopPalette : _sequencePalette;
+  final palette = switch (kind) {
+    PuzzleKind.loops => _loopPalette,
+    PuzzleKind.functions => _functionPalette,
+    PuzzleKind.directions || PuzzleKind.sequencing => _sequencePalette,
+  };
+  final limited = kind == PuzzleKind.loops || kind == PuzzleKind.functions;
   final level = Level(
     id: id,
     concept: kind.name,
@@ -180,7 +211,7 @@ GeneratedPuzzle? _buildPuzzle(
     startFacing: facing,
     goal: shifted(path.last),
     palette: palette,
-    maxBlocks: kind == PuzzleKind.loops ? solution.blockCount + 1 : null,
+    maxBlocks: limited ? solution.blockCount + 1 : null,
   );
 
   // Verify: the intended solution works and there is no shorter route. The
@@ -189,10 +220,8 @@ GeneratedPuzzle? _buildPuzzle(
   if (!run.succeeded) return null;
   final shortest = solve(level);
   if (shortest == null || shortest.body.length != run.steps) return null;
-  // A loop puzzle must not fit within the block limit without a loop.
-  if (kind == PuzzleKind.loops && shortest.blockCount <= level.maxBlocks!) {
-    return null;
-  }
+  // A loop or star puzzle must not fit within the block limit without one.
+  if (limited && shortest.blockCount <= level.maxBlocks!) return null;
   return GeneratedPuzzle(level, solution);
 }
 

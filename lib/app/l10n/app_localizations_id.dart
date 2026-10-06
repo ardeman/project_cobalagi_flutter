@@ -218,6 +218,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get conceptLoops => 'Perulangan';
 
   @override
+  String get conceptFunctions => 'Blok Ajaib';
+
+  @override
   String get decisionAdvance => 'Pulau baru terbuka!';
 
   @override
@@ -420,6 +423,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get playGoalLoops => 'Pakai blok ulangi untuk sampai ke bendera!';
+
+  @override
+  String get playGoalFunctions =>
+      'Isi blok bintang, lalu pakai berkali-kali untuk sampai ke bendera!';
 
   @override
   String get backToIsland => 'Kembali ke pulau';

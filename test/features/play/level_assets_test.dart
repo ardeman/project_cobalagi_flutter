@@ -45,6 +45,43 @@ Program? withOneRepeat(List<Instruction> steps, int maxBlocks) {
   return null;
 }
 
+/// Searches for a star block (a run of [steps]) that, called wherever it
+/// fits, makes the program fit [maxBlocks].
+Program? withOneProcedure(List<Instruction> steps, int maxBlocks) {
+  bool same(List<Instruction> a, int at) =>
+      at + a.length <= steps.length &&
+      List.generate(
+        a.length,
+        (j) => a[j].kind == steps[at + j].kind,
+      ).every((s) => s);
+  for (var unit = 2; unit <= steps.length ~/ 2; unit++) {
+    for (var start = 0; start + unit <= steps.length; start++) {
+      final procedure = steps.sublist(start, start + unit);
+      final body = <Instruction>[];
+      var i = 0;
+      while (i < steps.length) {
+        if (same(procedure, i)) {
+          body.add(const Call());
+          i += unit;
+        } else if (steps.length - i < unit &&
+            List.generate(
+              steps.length - i,
+              (j) => steps[i + j].kind == procedure[j].kind,
+            ).every((s) => s)) {
+          // The run stops on the goal, so a final call may end part-way.
+          body.add(const Call());
+          i = steps.length;
+        } else {
+          body.add(steps[i++]);
+        }
+      }
+      final program = Program(body, procedure: procedure);
+      if (program.blockCount <= maxBlocks) return program;
+    }
+  }
+  return null;
+}
+
 void main() {
   test('each pack holds only its own concept', () {
     for (final pack in levelPacks) {
@@ -70,10 +107,13 @@ void main() {
       final straight = solve(level);
       expect(straight, isNotNull, reason: 'no route to the goal');
       final max = level.maxBlocks;
+      final calls = level.palette.contains(InstructionKind.call);
       final solution = max == null || straight!.blockCount <= max
           ? straight!
+          : calls
+          ? withOneProcedure(straight.body, max)
           : withOneRepeat(straight.body, max);
-      expect(solution, isNotNull, reason: 'no loop answer fits $max blocks');
+      expect(solution, isNotNull, reason: 'no answer fits $max blocks');
       expect(validateProgram(solution!, level), isEmpty);
       expect(runProgram(solution, level).succeeded, isTrue);
     });

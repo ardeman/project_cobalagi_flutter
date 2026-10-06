@@ -2,6 +2,7 @@
   "concepts": [
     { "id": "directions", "prerequisites": [] },
     { "id": "sequencing", "prerequisites": ["directions"] },
-    { "id": "loops", "prerequisites": ["sequencing"] }
+    { "id": "loops", "prerequisites": ["sequencing"] },
+    { "id": "functions", "prerequisites": ["loops"] }
   ]
 }

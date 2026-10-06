@@ -185,7 +185,7 @@ void main() {
       expect(find.text('Last 7 days'), findsOneWidget);
       expect(find.text('0 puzzles solved'), findsNWidgets(2));
       expect(find.text("Hasn't finished a puzzle yet"), findsOneWidget);
-      expect(find.textContaining('Not started'), findsNWidgets(3));
+      expect(find.textContaining('Not started'), findsNWidgets(4));
       expect(find.textContaining('Sponsors see the full'), findsNothing);
     });
   });

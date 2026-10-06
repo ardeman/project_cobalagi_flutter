@@ -1,0 +1,93 @@
+{
+  "levels": [
+    {
+      "id": "functions-01",
+      "concept": "functions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "call"
+      ],
+      "maxBlocks": 8,
+      "rows": [
+        "######",
+        "####G#",
+        "###..#",
+        "##..##",
+        "#S.###",
+        "######"
+      ]
+    },
+    {
+      "id": "functions-02",
+      "concept": "functions",
+      "facing": "north",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "call"
+      ],
+      "maxBlocks": 10,
+      "rows": [
+        "###########",
+        "#G..#######",
+        "###...#####",
+        "#####...###",
+        "#######...#",
+        "#########S#",
+        "###########"
+      ]
+    },
+    {
+      "id": "functions-03",
+      "concept": "functions",
+      "facing": "south",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "call"
+      ],
+      "maxBlocks": 10,
+      "rows": [
+        "#########",
+        "#S#######",
+        "#.#######",
+        "#...#####",
+        "###.#####",
+        "###...###",
+        "#####.###",
+        "#####..G#",
+        "#########"
+      ]
+    },
+    {
+      "id": "functions-04",
+      "concept": "functions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "call"
+      ],
+      "maxBlocks": 13,
+      "rows": [
+        "#############",
+        "###########G#",
+        "###########.#",
+        "#########...#",
+        "#########.###",
+        "#######...###",
+        "#######.#####",
+        "#####...#####",
+        "#####.#######",
+        "#S....#######",
+        "#############"
+      ]
+    }
+  ]
+}

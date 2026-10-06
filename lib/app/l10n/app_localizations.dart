@@ -470,6 +470,12 @@ abstract class AppLocalizations {
   /// **'Loops'**
   String get conceptLoops;
 
+  /// No description provided for @conceptFunctions.
+  ///
+  /// In en, this message translates to:
+  /// **'Magic Block'**
+  String get conceptFunctions;
+
   /// No description provided for @decisionAdvance.
   ///
   /// In en, this message translates to:
@@ -865,6 +871,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use the repeat block to reach the flag!'**
   String get playGoalLoops;
+
+  /// No description provided for @playGoalFunctions.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill the star block, then use it again and again to reach the flag!'**
+  String get playGoalFunctions;
 
   /// No description provided for @backToIsland.
   ///

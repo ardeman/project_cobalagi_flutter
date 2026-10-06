@@ -48,11 +48,13 @@ ExerciseResult result(
 
 void main() {
   group('skill graph', () {
-    test('follows Directions → Sequencing → Loops', () {
+    test('follows Directions → Sequencing → Loops → Functions', () {
       expect(graph.first, 'directions');
       expect(graph.nextAfter('directions'), 'sequencing');
       expect(graph.nextAfter('sequencing'), 'loops');
-      expect(graph.nextAfter('loops'), isNull);
+      expect(graph.nextAfter('loops'), 'functions');
+      expect(graph.nextAfter('functions'), isNull);
+      expect(graph.reviewTargetFor('functions'), 'loops');
       expect(graph.reviewTargetFor('loops'), 'sequencing');
       expect(graph.reviewTargetFor('directions'), isNull);
     });
@@ -157,9 +159,10 @@ void main() {
     });
 
     test('mastering the last concept completes the map', () {
-      final (_, decision) = play(engine.initialState(startConcept: 'loops'), [
-        for (var i = 0; i < config.minExercises; i++) result('loops'),
-      ]);
+      final (_, decision) = play(
+        engine.initialState(startConcept: 'functions'),
+        [for (var i = 0; i < config.minExercises; i++) result('functions')],
+      );
       expect(decision, isA<MapComplete>());
     });
 
