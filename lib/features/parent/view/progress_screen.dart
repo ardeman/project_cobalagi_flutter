@@ -16,6 +16,7 @@ import '../../profiles/cubit/profiles_cubit.dart';
 import '../../profiles/view/profile_avatar.dart';
 import 'donation_sheet.dart';
 import 'placement_dialog.dart';
+import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
 /// One child's progress for a parent. Reached from the parent area, behind the
 /// parent gate. The full report is a sponsor feature.
@@ -69,7 +70,10 @@ class _ProgressScreenState extends State<ProgressScreen> {
     final profile = context.watch<ProfilesCubit>().state.byId(widget.profileId);
     final plan = context.watch<EntitlementCubit>().state;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.progressTitle(profile?.nickname ?? ''))),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
+        title: Text(l10n.progressTitle(profile?.nickname ?? '')),
+      ),
       body: FutureBuilder(
         future: _data,
         builder: (context, snapshot) {
@@ -81,7 +85,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 720),
               child: ListView(
-                padding: const EdgeInsets.all(24),
+                padding: belowBars(context, const EdgeInsets.all(24)),
                 children: [
                   ListTile(
                     contentPadding: EdgeInsets.zero,

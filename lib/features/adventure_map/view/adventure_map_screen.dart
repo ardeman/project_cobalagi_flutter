@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cobalagi/core/widgets/glass_app_bar.dart';
+import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 
 import '../../../app/l10n/app_localizations.dart';
@@ -33,8 +35,51 @@ class AdventureMapScreen extends StatelessWidget {
     final concepts = engine.graph.concepts;
     final currentIndex = engine.graph.indexOf(learner.currentConcept);
 
+    final lessons = cubit.curriculum.lessons;
+    OceanMap map(EdgeInsets padding) => OceanMap(
+      padding: padding,
+      marker: GlassSurface(
+        padding: const EdgeInsets.all(3),
+        radius: 48,
+        blur: false,
+        child: ProfileAvatar(avatar: profile.avatar, size: 40),
+      ),
+      islands: [
+        for (var i = 0; i < concepts.length; i++)
+          MapIsland(
+            conceptId: concepts[i].id,
+            stars: ProgressReport.starsFor(
+              learner.progress[concepts[i].id],
+              engine.config,
+            ),
+            solvedLessons:
+                learner.progress[concepts[i].id]?.solvedLessons.length ?? 0,
+            totalLessons: lessons[concepts[i].id]?.length ?? 0,
+            current: i == currentIndex,
+            locked:
+                i > currentIndex &&
+                !learner.progress.containsKey(concepts[i].id),
+          ),
+      ],
+      onOpen: (id) => context.go('/child/$profileId/island/$id'),
+    );
+    final play = Padding(
+      padding: const EdgeInsets.all(16),
+      child: FilledButton.icon(
+        icon: const Icon(Icons.play_arrow_rounded, size: 48),
+        label: Text(l10n.play),
+        onPressed: () => context.go('/child/$profileId/play'),
+      ),
+    );
+    final banner = switch (learner.review) {
+      final trip? => _BonusBanner(conceptId: trip.conceptId),
+      null => null,
+    };
+
     return Scaffold(
-      appBar: AppBar(
+      // Phones scroll the sea under the glass bars.
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         leading: BackButton(onPressed: () => context.go('/')),
         title: Row(
           children: [
@@ -50,72 +95,57 @@ class AdventureMapScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: SafeArea(
-        child: WindowClassBuilder(
-          builder: (context, windowClass) {
-            final islandSize = switch (windowClass) {
-              WindowClass.compact => 104.0,
-              WindowClass.medium => 140.0,
-              WindowClass.expanded => 180.0,
-            };
-            if (learner.placement == null) {
-              return _Welcome(
+      body: WindowClassBuilder(
+        builder: (context, windowClass) {
+          final islandSize = switch (windowClass) {
+            WindowClass.compact => 104.0,
+            WindowClass.medium => 140.0,
+            WindowClass.expanded => 180.0,
+          };
+          if (learner.placement == null) {
+            return SafeArea(
+              child: _Welcome(
                 size: islandSize,
                 onStart: () => context.go('/child/$profileId/pretest'),
-              );
-            }
-            final lessons = cubit.curriculum.lessons;
-            return Column(
-              children: [
-                if (learner.review case final trip?)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                    child: _BonusBanner(conceptId: trip.conceptId),
-                  ),
-                Expanded(
-                  child: OceanMap(
-                    marker: GlassSurface(
-                      padding: const EdgeInsets.all(3),
-                      radius: 48,
-                      blur: false,
-                      child: ProfileAvatar(avatar: profile.avatar, size: 40),
-                    ),
-                    islands: [
-                      for (var i = 0; i < concepts.length; i++)
-                        MapIsland(
-                          conceptId: concepts[i].id,
-                          stars: ProgressReport.starsFor(
-                            learner.progress[concepts[i].id],
-                            engine.config,
-                          ),
-                          solvedLessons:
-                              learner
-                                  .progress[concepts[i].id]
-                                  ?.solvedLessons
-                                  .length ??
-                              0,
-                          totalLessons: lessons[concepts[i].id]?.length ?? 0,
-                          current: i == currentIndex,
-                          locked:
-                              i > currentIndex &&
-                              !learner.progress.containsKey(concepts[i].id),
-                        ),
-                    ],
-                    onOpen: (id) => context.go('/child/$profileId/island/$id'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: FilledButton.icon(
-                    icon: const Icon(Icons.play_arrow_rounded, size: 48),
-                    label: Text(l10n.play),
-                    onPressed: () => context.go('/child/$profileId/play'),
-                  ),
-                ),
-              ],
+              ),
             );
-          },
-        ),
+          }
+          if (windowClass != WindowClass.compact) {
+            return SafeArea(
+              child: Column(
+                children: [
+                  if (banner != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: banner,
+                    ),
+                  Expanded(child: map(EdgeInsets.zero)),
+                  play,
+                ],
+              ),
+            );
+          }
+          // Phones: the sea fills the screen and scrolls under the glass app
+          // bar and the Play bar; the bonus banner floats on top.
+          final top = MediaQuery.paddingOf(context).top;
+          return GlassFrame(
+            bottom: SafeArea(top: false, child: Center(child: play)),
+            builder: (context, insets) => Stack(
+              children: [
+                Positioned.fill(
+                  child: map(
+                    EdgeInsets.only(
+                      top: top + (banner == null ? 0 : 88),
+                      bottom: insets.bottom,
+                    ),
+                  ),
+                ),
+                if (banner != null)
+                  Positioned(top: top + 8, left: 16, right: 16, child: banner),
+              ],
+            ),
+          );
+        },
       ),
     );
   }

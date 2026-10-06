@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import 'package:cobalagi/core/widgets/glass_popups.dart';
 
 /// Asks a multiplication question that young children can't answer, as Google
 /// Play Families requires before settings and purchases. Returns true on success.
@@ -10,7 +11,7 @@ Future<bool> showParentGate(BuildContext context, {Random? random}) async {
   final rng = random ?? Random();
   final a = 3 + rng.nextInt(7);
   final b = 3 + rng.nextInt(7);
-  final passed = await showDialog<bool>(
+  final passed = await showGlassDialog<bool>(
     context: context,
     builder: (_) => _ParentGateDialog(a: a, b: b),
   );

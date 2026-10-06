@@ -93,8 +93,13 @@ void main() {
           find.descendant(of: page, matching: find.byType(Scrollable)).first,
         )
         .position;
-    // Adding blocks scrolled down to show them.
+    // Adding blocks scrolled down to show them, clear of the glass Go bar.
     expect(position.pixels, greaterThan(0));
+    final newest = find.byKey(ValueKey(cubit.state.main.last.id)).first;
+    expect(
+      tester.getRect(newest).bottom,
+      lessThanOrEqualTo(tester.getRect(go).top),
+    );
 
     await tester.tap(go);
     await _pumpScroll(tester);

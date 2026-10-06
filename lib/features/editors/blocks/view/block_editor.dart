@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -193,17 +195,27 @@ class _BlockEditorState extends State<BlockEditor> {
             // program sits below the fold on a phone.
             listenWhen: (before, after) =>
                 _count(after.main) > _count(before.main),
-            listener: (_, _) => WidgetsBinding.instance.addPostFrameCallback((
-              _,
-            ) {
-              final program = _program.currentContext;
-              if (program == null || !program.mounted) return;
-              Scrollable.ensureVisible(
-                program,
-                duration: const Duration(milliseconds: 250),
-                alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
-              );
-            }),
+            listener: (_, _) =>
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  final program = _program.currentContext;
+                  if (program == null || !program.mounted) return;
+                  final box = program.findRenderObject()! as RenderBox;
+                  // Reveal the program's end above any bar floating over the
+                  // page (reported as padding), like a text field's caret.
+                  final bar = MediaQuery.paddingOf(program).bottom;
+                  // Just the last row: new blocks land at the end.
+                  final last = min(box.size.height, widget.blockSize * 2);
+                  box.showOnScreen(
+                    rect: Rect.fromLTWH(
+                      0,
+                      box.size.height - last,
+                      box.size.width,
+                      last + bar,
+                    ),
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOut,
+                  );
+                }),
             child: column,
           )
         : column;

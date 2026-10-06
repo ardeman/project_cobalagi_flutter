@@ -36,9 +36,14 @@ class OceanMap extends StatefulWidget {
     required this.islands,
     required this.marker,
     required this.onOpen,
+    this.padding = EdgeInsets.zero,
   });
 
   final List<MapIsland> islands;
+
+  /// Space at the top and bottom kept clear of islands, for bars that float
+  /// over the map; the sea still fills it.
+  final EdgeInsets padding;
   final Widget marker;
 
   /// Opens an island's levels; never called for a locked island.
@@ -62,28 +67,34 @@ class _OceanMapState extends State<OceanMap> {
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
       final width = constraints.maxWidth;
-      final wide = width > constraints.maxHeight * 1.1;
+      final pad = widget.padding;
+      // The height islands may use, between the bars.
+      final room = max(0.0, constraints.maxHeight - pad.vertical);
+      final wide = width > room * 1.1;
       final n = widget.islands.length;
       // Island size: as big as fits, but not huge on large tablets.
       final size = wide
           ? min(
-              constraints.maxHeight * 0.24,
+              room * 0.24,
               width / (max(n, 1) * 2.2),
             ).clamp(72.0, 170.0).toDouble()
           : min(width * 0.32, 150.0).clamp(72.0, 150.0).toDouble();
       final height = wide
           ? constraints.maxHeight
-          : max(constraints.maxHeight, size * 0.9 + n * size * 2.35);
+          : max(
+              constraints.maxHeight,
+              pad.vertical + size * 0.9 + n * size * 2.35,
+            );
       final centres = [
         for (var i = 0; i < n; i++)
           wide
               ? Offset(
                   width * (n == 1 ? 0.5 : 0.13 + 0.74 * i / (n - 1)),
-                  height * (i.isEven ? 0.36 : 0.64),
+                  pad.top + room * (i.isEven ? 0.36 : 0.64),
                 )
               : Offset(
                   width * (i.isEven ? 0.3 : 0.7),
-                  size * 1.15 + i * size * 2.35,
+                  pad.top + size * 1.15 + i * size * 2.35,
                 ),
       ];
       // The path is bright up to the furthest island the child can open.
@@ -129,7 +140,7 @@ class _OceanMapState extends State<OceanMap> {
       final current = widget.islands.indexWhere((i) => i.current);
       final double offset = current < 0
           ? 0
-          : (centres[current].dy - constraints.maxHeight / 2)
+          : (centres[current].dy - pad.top - room / 2)
                 .clamp(0.0, max(0.0, height - constraints.maxHeight))
                 .toDouble();
       return SingleChildScrollView(

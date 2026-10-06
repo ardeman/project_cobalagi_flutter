@@ -5,10 +5,11 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/entitlement_service.dart';
 import '../../../core/entitlement/plan.dart';
+import 'package:cobalagi/core/widgets/glass_popups.dart';
 
 /// Donation choices from the store. Shown only in the parent area, behind the
 /// parent gate, as Google Play Families requires.
-Future<void> showDonationSheet(BuildContext context) => showModalBottomSheet(
+Future<void> showDonationSheet(BuildContext context) => showGlassSheet(
   context: context,
   showDragHandle: true,
   builder: (_) => BlocProvider.value(
@@ -89,7 +90,7 @@ class _DonationSheetState extends State<_DonationSheet> {
                     child: Text(l10n.restoreDonation),
                   ),
                   TextButton(
-                    onPressed: () => showDialog<void>(
+                    onPressed: () => showGlassDialog<void>(
                       context: context,
                       builder: (_) => BlocProvider.value(
                         value: context.read<EntitlementCubit>(),

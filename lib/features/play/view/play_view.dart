@@ -16,6 +16,7 @@ import '../../../engine/generator/solver.dart';
 import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
 import '../../../engine/program/instruction.dart';
+import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
 import 'package:cobalagi/features/editors/typed/data/typed_program.dart';
 import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
@@ -237,129 +238,139 @@ class _PlayViewState extends State<PlayView> {
           ),
         ],
         child: Scaffold(
+          // Phones pad inside their glass bars instead, so the page can
+          // scroll under the bars from edge to edge.
           body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: WindowClassBuilder(
-                builder: (context, windowClass) {
-                  final compact = windowClass == WindowClass.compact;
-                  final topBar = _TopBar(
-                    plan: widget.exercise.plan,
-                    goal: _goal(_level).$1(AppLocalizations.of(context)),
-                    onListen: _sayGoal,
-                    homePath: widget.homePath,
-                    compact: compact,
-                    // Phones keep the editor switch up here, so the world
-                    // keeps its height.
-                    editorSwitch: compact
-                        ? BlocBuilder<PlayCubit, PlayState>(
-                            builder: (context, play) => _EditorSwitch(
-                              codeMode: _codeMode,
-                              iconOnly: true,
-                              onPick:
-                                  !_finished && play.phase != PlayPhase.running
-                                  ? _pickEditor
-                                  : null,
-                            ),
-                          )
-                        : null,
+            child: WindowClassBuilder(
+              builder: (context, windowClass) {
+                final compact = windowClass == WindowClass.compact;
+                final topBar = _TopBar(
+                  plan: widget.exercise.plan,
+                  goal: _goal(_level).$1(AppLocalizations.of(context)),
+                  onListen: _sayGoal,
+                  homePath: widget.homePath,
+                  compact: compact,
+                  // Phones keep the editor switch up here, so the world
+                  // keeps its height.
+                  editorSwitch: compact
+                      ? BlocBuilder<PlayCubit, PlayState>(
+                          builder: (context, play) => _EditorSwitch(
+                            codeMode: _codeMode,
+                            iconOnly: true,
+                            onPick:
+                                !_finished && play.phase != PlayPhase.running
+                                ? _pickEditor
+                                : null,
+                          ),
+                        )
+                      : null,
+                );
+                final panel = ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  // The Step Box sits beside or above the world, never over
+                  // it, so it never hides a cell.
+                  child: ColoredBox(
+                    color: _game.backgroundColor(),
+                    child: Flex(
+                      direction: compact ? Axis.horizontal : Axis.vertical,
+                      children: [
+                        if (_level.palette.contains(InstructionKind.setSteps))
+                          Padding(
+                            padding: compact
+                                ? const EdgeInsets.fromLTRB(8, 8, 0, 8)
+                                : const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                            child: _StepBoxValue(compact: compact),
+                          ),
+                        Expanded(child: GameWidget(game: _game)),
+                      ],
+                    ),
+                  ),
+                );
+                // Feedback replaces the controls, so it never hides the
+                // world, and the controls aren't usable meanwhile anyway.
+                final controls =
+                    _feedbackCard(context) ??
+                    _RunControls(
+                      onHint: _finished ? null : _showHint,
+                      howTo: widget.showHowTo,
+                      compact: compact,
+                      codeMode: _codeMode,
+                    );
+                Widget editorFor({required bool fit}) =>
+                    BlocBuilder<PlayCubit, PlayState>(
+                      builder: (context, play) {
+                        final enabled =
+                            !_finished && play.phase != PlayPhase.running;
+                        return _codeMode
+                            ? TypedCodeEditor(
+                                enabled: enabled,
+                                activeBlockId: play.activeBlockId,
+                                fitContent: fit,
+                              )
+                            : BlockEditor(
+                                palette: _level.palette,
+                                blockSize: compact ? 56.0 : 72.0,
+                                activeBlockId: play.activeBlockId,
+                                issueBlockIds: {
+                                  for (final issue in play.issues)
+                                    ?issue.blockId,
+                                },
+                                enabled: enabled,
+                                showTips: !compact,
+                                fitContent: fit,
+                                showHowTo: widget.showHowTo && play.runs == 0,
+                                words: widget.words,
+                              );
+                      },
+                    );
+                if (compact && _codeMode && keyboardOpen) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: editorFor(fit: false),
                   );
-                  final panel = ClipRRect(
-                    borderRadius: BorderRadius.circular(24),
-                    // The Step Box sits beside or above the world, never over
-                    // it, so it never hides a cell.
-                    child: ColoredBox(
-                      color: _game.backgroundColor(),
-                      child: Flex(
-                        direction: compact ? Axis.horizontal : Axis.vertical,
-                        children: [
-                          if (_level.palette.contains(InstructionKind.setSteps))
-                            Padding(
-                              padding: compact
-                                  ? const EdgeInsets.fromLTRB(8, 8, 0, 8)
-                                  : const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                              child: _StepBoxValue(compact: compact),
+                }
+                if (compact) {
+                  // Phones: the world and the editor scroll as one page
+                  // under a glass top bar and glass controls at the bottom.
+                  return GlassFrame(
+                    top: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                      child: topBar,
+                    ),
+                    bottom: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+                      child: controls,
+                    ),
+                    builder: (context, insets) => LayoutBuilder(
+                      builder: (context, box) => SingleChildScrollView(
+                        controller: _page,
+                        padding:
+                            insets + const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            SizedBox(
+                              // Large, with the editor peeking below.
+                              height: max(
+                                0,
+                                min(
+                                  (box.maxHeight - insets.vertical) * 0.75,
+                                  box.maxWidth - 32,
+                                ),
+                              ),
+                              child: panel,
                             ),
-                          Expanded(child: GameWidget(game: _game)),
-                        ],
+                            const SizedBox(height: 12),
+                            editorFor(fit: true),
+                          ],
+                        ),
                       ),
                     ),
                   );
-                  // Feedback replaces the controls, so it never hides the
-                  // world, and the controls aren't usable meanwhile anyway.
-                  final controls =
-                      _feedbackCard(context) ??
-                      _RunControls(
-                        onHint: _finished ? null : _showHint,
-                        howTo: widget.showHowTo,
-                        compact: compact,
-                        codeMode: _codeMode,
-                      );
-                  Widget editorFor({required bool fit}) =>
-                      BlocBuilder<PlayCubit, PlayState>(
-                        builder: (context, play) {
-                          final enabled =
-                              !_finished && play.phase != PlayPhase.running;
-                          return _codeMode
-                              ? TypedCodeEditor(
-                                  enabled: enabled,
-                                  activeBlockId: play.activeBlockId,
-                                  fitContent: fit,
-                                )
-                              : BlockEditor(
-                                  palette: _level.palette,
-                                  blockSize: compact ? 56.0 : 72.0,
-                                  activeBlockId: play.activeBlockId,
-                                  issueBlockIds: {
-                                    for (final issue in play.issues)
-                                      ?issue.blockId,
-                                  },
-                                  enabled: enabled,
-                                  showTips: !compact,
-                                  fitContent: fit,
-                                  showHowTo: widget.showHowTo && play.runs == 0,
-                                  words: widget.words,
-                                );
-                        },
-                      );
-                  if (compact && _codeMode && keyboardOpen) {
-                    return editorFor(fit: false);
-                  }
-                  if (compact) {
-                    // Phones: the world and the editor scroll as one page
-                    // between a fixed top bar and the controls at the bottom.
-                    return Column(
-                      children: [
-                        topBar,
-                        const SizedBox(height: 12),
-                        Expanded(
-                          child: LayoutBuilder(
-                            builder: (context, box) => SingleChildScrollView(
-                              controller: _page,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  SizedBox(
-                                    // Large, with the editor peeking below.
-                                    height: min(
-                                      box.maxHeight * 0.75,
-                                      box.maxWidth,
-                                    ),
-                                    child: panel,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  editorFor(fit: true),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        controls,
-                      ],
-                    );
-                  }
-                  return Row(
+                }
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
                     children: [
                       Expanded(
                         flex: 3,
@@ -396,9 +407,9 @@ class _PlayViewState extends State<PlayView> {
                         ),
                       ),
                     ],
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ),

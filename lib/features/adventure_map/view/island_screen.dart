@@ -6,6 +6,7 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
+import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
 /// One island's levels. Levels already played can be replayed for fun; the
 /// rest open as the adventure reaches them.
@@ -32,7 +33,8 @@ class IslandScreen extends StatelessWidget {
     final color = conceptColor(conceptId);
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         leading: BackButton(onPressed: () => context.go('/child/$profileId')),
         title: Row(
           children: [
@@ -42,13 +44,16 @@ class IslandScreen extends StatelessWidget {
           ],
         ),
       ),
+      // The scroll view pads itself, so content passes under the bar.
       body: SafeArea(
+        top: false,
+        bottom: false,
         child: WindowClassBuilder(
           builder: (context, windowClass) {
             final tile = windowClass == WindowClass.compact ? 104.0 : 140.0;
             return Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: belowBars(context, const EdgeInsets.all(24)),
                 child: Column(
                   children: [
                     Wrap(

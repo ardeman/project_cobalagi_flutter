@@ -6,6 +6,7 @@ import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/program/validation.dart';
 import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
 import 'package:cobalagi/features/editors/typed/data/typed_program.dart';
+import 'package:cobalagi/core/widgets/glass_popups.dart';
 
 class TypedCodeEditor extends StatefulWidget {
   const TypedCodeEditor({
@@ -191,7 +192,7 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
           Text(l.codeDrafts),
           TextButton(
             style: TextButton.styleFrom(minimumSize: const Size(64, 64)),
-            onPressed: () => showDialog<void>(
+            onPressed: () => showGlassDialog<void>(
               context: context,
               builder: (context) => AlertDialog(
                 title: Text(l.codeHelp),

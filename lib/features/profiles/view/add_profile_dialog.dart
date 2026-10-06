@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import 'profile_avatar.dart';
+import 'package:cobalagi/core/widgets/glass_popups.dart';
 
 /// Returns `(nickname, avatar)`, or null if cancelled.
 Future<(String, int)?> showAddProfileDialog(BuildContext context) =>
-    showDialog<(String, int)>(
+    showGlassDialog<(String, int)>(
       context: context,
       builder: (_) => const _AddProfileDialog(),
     );

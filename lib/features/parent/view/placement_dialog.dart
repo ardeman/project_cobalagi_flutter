@@ -6,6 +6,7 @@ import '../../learning/data/curriculum_repository.dart';
 import '../../learning/data/parent_placement.dart';
 import '../../learning/view/concepts.dart';
 import '../../profiles/data/profile.dart';
+import 'package:cobalagi/core/widgets/glass_popups.dart';
 
 /// Lets a parent pick a child's starting island or replay the warm-up game.
 Future<void> showPlacementDialog(
@@ -15,7 +16,7 @@ Future<void> showPlacementDialog(
 }) async {
   final learner = await placement.load(profile.id);
   if (!context.mounted) return;
-  await showDialog<void>(
+  await showGlassDialog<void>(
     context: context,
     builder: (_) => _PlacementDialog(
       profile: profile,

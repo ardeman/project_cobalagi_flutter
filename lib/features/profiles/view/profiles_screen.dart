@@ -10,6 +10,7 @@ import '../../parent/view/parent_gate.dart';
 import '../cubit/profiles_cubit.dart';
 import 'add_profile_dialog.dart';
 import 'profile_avatar.dart';
+import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
 class ProfilesScreen extends StatelessWidget {
   const ProfilesScreen({super.key});
@@ -33,7 +34,8 @@ class ProfilesScreen extends StatelessWidget {
     final canAdd = state.profiles.length < maxProfiles;
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         title: Text(l10n.whoIsPlaying),
         actions: [
           // Labelled, so parents find it and it doesn't look like the lock
@@ -64,7 +66,7 @@ class ProfilesScreen extends StatelessWidget {
                 };
                 return GridView.extent(
                   maxCrossAxisExtent: tileSize,
-                  padding: const EdgeInsets.all(24),
+                  padding: belowBars(context, const EdgeInsets.all(24)),
                   mainAxisSpacing: 24,
                   crossAxisSpacing: 24,
                   children: [

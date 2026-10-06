@@ -19,6 +19,8 @@ import '../../profiles/data/profile.dart';
 import '../../profiles/view/profile_avatar.dart';
 import 'donation_sheet.dart';
 import 'placement_dialog.dart';
+import 'package:cobalagi/core/widgets/glass_popups.dart';
+import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
 /// Reached only through the parent gate.
 class ParentScreen extends StatelessWidget {
@@ -26,7 +28,7 @@ class ParentScreen extends StatelessWidget {
 
   Future<void> _confirmDelete(BuildContext context, Profile profile) async {
     final l10n = AppLocalizations.of(context);
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showGlassDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         content: Text(l10n.deletePlayerConfirm(profile.nickname)),
@@ -56,12 +58,13 @@ class ParentScreen extends StatelessWidget {
     final headerStyle = Theme.of(context).textTheme.titleMedium;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.parentArea)),
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(title: Text(l10n.parentArea)),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
           child: ListView(
-            padding: const EdgeInsets.all(24),
+            padding: belowBars(context, const EdgeInsets.all(24)),
             children: [
               Text(l10n.language, style: headerStyle),
               const SizedBox(height: 8),

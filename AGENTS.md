@@ -29,6 +29,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - Feedback to children comes from `CheerPicker` (`lib/core/feedback/cheers.dart`): varied, never the same words twice in a row, and never "wrong". Add phrases there (both ARB files), not one-off strings.
 - The warm-up game (`lib/learning/placement/`) must work without reading: every prompt has a voice clip id and pictures for answers. Placement thresholds and the number of second chances per skill (`secondChances`: extra questions at the same level after a wrong answer) live in `assets/config/pretest.json`. After a wrong answer it shows the right one (green ✓ with "The answer is this one!" under it, orange wobble on the tapped card) with encouraging words, never "wrong".
 - Layouts adapt via `WindowClass`/`WindowClassBuilder` (`lib/core/responsive/`), not fixed device sizes. Tap targets are at least 64dp.
+- Pop-ups go through `showGlassDialog`/`showGlassSheet` (`lib/core/widgets/glass_popups.dart`), never `showDialog`/`showModalBottomSheet` directly. Screens with an app bar use `GlassAppBar` with `Scaffold(extendBodyBehindAppBar: true)` and pad their scroll view with `belowBars`; custom bars over a scrolling page use `GlassFrame`. Bars turn to glass only while content is under them.
 - Drag-and-drop must work with touch and mouse (`Draggable`/`DragTarget`), with tap-to-add as an alternative.
 
 ## Guardrails
@@ -92,3 +93,4 @@ Record architectural choices here as one line each: date, decision, reason.
 - 2026-10-06: Typed code uses a bounded teaching-language parser (8,000 characters, 16 nested containers) that compiles to the shared `Program` with source-offset IDs. Actions move one step so code preserves block-editor lesson limits; the first code draft copies the blocks, then both drafts stay separate for the puzzle.
 
 - 2026-10-06: Variables start with one Step Box storing an integer from 1 to 9. Shared `SetSteps` and `MoveSteps` instructions reset the value each run, validate saving before use and emit `StepsStored` for playback; blocks and code share the same semantics.
+- 2026-10-06: Liquid-glass bars and pop-ups: content scrolls under app bars and phone bottom bars, which blur only while something is beneath (`GlassBar`); dialogs blur the screen behind a translucent panel, sheets are clipped glass. High contrast stays opaque. `GlassFrame` reports its bars as `MediaQuery` padding so revealed content (new blocks) stops clear of them.

@@ -11,6 +11,7 @@ import '../../../learning/placement/pretest_question.dart';
 import '../../../learning/placement/pretest_session.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import 'question_views.dart';
+import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
 /// The voice-led warm-up game that places a child on the map. After each
 /// answer the right option lights up green; a wrong tap wobbles in orange and
@@ -104,13 +105,17 @@ class _PretestScreenState extends State<PretestScreen> {
     final question = _session.current;
     final feedback = _feedback;
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      appBar: GlassAppBar(
         leading: CloseButton(
           onPressed: () => context.go('/child/${widget.profileId}'),
         ),
         title: _Footprints(progress: _session.progress),
       ),
+      // The scroll view pads itself, so content passes under the bar.
       body: SafeArea(
+        top: false,
+        bottom: false,
         child: WindowClassBuilder(
           builder: (context, windowClass) {
             final size = switch (windowClass) {
@@ -120,7 +125,7 @@ class _PretestScreenState extends State<PretestScreen> {
             };
             return Center(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: belowBars(context, const EdgeInsets.all(24)),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
                   child: feedback != null

@@ -43,9 +43,12 @@ abstract final class AppTheme {
         color: scheme.surface.withValues(alpha: 0.8),
         surfaceTintColor: Colors.transparent,
       ),
+      // Translucent over the blur that showGlassDialog puts behind it.
       dialogTheme: DialogThemeData(
-        shape: shape,
-        backgroundColor: scheme.surface.withValues(alpha: 0.97),
+        shape: shape.copyWith(
+          side: const BorderSide(color: Color(0xCCFFFFFF), width: 1.2),
+        ),
+        backgroundColor: scheme.surface.withValues(alpha: 0.82),
         surfaceTintColor: Colors.transparent,
       ),
       bottomSheetTheme: BottomSheetThemeData(
