@@ -16,7 +16,8 @@
       "clip_models": {
         "pretest_turn_left": "eleven_v4",
         "pretest_turn_right": "eleven_v4",
-        "pretest_answer_was": "eleven_v4"
+        "pretest_answer_was": "eleven_v4",
+        "play_goal_functions": "eleven_v4"
       }
     },
     "en": {
