@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -118,11 +120,15 @@ class _PretestScreenState extends State<PretestScreen> {
         bottom: false,
         child: WindowClassBuilder(
           builder: (context, windowClass) {
-            final size = switch (windowClass) {
+            final media = MediaQuery.of(context);
+            // Also fit the height, so a phone held sideways shows the
+            // answers without scrolling.
+            final height = media.size.height - media.padding.vertical - 48;
+            final size = min(switch (windowClass) {
               WindowClass.compact => 110.0,
               WindowClass.medium => 150.0,
               WindowClass.expanded => 190.0,
-            };
+            }, max(80.0, height / 3.4));
             return Center(
               child: SingleChildScrollView(
                 padding: belowBars(context, const EdgeInsets.all(24)),
@@ -262,10 +268,11 @@ class _Done extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const Icon(
+        Icon(
           Icons.emoji_events_rounded,
-          size: 160,
-          color: Color(0xFFFFC83D),
+          // Smaller on short screens, so the button stays in view.
+          size: min(160, MediaQuery.sizeOf(context).height * 0.22),
+          color: const Color(0xFFFFC83D),
         ),
         const SizedBox(height: 16),
         Text(

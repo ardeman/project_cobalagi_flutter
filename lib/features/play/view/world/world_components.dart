@@ -214,11 +214,14 @@ class CelebrationComponent extends ParticleSystemComponent {
     lifespan: 1.6,
     generator: (i) {
       final angle = random.nextDouble() * 2 * pi;
-      final speed = 1.5 + random.nextDouble() * 3;
+      final speed = 2 + random.nextDouble() * 3;
       final paint = Paint()..color = _colors[i % _colors.length];
       final size = 0.06 + random.nextDouble() * 0.07;
+      final out = Vector2(cos(angle), sin(angle));
       return AcceleratedParticle(
-        speed: Vector2(cos(angle) * speed, sin(angle) * speed - 2.5),
+        // From a ring around the character, never piled on top of it.
+        position: out * 0.55,
+        speed: out * speed - Vector2(0, 2.5),
         acceleration: Vector2(0, 6),
         child: i.isEven
             ? CircleParticle(radius: size, paint: paint)

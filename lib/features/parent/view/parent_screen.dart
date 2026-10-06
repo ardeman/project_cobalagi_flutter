@@ -63,77 +63,86 @@ class ParentScreen extends StatelessWidget {
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 720),
-          child: ListView(
-            padding: belowBars(context, const EdgeInsets.all(24)),
-            children: [
-              Text(l10n.language, style: headerStyle),
-              const SizedBox(height: 8),
-              SegmentedButton<String?>(
-                segments: [
-                  ButtonSegment(value: null, label: Text(l10n.languageSystem)),
-                  ButtonSegment(
-                    value: 'id',
-                    label: Text(l10n.languageIndonesian),
-                  ),
-                  ButtonSegment(value: 'en', label: Text(l10n.languageEnglish)),
-                ],
-                selected: {languageCode},
-                onSelectionChanged: (s) =>
-                    context.read<SettingsCubit>().setLanguageCode(s.first),
-              ),
-              const SizedBox(height: 8),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                secondary: const Icon(Icons.music_note_rounded),
-                title: Text(l10n.soundEffects),
-                subtitle: Text(l10n.soundEffectsHint),
-                value: context.watch<SoundEffectsCubit>().state,
-                onChanged: (on) =>
-                    context.read<SoundEffectsCubit>().set(on: on),
-              ),
-              SwitchListTile(
-                contentPadding: EdgeInsets.zero,
-                secondary: const Icon(Icons.queue_music_rounded),
-                title: Text(l10n.music),
-                value: context.watch<MusicCubit>().state,
-                onChanged: (on) => context.read<MusicCubit>().set(on: on),
-              ),
-              const SizedBox(height: 32),
-              Text(l10n.plan, style: headerStyle),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(
-                  plan == Plan.free
-                      ? l10n.planFree
-                      : l10n.planFull(Plan.full.maxProfiles),
+          // Below the Scaffold, so the padding includes the app bar.
+          child: Builder(
+            builder: (context) => ListView(
+              padding: belowBars(context, const EdgeInsets.all(24)),
+              children: [
+                Text(l10n.language, style: headerStyle),
+                const SizedBox(height: 8),
+                SegmentedButton<String?>(
+                  segments: [
+                    ButtonSegment(
+                      value: null,
+                      label: Text(l10n.languageSystem),
+                    ),
+                    ButtonSegment(
+                      value: 'id',
+                      label: Text(l10n.languageIndonesian),
+                    ),
+                    ButtonSegment(
+                      value: 'en',
+                      label: Text(l10n.languageEnglish),
+                    ),
+                  ],
+                  selected: {languageCode},
+                  onSelectionChanged: (s) =>
+                      context.read<SettingsCubit>().setLanguageCode(s.first),
                 ),
-                trailing: plan == Plan.free
-                    ? FilledButton(
-                        onPressed: () => showDonationSheet(context),
-                        child: Text(l10n.supportCobaLagi),
-                      )
-                    : const Icon(Icons.favorite_rounded, color: Colors.pink),
-              ),
-              if (kDebugMode)
+                const SizedBox(height: 8),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(l10n.debugPlanOverride),
-                  value: plan == Plan.full,
-                  onChanged: (full) => context
-                      .read<EntitlementCubit>()
-                      .debugOverride(full ? Plan.full : Plan.free),
+                  secondary: const Icon(Icons.music_note_rounded),
+                  title: Text(l10n.soundEffects),
+                  subtitle: Text(l10n.soundEffectsHint),
+                  value: context.watch<SoundEffectsCubit>().state,
+                  onChanged: (on) =>
+                      context.read<SoundEffectsCubit>().set(on: on),
                 ),
-              const SizedBox(height: 32),
-              Text(l10n.players, style: headerStyle),
-              for (final profile in profiles)
-                _PlayerTile(
-                  key: ValueKey(profile.id),
-                  profile: profile,
-                  onDelete: () => _confirmDelete(context, profile),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.queue_music_rounded),
+                  title: Text(l10n.music),
+                  value: context.watch<MusicCubit>().state,
+                  onChanged: (on) => context.read<MusicCubit>().set(on: on),
                 ),
-              const SizedBox(height: 32),
-              const AppVersionText(),
-            ],
+                const SizedBox(height: 32),
+                Text(l10n.plan, style: headerStyle),
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(
+                    plan == Plan.free
+                        ? l10n.planFree
+                        : l10n.planFull(Plan.full.maxProfiles),
+                  ),
+                  trailing: plan == Plan.free
+                      ? FilledButton(
+                          onPressed: () => showDonationSheet(context),
+                          child: Text(l10n.supportCobaLagi),
+                        )
+                      : const Icon(Icons.favorite_rounded, color: Colors.pink),
+                ),
+                if (kDebugMode)
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.debugPlanOverride),
+                    value: plan == Plan.full,
+                    onChanged: (full) => context
+                        .read<EntitlementCubit>()
+                        .debugOverride(full ? Plan.full : Plan.free),
+                  ),
+                const SizedBox(height: 32),
+                Text(l10n.players, style: headerStyle),
+                for (final profile in profiles)
+                  _PlayerTile(
+                    key: ValueKey(profile.id),
+                    profile: profile,
+                    onDelete: () => _confirmDelete(context, profile),
+                  ),
+                const SizedBox(height: 32),
+                const AppVersionText(),
+              ],
+            ),
           ),
         ),
       ),

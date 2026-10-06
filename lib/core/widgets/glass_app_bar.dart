@@ -64,7 +64,8 @@ class _GlassAppBarState extends State<GlassAppBar> {
 }
 
 /// [padding] plus the space a [GlassAppBar] and the system bars take, for a
-/// scroll view whose content passes under them.
+/// scroll view whose content passes under them. [context] must be below the
+/// Scaffold (use a Builder), or the app bar's height is missing.
 EdgeInsets belowBars(BuildContext context, EdgeInsets padding) {
   final insets = MediaQuery.paddingOf(context);
   return padding + EdgeInsets.only(top: insets.top, bottom: insets.bottom);

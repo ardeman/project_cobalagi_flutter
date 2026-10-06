@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../app/l10n/app_localizations.dart';
 import '../../../../engine/program/instruction.dart';
-import 'package:cobalagi/core/responsive/window_class.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 import '../../../../engine/program/validation.dart';
 import '../cubit/blocks_cubit.dart';
@@ -543,13 +542,23 @@ class _ContainerBlock extends StatelessWidget {
                 : color,
           ),
         ),
-        child: WindowClassBuilder(
-          builder: (context, windowClass) {
+        // Stack the header over the body when the room this block gets
+        // (not the screen) is too narrow for them side by side.
+        child: LayoutBuilder(
+          builder: (context, box) {
+            final nested = block.children.any(
+              (b) => b.type == BlockType.ifPathClear,
+            );
+            // Count buttons, then a condition holding a block.
+            final sideBySide =
+                (conditional ? size * 0.8 : 64 * 2 + size * 0.5) +
+                style.gap +
+                (nested ? size * 3.4 : size * 1.6);
             final stacked =
-                windowClass == WindowClass.compact &&
-                style.words &&
-                (conditional ||
-                    block.children.any((b) => b.type == BlockType.ifPathClear));
+                (style.words &&
+                    (conditional || nested) &&
+                    box.maxWidth < 600) ||
+                box.maxWidth < sideBySide;
             return stacked
                 ? Column(
                     mainAxisSize: MainAxisSize.min,

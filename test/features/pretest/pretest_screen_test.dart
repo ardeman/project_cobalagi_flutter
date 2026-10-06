@@ -5,6 +5,7 @@ import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/features/pretest/view/pretest_screen.dart';
+import 'package:cobalagi/features/pretest/view/question_views.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -52,10 +53,12 @@ class HeldAudio implements AudioService {
 
 Future<LearningCubit> pumpPretest(
   WidgetTester tester,
-  AudioService audio,
-) async {
-  tester.view.physicalSize = const Size(2560, 1600);
-  tester.view.devicePixelRatio = 2;
+  AudioService audio, {
+  Size physicalSize = const Size(2560, 1600),
+  double pixelRatio = 2,
+}) async {
+  tester.view.physicalSize = physicalSize;
+  tester.view.devicePixelRatio = pixelRatio;
   addTearDown(tester.view.reset);
   final (curriculum, progress) = (await tester.runAsync(() async {
     final db = await newDatabaseFactoryMemory().openDatabase('t.db');
@@ -169,5 +172,30 @@ void main() {
     }
     expect(answered, greaterThanOrEqualTo(5));
     expect(cubit.state.learner!.placement, isNotNull);
+  });
+
+  testWidgets('a phone held sideways shows every answer without scrolling', (
+    tester,
+  ) async {
+    final audio = HeldAudio();
+    await pumpPretest(
+      tester,
+      audio,
+      physicalSize: const Size(840, 380),
+      pixelRatio: 1,
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    final answers = find.descendant(
+      of: find.byType(QuestionView),
+      matching: find.byType(InkWell),
+    );
+    expect(answers, findsWidgets);
+    for (final answer in answers.evaluate()) {
+      final rect = tester.getRect(find.byElementPredicate((e) => e == answer));
+      expect(rect.bottom, lessThanOrEqualTo(380));
+      expect(rect.shortestSide, greaterThanOrEqualTo(64));
+    }
+    expect(tester.takeException(), isNull);
+    audio.finish();
   });
 }

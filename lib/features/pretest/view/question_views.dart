@@ -174,10 +174,15 @@ class QuestionView extends StatelessWidget {
       ),
     };
 
+    final screen = MediaQuery.sizeOf(context);
+    final sideways = screen.height < 600 && screen.width > screen.height * 1.3;
     final cards = [
       for (var i = 0; i < options.length; i++)
         _OptionCard(
-          size: question is SequencingQuestion ? size * 1.6 : size,
+          // Sideways, step cards share the row with the map, so they shrink.
+          size: question is SequencingQuestion
+              ? size * (sideways ? 1.3 : 1.6)
+              : size,
           onTap: onAnswer == null ? null : () => onAnswer!(i),
           mark: switch (chosen) {
             null => _Mark.none,
@@ -217,16 +222,30 @@ class QuestionView extends StatelessWidget {
         ],
       );
     }
+    final answers = Wrap(
+      alignment: WrapAlignment.center,
+      spacing: size * 0.2,
+      runSpacing: size * 0.2,
+      children: cards,
+    );
+    // Phones held sideways: the picture goes beside the answers, so both
+    // fit the short screen without scrolling.
+    if (stimulus != null && sideways) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          stimulus,
+          SizedBox(width: size * 0.4),
+          Flexible(child: answers),
+        ],
+      );
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         if (stimulus != null) ...[stimulus, SizedBox(height: size * 0.25)],
-        Wrap(
-          alignment: WrapAlignment.center,
-          spacing: size * 0.2,
-          runSpacing: size * 0.2,
-          children: cards,
-        ),
+        answers,
       ],
     );
   }

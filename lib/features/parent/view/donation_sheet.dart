@@ -36,8 +36,9 @@ class _DonationSheetState extends State<_DonationSheet> {
     final l10n = AppLocalizations.of(context);
     final service = context.read<EntitlementCubit>().service;
     final plan = context.watch<EntitlementCubit>().state;
+    // Scrolls when the sheet is short, as on a phone held sideways.
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,

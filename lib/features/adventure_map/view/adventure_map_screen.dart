@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -188,7 +190,8 @@ class _WelcomeState extends State<_Welcome> {
           children: [
             Icon(
               Icons.sports_esports_rounded,
-              size: size * 1.2,
+              // Smaller on short screens, so Start stays in view.
+              size: min(size * 1.2, MediaQuery.sizeOf(context).height * 0.22),
               color: const Color(0xFFFF7A59),
             ),
             const SizedBox(height: 16),

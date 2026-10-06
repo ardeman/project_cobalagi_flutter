@@ -192,6 +192,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Language'), findsOneWidget);
+    // The first heading starts below the glass app bar, not under it.
+    expect(
+      tester.getTopLeft(find.text('Language')).dy,
+      greaterThanOrEqualTo(tester.getBottomLeft(find.byType(AppBar)).dy),
+    );
   });
 
   testWidgets('the parent area shows the app version', (tester) async {

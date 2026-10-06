@@ -25,8 +25,12 @@ final _level = Level.fromRows(
   maxBlocks: 20,
 );
 
-Future<void> _pumpPhone(WidgetTester tester) async {
-  tester.view.physicalSize = const Size(400, 760);
+Future<void> _pumpPhone(
+  WidgetTester tester, {
+  Size size = const Size(400, 760),
+  Level? level,
+}) async {
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
@@ -43,7 +47,7 @@ Future<void> _pumpPhone(WidgetTester tester) async {
               mode: ExerciseMode.replay,
               difficulty: 1,
             ),
-            level: _level,
+            level: level ?? _level,
             key: 'phone',
           ),
           skipAfterRuns: 3,
@@ -105,5 +109,64 @@ void main() {
     await _pumpScroll(tester);
     expect(position.pixels, 0);
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('a phone held sideways fits the world, Go and the editor', (
+    tester,
+  ) async {
+    await _pumpPhone(
+      tester,
+      size: const Size(840, 380),
+      level: Level.fromRows(
+        id: 'sideways',
+        concept: 'functions',
+        rows: ['S..G'],
+        startFacing: Direction.east,
+        palette: {
+          InstructionKind.move,
+          InstructionKind.turnLeft,
+          InstructionKind.turnRight,
+          InstructionKind.call,
+          InstructionKind.repeat,
+          InstructionKind.ifPathClear,
+        },
+        maxBlocks: 12,
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    final go = find.widgetWithText(FilledButton, 'Go!');
+    expect(tester.getRect(go).bottom, lessThanOrEqualTo(380));
+    // The world sits beside the editor and keeps a usable size.
+    final world = tester.getRect(
+      find.byWidgetPredicate((widget) => widget is GameWidget),
+    );
+    final editor = tester.getRect(find.byType(BlockEditor));
+    expect(world.right, lessThan(editor.left));
+    expect(world.height, greaterThan(150));
+    // The editor scrolls on its own, with small blocks.
+    expect(
+      find.ancestor(
+        of: find.byType(BlockEditor),
+        matching: find.byType(SingleChildScrollView),
+      ),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('a tablet held upright stacks a large world over the editor', (
+    tester,
+  ) async {
+    await _pumpPhone(tester, size: const Size(800, 1280));
+    expect(tester.takeException(), isNull);
+    final world = tester.getRect(
+      find.byWidgetPredicate((widget) => widget is GameWidget),
+    );
+    final editor = tester.getRect(find.byType(BlockEditor));
+    expect(world.bottom, lessThanOrEqualTo(editor.top));
+    expect(world.width, greaterThan(700));
+    expect(
+      tester.getRect(find.widgetWithText(FilledButton, 'Go!')).bottom,
+      greaterThan(1280 - 120),
+    );
   });
 }

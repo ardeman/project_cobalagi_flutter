@@ -244,15 +244,25 @@ class _PlayViewState extends State<PlayView> {
             child: WindowClassBuilder(
               builder: (context, windowClass) {
                 final compact = windowClass == WindowClass.compact;
+                // Phones held sideways: wide enough for two columns, too short
+                // for the tablet's big blocks and fixed editor.
+                final short =
+                    !compact && MediaQuery.sizeOf(context).height < 500;
+                // Small blocks, an icon editor switch and a page that scrolls.
+                final tight = compact || short;
+                // Tall screens (phones, tablets held upright) stack the world
+                // over the editor in one scrolling page.
+                final screen = MediaQuery.sizeOf(context);
+                final stacked = compact || screen.height > screen.width * 1.15;
                 final topBar = _TopBar(
                   plan: widget.exercise.plan,
                   goal: _goal(_level).$1(AppLocalizations.of(context)),
                   onListen: _sayGoal,
                   homePath: widget.homePath,
-                  compact: compact,
+                  compact: tight,
                   // Phones keep the editor switch up here, so the world
                   // keeps its height.
-                  editorSwitch: compact
+                  editorSwitch: tight || stacked
                       ? BlocBuilder<PlayCubit, PlayState>(
                           builder: (context, play) => _EditorSwitch(
                             codeMode: _codeMode,
@@ -272,14 +282,14 @@ class _PlayViewState extends State<PlayView> {
                   child: ColoredBox(
                     color: _game.backgroundColor(),
                     child: Flex(
-                      direction: compact ? Axis.horizontal : Axis.vertical,
+                      direction: tight ? Axis.horizontal : Axis.vertical,
                       children: [
                         if (_level.palette.contains(InstructionKind.setSteps))
                           Padding(
-                            padding: compact
+                            padding: tight
                                 ? const EdgeInsets.fromLTRB(8, 8, 0, 8)
                                 : const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                            child: _StepBoxValue(compact: compact),
+                            child: _StepBoxValue(compact: tight),
                           ),
                         Expanded(child: GameWidget(game: _game)),
                       ],
@@ -293,7 +303,7 @@ class _PlayViewState extends State<PlayView> {
                     _RunControls(
                       onHint: _finished ? null : _showHint,
                       howTo: widget.showHowTo,
-                      compact: compact,
+                      compact: tight,
                       codeMode: _codeMode,
                     );
                 Widget editorFor({required bool fit}) =>
@@ -309,27 +319,27 @@ class _PlayViewState extends State<PlayView> {
                               )
                             : BlockEditor(
                                 palette: _level.palette,
-                                blockSize: compact ? 56.0 : 72.0,
+                                blockSize: tight ? 56.0 : 72.0,
                                 activeBlockId: play.activeBlockId,
                                 issueBlockIds: {
                                   for (final issue in play.issues)
                                     ?issue.blockId,
                                 },
                                 enabled: enabled,
-                                showTips: !compact,
+                                showTips: !tight,
                                 fitContent: fit,
                                 showHowTo: widget.showHowTo && play.runs == 0,
                                 words: widget.words,
                               );
                       },
                     );
-                if (compact && _codeMode && keyboardOpen) {
+                if (tight && _codeMode && keyboardOpen) {
                   return Padding(
                     padding: const EdgeInsets.all(16),
                     child: editorFor(fit: false),
                   );
                 }
-                if (compact) {
+                if (stacked) {
                   // Phones: the world and the editor scroll as one page
                   // under a glass top bar and glass controls at the bottom.
                   return GlassFrame(
@@ -365,6 +375,36 @@ class _PlayViewState extends State<PlayView> {
                           ],
                         ),
                       ),
+                    ),
+                  );
+                }
+                if (short) {
+                  // Sideways phones: world and Go on the left; the editor
+                  // scrolls on its own on the right.
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            children: [
+                              topBar,
+                              const SizedBox(height: 12),
+                              Expanded(child: panel),
+                              const SizedBox(height: 12),
+                              controls,
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 2,
+                          child: SingleChildScrollView(
+                            child: editorFor(fit: true),
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
@@ -814,47 +854,72 @@ class _RunControls extends StatelessWidget {
     final canGo = hasBlocks && (play.phase == PlayPhase.editing || running);
 
     final gap = compact ? 8.0 : 16.0;
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _Pulse(
-          active: howTo && hasBlocks && play.runs == 0 && !running,
-          child: FilledButton.icon(
-            style: compact
-                ? FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                  )
-                : null,
-            onPressed: canGo && !(running && !play.stepping)
-                ? () => context.read<PlayCubit>().run(program!)
-                : null,
-            icon: const Icon(Icons.play_arrow_rounded, size: 40),
-            label: Text(l10n.run),
-          ),
-        ),
-        SizedBox(width: gap),
-        IconButton.filledTonal(
-          tooltip: l10n.step,
-          onPressed: canGo && (!running || (play.stepping && !play.playing))
-              ? () => context.read<PlayCubit>().step(program!)
-              : null,
-          icon: const Icon(Icons.skip_next_rounded),
-        ),
-        SizedBox(width: gap),
-        IconButton.filledTonal(
-          tooltip: l10n.reset,
-          onPressed: play.phase == PlayPhase.editing
-              ? null
-              : context.read<PlayCubit>().reset,
-          icon: const Icon(Icons.replay_rounded),
-        ),
-        SizedBox(width: gap),
-        IconButton.filledTonal(
-          tooltip: l10n.hint,
-          onPressed: running ? null : onHint,
-          icon: const Icon(Icons.lightbulb_rounded),
-        ),
-      ],
+    final onGo = canGo && !(running && !play.stepping)
+        ? () => context.read<PlayCubit>().run(program!)
+        : null;
+    return LayoutBuilder(
+      builder: (context, box) {
+        // Small phones: Go keeps only its play picture, so all four
+        // buttons fit at full tap size.
+        final iconOnly = box.maxWidth < 340;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _Pulse(
+              active: howTo && hasBlocks && play.runs == 0 && !running,
+              child: iconOnly
+                  ? Tooltip(
+                      message: l10n.run,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                        ),
+                        onPressed: onGo,
+                        child: Icon(
+                          Icons.play_arrow_rounded,
+                          size: 40,
+                          semanticLabel: l10n.run,
+                        ),
+                      ),
+                    )
+                  : FilledButton.icon(
+                      style: compact
+                          ? FilledButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                              ),
+                            )
+                          : null,
+                      onPressed: onGo,
+                      icon: const Icon(Icons.play_arrow_rounded, size: 40),
+                      label: Text(l10n.run),
+                    ),
+            ),
+            SizedBox(width: gap),
+            IconButton.filledTonal(
+              tooltip: l10n.step,
+              onPressed: canGo && (!running || (play.stepping && !play.playing))
+                  ? () => context.read<PlayCubit>().step(program!)
+                  : null,
+              icon: const Icon(Icons.skip_next_rounded),
+            ),
+            SizedBox(width: gap),
+            IconButton.filledTonal(
+              tooltip: l10n.reset,
+              onPressed: play.phase == PlayPhase.editing
+                  ? null
+                  : context.read<PlayCubit>().reset,
+              icon: const Icon(Icons.replay_rounded),
+            ),
+            SizedBox(width: gap),
+            IconButton.filledTonal(
+              tooltip: l10n.hint,
+              onPressed: running ? null : onHint,
+              icon: const Icon(Icons.lightbulb_rounded),
+            ),
+          ],
+        );
+      },
     );
   }
 }
