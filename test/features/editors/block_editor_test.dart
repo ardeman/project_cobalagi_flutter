@@ -4,6 +4,7 @@ import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/engine/program/program.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -165,6 +166,83 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('in a scrolling page, a swipe on a block scrolls; a hold drags', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 500);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final cubit = BlocksCubit();
+    addTearDown(cubit.close);
+    final scroll = ScrollController();
+    addTearDown(scroll.dispose);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: SingleChildScrollView(
+              controller: scroll,
+              child: Column(
+                children: [
+                  // The world above the editor, as on a phone.
+                  const SizedBox(height: 300),
+                  BlockEditor(
+                    palette: const {
+                      InstructionKind.move,
+                      InstructionKind.repeat,
+                    },
+                    blockSize: 56,
+                    fitContent: true,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    // A repeat as wide as the screen, then more blocks below it.
+    cubit.add(BlockType.repeat);
+    final loop = cubit.state.main.single.id;
+    for (var i = 0; i < 4; i++) {
+      cubit.add(BlockType.forward, parentId: loop);
+    }
+    for (var i = 0; i < 6; i++) {
+      cubit.add(BlockType.forward);
+    }
+    await tester.pumpAndSettle();
+    final program = cubit.state;
+
+    // Scroll the repeat into view near the bottom, then swipe down on it.
+    final repeat = find.byKey(ValueKey(loop));
+    await tester.ensureVisible(repeat);
+    await tester.pumpAndSettle();
+    final start = scroll.offset;
+    expect(start, greaterThan(0));
+    await tester.dragFrom(tester.getCenter(repeat), const Offset(0, 120));
+    await tester.pumpAndSettle();
+    expect(scroll.offset, lessThan(start));
+    expect(cubit.state.main, program.main);
+
+    // Hold, then drag the last block onto the palette to remove it.
+    final last = find.byKey(ValueKey(cubit.state.main.last.id));
+    await tester.ensureVisible(last);
+    await tester.pumpAndSettle();
+    final gesture = await tester.startGesture(tester.getCenter(last));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.ensureVisible(find.byIcon(Icons.arrow_upward_rounded).first);
+    await gesture.moveTo(
+      tester.getCenter(find.byIcon(Icons.arrow_upward_rounded).first),
+    );
+    await tester.pump();
+    await gesture.up();
+    await tester.pumpAndSettle();
+    expect(cubit.state.main, hasLength(program.main.length - 1));
+  });
+
   for (final showTips in [true, false]) {
     testWidgets('the written Step Box tip follows showTips ($showTips)', (
       tester,
@@ -197,6 +275,35 @@ void main() {
       );
     });
   }
+
+  testWidgets('undo brings cleared blocks back; redo clears them again', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester);
+    final undo = find.byTooltip('Undo');
+    final redo = find.byTooltip('Redo');
+    IconButton button(Finder f) => tester.widget<IconButton>(
+      find.ancestor(of: f, matching: find.byType(IconButton)).first,
+    );
+    expect(button(undo).onPressed, isNull);
+    expect(button(redo).onPressed, isNull);
+
+    await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
+    await tester.tap(paletteBlock(Icons.turn_left_rounded));
+    await tester.pump();
+    await tester.tap(find.byTooltip('Remove all blocks'));
+    await tester.pump();
+    expect(cubit.state.main, isEmpty);
+
+    await tester.tap(undo);
+    await tester.pump();
+    expect(cubit.state.main, hasLength(2));
+    expect(button(redo).onPressed, isNotNull);
+
+    await tester.tap(redo);
+    await tester.pump();
+    expect(cubit.state.main, isEmpty);
+  });
 
   testWidgets('tap a condition then a palette action to fill it', (
     tester,
@@ -270,22 +377,59 @@ void main() {
     expect(cubit.state.main.single.type, BlockType.turnRight);
   });
 
-  testWidgets('dragging a placed block onto the palette removes it', (
+  for (final kind in [PointerDeviceKind.mouse, PointerDeviceKind.touch]) {
+    testWidgets('dragging a placed block onto the palette removes it ($kind)', (
+      tester,
+    ) async {
+      final cubit = await pumpEditor(tester)
+        ..add(BlockType.forward)
+        ..add(BlockType.turnLeft);
+      await tester.pump();
+      final placed = find.byIcon(Icons.turn_left_rounded).last;
+      final gesture = await tester.startGesture(
+        tester.getCenter(placed),
+        kind: kind,
+      );
+      // A finger holds first, since the program row can scroll.
+      if (kind == PointerDeviceKind.touch) {
+        await tester.pump(const Duration(milliseconds: 300));
+      }
+      await gesture.moveBy(const Offset(0, -20));
+      await gesture.moveTo(
+        tester.getCenter(paletteBlock(Icons.arrow_upward_rounded)),
+      );
+      await gesture.up();
+      await tester.pump();
+      expect(cubit.state.main.single.type, BlockType.forward);
+    });
+  }
+
+  testWidgets('on a tablet, a swipe on a placed block scrolls the program', (
     tester,
   ) async {
-    final cubit = await pumpEditor(tester)
-      ..add(BlockType.forward)
-      ..add(BlockType.turnLeft);
-    await tester.pump();
-    final placed = find.byIcon(Icons.turn_left_rounded).last;
-    final gesture = await tester.startGesture(tester.getCenter(placed));
-    await gesture.moveBy(const Offset(0, -20));
-    await gesture.moveTo(
-      tester.getCenter(paletteBlock(Icons.arrow_upward_rounded)),
+    final cubit = await pumpEditor(tester);
+    cubit.add(BlockType.repeat);
+    final loop = cubit.state.main.single.id;
+    for (var i = 0; i < 3; i++) {
+      cubit.add(BlockType.forward, parentId: loop);
+    }
+    for (var i = 0; i < 12; i++) {
+      cubit.add(BlockType.turnLeft);
+    }
+    await tester.pumpAndSettle();
+    final program = cubit.state;
+    final scrollable = tester.state<ScrollableState>(
+      find.byType(Scrollable).last,
     );
-    await gesture.up();
-    await tester.pump();
-    expect(cubit.state.main.single.type, BlockType.forward);
+    expect(scrollable.position.maxScrollExtent, greaterThan(0));
+    // Swipe up from the wide repeat, as a finger would.
+    await tester.dragFrom(
+      tester.getCenter(find.byKey(ValueKey(loop))),
+      const Offset(0, -120),
+    );
+    await tester.pumpAndSettle();
+    expect(scrollable.position.pixels, greaterThan(0));
+    expect(cubit.state.main, program.main);
   });
 
   testWidgets('the palette is disabled at the block limit', (tester) async {

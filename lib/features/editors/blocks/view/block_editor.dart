@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../app/l10n/app_localizations.dart';
@@ -77,6 +79,8 @@ class _BlockEditorState extends State<BlockEditor> {
       enabled: widget.enabled,
       activeBlockId: widget.activeBlockId,
       issueBlockIds: widget.issueBlockIds,
+      // Placed blocks sit in rows that scroll, on tablets too.
+      holdToDrag: true,
     );
 
     final top = <Widget>[
@@ -97,6 +101,7 @@ class _BlockEditorState extends State<BlockEditor> {
                   words: widget.words,
                   size: widget.blockSize,
                   enabled: widget.enabled && !cubit.isFull,
+                  hold: widget.fitContent,
                   onTap: () => cubit.tap(type),
                 ),
             ],
@@ -159,30 +164,49 @@ class _BlockEditorState extends State<BlockEditor> {
           Expanded(key: _program, child: program),
         ],
         SizedBox(height: gap),
-        Row(
+        // Count and buttons share a line when there is room; on narrow
+        // columns the count gets its own line above them.
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runSpacing: gap,
           children: [
             if (cubit.maxBlocks case final max?)
               Text(
                 '${cubit.blockCount} / $max',
                 style: Theme.of(context).textTheme.headlineSmall,
-              ),
-            const Spacer(),
-            IconButton.filledTonal(
-              tooltip: l10n.undo,
-              onPressed: widget.enabled && blocks.isNotEmpty
-                  ? cubit.removeLast
-                  : null,
-              icon: const Icon(Icons.backspace_rounded),
-            ),
-            SizedBox(width: gap),
-            IconButton.filledTonal(
-              tooltip: l10n.clearBlocks,
-              onPressed:
-                  widget.enabled &&
-                      (blocks.isNotEmpty || cubit.state.star.isNotEmpty)
-                  ? cubit.clear
-                  : null,
-              icon: const Icon(Icons.delete_sweep_rounded),
+              )
+            else
+              const SizedBox.shrink(),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton.filledTonal(
+                  tooltip: l10n.undo,
+                  onPressed: widget.enabled && cubit.canUndo
+                      ? cubit.undo
+                      : null,
+                  icon: const Icon(Icons.undo_rounded),
+                ),
+                SizedBox(width: gap),
+                IconButton.filledTonal(
+                  tooltip: l10n.redo,
+                  onPressed: widget.enabled && cubit.canRedo
+                      ? cubit.redo
+                      : null,
+                  icon: const Icon(Icons.redo_rounded),
+                ),
+                SizedBox(width: gap),
+                IconButton.filledTonal(
+                  tooltip: l10n.clearBlocks,
+                  onPressed:
+                      widget.enabled &&
+                          (blocks.isNotEmpty || cubit.state.star.isNotEmpty)
+                      ? cubit.clear
+                      : null,
+                  icon: const Icon(Icons.delete_sweep_rounded),
+                ),
+              ],
             ),
           ],
         ),
@@ -253,6 +277,7 @@ final class _BlockStyle {
     required this.enabled,
     required this.activeBlockId,
     required this.issueBlockIds,
+    this.holdToDrag = false,
   });
 
   final bool words;
@@ -261,6 +286,93 @@ final class _BlockStyle {
   final bool enabled;
   final String? activeBlockId;
   final Set<String> issueBlockIds;
+
+  /// See [_dragSource].
+  final bool holdToDrag;
+}
+
+/// How long a finger rests on a block before it lifts where its row
+/// scrolls; a swipe that moves sooner scrolls instead.
+const _holdToDrag = Duration(milliseconds: 200);
+
+/// A block that can be dragged. Where its row scrolls ([hold]), a finger
+/// lifts it only after a short hold, so swiping across wide blocks scrolls
+/// instead; a mouse, which scrolls with its wheel, still drags at once.
+Widget _dragSource<T extends Object>({
+  required bool hold,
+  required T data,
+  required Widget feedback,
+  required Widget childWhenDragging,
+  required Widget child,
+}) {
+  if (!hold) {
+    return Draggable<T>(
+      data: data,
+      feedback: feedback,
+      childWhenDragging: childWhenDragging,
+      child: child,
+    );
+  }
+  return _MouseDraggable<T>(
+    data: data,
+    feedback: feedback,
+    childWhenDragging: childWhenDragging,
+    child: _HoldDraggable<T>(
+      data: data,
+      feedback: feedback,
+      childWhenDragging: childWhenDragging,
+      child: child,
+    ),
+  );
+}
+
+/// Drags at once, but only with a mouse or trackpad.
+class _MouseDraggable<T extends Object> extends Draggable<T> {
+  const _MouseDraggable({
+    required super.data,
+    required super.feedback,
+    required super.childWhenDragging,
+    required super.child,
+  });
+
+  @override
+  MultiDragGestureRecognizer createRecognizer(
+    GestureMultiDragStartCallback onStart,
+  ) => ImmediateMultiDragGestureRecognizer(
+    supportedDevices: const {
+      PointerDeviceKind.mouse,
+      PointerDeviceKind.trackpad,
+    },
+  )..onStart = onStart;
+}
+
+/// Drags after [_holdToDrag] with a finger or stylus, with a small click.
+class _HoldDraggable<T extends Object> extends Draggable<T> {
+  const _HoldDraggable({
+    required super.data,
+    required super.feedback,
+    required super.childWhenDragging,
+    required super.child,
+  });
+
+  @override
+  MultiDragGestureRecognizer createRecognizer(
+    GestureMultiDragStartCallback onStart,
+  ) =>
+      DelayedMultiDragGestureRecognizer(
+          delay: _holdToDrag,
+          supportedDevices: const {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.stylus,
+            PointerDeviceKind.invertedStylus,
+            PointerDeviceKind.unknown,
+          },
+        )
+        ..onStart = (position) {
+          final drag = onStart(position);
+          if (drag != null) HapticFeedback.selectionClick();
+          return drag;
+        };
 }
 
 class _BlockRow extends StatelessWidget {
@@ -307,6 +419,7 @@ class _PaletteBlock extends StatelessWidget {
     required this.size,
     required this.enabled,
     required this.onTap,
+    this.hold = false,
   });
 
   final BlockType type;
@@ -314,6 +427,7 @@ class _PaletteBlock extends StatelessWidget {
   final double size;
   final bool enabled;
   final VoidCallback onTap;
+  final bool hold;
 
   @override
   Widget build(BuildContext context) {
@@ -323,7 +437,8 @@ class _PaletteBlock extends StatelessWidget {
       words: words,
     );
     if (!enabled) return Opacity(opacity: 0.4, child: tile);
-    return Draggable<BlockType>(
+    return _dragSource<BlockType>(
+      hold: hold,
       data: type,
       feedback: Material(
         type: MaterialType.transparency,
@@ -379,7 +494,8 @@ class _PlacedBlock extends StatelessWidget {
           ),
           // Flexible keeps a wide repeat block within the row, so it wraps.
           Flexible(
-            child: Draggable<Block>(
+            child: _dragSource<Block>(
+              hold: style.holdToDrag,
               data: block,
               feedback: Material(
                 type: MaterialType.transparency,

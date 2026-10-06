@@ -30,7 +30,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - The warm-up game (`lib/learning/placement/`) must work without reading: every prompt has a voice clip id and pictures for answers. Placement thresholds and the number of second chances per skill (`secondChances`: extra questions at the same level after a wrong answer) live in `assets/config/pretest.json`. After a wrong answer it shows the right one (green ✓ with "The answer is this one!" under it, orange wobble on the tapped card) with encouraging words, never "wrong".
 - Layouts adapt via `WindowClass`/`WindowClassBuilder` (`lib/core/responsive/`), not fixed device sizes. Tap targets are at least 64dp.
 - Pop-ups go through `showGlassDialog`/`showGlassSheet` (`lib/core/widgets/glass_popups.dart`), never `showDialog`/`showModalBottomSheet` directly. Screens with an app bar use `GlassAppBar` with `Scaffold(extendBodyBehindAppBar: true)` and pad their scroll view with `belowBars`; custom bars over a scrolling page use `GlassFrame`. Bars turn to glass only while content is under them.
-- Drag-and-drop must work with touch and mouse (`Draggable`/`DragTarget`), with tap-to-add as an alternative.
+- Drag-and-drop must work with touch and mouse (`Draggable`/`DragTarget`), with tap-to-add as an alternative. Where blocks sit in a row that scrolls (placed blocks everywhere, the palette too on phones), a finger lifts a block only after a short hold (`_dragSource`), so swiping across wide blocks scrolls instead; a mouse still drags at once.
 
 ## Guardrails
 
