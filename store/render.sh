@@ -2,7 +2,9 @@
 # Renders the Google Play graphics for each listing language with headless
 # Chrome, from website/screenshots/ and branding/icon.svg:
 #   store/<locale>/feature_graphic.png   1024 x 500
-#   store/<locale>/screenshots/*.png     1920 x 1080 (16:9, for phone and tablet)
+#   store/<locale>/screenshots/*.png     1920 x 1080 (16:9, tablets)
+#   store/<locale>/phone_screenshots/*.png 1080 x 1920 (9:16, phones), from the
+#     phone-*.png renders of tool/screenshots
 # Run from the project root: store/render.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -31,6 +33,28 @@ shot() {
     "$STYLE" "$1" "$2" "$3" > "$TMP/page.html"
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files \
     --window-size="$1,$2" --screenshot="$4" "file://$TMP/page.html" 2>/dev/null
+}
+
+# phone_slide <image> <caption> <out>: caption above a framed 400 x 760
+# phone screenshot, in portrait.
+phone_slide() {
+  shot 1080 1920 "<div style=\"display:flex;flex-direction:column;align-items:center;gap:56px;padding-top:110px\">
+      <h1 style=\"font-size:72px;max-width:900px;text-align:center;line-height:1.1\">$2</h1>
+      <div class=\"tablet\" style=\"padding:16px;border-radius:64px\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"height:1400px;border-radius:50px\"></div>
+    </div>" "$3"
+}
+
+render_phone() { # locale suffix captions...
+  local locale="$1" s="$2"; shift 2
+  local dir="store/$locale/phone_screenshots"
+  mkdir -p "$dir"
+  rm -f "$dir/"*.png
+  phone_slide "phone-adventure-map$s.png"   "$1" "$dir/1-adventure-map.png"
+  phone_slide "phone-play-loops$s.png"      "$2" "$dir/2-play-loops.png"
+  phone_slide "phone-play-functions$s.png"  "$3" "$dir/3-play-functions.png"
+  phone_slide "phone-solved$s.png"          "$4" "$dir/4-solved.png"
+  phone_slide "phone-warm-up$s.png"         "$5" "$dir/5-warm-up.png"
+  phone_slide "phone-parent-progress$s.png" "$6" "$dir/6-progress.png"
 }
 
 # slide <image> <caption> <out>: caption above a framed 1280 x 740 screenshot.
@@ -93,6 +117,22 @@ render_locale en-US "" "Learn to code through play" \
   "Every try is met with encouragement" \
   "A warm-up game finds the right start" \
   "Parents stay in charge" \
+  "Sponsor feature: your child's progress"
+
+render_phone id "-id" \
+  "Jelajahi pulau-pulau coding" \
+  "Blok bergambar, tanpa perlu membaca" \
+  "Buat blok sendiri, pakai berkali-kali" \
+  "Setiap percobaan disambut dengan semangat" \
+  "Permainan pemanasan menemukan titik awal" \
+  "Fitur sponsor: laporan perkembangan anak"
+
+render_phone en-US "" \
+  "Explore the coding islands" \
+  "Picture blocks, no reading needed" \
+  "Build your own block, use it again and again" \
+  "Every try is met with encouragement" \
+  "A warm-up game finds the right start" \
   "Sponsor feature: your child's progress"
 
 echo "Store graphics rendered."

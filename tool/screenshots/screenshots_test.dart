@@ -35,6 +35,9 @@ import 'package:sembast/sembast_memory.dart';
 /// Screenshots are 1280 x 740 logical pixels, rendered at 2x.
 const _size = Size(1280, 740);
 
+/// Phone screenshots, portrait.
+const _phone = Size(400, 760);
+
 /// The Material fonts that ship with the Flutter SDK running this test.
 Future<void> _loadFonts() async {
   final tester = Platform.resolvedExecutable;
@@ -95,9 +98,9 @@ Future<Database> _seed(String language) async {
       ),
       progress: {
         for (final (id, n) in [
-          ('directions', 5),
-          ('sequencing', 4),
-          ('loops', 4),
+          ('directions', 6),
+          ('sequencing', 6),
+          ('loops', 6),
         ])
           id: ConceptProgress(
             scores: const [1, 0.9, 1],
@@ -200,6 +203,59 @@ Future<void> _buildAnswer(WidgetTester tester, String levelId) async {
   throw StateError('no star answer for $levelId');
 }
 
+/// Builds a one-repeat answer to the loops level [levelId] in the editor.
+Future<void> _buildLoopAnswer(WidgetTester tester, String levelId) async {
+  final level = parseLevelPack(
+    File('assets/levels/loops.json').readAsStringSync(),
+  ).firstWhere((l) => l.id == levelId);
+  final steps = solve(level)!.body.map((i) => i.kind).toList();
+  final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
+  BlockType type(InstructionKind kind) =>
+      BlockType.values.firstWhere((t) => t.kind == kind);
+  for (var unit = 1; unit <= steps.length ~/ 2; unit++) {
+    for (var start = 0; start + unit * 2 <= steps.length; start++) {
+      final body = steps.sublist(start, start + unit);
+      bool same(int at) => List.generate(
+        unit,
+        (j) => at + j < steps.length && steps[at + j] == body[j],
+      ).every((s) => s);
+      var times = 1;
+      while (same(start + times * unit)) {
+        times++;
+      }
+      var rest = steps.sublist(start + times * unit);
+      // The run stops on the goal, so a final repeat may end part-way.
+      if (rest.isNotEmpty &&
+          rest.length < unit &&
+          List.generate(
+            rest.length,
+            (j) => rest[j] == body[j],
+          ).every((s) => s)) {
+        times++;
+        rest = [];
+      }
+      final blocks = start + 1 + unit + rest.length;
+      if (times >= 2 && blocks <= level.maxBlocks!) {
+        for (final kind in steps.sublist(0, start)) {
+          cubit.add(type(kind));
+        }
+        cubit.add(BlockType.repeat);
+        final loop = cubit.state.main.last.id;
+        cubit.setCount(loop, times);
+        for (final kind in body) {
+          cubit.add(type(kind), parentId: loop);
+        }
+        for (final kind in rest) {
+          cubit.add(type(kind));
+        }
+        await _settle(tester);
+        return;
+      }
+    }
+  }
+  throw StateError('no loop answer for $levelId');
+}
+
 void main() {
   setUpAll(_loadFonts);
 
@@ -292,6 +348,65 @@ void main() {
       GoRouter.of(context).push('/parent/progress/1');
       await _settle(tester);
       await shoot('parent-progress');
+    });
+
+    group('phone', () {
+      Future<void> phone(WidgetTester tester, {Plan plan = Plan.free}) =>
+          pumpApp(tester, plan: plan, size: _phone);
+
+      testWidgets('map ($language)', (tester) async {
+        await phone(tester);
+        await _open(tester, '/child/1');
+        await shoot('phone-adventure-map');
+      });
+
+      testWidgets('loops puzzle ($language)', (tester) async {
+        await phone(tester);
+        await _open(tester, '/child/1/replay/loops-03');
+        await _buildLoopAnswer(tester, 'loops-03');
+        await shoot('phone-play-loops');
+      });
+
+      testWidgets('magic block ($language)', (tester) async {
+        await phone(tester);
+        await _open(tester, '/child/1/replay/functions-01');
+        await _buildAnswer(tester, 'functions-01');
+        await shoot('phone-play-functions');
+      });
+
+      testWidgets('solved ($language)', (tester) async {
+        await phone(tester);
+        await _open(tester, '/child/1/replay/loops-03');
+        await _buildLoopAnswer(tester, 'loops-03');
+        await tester.tap(find.text(language == 'id' ? 'Jalan!' : 'Go!'));
+        // Play the run until the cheer card shows, mid-confetti.
+        for (var i = 0; i < 200; i++) {
+          await tester.pump(const Duration(milliseconds: 50));
+          if (find.byIcon(Icons.celebration_rounded).evaluate().isNotEmpty ||
+              find
+                  .text(language == 'id' ? 'Lanjut' : 'Next')
+                  .evaluate()
+                  .isNotEmpty) {
+            break;
+          }
+        }
+        await shoot('phone-solved');
+      });
+
+      testWidgets('warm-up ($language)', (tester) async {
+        await phone(tester);
+        await _open(tester, '/child/2/pretest');
+        await shoot('phone-warm-up');
+      });
+
+      testWidgets('progress ($language)', (tester) async {
+        await phone(tester, plan: Plan.full);
+        await _open(tester, '/parent');
+        final context = tester.element(find.byType(Scaffold).first);
+        GoRouter.of(context).push('/parent/progress/1');
+        await _settle(tester);
+        await shoot('phone-parent-progress');
+      });
     });
   }
 }
