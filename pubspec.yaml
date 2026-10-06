@@ -41,6 +41,7 @@ flutter:
   assets:
     - assets/audio/en/
     - assets/audio/id/
+    - assets/audio/music/
     - assets/audio/sfx/
     - assets/config/
     - assets/images/

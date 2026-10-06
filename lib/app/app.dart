@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/audio/audio_service.dart';
+import '../core/audio/music_cubit.dart';
 import '../core/audio/sound_effects_cubit.dart';
 import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
@@ -38,11 +39,24 @@ class CobaLagiApp extends StatefulWidget {
   State<CobaLagiApp> createState() => _CobaLagiAppState();
 }
 
-class _CobaLagiAppState extends State<CobaLagiApp> {
+class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
   late final GoRouter _router = createRouter();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  /// Music pauses while the app is in the background.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    widget.audio.foreground = state == AppLifecycleState.resumed;
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _router.dispose();
     widget.entitlement.dispose();
     widget.audio.dispose();
@@ -62,6 +76,9 @@ class _CobaLagiAppState extends State<CobaLagiApp> {
         BlocProvider(
           create: (_) =>
               SoundEffectsCubit(widget.settings, widget.audio)..load(),
+        ),
+        BlocProvider(
+          create: (_) => MusicCubit(widget.settings, widget.audio)..load(),
         ),
         BlocProvider(
           create: (_) => EntitlementCubit(widget.entitlement)..load(),

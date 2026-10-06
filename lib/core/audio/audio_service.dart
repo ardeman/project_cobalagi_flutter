@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/services.dart';
 
+import 'music.dart';
 import 'sound_effects.dart';
 
 /// Plays prerecorded voice clips from `assets/audio/<languageCode>/<clipId>.mp3`.
@@ -29,6 +30,15 @@ abstract interface class AudioService {
   bool get effectsOn;
   set effectsOn(bool on);
 
+  /// Background music on or off (a parent setting). While on, the theme loops
+  /// quietly whenever the app is in the foreground, softer while a voice
+  /// speaks.
+  bool get musicOn;
+  set musicOn(bool on);
+
+  /// Whether the app is visible; music pauses in the background.
+  set foreground(bool visible);
+
   Future<void> dispose();
 }
 
@@ -49,9 +59,81 @@ class AudioplayersAudioService implements AudioService {
   /// A few players, so quick steps can overlap without cutting each other.
   final _effects = List.generate(3, (_) => AudioPlayer());
   var _nextEffect = 0;
+  final _music = AudioPlayer();
+  var _musicStarted = false;
+  var _musicOn = false;
+  var _foreground = true;
+
+  /// Effects and music mix in without taking audio focus from the voice.
+  static final _mixing = AudioContextConfig(
+    focus: AudioContextConfigFocus.mixWithOthers,
+  ).build();
+  var _contextsSet = false;
+
+  static const _musicVolume = 0.22;
+  static const _musicUnderVoice = 0.08;
 
   @override
   var effectsOn = true;
+
+  @override
+  bool get musicOn => _musicOn;
+
+  @override
+  set musicOn(bool on) {
+    _musicOn = on;
+    unawaited(_updateMusic());
+  }
+
+  @override
+  set foreground(bool visible) {
+    _foreground = visible;
+    unawaited(_updateMusic());
+  }
+
+  Future<void> _setContexts() async {
+    if (_contextsSet) return;
+    _contextsSet = true;
+    try {
+      for (final player in [..._effects, _music]) {
+        await player.setAudioContext(_mixing);
+      }
+    } on Object {
+      // Not every platform supports audio contexts; mixing is a nicety.
+    }
+  }
+
+  Future<void> _updateMusic() async {
+    try {
+      if (!_musicOn || !_foreground) {
+        if (_musicStarted) await _music.pause();
+        return;
+      }
+      if (_musicStarted) {
+        await _music.resume();
+        return;
+      }
+      if (!await _hasAsset(MusicTrack.theme.asset)) return;
+      await _setContexts();
+      _musicStarted = true;
+      await _music.setReleaseMode(ReleaseMode.loop);
+      await _music.play(
+        AssetSource(MusicTrack.theme.asset),
+        volume: _playing ? _musicUnderVoice : _musicVolume,
+      );
+    } on Object {
+      // Music that can't play must never break the game.
+    }
+  }
+
+  void _duck({required bool underVoice}) {
+    if (!_musicStarted) return;
+    unawaited(
+      _music
+          .setVolume(underVoice ? _musicUnderVoice : _musicVolume)
+          .catchError((Object _) {}),
+    );
+  }
 
   Future<bool> _hasAsset(String path) async {
     _assets ??= (await AssetManifest.loadFromAssetBundle(
@@ -68,6 +150,7 @@ class AudioplayersAudioService implements AudioService {
 
   Future<void> _playEffect(SoundEffect effect) async {
     if (!await _hasAsset(effect.asset)) return;
+    await _setContexts();
     final player = _effects[_nextEffect];
     _nextEffect = (_nextEffect + 1) % _effects.length;
     try {
@@ -111,6 +194,7 @@ class AudioplayersAudioService implements AudioService {
 
   Future<void> _start(String path) async {
     _playing = true;
+    _duck(underVoice: true);
     try {
       await _voice.stop();
       await _voice.play(AssetSource(path));
@@ -125,6 +209,7 @@ class AudioplayersAudioService implements AudioService {
     if (_queue.isNotEmpty) {
       _start(_queue.removeAt(0));
     } else {
+      _duck(underVoice: false);
       _notifyIdle();
     }
   }
@@ -134,7 +219,7 @@ class AudioplayersAudioService implements AudioService {
     _notifyIdle();
     await _done.cancel();
     await _voice.dispose();
-    for (final player in _effects) {
+    for (final player in [..._effects, _music]) {
       await player.dispose();
     }
   }
@@ -161,6 +246,15 @@ class SilentAudioService implements AudioService {
 
   @override
   set effectsOn(bool on) {}
+
+  @override
+  bool get musicOn => false;
+
+  @override
+  set musicOn(bool on) {}
+
+  @override
+  set foreground(bool visible) {}
 
   @override
   Future<void> dispose() async {}

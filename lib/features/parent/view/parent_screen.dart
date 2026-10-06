@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import '../../../core/audio/music_cubit.dart';
 import '../../../core/audio/sound_effects_cubit.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/plan.dart';
@@ -86,6 +87,13 @@ class ParentScreen extends StatelessWidget {
                 value: context.watch<SoundEffectsCubit>().state,
                 onChanged: (on) =>
                     context.read<SoundEffectsCubit>().set(on: on),
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.queue_music_rounded),
+                title: Text(l10n.music),
+                value: context.watch<MusicCubit>().state,
+                onChanged: (on) => context.read<MusicCubit>().set(on: on),
               ),
               const SizedBox(height: 32),
               Text(l10n.plan, style: headerStyle),

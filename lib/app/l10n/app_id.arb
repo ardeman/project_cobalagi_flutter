@@ -37,6 +37,7 @@
   "statusMastered": "Sudah dikuasai",
   "progressLevels": "{solved} dari {total} level selesai",
   "progressSponsorOnly": "Sponsor bisa melihat laporan perkembangan lengkap: teka-teki yang selesai, waktu bermain, dan kemajuan di setiap pulau.",
+  "music": "Musik latar",
   "soundEffects": "Efek suara",
   "soundEffectsHint": "Suara petunjuk tetap terdengar.",
   "supportCobaLagi": "Dukung Coba Lagi",

@@ -132,6 +132,8 @@ dart run tool/generate_sfx.dart               # missing effects
 dart run tool/generate_sfx.dart --only goal   # redo one
 ```
 
+**Background music:** `tool/generate_music.dart` composes the looping theme (`MusicTrack`) with ElevenLabs Music from the prompt in `tool/music.json` into `assets/audio/music/`. The API key needs the *Music* permission. Run `dart run tool/generate_music.dart --force` to compose a new one.
+
 **Test voices (macOS):** to hear the voice flow before real recordings exist, generate every clip with the Mac's built-in voices (Damayanti for Indonesian, Flo for English):
 
 ```sh

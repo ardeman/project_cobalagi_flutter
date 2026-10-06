@@ -139,6 +139,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Sponsor bisa melihat laporan perkembangan lengkap: teka-teki yang selesai, waktu bermain, dan kemajuan di setiap pulau.';
 
   @override
+  String get music => 'Musik latar';
+
+  @override
   String get soundEffects => 'Efek suara';
 
   @override

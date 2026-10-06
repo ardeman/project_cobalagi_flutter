@@ -8,6 +8,7 @@ class SettingsRepository {
   static const _localeKey = 'locale';
   static const _supporterKey = 'supporter';
   static const _effectsKey = 'soundEffects';
+  static const _musicKey = 'music';
 
   /// Language code chosen in the parent area, or null to follow the device.
   Future<String?> loadLanguageCode() async =>
@@ -31,4 +32,10 @@ class SettingsRepository {
 
   Future<void> saveSoundEffects(bool on) =>
       _store.record(_effectsKey).put(_db, on);
+
+  /// Whether background music plays; on unless a parent turned it off.
+  Future<bool> loadMusic() async =>
+      await _store.record(_musicKey).get(_db) as bool? ?? true;
+
+  Future<void> saveMusic(bool on) => _store.record(_musicKey).put(_db, on);
 }

@@ -41,6 +41,12 @@ class HeldAudio implements AudioService {
   bool effectsOn = true;
 
   @override
+  bool musicOn = false;
+
+  @override
+  set foreground(bool visible) {}
+
+  @override
   Future<void> dispose() async {}
 }
 

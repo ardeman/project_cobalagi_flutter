@@ -56,6 +56,15 @@ class RecordingAudio implements AudioService {
   set effectsOn(bool on) => _inner.effectsOn = on;
 
   @override
+  bool get musicOn => _inner.musicOn;
+
+  @override
+  set musicOn(bool on) => _inner.musicOn = on;
+
+  @override
+  set foreground(bool visible) => _inner.foreground = visible;
+
+  @override
   Future<void> dispose() => _inner.dispose();
 }
 
