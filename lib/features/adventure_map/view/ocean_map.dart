@@ -63,6 +63,13 @@ class _OceanMapState extends State<OceanMap> {
     super.dispose();
   }
 
+  /// Distance between island centres on phones, in island sizes.
+  static const _rowStep = 1.75;
+
+  VoidCallback? _open(int i) => widget.islands[i].locked
+      ? null
+      : () => widget.onOpen(widget.islands[i].conceptId);
+
   @override
   Widget build(BuildContext context) => LayoutBuilder(
     builder: (context, constraints) {
@@ -78,12 +85,12 @@ class _OceanMapState extends State<OceanMap> {
               room * 0.24,
               width / (max(n, 1) * 2.2),
             ).clamp(72.0, 170.0).toDouble()
-          : min(width * 0.32, 150.0).clamp(72.0, 150.0).toDouble();
+          : min(width * 0.3, 150.0).clamp(72.0, 150.0).toDouble();
       final height = wide
           ? constraints.maxHeight
           : max(
               constraints.maxHeight,
-              pad.vertical + size * 0.9 + n * size * 2.35,
+              pad.vertical + size * 1.45 + max(n - 1, 0) * size * _rowStep,
             );
       final centres = [
         for (var i = 0; i < n; i++)
@@ -93,8 +100,8 @@ class _OceanMapState extends State<OceanMap> {
                   pad.top + room * (i.isEven ? 0.36 : 0.64),
                 )
               : Offset(
-                  width * (i.isEven ? 0.3 : 0.7),
-                  pad.top + size * 1.15 + i * size * 2.35,
+                  width * (i.isEven ? 0.27 : 0.73),
+                  pad.top + size * 1.1 + i * size * _rowStep,
                 ),
       ];
       // The path is bright up to the furthest island the child can open.
@@ -118,7 +125,7 @@ class _OceanMapState extends State<OceanMap> {
                 ),
               ),
             ),
-            for (var i = 0; i < n; i++)
+            for (var i = 0; i < n; i++) ...[
               Positioned(
                 left: centres[i].dx - size,
                 top: centres[i].dy - size * 0.85,
@@ -127,11 +134,34 @@ class _OceanMapState extends State<OceanMap> {
                   island: widget.islands[i],
                   size: size,
                   marker: widget.marker,
-                  onTap: widget.islands[i].locked
-                      ? null
-                      : () => widget.onOpen(widget.islands[i].conceptId),
+                  // Phones show the label beside the island instead.
+                  label: wide,
+                  onTap: _open(i),
                 ),
               ),
+              if (!wide)
+                // Beside the island, on the side away from the screen edge,
+                // so the path runs straight from shore to shore.
+                Positioned(
+                  top: centres[i].dy - size * 0.6,
+                  height: size,
+                  left: i.isEven ? centres[i].dx + size * 0.8 + 4 : 12,
+                  right: i.isEven ? 12 : width - centres[i].dx + size * 0.8 + 4,
+                  child: Align(
+                    alignment: i.isEven
+                        ? Alignment.centerLeft
+                        : Alignment.centerRight,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: _IslandLabel(
+                        island: widget.islands[i],
+                        size: size,
+                        onTap: _open(i),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ],
         ),
       );
@@ -245,12 +275,17 @@ class _Island extends StatelessWidget {
     required this.size,
     required this.marker,
     required this.onTap,
+    this.label = true,
   });
 
   final MapIsland island;
   final double size;
   final Widget marker;
   final VoidCallback? onTap;
+
+  /// Stars, name and lessons below the island; phones place an
+  /// [_IslandLabel] beside it instead.
+  final bool label;
 
   @override
   Widget build(BuildContext context) {
@@ -260,10 +295,6 @@ class _Island extends StatelessWidget {
         ? Colors.blueGrey.shade300
         : conceptColor(island.conceptId);
     final emblem = size * 0.62;
-    final textStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-      fontWeight: FontWeight.w800,
-      color: const Color(0xFF0B3C49),
-    );
     return Semantics(
       button: !locked,
       label: conceptName(l10n, island.conceptId),
@@ -368,38 +399,73 @@ class _Island extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: size * 0.04),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  for (var i = 0; i < 3; i++)
-                    Icon(
-                      i < island.stars
-                          ? Icons.star_rounded
-                          : Icons.star_outline_rounded,
-                      size: size * 0.2,
-                      color: const Color(0xFFFFC83D),
-                      shadows: const [
-                        Shadow(color: Colors.black26, blurRadius: 2),
-                      ],
-                    ),
-                ],
-              ),
-              Text(
-                conceptName(l10n, island.conceptId),
-                textAlign: TextAlign.center,
-                style: textStyle,
-              ),
-              Text(
-                '${island.solvedLessons}/${island.totalLessons}',
-                style: textStyle?.copyWith(
-                  fontSize: (textStyle.fontSize ?? 16) * 0.85,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              if (label) ...[
+                SizedBox(height: size * 0.04),
+                _IslandLabel(island: island, size: size),
+              ],
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// An island's stars, name and solved lessons.
+class _IslandLabel extends StatelessWidget {
+  const _IslandLabel({required this.island, required this.size, this.onTap});
+
+  final MapIsland island;
+  final double size;
+
+  /// Set when the label stands apart from its island, so it opens it too.
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final textStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
+      fontWeight: FontWeight.w800,
+      color: const Color(0xFF0B3C49),
+    );
+    final column = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var i = 0; i < 3; i++)
+              Icon(
+                i < island.stars
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                size: size * 0.2,
+                color: const Color(0xFFFFC83D),
+                shadows: const [Shadow(color: Colors.black26, blurRadius: 2)],
+              ),
+          ],
+        ),
+        Text(
+          conceptName(l10n, island.conceptId),
+          textAlign: TextAlign.center,
+          style: textStyle,
+        ),
+        Text(
+          '${island.solvedLessons}/${island.totalLessons}',
+          style: textStyle?.copyWith(
+            fontSize: (textStyle.fontSize ?? 16) * 0.85,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+    if (onTap == null) return column;
+    // The island itself carries the name for screen readers.
+    return ExcludeSemantics(
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: column,
       ),
     );
   }

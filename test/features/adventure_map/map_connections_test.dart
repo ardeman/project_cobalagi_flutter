@@ -10,16 +10,27 @@ void main() {
         for (var i = 0; i < 6; i++)
           wide
               ? Offset(160 + i * 235, i.isEven ? 210 : 370)
-              : Offset(i.isEven ? 120 : 280, 130 + i * size * 2.35),
+              : Offset(i.isEven ? 108 : 292, 130 + i * size * 1.75),
       ];
+      // Tablets: labels under the islands. Phones: beside them, on the side
+      // away from the screen edge (right of left islands, left of right ones).
       final labels = [
-        for (final centre in centres)
-          Rect.fromLTWH(
-            centre.dx - size * 0.65,
-            centre.dy + size * 0.25,
-            size * 1.3,
-            size * 0.6,
-          ),
+        for (var i = 0; i < centres.length; i++)
+          wide
+              ? Rect.fromLTWH(
+                  centres[i].dx - size * 0.65,
+                  centres[i].dy + size * 0.25,
+                  size * 1.3,
+                  size * 0.6,
+                )
+              : Rect.fromLTWH(
+                  i.isEven
+                      ? centres[i].dx + size * 0.8 + 4
+                      : centres[i].dx - size * 0.8 - 4 - size * 1.3,
+                  centres[i].dy - size * 0.6,
+                  size * 1.3,
+                  size,
+                ),
       ];
       final paths = mapConnections(
         centres: centres,
@@ -27,8 +38,14 @@ void main() {
         wide: wide,
       );
       expect(paths, hasLength(centres.length - 1));
-      for (final path in paths) {
+      for (var i = 0; i < paths.length; i++) {
+        final path = paths[i];
         final metric = path.computeMetrics().single;
+        // Each path leaves one island's shore and lands on the next one's.
+        final first = metric.getTangentForOffset(0)!.position;
+        final last = metric.getTangentForOffset(metric.length)!.position;
+        expect((first - centres[i]).distance, lessThan(size * 0.85));
+        expect((last - centres[i + 1]).distance, lessThan(size * 0.85));
         expect(metric.length, greaterThan(40));
         final start = metric.getTangentForOffset(0)!;
         final end = metric.getTangentForOffset(metric.length)!;
