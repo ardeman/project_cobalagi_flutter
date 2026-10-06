@@ -31,6 +31,10 @@ class _PlayScreenState extends State<PlayScreen> {
       homePath: '/child/${widget.profileId}',
       onFinished: learning.record,
       onNext: () => setState(() => _exercise = learning.nextExercise()),
+      // Until the child has solved a first puzzle.
+      showHowTo: learning.state.learner!.progress.values.every(
+        (p) => p.solvedLessons.isEmpty && p.scores.every((s) => s == 0),
+      ),
     );
   }
 }

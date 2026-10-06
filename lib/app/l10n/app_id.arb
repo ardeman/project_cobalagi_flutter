@@ -133,6 +133,7 @@
   "playGoalStars": "Kumpulkan semua bintang, lalu ke bendera!",
   "playGoalLoops": "Pakai blok ulangi untuk sampai ke bendera!",
   "playGoalFunctions": "Isi blok bintang, lalu pakai berkali-kali untuk sampai ke bendera!",
+  "playHowTo": "Seret blok ke kotak putih, lalu tekan Jalan!",
   "backToIsland": "Kembali ke pulau",
   "continueAdventure": "Lanjutkan petualangan",
   "levelNumber": "Level {number}",

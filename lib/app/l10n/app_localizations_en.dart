@@ -451,6 +451,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Fill the star block, then use it again and again to reach the flag!';
 
   @override
+  String get playHowTo => 'Drag a block into the white box, then press Go!';
+
+  @override
   String get backToIsland => 'Back to the island';
 
   @override

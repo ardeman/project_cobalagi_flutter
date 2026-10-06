@@ -35,9 +35,14 @@ class PlayView extends StatefulWidget {
     required this.homePath,
     required this.onFinished,
     required this.onNext,
+    this.showHowTo = false,
   });
 
   final Exercise exercise;
+
+  /// For a child who hasn't solved a puzzle yet: a hand shows how to add a
+  /// block, then the Go button pulses, until the first run.
+  final bool showHowTo;
   final int skipAfterRuns;
   final String homePath;
   final Future<Decision?> Function(ExerciseResult result) onFinished;
@@ -98,7 +103,10 @@ class _PlayViewState extends State<PlayView> {
     );
   }
 
-  void _sayGoal() => _say(_goal(_level).$2);
+  void _sayGoal() {
+    _say(_goal(_level).$2);
+    if (widget.showHowTo) _say(VoiceClips.playHowTo, queue: true);
+  }
 
   Future<void> _finish({required bool succeeded}) async {
     if (_finishing) return;
@@ -215,7 +223,10 @@ class _PlayViewState extends State<PlayView> {
                     // Feedback replaces the controls, so it never hides the
                     // world, and the controls aren't usable meanwhile anyway.
                     _feedbackCard(context) ??
-                        _RunControls(onHint: _finished ? null : _showHint),
+                        _RunControls(
+                          onHint: _finished ? null : _showHint,
+                          howTo: widget.showHowTo,
+                        ),
                   ],
                 );
                 final editor = BlocBuilder<PlayCubit, PlayState>(
@@ -227,6 +238,7 @@ class _PlayViewState extends State<PlayView> {
                       for (final issue in play.issues) ?issue.blockId,
                     },
                     enabled: !_finished && play.phase != PlayPhase.running,
+                    showHowTo: widget.showHowTo && play.runs == 0,
                   ),
                 );
                 return compact
@@ -442,9 +454,12 @@ class _FeedbackCard extends StatelessWidget {
 }
 
 class _RunControls extends StatelessWidget {
-  const _RunControls({required this.onHint});
+  const _RunControls({required this.onHint, this.howTo = false});
 
   final VoidCallback? onHint;
+
+  /// Pulse the Go button until the first run, once there's a block.
+  final bool howTo;
 
   @override
   Widget build(BuildContext context) {
@@ -458,12 +473,15 @@ class _RunControls extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        FilledButton.icon(
-          onPressed: canGo && !(running && !play.stepping)
-              ? () => context.read<PlayCubit>().run(blocks.program)
-              : null,
-          icon: const Icon(Icons.play_arrow_rounded, size: 40),
-          label: Text(l10n.run),
+        _Pulse(
+          active: howTo && hasBlocks && play.runs == 0 && !running,
+          child: FilledButton.icon(
+            onPressed: canGo && !(running && !play.stepping)
+                ? () => context.read<PlayCubit>().run(blocks.program)
+                : null,
+            icon: const Icon(Icons.play_arrow_rounded, size: 40),
+            label: Text(l10n.run),
+          ),
         ),
         const SizedBox(width: 16),
         IconButton.filledTonal(
@@ -490,4 +508,59 @@ class _RunControls extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Gently grows and shrinks [child] while [active], to point it out.
+class _Pulse extends StatefulWidget {
+  const _Pulse({required this.active, required this.child});
+
+  final bool active;
+  final Widget child;
+
+  @override
+  State<_Pulse> createState() => _PulseState();
+}
+
+class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 700),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _update();
+  }
+
+  @override
+  void didUpdateWidget(_Pulse old) {
+    super.didUpdateWidget(old);
+    _update();
+  }
+
+  void _update() {
+    if (widget.active && !_controller.isAnimating) {
+      _controller.repeat(reverse: true);
+    } else if (!widget.active) {
+      _controller
+        ..stop()
+        ..value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ScaleTransition(
+    scale: Tween(
+      begin: 1.0,
+      end: 1.12,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut)),
+    child: widget.child,
+  );
 }

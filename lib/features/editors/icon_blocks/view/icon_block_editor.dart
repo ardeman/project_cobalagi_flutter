@@ -11,7 +11,7 @@ import 'icon_block_tile.dart';
 /// Tier 1 editor: drag (touch or mouse) or tap palette blocks to build a row.
 /// Drag a placed block to reorder it, into a repeat block to repeat it, or
 /// back onto the palette to remove it.
-class IconBlockEditor extends StatelessWidget {
+class IconBlockEditor extends StatefulWidget {
   const IconBlockEditor({
     super.key,
     required this.palette,
@@ -19,13 +19,27 @@ class IconBlockEditor extends StatelessWidget {
     this.activeBlockId,
     this.issueBlockIds = const {},
     this.enabled = true,
+    this.showHowTo = false,
   });
+
+  /// Shows a hand dragging the first palette block into the program, for a
+  /// child who hasn't played yet. Hidden once the program has a block.
+  final bool showHowTo;
 
   final Set<InstructionKind> palette;
   final double blockSize;
   final String? activeBlockId;
   final Set<String> issueBlockIds;
   final bool enabled;
+
+  @override
+  State<IconBlockEditor> createState() => _IconBlockEditorState();
+}
+
+class _IconBlockEditorState extends State<IconBlockEditor> {
+  final _stack = GlobalKey();
+  final _firstBlock = GlobalKey();
+  final _program = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -35,19 +49,19 @@ class IconBlockEditor extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final types = [
       for (final type in IconBlockType.values)
-        if (palette.contains(type.kind)) type,
+        if (widget.palette.contains(type.kind)) type,
     ];
-    final gap = blockSize * 0.18;
-    final showStar = palette.contains(InstructionKind.call);
+    final gap = widget.blockSize * 0.18;
+    final showStar = widget.palette.contains(InstructionKind.call);
     final style = _BlockStyle(
-      size: blockSize,
+      size: widget.blockSize,
       gap: gap,
-      enabled: enabled,
-      activeBlockId: activeBlockId,
-      issueBlockIds: issueBlockIds,
+      enabled: widget.enabled,
+      activeBlockId: widget.activeBlockId,
+      issueBlockIds: widget.issueBlockIds,
     );
 
-    return Column(
+    final column = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         DragTarget<IconBlock>(
@@ -68,9 +82,10 @@ class IconBlockEditor extends StatelessWidget {
               children: [
                 for (final type in types)
                   _PaletteBlock(
+                    key: type == types.first ? _firstBlock : null,
                     type: type,
-                    size: blockSize,
-                    enabled: enabled && !cubit.isFull,
+                    size: widget.blockSize,
+                    enabled: widget.enabled && !cubit.isFull,
                     onTap: () => cubit.tap(type),
                   ),
               ],
@@ -90,11 +105,12 @@ class IconBlockEditor extends StatelessWidget {
           SizedBox(height: gap),
         ],
         Expanded(
+          key: _program,
           child: GestureDetector(
             onTap: () => cubit.pickRow(star: false),
             child: DragTarget<Object>(
               onWillAcceptWithDetails: (d) =>
-                  enabled && (d.data is IconBlock || !cubit.isFull),
+                  widget.enabled && (d.data is IconBlock || !cubit.isFull),
               onAcceptWithDetails: (d) =>
                   cubit.drop(d.data, index: blocks.length),
               builder: (context, candidates, _) => AnimatedContainer(
@@ -133,19 +149,41 @@ class IconBlockEditor extends StatelessWidget {
             const Spacer(),
             IconButton.filledTonal(
               tooltip: l10n.undo,
-              onPressed: enabled && blocks.isNotEmpty ? cubit.removeLast : null,
+              onPressed: widget.enabled && blocks.isNotEmpty
+                  ? cubit.removeLast
+                  : null,
               icon: const Icon(Icons.backspace_rounded),
             ),
             SizedBox(width: gap),
             IconButton.filledTonal(
               tooltip: l10n.clearBlocks,
               onPressed:
-                  enabled && (blocks.isNotEmpty || cubit.state.star.isNotEmpty)
+                  widget.enabled &&
+                      (blocks.isNotEmpty || cubit.state.star.isNotEmpty)
                   ? cubit.clear
                   : null,
               icon: const Icon(Icons.delete_sweep_rounded),
             ),
           ],
+        ),
+      ],
+    );
+    if (!widget.showHowTo || !widget.enabled || blocks.isNotEmpty) {
+      return column;
+    }
+    return Stack(
+      key: _stack,
+      children: [
+        column,
+        Positioned.fill(
+          child: IgnorePointer(
+            child: _HowToHand(
+              stack: _stack,
+              from: _firstBlock,
+              to: _program,
+              size: widget.blockSize,
+            ),
+          ),
         ),
       ],
     );
@@ -207,6 +245,7 @@ class _BlockRow extends StatelessWidget {
 
 class _PaletteBlock extends StatelessWidget {
   const _PaletteBlock({
+    super.key,
     required this.type,
     required this.size,
     required this.enabled,
@@ -538,4 +577,94 @@ class _CountStepper extends StatelessWidget {
       ],
     );
   }
+}
+
+/// A hand that drags from [from] to [to], over and over: how to add a block.
+class _HowToHand extends StatefulWidget {
+  const _HowToHand({
+    required this.stack,
+    required this.from,
+    required this.to,
+    required this.size,
+  });
+
+  final GlobalKey stack;
+  final GlobalKey from;
+  final GlobalKey to;
+  final double size;
+
+  @override
+  State<_HowToHand> createState() => _HowToHandState();
+}
+
+class _HowToHandState extends State<_HowToHand>
+    with SingleTickerProviderStateMixin {
+  late final _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2200),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// Centre of [key]'s widget, relative to the editor.
+  Offset? _centre(GlobalKey key, {double dy = 0.5}) {
+    final box = key.currentContext?.findRenderObject() as RenderBox?;
+    final stack = widget.stack.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || stack == null || !box.hasSize) return null;
+    return stack.globalToLocal(
+      box.localToGlobal(Offset(box.size.width / 2, box.size.height * dy)),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: _controller,
+    builder: (context, _) {
+      final from = _centre(widget.from);
+      final to = _centre(widget.to, dy: 0.3);
+      if (from == null || to == null) return const SizedBox.shrink();
+      // Press, drag, let go, then fade before the next round.
+      final t = _controller.value;
+      final drag = Curves.easeInOut.transform(
+        ((t - 0.15) / 0.55).clamp(0.0, 1.0),
+      );
+      final at = Offset.lerp(from, to, drag)!;
+      final opacity = t < 0.85 ? 1.0 : (1 - (t - 0.85) / 0.15);
+      final size = widget.size;
+      return Stack(
+        children: [
+          // The block being dragged.
+          if (t > 0.15 && t < 0.85)
+            Positioned(
+              left: at.dx - size * 0.45,
+              top: at.dy - size * 0.45,
+              child: Opacity(
+                opacity: 0.75,
+                child: IconBlockTile(
+                  type: IconBlockType.forward,
+                  size: size * 0.9,
+                ),
+              ),
+            ),
+          Positioned(
+            left: at.dx - size * 0.1,
+            top: at.dy + size * 0.05,
+            child: Opacity(
+              opacity: opacity.clamp(0.0, 1.0),
+              child: Icon(
+                Icons.touch_app_rounded,
+                size: size * 0.9,
+                color: Colors.white,
+                shadows: const [Shadow(blurRadius: 6, color: Colors.black54)],
+              ),
+            ),
+          ),
+        ],
+      );
+    },
+  );
 }

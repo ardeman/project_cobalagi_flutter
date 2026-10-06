@@ -11,6 +11,7 @@ Future<IconBlocksCubit> pumpEditor(
   WidgetTester tester, {
   int? maxBlocks,
   bool star = false,
+  bool showHowTo = false,
 }) async {
   final cubit = IconBlocksCubit(maxBlocks: maxBlocks);
   addTearDown(cubit.close);
@@ -32,6 +33,7 @@ Future<IconBlocksCubit> pumpEditor(
                 if (star) InstructionKind.call else InstructionKind.repeat,
               },
               blockSize: 64,
+              showHowTo: showHowTo,
             ),
           ),
         ),
@@ -195,5 +197,24 @@ void main() {
     ]);
     expect(cubit.state.main.single.type, IconBlockType.star);
     expect(cubit.program.procedure, hasLength(2));
+  });
+
+  testWidgets('a hand shows how to add a block until there is one', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester, showHowTo: true);
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(find.byIcon(Icons.touch_app_rounded), findsOneWidget);
+
+    await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
+    await tester.pump();
+    expect(cubit.state.main, hasLength(1));
+    expect(find.byIcon(Icons.touch_app_rounded), findsNothing);
+  });
+
+  testWidgets('no hand without showHowTo', (tester) async {
+    await pumpEditor(tester);
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(find.byIcon(Icons.touch_app_rounded), findsNothing);
   });
 }

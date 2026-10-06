@@ -896,6 +896,12 @@ abstract class AppLocalizations {
   /// **'Fill the star block, then use it again and again to reach the flag!'**
   String get playGoalFunctions;
 
+  /// No description provided for @playHowTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag a block into the white box, then press Go!'**
+  String get playHowTo;
+
   /// No description provided for @backToIsland.
   ///
   /// In en, this message translates to:

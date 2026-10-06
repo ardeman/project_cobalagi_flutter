@@ -233,6 +233,7 @@
   "playGoalStars": "Collect all the stars, then go to the flag!",
   "playGoalLoops": "Use the repeat block to reach the flag!",
   "playGoalFunctions": "Fill the star block, then use it again and again to reach the flag!",
+  "playHowTo": "Drag a block into the white box, then press Go!",
   "backToIsland": "Back to the island",
   "continueAdventure": "Continue the adventure",
   "levelNumber": "Level {number}",

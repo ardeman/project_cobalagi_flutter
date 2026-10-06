@@ -438,6 +438,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Isi blok bintang, lalu pakai berkali-kali untuk sampai ke bendera!';
 
   @override
+  String get playHowTo => 'Seret blok ke kotak putih, lalu tekan Jalan!';
+
+  @override
   String get backToIsland => 'Kembali ke pulau';
 
   @override
