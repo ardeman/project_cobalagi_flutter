@@ -9,6 +9,7 @@ import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/features/profiles/data/profile_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sembast/sembast_memory.dart';
@@ -152,5 +153,40 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(AlertDialog), findsNothing);
     expect(find.text('Thank you for supporting Coba Lagi!'), findsOneWidget);
+  });
+
+  group('progress report', () {
+    // rootBundle caches asset loads started in an earlier test's fake clock,
+    // which then never finish here.
+    setUp(rootBundle.clear);
+
+    Future<void> openProgress(WidgetTester tester, Plan plan) async {
+      await pumpApp(tester, entitlement: StaticEntitlementService(plan));
+      await tester.tap(find.text('New player'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'Ayu');
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      await passParentGate(tester);
+      await tester.tap(find.text('Ayu'));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('is a sponsor feature on the regular plan', (tester) async {
+      await openProgress(tester, Plan.free);
+      expect(find.text("Ayu's progress"), findsOneWidget);
+      expect(find.text('Change starting island'), findsOneWidget);
+      expect(find.textContaining('Sponsors see the full'), findsOneWidget);
+      expect(find.text('Last 7 days'), findsNothing);
+    });
+
+    testWidgets('shows the report on the sponsor plan', (tester) async {
+      await openProgress(tester, Plan.full);
+      expect(find.text('Last 7 days'), findsOneWidget);
+      expect(find.text('0 puzzles solved'), findsNWidgets(2));
+      expect(find.text("Hasn't finished a puzzle yet"), findsOneWidget);
+      expect(find.textContaining('Not started'), findsNWidgets(3));
+      expect(find.textContaining('Sponsors see the full'), findsNothing);
+    });
   });
 }

@@ -236,6 +236,90 @@ abstract class AppLocalizations {
   /// **'App version {version} ({build})'**
   String appVersion(String version, String build);
 
+  /// No description provided for @progressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{name}\'s progress'**
+  String progressTitle(String name);
+
+  /// No description provided for @changeStartingIsland.
+  ///
+  /// In en, this message translates to:
+  /// **'Change starting island'**
+  String get changeStartingIsland;
+
+  /// No description provided for @progressThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get progressThisWeek;
+
+  /// No description provided for @progressAllTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Since the start'**
+  String get progressAllTime;
+
+  /// No description provided for @progressPuzzles.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 puzzle solved} other{{count} puzzles solved}}'**
+  String progressPuzzles(int count);
+
+  /// No description provided for @progressMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute of play} other{{count} minutes of play}}'**
+  String progressMinutes(int count);
+
+  /// No description provided for @progressLastPlayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Last played: {date}'**
+  String progressLastPlayed(String date);
+
+  /// No description provided for @progressNotPlayed.
+  ///
+  /// In en, this message translates to:
+  /// **'Hasn\'t finished a puzzle yet'**
+  String get progressNotPlayed;
+
+  /// No description provided for @progressIslands.
+  ///
+  /// In en, this message translates to:
+  /// **'Islands'**
+  String get progressIslands;
+
+  /// No description provided for @statusNotStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not started'**
+  String get statusNotStarted;
+
+  /// No description provided for @statusPractising.
+  ///
+  /// In en, this message translates to:
+  /// **'Practising'**
+  String get statusPractising;
+
+  /// No description provided for @statusMastered.
+  ///
+  /// In en, this message translates to:
+  /// **'Mastered'**
+  String get statusMastered;
+
+  /// No description provided for @progressLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'{solved} of {total} levels solved'**
+  String progressLevels(int solved, int total);
+
+  /// No description provided for @progressSponsorOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Sponsors see the full progress report: puzzles solved, time played and progress on each island.'**
+  String get progressSponsorOnly;
+
   /// No description provided for @supportCobaLagi.
   ///
   /// In en, this message translates to:

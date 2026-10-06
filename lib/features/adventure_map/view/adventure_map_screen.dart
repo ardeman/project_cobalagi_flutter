@@ -6,8 +6,7 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/responsive/window_class.dart';
-import '../../../learning/learner_state.dart';
-import '../../../learning/learning_engine.dart';
+import '../../../learning/progress_report.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
@@ -81,7 +80,10 @@ class AdventureMapScreen extends StatelessWidget {
                           _Island(
                             conceptId: concepts[i].id,
                             size: islandSize,
-                            stars: _stars(engine, learner, concepts[i].id),
+                            stars: ProgressReport.starsFor(
+                              learner.progress[concepts[i].id],
+                              engine.config,
+                            ),
                             current: i == currentIndex,
                             locked:
                                 i > currentIndex &&
@@ -107,16 +109,6 @@ class AdventureMapScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  /// 3 stars at mastery, 2 while practising well, 1 once started.
-  static int _stars(LearningEngine engine, LearnerState learner, String id) {
-    final progress = learner.progress[id];
-    if (progress == null || progress.scores.isEmpty) return 0;
-    final mastery = progress.mastery;
-    if (mastery >= engine.config.advanceAt) return 3;
-    if (mastery >= engine.config.practiceAt) return 2;
-    return 1;
   }
 }
 

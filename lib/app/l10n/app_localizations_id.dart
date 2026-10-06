@@ -86,6 +86,59 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String progressTitle(String name) {
+    return 'Perkembangan $name';
+  }
+
+  @override
+  String get changeStartingIsland => 'Ubah pulau awal';
+
+  @override
+  String get progressThisWeek => '7 hari terakhir';
+
+  @override
+  String get progressAllTime => 'Sejak awal';
+
+  @override
+  String progressPuzzles(int count) {
+    return '$count teka-teki selesai';
+  }
+
+  @override
+  String progressMinutes(int count) {
+    return '$count menit bermain';
+  }
+
+  @override
+  String progressLastPlayed(String date) {
+    return 'Terakhir main: $date';
+  }
+
+  @override
+  String get progressNotPlayed => 'Belum menyelesaikan teka-teki';
+
+  @override
+  String get progressIslands => 'Pulau';
+
+  @override
+  String get statusNotStarted => 'Belum mulai';
+
+  @override
+  String get statusPractising => 'Sedang berlatih';
+
+  @override
+  String get statusMastered => 'Sudah dikuasai';
+
+  @override
+  String progressLevels(int solved, int total) {
+    return '$solved dari $total level selesai';
+  }
+
+  @override
+  String get progressSponsorOnly =>
+      'Sponsor bisa melihat laporan perkembangan lengkap: teka-teki yang selesai, waktu bermain, dan kemajuan di setiap pulau.';
+
+  @override
   String get supportCobaLagi => 'Dukung Coba Lagi';
 
   @override

@@ -26,7 +26,12 @@ class ProgressRepository {
         ...result.toJson(),
       });
 
-  Future<List<ExerciseResult>> attempts(int profileId) async {
+  Future<List<ExerciseResult>> attempts(int profileId) async => [
+    for (final (_, result) in await attemptLog(profileId)) result,
+  ];
+
+  /// Finished exercises with the time each was recorded, oldest first.
+  Future<List<(DateTime, ExerciseResult)>> attemptLog(int profileId) async {
     final records = await _attempts.find(
       _db,
       finder: Finder(
@@ -34,7 +39,13 @@ class ProgressRepository {
         sortOrders: [SortOrder('at')],
       ),
     );
-    return [for (final r in records) ExerciseResult.fromJson(r.value)];
+    return [
+      for (final r in records)
+        (
+          DateTime.fromMillisecondsSinceEpoch(r.value['at']! as int),
+          ExerciseResult.fromJson(r.value),
+        ),
+    ];
   }
 
   /// Removes all progress of a deleted profile.

@@ -5,6 +5,7 @@ import '../features/adventure_map/view/adventure_map_screen.dart';
 import '../features/adventure_map/view/island_screen.dart';
 import '../features/learning/view/child_scope.dart';
 import '../features/parent/view/parent_screen.dart';
+import '../features/parent/view/progress_screen.dart';
 import '../features/play/view/play_screen.dart';
 import '../features/play/view/replay_screen.dart';
 import '../features/pretest/view/pretest_screen.dart';
@@ -54,6 +55,12 @@ GoRouter createRouter() => GoRouter(
       ],
     ),
     GoRoute(path: '/parent', builder: (_, _) => const ParentScreen()),
+    GoRoute(
+      path: '/parent/progress/:profileId',
+      builder: (_, state) => ProgressScreen(
+        profileId: int.parse(state.pathParameters['profileId']!),
+      ),
+    ),
   ],
 );
 

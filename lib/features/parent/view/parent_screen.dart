@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../app/l10n/app_localizations.dart';
@@ -146,7 +147,7 @@ class _AppVersionState extends State<_AppVersion> {
   }
 }
 
-/// A player row: tap to change where they start; shows the current start.
+/// A player row: shows where they start; tap for their progress.
 class _PlayerTile extends StatefulWidget {
   const _PlayerTile({super.key, required this.profile, required this.onDelete});
 
@@ -196,16 +197,11 @@ class _PlayerTileState extends State<_PlayerTile> {
       subtitle: placement == null
           ? null
           : Text(placementSummary(l10n, placement.curriculum, _learner)),
-      onTap: placement == null
-          ? null
-          : () async {
-              await showPlacementDialog(
-                context,
-                profile: widget.profile,
-                placement: placement,
-              );
-              await _refresh();
-            },
+      // The progress screen also changes the start, so refresh on return.
+      onTap: () async {
+        await context.push('/parent/progress/${widget.profile.id}');
+        await _refresh();
+      },
       trailing: IconButton(
         tooltip: l10n.delete,
         icon: const Icon(Icons.delete_outline),

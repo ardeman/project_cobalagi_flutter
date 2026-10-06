@@ -86,6 +86,71 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String progressTitle(String name) {
+    return '$name\'s progress';
+  }
+
+  @override
+  String get changeStartingIsland => 'Change starting island';
+
+  @override
+  String get progressThisWeek => 'Last 7 days';
+
+  @override
+  String get progressAllTime => 'Since the start';
+
+  @override
+  String progressPuzzles(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count puzzles solved',
+      one: '1 puzzle solved',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String progressMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes of play',
+      one: '1 minute of play',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String progressLastPlayed(String date) {
+    return 'Last played: $date';
+  }
+
+  @override
+  String get progressNotPlayed => 'Hasn\'t finished a puzzle yet';
+
+  @override
+  String get progressIslands => 'Islands';
+
+  @override
+  String get statusNotStarted => 'Not started';
+
+  @override
+  String get statusPractising => 'Practising';
+
+  @override
+  String get statusMastered => 'Mastered';
+
+  @override
+  String progressLevels(int solved, int total) {
+    return '$solved of $total levels solved';
+  }
+
+  @override
+  String get progressSponsorOnly =>
+      'Sponsors see the full progress report: puzzles solved, time played and progress on each island.';
+
+  @override
   String get supportCobaLagi => 'Support Coba Lagi';
 
   @override
