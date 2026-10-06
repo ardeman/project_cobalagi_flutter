@@ -5,7 +5,7 @@ import 'entitlement_factory_io.dart'
 import '../settings/settings_repository.dart';
 import 'unlock_code.dart';
 
-/// Store donations on Android and iOS; the free plan everywhere else.
+/// Store donations on Android and iOS; elsewhere only unlock codes.
 EntitlementService createEntitlementService({
   required Set<String> productIds,
   required UnlockCodes unlockCodes,

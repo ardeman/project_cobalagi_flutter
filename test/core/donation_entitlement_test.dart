@@ -157,4 +157,21 @@ void main() {
       }
     });
   });
+
+  test(
+    'without store billing, codes still unlock and nothing is sold',
+    () async {
+      final offline = DonationEntitlementService(
+        productIds: {'small'},
+        store: const NoPurchaseStore(),
+        settings: settings,
+        unlockCodes: UnlockCodes({hashOf('TESTCODE1234')}),
+      );
+      addTearDown(offline.dispose);
+      expect(await offline.loadPlan(), Plan.free);
+      expect(await offline.donationOptions(), isEmpty);
+      expect(await offline.redeem('TESTCODE-1234'), isTrue);
+      expect(await offline.loadPlan(), Plan.full);
+    },
+  );
 }
