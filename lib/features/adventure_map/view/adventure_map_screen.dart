@@ -11,6 +11,7 @@ import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
 import '../../profiles/view/profile_avatar.dart';
+import 'ocean_map.dart';
 
 /// A child's home: one island per concept, with stars for mastery.
 class AdventureMapScreen extends StatelessWidget {
@@ -56,134 +57,62 @@ class AdventureMapScreen extends StatelessWidget {
                 onStart: () => context.go('/child/$profileId/pretest'),
               );
             }
-            return Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  children: [
-                    if (learner.review case final trip?)
-                      _BonusBanner(conceptId: trip.conceptId),
-                    const SizedBox(height: 24),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: 8,
-                      runSpacing: 24,
-                      children: [
-                        for (var i = 0; i < concepts.length; i++) ...[
-                          if (i > 0)
-                            Icon(
-                              Icons.more_horiz_rounded,
-                              size: islandSize * 0.4,
-                              color: Theme.of(context).colorScheme.outline,
-                            ),
-                          _Island(
-                            conceptId: concepts[i].id,
-                            size: islandSize,
-                            stars: ProgressReport.starsFor(
-                              learner.progress[concepts[i].id],
-                              engine.config,
-                            ),
-                            current: i == currentIndex,
-                            locked:
-                                i > currentIndex &&
-                                !learner.progress.containsKey(concepts[i].id),
-                            onTap: () => context.go(
-                              '/child/$profileId/island/${concepts[i].id}',
-                            ),
-                          ),
+            final lessons = cubit.curriculum.lessons;
+            return Column(
+              children: [
+                if (learner.review case final trip?)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: _BonusBanner(conceptId: trip.conceptId),
+                  ),
+                Expanded(
+                  child: OceanMap(
+                    marker: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(color: Colors.black26, blurRadius: 4),
                         ],
-                      ],
+                      ),
+                      child: ProfileAvatar(avatar: profile.avatar, size: 40),
                     ),
-                    const SizedBox(height: 40),
-                    FilledButton.icon(
-                      icon: const Icon(Icons.play_arrow_rounded, size: 48),
-                      label: Text(l10n.play),
-                      onPressed: () => context.go('/child/$profileId/play'),
-                    ),
-                  ],
+                    islands: [
+                      for (var i = 0; i < concepts.length; i++)
+                        MapIsland(
+                          conceptId: concepts[i].id,
+                          stars: ProgressReport.starsFor(
+                            learner.progress[concepts[i].id],
+                            engine.config,
+                          ),
+                          solvedLessons:
+                              learner
+                                  .progress[concepts[i].id]
+                                  ?.solvedLessons
+                                  .length ??
+                              0,
+                          totalLessons: lessons[concepts[i].id]?.length ?? 0,
+                          current: i == currentIndex,
+                          locked:
+                              i > currentIndex &&
+                              !learner.progress.containsKey(concepts[i].id),
+                        ),
+                    ],
+                    onOpen: (id) => context.go('/child/$profileId/island/$id'),
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.play_arrow_rounded, size: 48),
+                    label: Text(l10n.play),
+                    onPressed: () => context.go('/child/$profileId/play'),
+                  ),
+                ),
+              ],
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _Island extends StatelessWidget {
-  const _Island({
-    required this.conceptId,
-    required this.size,
-    required this.stars,
-    required this.current,
-    required this.locked,
-    required this.onTap,
-  });
-
-  final String conceptId;
-  final double size;
-  final int stars;
-  final bool current;
-  final bool locked;
-
-  /// Opens the island's levels; ignored while the island is locked.
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = locked ? Colors.grey.shade400 : conceptColor(conceptId);
-    return Semantics(
-      button: !locked,
-      child: GestureDetector(
-        onTap: locked ? null : onTap,
-        behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: size,
-              height: size,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  width: size * 0.06,
-                  color: current ? const Color(0xFFFFD54F) : Colors.white,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: (current ? const Color(0xFFFFD54F) : Colors.black)
-                        .withValues(alpha: current ? 0.6 : 0.15),
-                    blurRadius: current ? size * 0.2 : size * 0.06,
-                    offset: Offset(0, size * 0.04),
-                  ),
-                ],
-              ),
-              child: Icon(
-                locked ? Icons.lock_rounded : conceptIcon(conceptId),
-                size: size * 0.5,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < 3; i++)
-                  Icon(
-                    i < stars ? Icons.star_rounded : Icons.star_outline_rounded,
-                    size: size * 0.2,
-                    color: const Color(0xFFFFC83D),
-                  ),
-              ],
-            ),
-            Text(
-              conceptName(AppLocalizations.of(context), conceptId),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ],
         ),
       ),
     );
