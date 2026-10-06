@@ -9,6 +9,7 @@ enum InstructionKind {
   ifPathClear,
   setSteps,
   moveSteps,
+  untilGoal,
 }
 
 sealed class Instruction {
@@ -94,6 +95,22 @@ final class IfPathClear extends Instruction {
 
   @override
   InstructionKind get kind => InstructionKind.ifPathClear;
+
+  @override
+  int get blockCount =>
+      1 + body.fold(0, (sum, instruction) => sum + instruction.blockCount);
+}
+
+/// Repeats [body] until the friend reaches the flag, with no count: the run
+/// ends there, or on a bump, or at the step limit if it never gets there.
+/// Each round counts as one step, so a loop that only turns still stops.
+final class RepeatUntilGoal extends Instruction {
+  const RepeatUntilGoal(this.body, {super.blockId});
+
+  final List<Instruction> body;
+
+  @override
+  InstructionKind get kind => InstructionKind.untilGoal;
 
   @override
   int get blockCount =>

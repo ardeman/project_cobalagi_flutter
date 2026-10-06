@@ -71,7 +71,10 @@ int _count(BlockProgram program) =>
 
 class _PlayViewState extends State<PlayView> {
   late final _level = widget.exercise.level;
-  late final _blocks = BlocksCubit(maxBlocks: _level.maxBlocks);
+  late final _blocks = BlocksCubit(
+    maxBlocks: _level.maxBlocks,
+    start: _level.starter,
+  );
   late final _play = PlayCubit(_level);
   late final _typed = TypedCodeCubit(_level);
   final _page = ScrollController();
@@ -531,7 +534,11 @@ class _PlayViewState extends State<PlayView> {
 
   /// The spoken goal of a level: its words and its voice clip.
   static (String Function(AppLocalizations), String) _goal(Level level) =>
-      level.palette.contains(InstructionKind.setSteps)
+      level.starter != null
+      ? ((l) => l.playGoalDebugging, VoiceClips.playGoalDebugging)
+      : level.palette.contains(InstructionKind.untilGoal)
+      ? ((l) => l.playGoalUntil, VoiceClips.playGoalUntil)
+      : level.palette.contains(InstructionKind.setSteps)
       ? ((l) => l.playGoalVariables, VoiceClips.playGoalVariables)
       : level.palette.contains(InstructionKind.ifPathClear)
       ? ((l) => l.playGoalConditions, VoiceClips.playGoalConditions)

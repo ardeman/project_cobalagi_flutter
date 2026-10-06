@@ -184,6 +184,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get clearBlocks => 'Hapus semua blok';
 
   @override
+  String get removeBlock => 'Hapus blok ini';
+
+  @override
   String get blockForward => 'Maju';
 
   @override
@@ -464,6 +467,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get conceptConditions => 'Lihat depan';
 
   @override
+  String get blockUntilGoal => 'Ulangi sampai bendera';
+
+  @override
   String get blockIfPathClear => 'Jika kosong';
 
   @override
@@ -512,7 +518,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal. Simpan angka dengan steps = 3; dan pakai move(steps); untuk maju sebanyak itu. Angka tetap sama sampai kamu menyimpan yang baru. Simpan sebelum memakainya.';
+      'Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal. Simpan angka dengan steps = 3; dan pakai move(steps); untuk maju sebanyak itu. Angka tetap sama sampai kamu menyimpan yang baru. Simpan sebelum memakainya. until_flag mengulang isi kurung kurawalnya sampai temanmu tiba di bendera, tanpa hitungan.';
 
   @override
   String get codeSyntax =>
@@ -568,6 +574,20 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get codeDefineStar => 'Buat blokku';
+
+  @override
+  String get conceptUntil => 'Sampai bendera';
+
+  @override
+  String get playGoalUntil =>
+      'Pakai blok ulangi sampai bendera: blok itu terus jalan sendiri, jadi kamu tidak perlu menghitung!';
+
+  @override
+  String get conceptDebugging => 'Perbaiki!';
+
+  @override
+  String get playGoalDebugging =>
+      'Ups, blok ini belum pas! Tekan Jalan, lihat apa yang terjadi, lalu betulkan.';
 
   @override
   String get conceptVariables => 'Kotak Langkah';

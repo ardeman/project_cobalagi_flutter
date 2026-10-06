@@ -10,6 +10,8 @@ String conceptName(AppLocalizations l10n, String id) => switch (id) {
   'functions' => l10n.conceptFunctions,
   'conditions' => l10n.conceptConditions,
   'variables' => l10n.conceptVariables,
+  'debugging' => l10n.conceptDebugging,
+  'until' => l10n.conceptUntil,
   _ => id,
 };
 
@@ -20,6 +22,8 @@ IconData conceptIcon(String id) => switch (id) {
   'functions' => Icons.star_rounded,
   'conditions' => Icons.visibility_rounded,
   'variables' => Icons.inventory_2_rounded,
+  'debugging' => Icons.build_rounded,
+  'until' => Icons.sports_score_rounded,
   _ => Icons.terrain_rounded,
 };
 
@@ -30,5 +34,7 @@ Color conceptColor(String id) => switch (id) {
   'functions' => const Color(0xFFEC407A),
   'conditions' => const Color(0xFF00897B),
   'variables' => const Color(0xFFEF6C00),
+  'debugging' => const Color(0xFF5C6BC0),
+  'until' => const Color(0xFF7CB342),
   _ => const Color(0xFF8D6E63),
 };

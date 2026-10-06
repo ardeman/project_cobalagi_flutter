@@ -3,6 +3,7 @@ import 'dart:math';
 import '../interpreter/interpreter.dart';
 import '../program/instruction.dart';
 import '../program/program.dart';
+import '../program/program_json.dart';
 import '../world/direction.dart';
 import '../world/grid_point.dart';
 import '../world/level.dart';
@@ -16,6 +17,8 @@ enum PuzzleKind {
   functions,
   conditions,
   variables,
+  debugging,
+  until,
 }
 
 const minDifficulty = 1;
@@ -48,6 +51,10 @@ GeneratedPuzzle generatePuzzle(
   );
   final random = Random(seed);
   if (kind == PuzzleKind.variables) return _variables(random, difficulty, seed);
+  if (kind == PuzzleKind.debugging) {
+    return _debugging(random, difficulty, seed);
+  }
+  if (kind == PuzzleKind.until) return _until(random, difficulty, seed);
   if (kind == PuzzleKind.conditions) {
     return _conditions(random, difficulty, seed);
   }
@@ -61,6 +68,8 @@ GeneratedPuzzle generatePuzzle(
       PuzzleKind.conditions => throw StateError(
         'conditions use a checked route',
       ),
+      PuzzleKind.debugging => throw StateError('debugging plants a bug'),
+      PuzzleKind.until => throw StateError('until traces a counted route'),
     };
     final puzzle = _buildPuzzle(
       kind,
@@ -130,6 +139,134 @@ GeneratedPuzzle _variables(Random random, int difficulty, int seed) {
     }
   }
   throw StateError('no valid variables puzzle for seed $seed');
+}
+
+const _untilPalette = {..._sequencePalette, InstructionKind.untilGoal};
+
+/// A shape that repeats an unknown number of times, all the way to the
+/// flag: a corridor, then stairs and zigzags, later after a lead-in. The
+/// route is laid out with a counted repeat, but the answer is a
+/// repeat-until, and the block limit leaves no room to write it out.
+GeneratedPuzzle _until(Random random, int difficulty, int seed) {
+  for (var attempt = 0; attempt < 200; attempt++) {
+    final turn = _turn(random);
+    final back = turn is TurnLeft ? const TurnRight() : const TurnLeft();
+    final unit = switch (difficulty) {
+      1 => [const Move()],
+      2 => [const Move(), turn, const Move(), back],
+      _ => [
+        ..._moves(1 + random.nextInt(2)),
+        turn,
+        ..._moves(1 + random.nextInt(2)),
+        back,
+      ],
+    };
+    final lead = [
+      if (difficulty >= 4) ...[..._moves(1 + random.nextInt(2)), _turn(random)],
+    ];
+    final times = (difficulty == 1 ? 4 : 3) + random.nextInt(4);
+    final puzzle = _buildPuzzle(
+      PuzzleKind.until,
+      Program([...lead, Repeat(times, unit)]),
+      Direction.values[random.nextInt(4)],
+      id: 'until-d$difficulty-s$seed',
+      difficulty: difficulty,
+    );
+    if (puzzle == null) continue;
+    final solution = Program([...lead, RepeatUntilGoal(unit)]);
+    final level = Level.fromJson({
+      ...puzzle.level.toJson(),
+      'maxBlocks': solution.blockCount + 1,
+    });
+    if (!runProgram(solution, level).succeeded) continue;
+    // Writing every step out must not fit.
+    if (solve(level)!.blockCount <= level.maxBlocks!) continue;
+    return GeneratedPuzzle(level, solution);
+  }
+  throw StateError('no valid until puzzle for seed $seed');
+}
+
+/// A working program with one bug planted in it, for the child to find and
+/// fix: steps and turns at first, then a route with a repeat. The block
+/// limit leaves room for the fix but not for writing a different program.
+GeneratedPuzzle _debugging(Random random, int difficulty, int seed) {
+  final base = difficulty <= 2 ? PuzzleKind.sequencing : PuzzleKind.loops;
+  final baseDifficulty = difficulty <= 2 ? difficulty + 1 : difficulty - 2;
+  for (var attempt = 0; attempt < 200; attempt++) {
+    final puzzle = generatePuzzle(
+      base,
+      difficulty: baseDifficulty,
+      seed: seed * 1000 + attempt,
+    );
+    final starter = plantBug(puzzle.solution, random);
+    if (starter == null) continue;
+    final level = Level.fromJson({
+      ...puzzle.level.toJson(),
+      'id': 'debugging-d$difficulty-s$seed',
+      'concept': PuzzleKind.debugging.name,
+      'maxBlocks': max(puzzle.solution.blockCount, starter.blockCount),
+      'starter': programToJson(starter),
+    });
+    if (!runProgram(starter, level).succeeded &&
+        runProgram(puzzle.solution, level).succeeded) {
+      return GeneratedPuzzle(level, puzzle.solution);
+    }
+  }
+  throw StateError('no valid debugging puzzle for seed $seed');
+}
+
+/// [program] with one bug: a turn the wrong way, a step missing or one too
+/// many, or a repeat count off by one. Null when it has nowhere to put one.
+Program? plantBug(Program program, Random random) {
+  // Every place a bug can go: a path of indexes into nested bodies.
+  final sites = <(String, List<int>)>[];
+  void scan(List<Instruction> body, List<int> at) {
+    final moves = body.whereType<Move>().length;
+    for (var i = 0; i < body.length; i++) {
+      final here = [...at, i];
+      switch (body[i]) {
+        case TurnLeft() || TurnRight():
+          sites.add(('flip', here));
+        case Move():
+          sites.add(('extra', here));
+          if (moves > 1) sites.add(('drop', here));
+        case Repeat(:final times, :final body):
+          sites.add(('more', here));
+          if (times > 2) sites.add(('fewer', here));
+          scan(body, here);
+        default:
+          break;
+      }
+    }
+  }
+
+  scan(program.body, const []);
+  if (sites.isEmpty) return null;
+  final (bug, path) = sites[random.nextInt(sites.length)];
+
+  List<Instruction> change(List<Instruction> body, int depth) {
+    final i = path[depth];
+    final out = [...body];
+    if (depth < path.length - 1) {
+      final repeat = body[i] as Repeat;
+      out[i] = Repeat(repeat.times, change(repeat.body, depth + 1));
+      return out;
+    }
+    switch (bug) {
+      case 'flip':
+        out[i] = body[i] is TurnLeft ? const TurnRight() : const TurnLeft();
+      case 'extra':
+        out.insert(i, const Move());
+      case 'drop':
+        out.removeAt(i);
+      case 'more' || 'fewer':
+        final repeat = body[i] as Repeat;
+        out[i] = Repeat(repeat.times + (bug == 'more' ? 1 : -1), repeat.body);
+    }
+    return out;
+  }
+
+  return Program(change(program.body, 0), procedure: program.procedure);
 }
 
 const _conditionPalette = {..._loopPalette, InstructionKind.ifPathClear};
@@ -277,6 +414,8 @@ GeneratedPuzzle? _buildPuzzle(
           throw StateError('trace the route before adding variables');
         case IfPathClear():
           throw StateError('trace the route before adding path checks');
+        case RepeatUntilGoal():
+          throw StateError('trace the route with a counted repeat');
       }
     }
   }
@@ -300,7 +439,10 @@ GeneratedPuzzle? _buildPuzzle(
     PuzzleKind.functions => _functionPalette,
     PuzzleKind.conditions => _conditionPalette,
     PuzzleKind.variables => _variablePalette,
-    PuzzleKind.directions || PuzzleKind.sequencing => _sequencePalette,
+    PuzzleKind.until => _untilPalette,
+    PuzzleKind.directions ||
+    PuzzleKind.sequencing ||
+    PuzzleKind.debugging => _sequencePalette,
   };
   final limited = kind == PuzzleKind.loops || kind == PuzzleKind.functions;
   final level = Level(

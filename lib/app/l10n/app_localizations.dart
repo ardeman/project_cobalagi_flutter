@@ -404,6 +404,12 @@ abstract class AppLocalizations {
   /// **'Remove all blocks'**
   String get clearBlocks;
 
+  /// No description provided for @removeBlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this block'**
+  String get removeBlock;
+
   /// No description provided for @blockForward.
   ///
   /// In en, this message translates to:
@@ -944,6 +950,12 @@ abstract class AppLocalizations {
   /// **'Look ahead'**
   String get conceptConditions;
 
+  /// No description provided for @blockUntilGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat until the flag'**
+  String get blockUntilGoal;
+
   /// No description provided for @blockIfPathClear.
   ///
   /// In en, this message translates to:
@@ -1031,7 +1043,7 @@ abstract class AppLocalizations {
   /// No description provided for @codeGuide.
   ///
   /// In en, this message translates to:
-  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it.'**
+  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until your friend reaches the flag, with no count.'**
   String get codeGuide;
 
   /// No description provided for @codeSyntax.
@@ -1123,6 +1135,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Define my block'**
   String get codeDefineStar;
+
+  /// No description provided for @conceptUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Until the flag'**
+  String get conceptUntil;
+
+  /// No description provided for @playGoalUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Use repeat until the flag: it keeps going by itself, so you don\'t need to count!'**
+  String get playGoalUntil;
+
+  /// No description provided for @conceptDebugging.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix it!'**
+  String get conceptDebugging;
+
+  /// No description provided for @playGoalDebugging.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops, these blocks aren\'t quite right yet! Press Go, watch what happens, then fix them.'**
+  String get playGoalDebugging;
 
   /// No description provided for @conceptVariables.
   ///

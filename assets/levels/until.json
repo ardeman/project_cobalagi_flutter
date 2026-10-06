@@ -1,0 +1,135 @@
+{
+  "levels": [
+    {
+      "id": "until-01",
+      "concept": "until",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal"
+      ],
+      "maxBlocks": 3,
+      "rows": [
+        "########",
+        "#S....G#",
+        "########"
+      ]
+    },
+    {
+      "id": "until-02",
+      "concept": "until",
+      "facing": "south",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal"
+      ],
+      "maxBlocks": 3,
+      "rows": [
+        "###",
+        "#S#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#.#",
+        "#G#",
+        "###"
+      ]
+    },
+    {
+      "id": "until-03",
+      "concept": "until",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal"
+      ],
+      "maxBlocks": 6,
+      "rows": [
+        "#######",
+        "#####G#",
+        "####..#",
+        "###..##",
+        "##..###",
+        "#S.####",
+        "#######"
+      ]
+    },
+    {
+      "id": "until-04",
+      "concept": "until",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal"
+      ],
+      "maxBlocks": 6,
+      "rows": [
+        "#####",
+        "#S..#",
+        "###.#",
+        "###.#",
+        "###.#",
+        "###.#",
+        "###.#",
+        "###G#",
+        "#####"
+      ]
+    },
+    {
+      "id": "until-05",
+      "concept": "until",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal"
+      ],
+      "maxBlocks": 7,
+      "rows": [
+        "###########",
+        "#S..#######",
+        "###.*.#####",
+        "#####..*###",
+        "#######...#",
+        "#########G#",
+        "###########"
+      ]
+    },
+    {
+      "id": "until-06",
+      "concept": "until",
+      "facing": "north",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal"
+      ],
+      "maxBlocks": 8,
+      "rows": [
+        "######",
+        "####G#",
+        "####.#",
+        "###..#",
+        "###.##",
+        "##..##",
+        "##.###",
+        "#..###",
+        "#S####",
+        "######"
+      ]
+    }
+  ]
+}

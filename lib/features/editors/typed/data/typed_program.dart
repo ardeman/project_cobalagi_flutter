@@ -37,6 +37,8 @@ String formatCode(Program program) {
             '${indent}repeat($times) {\n${body(children, depth + 1)}$indent}\n',
           IfPathClear(body: final children) =>
             '${indent}if_path_clear {\n${body(children, depth + 1)}$indent}\n',
+          RepeatUntilGoal(body: final children) =>
+            '${indent}until_flag {\n${body(children, depth + 1)}$indent}\n',
         };
       }).join();
   return '${program.procedure.isEmpty ? '' : 'define star {\n${body(program.procedure, 1)}}\n\n'}${body(program.body, 0)}';
@@ -143,6 +145,11 @@ final class _Parser {
           final children = _body(depth + 1);
           _expect('}');
           result.add(IfPathClear(children, blockId: id));
+        case 'until_flag':
+          _expect('{');
+          final children = _body(depth + 1);
+          _expect('}');
+          result.add(RepeatUntilGoal(children, blockId: id));
         case 'define':
           if (depth != 0) throw CodeIssue(CodeProblem.nestedStar, token.line);
           if (_procedure != null) {

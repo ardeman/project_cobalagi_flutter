@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../play/level_assets_test.dart'
-    show withOneRepeat, withOneProcedure, withSavedSteps;
+    show withOneRepeat, withOneProcedure, withSavedSteps, withUntilGoal;
 
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
@@ -147,6 +147,8 @@ void main() {
               ? straight
               : level.palette.contains(InstructionKind.call)
               ? withOneProcedure(straight.body, max)!
+              : level.palette.contains(InstructionKind.untilGoal)
+              ? withUntilGoal(straight.body, max)!
               : withOneRepeat(straight.body, max)!;
           final code = compileCode(formatCode(solution));
           expect(validateProgram(code, level), isEmpty, reason: level.id);

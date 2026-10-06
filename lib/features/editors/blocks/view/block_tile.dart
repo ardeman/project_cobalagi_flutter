@@ -13,6 +13,7 @@ extension BlockTypeStyle on BlockType {
     BlockType.moveSteps => Icons.forward_rounded,
     BlockType.star => Icons.star_rounded,
     BlockType.ifPathClear => Icons.visibility_rounded,
+    BlockType.untilGoal => Icons.sports_score_rounded,
   };
 
   Color get color => switch (this) {
@@ -24,6 +25,7 @@ extension BlockTypeStyle on BlockType {
     BlockType.moveSteps => const Color(0xFFEF6C00),
     BlockType.star => const Color(0xFFD81B60),
     BlockType.ifPathClear => const Color(0xFF00897B),
+    BlockType.untilGoal => const Color(0xFF7CB342),
   };
 
   /// Spoken by screen readers; pre-readers rely on the icon alone.
@@ -36,6 +38,7 @@ extension BlockTypeStyle on BlockType {
     BlockType.moveSteps => l10n.blockMoveSteps,
     BlockType.star => l10n.blockStar,
     BlockType.ifPathClear => l10n.blockIfPathClear,
+    BlockType.untilGoal => l10n.blockUntilGoal,
   };
 }
 

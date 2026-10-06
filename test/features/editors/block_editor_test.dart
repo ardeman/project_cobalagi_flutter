@@ -3,6 +3,7 @@ import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/engine/program/program.dart';
+import 'package:cobalagi/engine/program/program_json.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -297,6 +298,69 @@ void main() {
     await tester.pump();
     expect(cubit.state.main, isEmpty);
   });
+
+  testWidgets(
+    'a full program is fixed by tapping a block, then the right one',
+    (tester) async {
+      final cubit = BlocksCubit(
+        maxBlocks: 3,
+        start: programFromJson(['move', 'turnLeft', 'move']),
+      );
+      addTearDown(cubit.close);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: cubit,
+              child: SizedBox(
+                width: 600,
+                height: 500,
+                child: BlockEditor(
+                  palette: const {
+                    InstructionKind.move,
+                    InstructionKind.turnLeft,
+                    InstructionKind.turnRight,
+                  },
+                  blockSize: 64,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      // At the limit, the palette rests.
+      await tester.tap(paletteBlock(Icons.turn_right_rounded));
+      await tester.pump();
+      expect(cubit.state.main.map((b) => b.type), [
+        BlockType.forward,
+        BlockType.turnLeft,
+        BlockType.forward,
+      ]);
+      // Tap the wrong turn in the program, then the right one.
+      await tester.tap(find.byIcon(Icons.turn_left_rounded).last);
+      await tester.pump();
+      expect(find.byTooltip('Remove this block'), findsOneWidget);
+      await tester.tap(paletteBlock(Icons.turn_right_rounded));
+      await tester.pump();
+      expect(cubit.state.main.map((b) => b.type), [
+        BlockType.forward,
+        BlockType.turnRight,
+        BlockType.forward,
+      ]);
+      expect(find.byTooltip('Remove all blocks'), findsOneWidget);
+      // Pick a block and remove only it.
+      await tester.tap(find.byIcon(Icons.turn_right_rounded).last);
+      await tester.pump();
+      await tester.tap(find.byTooltip('Remove this block'));
+      await tester.pump();
+      expect(cubit.state.main.map((b) => b.type), [
+        BlockType.forward,
+        BlockType.forward,
+      ]);
+    },
+  );
 
   testWidgets('tap a condition then a palette action to fill it', (
     tester,

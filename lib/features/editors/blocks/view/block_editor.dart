@@ -94,7 +94,11 @@ class _BlockEditorState extends State<BlockEditor> {
                   key: type == types.first ? _firstBlock : null,
                   type: type,
                   size: widget.blockSize,
-                  enabled: widget.enabled && !cubit.isFull,
+                  // Replacing a picked block keeps the count, so the palette
+                  // stays usable even at the block limit.
+                  enabled:
+                      widget.enabled &&
+                      (!cubit.isFull || cubit.state.pickedBlock != null),
                   hold: widget.fitContent,
                   onTap: () => cubit.tap(type),
                 ),
@@ -192,13 +196,19 @@ class _BlockEditorState extends State<BlockEditor> {
                 ),
                 SizedBox(width: gap),
                 IconButton.filledTonal(
-                  tooltip: l10n.clearBlocks,
+                  tooltip: cubit.state.pickedBlock != null
+                      ? l10n.removeBlock
+                      : l10n.clearBlocks,
                   onPressed:
                       widget.enabled &&
                           (blocks.isNotEmpty || cubit.state.star.isNotEmpty)
-                      ? cubit.clear
+                      ? cubit.deletePickedOrClear
                       : null,
-                  icon: const Icon(Icons.delete_sweep_rounded),
+                  icon: Icon(
+                    cubit.state.pickedBlock != null
+                        ? Icons.delete_rounded
+                        : Icons.delete_sweep_rounded,
+                  ),
                 ),
               ],
             ),
@@ -454,8 +464,8 @@ class _PlacedBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = style.size;
-    final Widget body =
-        block.type == BlockType.repeat || block.type == BlockType.ifPathClear
+    final container = block.type.isContainer;
+    final Widget plain = container
         ? _ContainerBlock(block: block, style: style)
         : block.type == BlockType.setSteps
         ? _SavedStepsBlock(block: block, style: style)
@@ -466,7 +476,32 @@ class _PlacedBlock extends StatelessWidget {
             highlighted: block.id == style.activeBlockId,
             hasIssue: style.issueBlockIds.contains(block.id),
           );
-    if (!style.enabled) return body;
+    if (!style.enabled) return plain;
+    final cubit = context.read<BlocksCubit>();
+    final picked = context.select<BlocksCubit, bool>(
+      (c) => c.state.pickedBlock == block.id,
+    );
+    // A tap picks a single block to fix: a ring shows which one.
+    final Widget body = container
+        ? plain
+        : Semantics(
+            selected: picked,
+            child: GestureDetector(
+              onTap: () => cubit.pickBlock(block.id),
+              child: Container(
+                foregroundDecoration: picked
+                    ? BoxDecoration(
+                        borderRadius: BorderRadius.circular(size * 0.26),
+                        border: Border.all(
+                          color: const Color(0xFFFFC83D),
+                          width: 5,
+                        ),
+                      )
+                    : null,
+                child: plain,
+              ),
+            ),
+          );
     return DragTarget<Object>(
       onWillAcceptWithDetails: (d) => d.data != block,
       onAcceptWithDetails: (d) => onDrop(d.data),
@@ -559,6 +594,8 @@ class _ContainerBlock extends StatelessWidget {
     final cubit = context.watch<BlocksCubit>();
     final size = style.size;
     final conditional = block.type == BlockType.ifPathClear;
+    // Only a repeat carries a count.
+    final counted = block.type == BlockType.repeat;
     final color = block.type.color;
     final active = block.selfAndDescendants.any(
       (b) => b.id == style.activeBlockId,
@@ -577,7 +614,7 @@ class _ContainerBlock extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         BlockTile(type: block.type, size: size * 0.8),
-        if (!conditional) ...[
+        if (counted) ...[
           SizedBox(height: style.gap * 0.5),
           _CountStepper(
             count: block.count,
@@ -595,6 +632,7 @@ class _ContainerBlock extends StatelessWidget {
           style.enabled &&
           d.data != block &&
           d.data != BlockType.repeat &&
+          d.data != BlockType.untilGoal &&
           (!conditional || d.data != BlockType.ifPathClear) &&
           (d.data is Block || !cubit.isFull),
       onAcceptWithDetails: (d) =>
@@ -650,7 +688,7 @@ class _ContainerBlock extends StatelessWidget {
             );
             // Count buttons, then a condition holding a block.
             final sideBySide =
-                (conditional ? size * 0.8 : 64 * 2 + size * 0.5) +
+                (counted ? 64 * 2 + size * 0.5 : size * 0.8) +
                 style.gap +
                 (nested ? size * 3.4 : size * 1.6);
             final stacked = box.maxWidth < sideBySide;

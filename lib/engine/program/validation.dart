@@ -30,6 +30,11 @@ final class EmptyCondition extends ProgramIssue {
   const EmptyCondition(super.blockId);
 }
 
+/// A repeat-until with nothing inside would only spin in place.
+final class EmptyUntil extends ProgramIssue {
+  const EmptyUntil(super.blockId);
+}
+
 /// A call to the child's own block while that block is still empty.
 final class EmptyProcedure extends ProgramIssue {
   const EmptyProcedure(super.blockId);
@@ -82,6 +87,9 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
         case IfPathClear(:final body):
           if (body.isEmpty) issues.add(EmptyCondition(instruction.blockId));
           visit(body, inProcedure: inProcedure);
+        case RepeatUntilGoal(:final body):
+          if (body.isEmpty) issues.add(EmptyUntil(instruction.blockId));
+          visit(body, inProcedure: inProcedure);
         case Call() when inProcedure:
           issues.add(CallInProcedure(instruction.blockId));
         case Call() when program.procedure.isEmpty:
@@ -117,6 +125,9 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
           if (times >= minCount) assigned = after;
         case IfPathClear(:final body):
           checkSteps(body, assigned, inProcedure: inProcedure);
+        case RepeatUntilGoal(:final body):
+          // Runs at least once.
+          assigned = checkSteps(body, assigned, inProcedure: inProcedure);
         case Call() when !inProcedure:
           assigned = checkSteps(program.procedure, assigned, inProcedure: true);
         case MoveSteps() || Move() || TurnLeft() || TurnRight() || Call():

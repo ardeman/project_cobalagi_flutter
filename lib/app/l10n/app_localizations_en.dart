@@ -196,6 +196,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearBlocks => 'Remove all blocks';
 
   @override
+  String get removeBlock => 'Remove this block';
+
+  @override
   String get blockForward => 'Forward';
 
   @override
@@ -477,6 +480,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conceptConditions => 'Look ahead';
 
   @override
+  String get blockUntilGoal => 'Repeat until the flag';
+
+  @override
   String get blockIfPathClear => 'If clear';
 
   @override
@@ -525,7 +531,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it.';
+      'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until your friend reaches the flag, with no count.';
 
   @override
   String get codeSyntax =>
@@ -579,6 +585,20 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get codeDefineStar => 'Define my block';
+
+  @override
+  String get conceptUntil => 'Until the flag';
+
+  @override
+  String get playGoalUntil =>
+      'Use repeat until the flag: it keeps going by itself, so you don\'t need to count!';
+
+  @override
+  String get conceptDebugging => 'Fix it!';
+
+  @override
+  String get playGoalDebugging =>
+      'Oops, these blocks aren\'t quite right yet! Press Go, watch what happens, then fix them.';
 
   @override
   String get conceptVariables => 'Step Box';

@@ -63,6 +63,14 @@ void main() {
             expect(checks.any((check) => check.clear), isTrue);
             expect(checks.any((check) => !check.clear), isTrue);
             expect(level.palette, contains(InstructionKind.ifPathClear));
+          } else if (kind == PuzzleKind.debugging) {
+            // Steps and turns first, then routes with a repeat; the rest is
+            // covered in debugging_test.dart.
+            expect(
+              level.palette.contains(InstructionKind.repeat),
+              difficulty >= 3,
+            );
+            expect(runProgram(level.starter!, level).succeeded, isFalse);
           } else {
             expect(level.palette, isNot(contains(InstructionKind.repeat)));
           }

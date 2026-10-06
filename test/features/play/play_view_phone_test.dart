@@ -229,4 +229,39 @@ void main() {
       );
     });
   }
+
+  testWidgets('a Fix it! puzzle opens with its bugged blocks in place', (
+    tester,
+  ) async {
+    await _pumpPhone(
+      tester,
+      size: const Size(1280, 800),
+      level: Level.fromJson({
+        'id': 'fix',
+        'concept': 'debugging',
+        'facing': 'east',
+        'palette': ['move', 'turnLeft', 'turnRight'],
+        'maxBlocks': 4,
+        'starter': ['move', 'move', 'move'],
+        'rows': ['#######', '#S...G#', '#######'],
+      }),
+    );
+    final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
+    expect(cubit.state.main.map((b) => b.type), [
+      BlockType.forward,
+      BlockType.forward,
+      BlockType.forward,
+    ]);
+    // Go is ready at once: the child runs the bug before fixing it.
+    final go = find.widgetWithText(FilledButton, 'Go!');
+    expect(tester.widget<FilledButton>(go).onPressed, isNotNull);
+    expect(
+      find.byTooltip(
+        "Listen again: Oops, these blocks aren't quite right yet! "
+        'Press Go, watch what happens, then fix them.',
+      ),
+      findsOneWidget,
+    );
+    expect(tester.takeException(), isNull);
+  });
 }

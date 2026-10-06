@@ -1,4 +1,6 @@
 import '../program/instruction.dart';
+import '../program/program.dart';
+import '../program/program_json.dart';
 import 'direction.dart';
 import 'grid_point.dart';
 
@@ -29,6 +31,7 @@ final class Level {
     Set<GridPoint> stars = const {},
     required Set<InstructionKind> palette,
     this.maxBlocks,
+    this.starter,
   }) : tiles = List<List<Tile>>.unmodifiable([
          for (final row in tiles) List<Tile>.unmodifiable(row),
        ]),
@@ -53,6 +56,7 @@ final class Level {
     required Direction startFacing,
     required Set<InstructionKind> palette,
     int? maxBlocks,
+    Program? starter,
   }) {
     GridPoint? start;
     GridPoint? goal;
@@ -96,6 +100,7 @@ final class Level {
       stars: stars,
       palette: palette,
       maxBlocks: maxBlocks,
+      starter: starter,
     );
   }
 
@@ -111,6 +116,9 @@ final class Level {
             InstructionKind.values.byName(name),
         },
         maxBlocks: json['maxBlocks'] as int?,
+        starter: json.containsKey('starter')
+            ? programFromJson(json['starter'])
+            : null,
       );
     } on LevelFormatException {
       rethrow;
@@ -132,6 +140,10 @@ final class Level {
 
   /// Upper limit on blocks in the program, or null for no limit.
   final int? maxBlocks;
+
+  /// Blocks already placed when the puzzle opens. Debugging puzzles start
+  /// with a program that has a bug for the child to find and fix.
+  final Program? starter;
 
   int get width => tiles.first.length;
 
@@ -166,6 +178,7 @@ final class Level {
     'facing': startFacing.name,
     'palette': [for (final kind in palette) kind.name],
     if (maxBlocks != null) 'maxBlocks': maxBlocks,
+    if (starter != null) 'starter': programToJson(starter!),
     'rows': rows,
   };
 }

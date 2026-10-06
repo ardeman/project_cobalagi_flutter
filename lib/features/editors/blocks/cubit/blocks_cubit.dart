@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../engine/program/instruction.dart';
 import '../../../../engine/program/program.dart';
 import '../../../../engine/program/validation.dart';
 import '../data/block.dart';
@@ -8,7 +9,50 @@ import '../data/block.dart';
 /// repeat block holds its own row, plus a star row that star blocks run.
 /// No repeat goes inside a repeat and no star inside the star row.
 class BlocksCubit extends Cubit<BlockProgram> {
-  BlocksCubit({this.maxBlocks}) : super(const BlockProgram());
+  BlocksCubit({this.maxBlocks, Program? start}) : super(const BlockProgram()) {
+    // Blocks already placed, such as a debugging puzzle's buggy program.
+    // Not an edit: undo never goes back past them.
+    if (start != null) {
+      super.emit(
+        BlockProgram(
+          main: _blocksOf(start.body),
+          star: _blocksOf(start.procedure),
+        ),
+      );
+    }
+  }
+
+  List<Block> _blocksOf(List<Instruction> instructions) => [
+    for (final instruction in instructions)
+      switch (instruction) {
+        Move() => Block(id: 'b${_nextId++}', type: BlockType.forward),
+        TurnLeft() => Block(id: 'b${_nextId++}', type: BlockType.turnLeft),
+        TurnRight() => Block(id: 'b${_nextId++}', type: BlockType.turnRight),
+        Call() => Block(id: 'b${_nextId++}', type: BlockType.star),
+        MoveSteps() => Block(id: 'b${_nextId++}', type: BlockType.moveSteps),
+        SetSteps(:final value) => Block(
+          id: 'b${_nextId++}',
+          type: BlockType.setSteps,
+          count: value,
+        ),
+        Repeat(:final times, :final body) => Block(
+          id: 'b${_nextId++}',
+          type: BlockType.repeat,
+          count: times,
+          children: _blocksOf(body),
+        ),
+        IfPathClear(:final body) => Block(
+          id: 'b${_nextId++}',
+          type: BlockType.ifPathClear,
+          children: _blocksOf(body),
+        ),
+        RepeatUntilGoal(:final body) => Block(
+          id: 'b${_nextId++}',
+          type: BlockType.untilGoal,
+          children: _blocksOf(body),
+        ),
+      },
+  ];
 
   /// Parent id for the star row, in [add], [move] and [drop].
   static const starRow = '*';
@@ -37,6 +81,10 @@ class BlocksCubit extends Cubit<BlockProgram> {
   /// row unless they tapped the star row. A star tapped while the star row is
   /// picked goes to the main row.
   bool tap(BlockType type) {
+    // A picked block is swapped for the tapped one, in its place.
+    if (state.pickedBlock case final picked?) {
+      if (replace(picked, type)) return true;
+    }
     final selected = state.selectedContainer;
     // A new repeat starts in the main row; actions go inside the selected
     // container. A condition can go inside a repeat.
@@ -50,17 +98,58 @@ class BlocksCubit extends Cubit<BlockProgram> {
 
   /// Picks the row that tapped palette blocks go to.
   void pickRow({required bool star}) {
-    if (state.tapToStar != star || state.selectedContainer != null) {
-      emit(state.copyWith(tapToStar: star, selectedContainer: () => null));
+    if (state.tapToStar != star ||
+        state.selectedContainer != null ||
+        state.pickedBlock != null) {
+      emit(
+        state.copyWith(
+          tapToStar: star,
+          selectedContainer: () => null,
+          pickedBlock: () => null,
+        ),
+      );
     }
   }
 
   void pickContainer(String id) {
     final block = _find(id);
-    if (block?.type == BlockType.repeat ||
-        block?.type == BlockType.ifPathClear) {
-      emit(state.copyWith(selectedContainer: () => id));
+    if (block?.type.isContainer ?? false) {
+      emit(
+        state.copyWith(selectedContainer: () => id, pickedBlock: () => null),
+      );
     }
+  }
+
+  /// Picks (or, if already picked, unpicks) a single block to fix.
+  void pickBlock(String id) {
+    final block = _find(id);
+    if (block == null || block.type.isContainer) return;
+    emit(
+      state.copyWith(
+        pickedBlock: () => state.pickedBlock == id ? null : id,
+        selectedContainer: () => null,
+      ),
+    );
+  }
+
+  /// Puts a new [type] block where block [id] is. Containers can't replace
+  /// or be replaced, so their contents never vanish by accident. Returns
+  /// false if it isn't allowed there.
+  bool replace(String id, BlockType type) {
+    final old = _find(id);
+    if (old == null || type.isContainer || old.type.isContainer) return false;
+    final (parent, index) = _locate(id)!;
+    if (!_fits(type, parent)) return false;
+    final block = Block(id: 'b${_nextId++}', type: type);
+    emit(
+      _insert(
+        _removed(id),
+        parent,
+        index,
+        block,
+      ).copyWith(pickedBlock: () => null),
+    );
+    return true;
   }
 
   /// Moves block [id] into [parentId] before the block now at [index].
@@ -87,14 +176,14 @@ class BlocksCubit extends Cubit<BlockProgram> {
   }
 
   void remove(String id) {
-    final selected = state.selectedContainer;
-    final removesSelection =
-        _find(id)?.selfAndDescendants.any((b) => b.id == selected) ?? false;
-    final removed = _removed(id);
+    final gone = {...?_find(id)?.selfAndDescendants.map((b) => b.id)};
     emit(
-      removesSelection
-          ? removed.copyWith(selectedContainer: () => null)
-          : removed,
+      _removed(id).copyWith(
+        selectedContainer: gone.contains(state.selectedContainer)
+            ? () => null
+            : null,
+        pickedBlock: gone.contains(state.pickedBlock) ? () => null : null,
+      ),
     );
   }
 
@@ -109,6 +198,15 @@ class BlocksCubit extends Cubit<BlockProgram> {
   }
 
   void clear() => emit(BlockProgram(tapToStar: state.tapToStar));
+
+  /// The delete button: removes the picked block, or else every block.
+  void deletePickedOrClear() {
+    if (state.pickedBlock case final picked?) {
+      remove(picked);
+    } else {
+      clear();
+    }
+  }
 
   /// Edits that can be undone, oldest first.
   final _past = <BlockProgram>[];
@@ -141,6 +239,7 @@ class BlocksCubit extends Cubit<BlockProgram> {
       program.copyWith(
         tapToStar: state.tapToStar,
         selectedContainer: () => null,
+        pickedBlock: () => null,
       ),
     );
   }
@@ -160,16 +259,17 @@ class BlocksCubit extends Cubit<BlockProgram> {
 
   bool _fits(BlockType type, String? parentId) {
     if (parentId == null) return true;
+    // Repeat-until runs to the end of the program, so it stays in the main
+    // row, never inside another block or the star row.
+    if (type == BlockType.untilGoal) return false;
     if (parentId == starRow) return type != BlockType.star;
     final parent = _find(parentId);
-    if (parent?.type != BlockType.repeat &&
-        parent?.type != BlockType.ifPathClear) {
-      return false;
-    }
-    // Keep container nesting to one repeat holding one condition. Children
+    if (!(parent?.type.isContainer ?? false)) return false;
+    // Keep container nesting to one loop holding one condition. Children
     // of a condition are actions, so the editor stays usable on phones.
     if (type == BlockType.repeat ||
-        (type == BlockType.ifPathClear && parent?.type != BlockType.repeat)) {
+        (type == BlockType.ifPathClear &&
+            parent?.type == BlockType.ifPathClear)) {
       return false;
     }
     // A repeat inside the star row may not hold a star either.

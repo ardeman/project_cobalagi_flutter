@@ -1,6 +1,7 @@
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
+import 'package:cobalagi/engine/program/program_json.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 List<BlockType> types(BlocksCubit c) => [for (final b in c.state.main) b.type];
@@ -268,5 +269,138 @@ void main() {
       c.undo();
     }
     expect(c.state.main, hasLength(10));
+  });
+
+  test('a starter program becomes blocks that undo cannot remove', () {
+    final starter = programFromJson({
+      'body': [
+        'move',
+        {
+          'repeat': 3,
+          'body': ['turnLeft', 'move'],
+        },
+        'call',
+      ],
+      'procedure': ['turnRight'],
+    });
+    final c = BlocksCubit(maxBlocks: 8, start: starter);
+    expect(types(c), [BlockType.forward, BlockType.repeat, BlockType.star]);
+    expect(c.state.main[1].count, 3);
+    expect(c.state.main[1].children.map((b) => b.type), [
+      BlockType.turnLeft,
+      BlockType.forward,
+    ]);
+    expect(c.state.star.single.type, BlockType.turnRight);
+    // Compiles back to the same program, with block ids for highlighting.
+    expect(programToJson(c.program), programToJson(starter));
+    expect(c.program.body.first.blockId, c.state.main.first.id);
+    // The child's first edit gets new ids and can be undone, back to the
+    // starter but no further.
+    expect(c.canUndo, isFalse);
+    c.add(BlockType.forward);
+    expect(
+      c.state.main.last.id,
+      isNot(
+        anyOf([
+          for (final b in [...c.state.main.take(3), ...c.state.star])
+            ...b.selfAndDescendants.map((d) => d.id),
+        ]),
+      ),
+    );
+    c.undo();
+    expect(types(c), [BlockType.forward, BlockType.repeat, BlockType.star]);
+    expect(c.canUndo, isFalse);
+  });
+
+  group('fixing one block', () {
+    BlocksCubit stairs() => BlocksCubit(
+      maxBlocks: 5,
+      start: programFromJson([
+        {
+          'repeat': 3,
+          'body': ['move', 'turnLeft', 'move', 'turnLeft'],
+        },
+      ]),
+    );
+
+    test('pick a block, tap a palette block: it is replaced in place', () {
+      final c = stairs();
+      expect(c.isFull, isTrue);
+      final wrong = c.state.main.single.children[3];
+      c.pickBlock(wrong.id);
+      expect(c.state.pickedBlock, wrong.id);
+      expect(c.tap(BlockType.turnRight), isTrue);
+      expect(c.state.main.single.children.map((b) => b.type), [
+        BlockType.forward,
+        BlockType.turnLeft,
+        BlockType.forward,
+        BlockType.turnRight,
+      ]);
+      expect(c.state.pickedBlock, isNull);
+      expect(c.program.blockCount, 5);
+      c.undo();
+      expect(c.state.main.single.children.last.type, BlockType.turnLeft);
+    });
+
+    test('tapping the picked block again unpicks it; picking is no edit', () {
+      final c = stairs();
+      final id = c.state.main.single.children.first.id;
+      c
+        ..pickBlock(id)
+        ..pickBlock(id);
+      expect(c.state.pickedBlock, isNull);
+      expect(c.canUndo, isFalse);
+    });
+
+    test('containers are neither picked nor replaced', () {
+      final c = stairs();
+      final loop = c.state.main.single.id;
+      c.pickBlock(loop);
+      expect(c.state.pickedBlock, isNull);
+      expect(c.replace(loop, BlockType.forward), isFalse);
+      final inner = c.state.main.single.children.first.id;
+      expect(c.replace(inner, BlockType.repeat), isFalse);
+    });
+
+    test('delete removes the picked block, or else everything', () {
+      final c = stairs();
+      final first = c.state.main.single.children.first;
+      c
+        ..pickBlock(first.id)
+        ..deletePickedOrClear();
+      expect(c.state.main.single.children, hasLength(3));
+      expect(c.state.pickedBlock, isNull);
+      c.deletePickedOrClear();
+      expect(c.state.main, isEmpty);
+    });
+
+    test('removing a block clears the pick inside it', () {
+      final c = stairs();
+      c.pickBlock(c.state.main.single.children.first.id);
+      c.remove(c.state.main.single.id);
+      expect(c.state.pickedBlock, isNull);
+    });
+  });
+
+  test('repeat-until stays in the main row and holds actions and a check', () {
+    final c = BlocksCubit()..add(BlockType.untilGoal);
+    final until = c.state.main.single.id;
+    expect(c.add(BlockType.forward, parentId: until), isTrue);
+    expect(c.add(BlockType.ifPathClear, parentId: until), isTrue);
+    expect(c.add(BlockType.repeat, parentId: until), isFalse);
+    expect(c.add(BlockType.untilGoal, parentId: until), isFalse);
+    expect(c.add(BlockType.untilGoal, parentId: BlocksCubit.starRow), isFalse);
+    c.add(BlockType.repeat);
+    expect(c.add(BlockType.untilGoal, parentId: c.state.main.last.id), isFalse);
+    // Tapping it makes it the target for palette taps, like a repeat.
+    c.pickContainer(until);
+    c.tap(BlockType.turnLeft);
+    expect(c.state.main.first.children.last.type, BlockType.turnLeft);
+    expect(c.program.body.first, isA<RepeatUntilGoal>());
+    expect((c.program.body.first as RepeatUntilGoal).body.map((i) => i.kind), [
+      InstructionKind.move,
+      InstructionKind.ifPathClear,
+      InstructionKind.turnLeft,
+    ]);
   });
 }

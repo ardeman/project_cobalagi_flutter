@@ -79,7 +79,9 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
         ? switch (programIssue) {
             DisallowedInstruction() => l.codeDisallowed,
             TooManyBlocks() => l.codeLimit,
-            EmptyRepeat() || EmptyCondition() => l.codeEmptyBody,
+            EmptyRepeat() ||
+            EmptyCondition() ||
+            EmptyUntil() => l.codeEmptyBody,
             EmptyProcedure() => l.codeEmptyStar,
             CallInProcedure() => l.codeRecursiveStar,
             CountOutOfRange() => l.codeNumber,
@@ -98,6 +100,7 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
         'if_path_clear {\n  \n}',
       ),
       InstructionKind.call: (l.blockStar, 'star();'),
+      InstructionKind.untilGoal: (l.blockUntilGoal, 'until_flag {\n  \n}'),
     };
     return GlassSurface(
       padding: const EdgeInsets.all(12),

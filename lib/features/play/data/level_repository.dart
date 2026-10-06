@@ -12,6 +12,8 @@ const levelPacks = [
   'functions',
   'conditions',
   'variables',
+  'debugging',
+  'until',
 ];
 
 /// Parses a pack file: `{"levels": [<level JSON>, ...]}`.

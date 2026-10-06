@@ -1,0 +1,167 @@
+{
+  "levels": [
+    {
+      "id": "debugging-01",
+      "concept": "debugging",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "maxBlocks": 4,
+      "starter": [
+        "move",
+        "move",
+        "move"
+      ],
+      "rows": [
+        "#######",
+        "#S...G#",
+        "#######"
+      ]
+    },
+    {
+      "id": "debugging-02",
+      "concept": "debugging",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "maxBlocks": 5,
+      "starter": [
+        "move",
+        "move",
+        "turnLeft",
+        "move",
+        "move"
+      ],
+      "rows": [
+        "#####",
+        "#S..#",
+        "###.#",
+        "###G#",
+        "#####"
+      ]
+    },
+    {
+      "id": "debugging-03",
+      "concept": "debugging",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "maxBlocks": 7,
+      "starter": [
+        "move",
+        "move",
+        "move",
+        "move",
+        "turnLeft",
+        "move",
+        "move"
+      ],
+      "rows": [
+        "######",
+        "####G#",
+        "####.#",
+        "#S...#",
+        "######"
+      ]
+    },
+    {
+      "id": "debugging-04",
+      "concept": "debugging",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 2,
+      "starter": [
+        {
+          "repeat": 5,
+          "body": [
+            "move"
+          ]
+        }
+      ],
+      "rows": [
+        "#########",
+        "#S.....G#",
+        "#########"
+      ]
+    },
+    {
+      "id": "debugging-05",
+      "concept": "debugging",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 5,
+      "starter": [
+        {
+          "repeat": 3,
+          "body": [
+            "move",
+            "turnLeft",
+            "move",
+            "turnLeft"
+          ]
+        }
+      ],
+      "rows": [
+        "######",
+        "####G#",
+        "###..#",
+        "##..##",
+        "#S.###",
+        "######"
+      ]
+    },
+    {
+      "id": "debugging-06",
+      "concept": "debugging",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "call"
+      ],
+      "maxBlocks": 8,
+      "starter": {
+        "body": [
+          "call",
+          "call",
+          "call"
+        ],
+        "procedure": [
+          "move",
+          "move",
+          "turnLeft",
+          "move",
+          "turnLeft"
+        ]
+      },
+      "rows": [
+        "#########",
+        "#S..#####",
+        "###...###",
+        "#####...#",
+        "#######G#",
+        "#########"
+      ]
+    }
+  ]
+}

@@ -37,6 +37,7 @@ Program program(List<InstructionKind> kinds) => Program([
       InstructionKind.turnRight => const TurnRight(),
       InstructionKind.repeat ||
       InstructionKind.ifPathClear ||
+      InstructionKind.untilGoal ||
       InstructionKind.setSteps ||
       InstructionKind.moveSteps ||
       InstructionKind.call => throw ArgumentError(),

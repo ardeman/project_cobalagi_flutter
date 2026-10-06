@@ -5,7 +5,8 @@ import '../world/grid_point.dart';
 import '../world/level.dart';
 import 'run_event.dart';
 
-/// Each single-cell move, turn, path check and value save counts as one step.
+/// Each single-cell move, turn, path check, value save and round of a
+/// repeat-until counts as one step.
 const defaultStepLimit = 1000;
 
 /// How deep calls may nest before the run stops, so a procedure that calls
@@ -106,6 +107,12 @@ final class _Run {
           }
           execute(procedure);
           _depth--;
+        case RepeatUntilGoal(:final body):
+          // Stops by ending the run: on the flag, on a bump, or at the limit.
+          while (true) {
+            _tick();
+            execute(body);
+          }
         case IfPathClear(:final body):
           _tick();
           final ahead = position.step(facing);

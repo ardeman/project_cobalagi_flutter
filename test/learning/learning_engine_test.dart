@@ -48,23 +48,25 @@ ExerciseResult result(
 
 void main() {
   group('skill graph', () {
-    test(
-      'follows Directions → Sequencing → Loops → Functions → Conditions → Variables',
-      () {
-        expect(graph.first, 'directions');
-        expect(graph.nextAfter('directions'), 'sequencing');
-        expect(graph.nextAfter('sequencing'), 'loops');
-        expect(graph.nextAfter('loops'), 'functions');
-        expect(graph.nextAfter('functions'), 'conditions');
-        expect(graph.nextAfter('conditions'), 'variables');
-        expect(graph.nextAfter('variables'), isNull);
-        expect(graph.reviewTargetFor('variables'), 'conditions');
-        expect(graph.reviewTargetFor('conditions'), 'functions');
-        expect(graph.reviewTargetFor('functions'), 'loops');
-        expect(graph.reviewTargetFor('loops'), 'sequencing');
-        expect(graph.reviewTargetFor('directions'), isNull);
-      },
-    );
+    test('follows Directions → … → Variables → Fix it! → Until the flag', () {
+      expect(graph.first, 'directions');
+      expect(graph.nextAfter('directions'), 'sequencing');
+      expect(graph.nextAfter('sequencing'), 'loops');
+      expect(graph.nextAfter('loops'), 'functions');
+      expect(graph.nextAfter('functions'), 'conditions');
+      expect(graph.nextAfter('conditions'), 'variables');
+      expect(graph.nextAfter('variables'), 'debugging');
+      expect(graph.nextAfter('debugging'), 'until');
+      expect(graph.nextAfter('until'), isNull);
+      expect(graph.reviewTargetFor('until'), 'loops');
+      // Struggling to fix bugs reviews loops, where the bugs come from.
+      expect(graph.reviewTargetFor('debugging'), 'loops');
+      expect(graph.reviewTargetFor('variables'), 'conditions');
+      expect(graph.reviewTargetFor('conditions'), 'functions');
+      expect(graph.reviewTargetFor('functions'), 'loops');
+      expect(graph.reviewTargetFor('loops'), 'sequencing');
+      expect(graph.reviewTargetFor('directions'), isNull);
+    });
 
     test('rejects prerequisites listed later and duplicates', () {
       expect(
@@ -166,10 +168,9 @@ void main() {
     });
 
     test('mastering the last concept completes the map', () {
-      final (_, decision) = play(
-        engine.initialState(startConcept: 'variables'),
-        [for (var i = 0; i < config.minExercises; i++) result('variables')],
-      );
+      final (_, decision) = play(engine.initialState(startConcept: 'until'), [
+        for (var i = 0; i < config.minExercises; i++) result('until'),
+      ]);
       expect(decision, isA<MapComplete>());
     });
 

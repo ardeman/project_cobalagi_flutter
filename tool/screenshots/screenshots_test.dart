@@ -506,6 +506,40 @@ void main() {
           }
         }
 
+        testWidgets('fix it', (tester) async {
+          await device(tester);
+          // A turn the wrong way inside stairs: the starter blocks are there.
+          await _open(tester, '/child/1/replay/debugging-05');
+          // The child has spotted the wrong turn and tapped it.
+          final cubit = tester
+              .element(find.byType(BlockEditor))
+              .read<BlocksCubit>();
+          cubit.pickBlock(cubit.state.main.single.children.last.id);
+          await _settle(tester);
+          await shoot('${prefix}play-debugging');
+        });
+
+        testWidgets('until the flag', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/replay/until-03');
+          // Stairs of any size: one loop that runs to the flag.
+          final cubit = tester
+              .element(find.byType(BlockEditor))
+              .read<BlocksCubit>();
+          cubit.add(BlockType.untilGoal);
+          final until = cubit.state.main.single.id;
+          for (final type in [
+            BlockType.forward,
+            BlockType.turnLeft,
+            BlockType.forward,
+            BlockType.turnRight,
+          ]) {
+            cubit.add(type, parentId: until);
+          }
+          await _settle(tester);
+          await shoot('${prefix}play-until');
+        });
+
         testWidgets('solved', (tester) async {
           await device(tester);
           await _showSolved(tester, language);

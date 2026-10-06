@@ -2,11 +2,11 @@ import 'dart:math';
 import 'dart:ui';
 
 /// What blocks the way on an island.
-enum Obstacle { bush, flowerBush, rock, crystal, pine, cactus }
+enum Obstacle { bush, flowerBush, rock, crystal, pine, cactus, crate, asteroid }
 
 /// The island's finish. Every one carries the red flag the voice talks
 /// about ("reach the flag"), so the goal reads the same on every island.
-enum Finish { flag, house, chest, castle, igloo, tent }
+enum Finish { flag, house, chest, castle, igloo, tent, toolbox, rocket }
 
 /// How an island's world looks: background, path, obstacles and finish.
 /// Purely visual; the level decides where things are.
@@ -74,6 +74,22 @@ final class WorldTheme {
     finish: Finish.tent,
   );
 
+  static const workshop = WorldTheme(
+    background: Color(0xFFDDE2F7),
+    floor: Color(0xFFF7F8FC),
+    floorEdge: Color(0xFFC3C9E6),
+    obstacle: Obstacle.crate,
+    finish: Finish.toolbox,
+  );
+
+  static const space = WorldTheme(
+    background: Color(0xFF233056),
+    floor: Color(0xFFFFF4D6),
+    floorEdge: Color(0xFFB9C2E8),
+    obstacle: Obstacle.asteroid,
+    finish: Finish.rocket,
+  );
+
   /// One world per island, keyed by concept id.
   static WorldTheme forConcept(String concept) => switch (concept) {
     'sequencing' => garden,
@@ -81,6 +97,8 @@ final class WorldTheme {
     'functions' => crystals,
     'conditions' => snow,
     'variables' => desert,
+    'debugging' => workshop,
+    'until' => space,
     _ => meadow,
   };
 }
@@ -232,6 +250,70 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
       if (random.nextBool()) {
         canvas.drawCircle(c + Offset(0, -0.32 * s), 0.05, _fill(0xFFF06292));
       }
+    case Obstacle.crate:
+      final side = 0.62 * s;
+      final box = Rect.fromCenter(center: c, width: side, height: side);
+      final wood = random.nextBool() ? 0xFFC58B52 : 0xFFB57B45;
+      final plank = Paint()
+        ..color = const Color(0xFF8D5A2B)
+        ..strokeWidth = 0.04
+        ..style = PaintingStyle.stroke;
+      canvas
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            box.shift(const Offset(0.03, 0.05)),
+            const Radius.circular(0.05),
+          ),
+          shadow,
+        )
+        ..drawRRect(
+          RRect.fromRectAndRadius(box, const Radius.circular(0.05)),
+          _fill(wood),
+        )
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            box.deflate(0.02),
+            const Radius.circular(0.04),
+          ),
+          plank,
+        )
+        ..drawLine(
+          box.topLeft + const Offset(0.05, 0.05),
+          box.bottomRight - const Offset(0.05, 0.05),
+          plank,
+        )
+        ..drawLine(
+          box.topRight + const Offset(-0.05, 0.05),
+          box.bottomLeft + const Offset(0.05, -0.05),
+          plank,
+        );
+    case Obstacle.asteroid:
+      final r = 0.3 * s;
+      final bumpy = Path();
+      for (var i = 0; i <= 10; i++) {
+        final a = i * 2 * pi / 10;
+        final d = r * (0.88 + 0.12 * ((i * 7 + seed) % 3) / 2);
+        final p = c + Offset(cos(a), sin(a)) * d;
+        if (i == 0) {
+          bumpy.moveTo(p.dx, p.dy);
+        } else {
+          bumpy.lineTo(p.dx, p.dy);
+        }
+      }
+      bumpy.close();
+      canvas
+        ..drawPath(bumpy.shift(const Offset(0.03, 0.05)), _fill(0x55000000))
+        ..drawPath(bumpy, _fill(0xFF8E8AA6))
+        ..drawCircle(c + Offset(-0.1, -0.06) * s, 0.07 * s, _fill(0xFF6E6A88))
+        ..drawCircle(c + Offset(0.1, 0.08) * s, 0.05 * s, _fill(0xFF6E6A88));
+      if (random.nextInt(3) == 0) {
+        // A tiny star twinkling nearby.
+        canvas.drawCircle(
+          c + const Offset(0.36, -0.34),
+          0.035,
+          _fill(0xFFFFF59D),
+        );
+      }
   }
 }
 
@@ -363,6 +445,76 @@ void drawFinish(Canvas canvas, Finish finish) {
           _fill(0xFF4F6F86),
         );
       _flag(canvas, const Offset(0.5, 0.45), 0.3, scale: 0.7);
+    case Finish.toolbox:
+      final handle = Paint()
+        ..color = const Color(0xFF546E7A)
+        ..strokeWidth = 0.05
+        ..style = PaintingStyle.stroke;
+      canvas
+        ..drawOval(const Rect.fromLTWH(0.14, 0.74, 0.72, 0.14), base)
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            const Rect.fromLTWH(0.18, 0.5, 0.64, 0.3),
+            const Radius.circular(0.05),
+          ),
+          _fill(0xFFE53935),
+        )
+        ..drawRect(
+          const Rect.fromLTWH(0.18, 0.58, 0.64, 0.05),
+          _fill(0xFFB71C1C),
+        )
+        ..drawRect(
+          const Rect.fromLTWH(0.45, 0.56, 0.1, 0.09),
+          _fill(0xFFFFC83D),
+        )
+        ..drawPath(
+          Path()
+            ..moveTo(0.36, 0.5)
+            ..lineTo(0.36, 0.42)
+            ..lineTo(0.56, 0.42)
+            ..lineTo(0.56, 0.5),
+          handle,
+        );
+      _flag(canvas, const Offset(0.72, 0.5), 0.36, scale: 0.7);
+    case Finish.rocket:
+      final body = Path()
+        ..moveTo(0.5, 0.16)
+        ..quadraticBezierTo(0.68, 0.36, 0.64, 0.72)
+        ..lineTo(0.36, 0.72)
+        ..quadraticBezierTo(0.32, 0.36, 0.5, 0.16)
+        ..close();
+      canvas
+        ..drawOval(
+          const Rect.fromLTWH(0.18, 0.78, 0.64, 0.12),
+          _fill(0x55000000),
+        )
+        ..drawPath(
+          Path()
+            ..moveTo(0.36, 0.56)
+            ..lineTo(0.24, 0.78)
+            ..lineTo(0.38, 0.72)
+            ..close(),
+          _fill(0xFFE53935),
+        )
+        ..drawPath(
+          Path()
+            ..moveTo(0.64, 0.56)
+            ..lineTo(0.76, 0.78)
+            ..lineTo(0.62, 0.72)
+            ..close(),
+          _fill(0xFFE53935),
+        )
+        ..drawPath(body, _fill(0xFFF5F5F5))
+        ..drawCircle(const Offset(0.5, 0.44), 0.07, _fill(0xFF4FC3F7))
+        ..drawPath(
+          Path()
+            ..moveTo(0.42, 0.72)
+            ..lineTo(0.5, 0.86)
+            ..lineTo(0.58, 0.72)
+            ..close(),
+          _fill(0xFFFFB300),
+        );
+      _flag(canvas, const Offset(0.5, 0.2), 0.12, scale: 0.55);
     case Finish.tent:
       canvas
         ..drawOval(const Rect.fromLTWH(0.12, 0.76, 0.76, 0.14), base)

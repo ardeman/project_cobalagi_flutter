@@ -236,6 +236,7 @@ final class PretestGenerator {
         InstructionKind.turnRight => const TurnRight(),
         InstructionKind.repeat ||
         InstructionKind.ifPathClear ||
+        InstructionKind.untilGoal ||
         InstructionKind.setSteps ||
         InstructionKind.moveSteps ||
         InstructionKind.call => throw ArgumentError('only moves and turns'),

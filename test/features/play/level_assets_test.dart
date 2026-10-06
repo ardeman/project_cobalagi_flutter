@@ -85,6 +85,63 @@ Program? withOneProcedure(List<Instruction> steps, int maxBlocks) {
 
 /// Saves each corridor length once and reuses it until the route needs a
 /// different distance. Used to verify variables lessons in both editors.
+/// Every program one change away from [program]: a turn flipped, a step
+/// added or removed, or a repeat count off by one, in the main row or the
+/// star row.
+Iterable<Program> oneChangeAway(Program program) sync* {
+  Iterable<List<Instruction>> edits(List<Instruction> body) sync* {
+    for (var i = 0; i <= body.length; i++) {
+      yield [...body.sublist(0, i), const Move(), ...body.sublist(i)];
+      if (i == body.length) break;
+      yield [...body]..removeAt(i);
+      switch (body[i]) {
+        case TurnLeft():
+          yield [...body]..[i] = const TurnRight();
+        case TurnRight():
+          yield [...body]..[i] = const TurnLeft();
+        case Repeat(:final times, body: final inner):
+          for (final t in [times - 1, times + 1]) {
+            if (t >= 1) yield [...body]..[i] = Repeat(t, inner);
+          }
+          for (final changed in edits(inner)) {
+            yield [...body]..[i] = Repeat(times, changed);
+          }
+        default:
+          break;
+      }
+    }
+  }
+
+  for (final body in edits(program.body)) {
+    yield Program(body, procedure: program.procedure);
+  }
+  for (final star in edits(program.procedure)) {
+    yield Program(program.body, procedure: star);
+  }
+}
+
+/// A lead-in, then one repeat-until of a shape that repeats to the end
+/// (the run stops on the flag, so the last round may end part-way), fitting
+/// [maxBlocks].
+Program? withUntilGoal(List<Instruction> steps, int maxBlocks) {
+  for (var start = 0; start < steps.length; start++) {
+    for (var unit = 1; start + unit <= steps.length; unit++) {
+      final body = steps.sublist(start, start + unit);
+      final repeats = List.generate(
+        steps.length - start,
+        (j) => steps[start + j].kind == body[j % unit].kind,
+      ).every((same) => same);
+      if (!repeats) continue;
+      final program = Program([
+        ...steps.sublist(0, start),
+        RepeatUntilGoal(body),
+      ]);
+      if (program.blockCount <= maxBlocks) return program;
+    }
+  }
+  return null;
+}
+
 Program withSavedSteps(List<Instruction> steps) {
   final commands = <Instruction>[];
   int? stored;
@@ -125,6 +182,31 @@ void main() {
   });
 
   for (final level in levels) {
+    if (level.concept == 'until') {
+      test('${level.id} needs repeat-until and fits it', () {
+        final steps = solve(level)!.body;
+        expect(Program(steps).blockCount, greaterThan(level.maxBlocks!));
+        expect(level.palette, isNot(contains(InstructionKind.repeat)));
+        final answer = withUntilGoal(steps, level.maxBlocks!);
+        expect(answer, isNotNull, reason: 'no repeat-until fits the limit');
+        expect(validateProgram(answer!, level), isEmpty);
+        expect(runProgram(answer, level).succeeded, isTrue);
+      });
+    }
+    if (level.concept == 'debugging') {
+      test('${level.id} starts with one bug that one change fixes', () {
+        final starter = level.starter!;
+        expect(validateProgram(starter, level), isEmpty);
+        expect(runProgram(starter, level).succeeded, isFalse);
+        final fixes = [
+          for (final fix in oneChangeAway(starter))
+            if (validateProgram(fix, level).isEmpty &&
+                runProgram(fix, level).succeeded)
+              fix,
+        ];
+        expect(fixes, isNotEmpty, reason: 'no single change fixes it');
+      });
+    }
     if (level.concept == 'variables') {
       test('${level.id} teaches saving and using a value', () {
         final answer = withSavedSteps(solve(level)!.body);
@@ -185,6 +267,8 @@ void main() {
           ? straight!
           : calls
           ? withOneProcedure(straight.body, max)
+          : level.palette.contains(InstructionKind.untilGoal)
+          ? withUntilGoal(straight.body, max)
           : withOneRepeat(straight.body, max);
       expect(solution, isNotNull, reason: 'no answer fits $max blocks');
       expect(validateProgram(solution!, level), isEmpty);

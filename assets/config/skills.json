@@ -5,6 +5,8 @@
     { "id": "loops", "prerequisites": ["sequencing"] },
     { "id": "functions", "prerequisites": ["loops"] },
     { "id": "conditions", "prerequisites": ["functions"] },
-    { "id": "variables", "prerequisites": ["conditions"] }
+    { "id": "variables", "prerequisites": ["conditions"] },
+    { "id": "debugging", "prerequisites": ["loops", "variables"] },
+    { "id": "until", "prerequisites": ["loops", "debugging"] }
   ]
 }

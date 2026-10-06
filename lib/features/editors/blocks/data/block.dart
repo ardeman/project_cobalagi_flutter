@@ -11,12 +11,19 @@ enum BlockType {
   moveSteps(InstructionKind.moveSteps),
   ifPathClear(InstructionKind.ifPathClear),
 
+  /// Repeats its blocks, with no count, until the friend reaches the flag.
+  untilGoal(InstructionKind.untilGoal),
+
   /// The child's own block: runs the star row.
   star(InstructionKind.call);
 
   const BlockType(this.kind);
 
   final InstructionKind kind;
+
+  /// Holds a row of blocks of its own.
+  bool get isContainer =>
+      this == repeat || this == ifPathClear || this == untilGoal;
 }
 
 final class Block {
@@ -58,6 +65,7 @@ final class BlockProgram {
     this.star = const [],
     this.tapToStar = false,
     this.selectedContainer,
+    this.pickedBlock,
   });
 
   final List<Block> main;
@@ -69,6 +77,10 @@ final class BlockProgram {
   /// A tapped repeat or condition receives palette actions without dragging.
   final String? selectedContainer;
 
+  /// A tapped single block: the next palette tap replaces it, and the delete
+  /// button removes just this block. How a child fixes one block in place.
+  final String? pickedBlock;
+
   /// Nothing to run: the main row is empty.
   bool get isEmpty => main.isEmpty;
 
@@ -77,6 +89,7 @@ final class BlockProgram {
     List<Block>? star,
     bool? tapToStar,
     String? Function()? selectedContainer,
+    String? Function()? pickedBlock,
   }) => BlockProgram(
     main: main ?? this.main,
     star: star ?? this.star,
@@ -84,6 +97,7 @@ final class BlockProgram {
     selectedContainer: selectedContainer != null
         ? selectedContainer()
         : this.selectedContainer,
+    pickedBlock: pickedBlock != null ? pickedBlock() : this.pickedBlock,
   );
 }
 
@@ -104,6 +118,9 @@ Instruction _compile(Block block) => switch (block.type) {
     for (final child in block.children) _compile(child),
   ], blockId: block.id),
   BlockType.star => Call(blockId: block.id),
+  BlockType.untilGoal => RepeatUntilGoal([
+    for (final child in block.children) _compile(child),
+  ], blockId: block.id),
   BlockType.ifPathClear => IfPathClear([
     for (final child in block.children) _compile(child),
   ], blockId: block.id),
