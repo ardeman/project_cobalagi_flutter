@@ -13,6 +13,7 @@ import '../../../../engine/world/level.dart';
 import '../../cubit/play_cubit.dart';
 import 'hint_mark.dart';
 import 'world_components.dart';
+import 'world_theme.dart';
 
 /// Renders a level and replays run events as animations. Holds no game logic:
 /// [apply] mirrors [PlayState], and [onEventShown] reports each finished event.
@@ -43,8 +44,11 @@ class WorldGame extends FlameGame {
   static const _moveTime = 0.35;
   static const _turnTime = 0.25;
 
+  /// This island's look: its background, path, obstacles and finish.
+  late final worldTheme = WorldTheme.forConcept(level.concept);
+
   @override
-  Color backgroundColor() => const Color(0xFFBFE6FF);
+  Color backgroundColor() => worldTheme.background;
 
   @override
   Future<void> onLoad() async {
@@ -60,8 +64,8 @@ class WorldGame extends FlameGame {
     world.removeAll(world.children.toList());
     _stars.clear();
     world
-      ..add(BoardComponent(level))
-      ..add(GoalComponent(level.goal));
+      ..add(BoardComponent(level, worldTheme))
+      ..add(GoalComponent(level.goal, worldTheme.finish));
     for (final star in level.stars) {
       world.add(_stars[star] = StarComponent(star));
     }

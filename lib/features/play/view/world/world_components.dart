@@ -8,6 +8,7 @@ import 'package:flame/particles.dart';
 import '../../../../engine/world/direction.dart';
 import '../../../../engine/world/grid_point.dart';
 import '../../../../engine/world/level.dart';
+import 'world_theme.dart';
 
 // Placeholder art until the Rive characters arrive. One world unit is one tile.
 
@@ -17,15 +18,14 @@ Vector2 tileCenter(GridPoint p) => Vector2(p.x + 0.5, p.y + 0.5);
 double angleOf(Direction direction) => direction.index * pi / 2;
 
 class BoardComponent extends PositionComponent {
-  BoardComponent(this.level)
+  BoardComponent(this.level, this.theme)
     : super(size: Vector2(level.width.toDouble(), level.height.toDouble()));
 
   final Level level;
+  final WorldTheme theme;
 
-  static final _floor = Paint()..color = const Color(0xFFFFF1C9);
-  static final _floorEdge = Paint()..color = const Color(0xFFF2D99A);
-  static final _bush = Paint()..color = const Color(0xFF6CC071);
-  static final _bushShade = Paint()..color = const Color(0xFF4FA457);
+  late final _floor = Paint()..color = theme.floor;
+  late final _floorEdge = Paint()..color = theme.floorEdge;
 
   /// The board never changes, so it is drawn once and replayed each frame.
   late final Picture _picture = () {
@@ -64,31 +64,23 @@ class BoardComponent extends PositionComponent {
               _floor,
             );
         } else {
-          final c = cell.center;
-          canvas
-            ..drawCircle(c + const Offset(0.04, 0.06), 0.36, _bushShade)
-            ..drawCircle(c, 0.34, _bush)
-            ..drawCircle(c + const Offset(-0.12, -0.1), 0.12, _bushShade);
+          drawObstacle(canvas, cell, theme.obstacle, y * 997 + x);
         }
       }
     }
   }
 }
 
+/// The island's finish, with the red flag, gently pulsing.
 class GoalComponent extends PositionComponent {
-  GoalComponent(GridPoint at)
+  GoalComponent(GridPoint at, this.finish)
     : super(
         position: tileCenter(at),
         size: Vector2.all(1),
         anchor: Anchor.center,
       );
 
-  static final _pole = Paint()
-    ..color = const Color(0xFF8D6E63)
-    ..strokeWidth = 0.07
-    ..strokeCap = StrokeCap.round;
-  static final _flag = Paint()..color = const Color(0xFFE53935);
-  static final _base = Paint()..color = const Color(0x5581C784);
+  final Finish finish;
 
   @override
   Future<void> onLoad() async => add(
@@ -99,19 +91,7 @@ class GoalComponent extends PositionComponent {
   );
 
   @override
-  void render(Canvas canvas) {
-    canvas
-      ..drawOval(const Rect.fromLTWH(0.2, 0.72, 0.6, 0.16), _base)
-      ..drawLine(const Offset(0.38, 0.8), const Offset(0.38, 0.14), _pole)
-      ..drawPath(
-        Path()
-          ..moveTo(0.41, 0.14)
-          ..lineTo(0.8, 0.27)
-          ..lineTo(0.41, 0.42)
-          ..close(),
-        _flag,
-      );
-  }
+  void render(Canvas canvas) => drawFinish(canvas, finish);
 }
 
 class StarComponent extends PositionComponent {
