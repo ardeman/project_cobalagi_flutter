@@ -3,16 +3,17 @@ Coba Lagi helps children learn the basics of coding through play. Kids put pictu
 IT STARTS WITH A WARM-UP GAME
 A short, picture-based game finds the right starting point for your child: reading, counting, left and right, patterns and order. It feels like play, not a test.
 
-FIVE ISLANDS TO EXPLORE
+SIX ISLANDS TO EXPLORE
 • Directions: forward, turn left, turn right
 • Step by step: putting steps in the right order
 • Loops: using the repeat block to do more with fewer blocks
 • Magic Block: building your own block, then using it again and again
 • Look Ahead: checking whether the path is clear before taking a step
+• Step Box: saving a number of steps and using it again
 Stars on the map show how far your child has come on each island. Completed lessons can be replayed from their island.
 
-PICTURE AND WORD BLOCKS
-Children who are still learning to read use picture blocks. Readers can use the same blocks with words. Both editors support dragging blocks and tapping to add them, on tablets and phones.
+PICTURE BLOCKS, WORD BLOCKS AND CODE
+Children who are still learning to read use picture blocks. Readers can use the same blocks with words, or switch to the Code tab and type the same program as text. Blocks can be dragged or tapped to add them, on tablets and phones.
 
 LEARNING AT YOUR CHILD'S PACE
 After every puzzle, Coba Lagi picks what comes next: the next island, a fresh practice puzzle, or a bonus adventure to review an earlier skill. Practice puzzles are generated and always checked to be solvable, so a child never gets the same puzzle twice.

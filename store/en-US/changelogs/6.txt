@@ -1,0 +1,6 @@
+- New Step Box island: save a number of steps and use it again.
+- Children who read can switch to the Code tab and type the same program.
+- Undo and redo buttons bring back blocks removed by accident.
+- Background music now starts right away.
+- Better fit on phones and tablets, upright or sideways. Swiping over blocks scrolls instead of moving them.
+- The app lets you know when a Google Play update is ready.

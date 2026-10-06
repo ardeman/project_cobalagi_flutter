@@ -38,10 +38,22 @@ shot() {
 # phone_slide <image> <caption> <out>: caption above a framed 400 x 760
 # phone screenshot, in portrait.
 phone_slide() {
-  shot 1080 1920 "<div style=\"display:flex;flex-direction:column;align-items:center;gap:56px;padding-top:110px\">
+  shot 1080 1920 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:56px;height:1920px\">
       <h1 style=\"font-size:72px;max-width:900px;text-align:center;line-height:1.1\">$2</h1>
       <div class=\"tablet\" style=\"padding:16px;border-radius:64px\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"height:1400px;border-radius:50px\"></div>
     </div>" "$3"
+}
+
+# phone_pair_slide <image> <image> <caption> <out>: two framed phone
+# screenshots side by side, for related screens.
+phone_pair_slide() {
+  shot 1080 1920 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:56px;height:1920px\">
+      <h1 style=\"font-size:72px;max-width:900px;text-align:center;line-height:1.1\">$3</h1>
+      <div style=\"display:flex;align-items:flex-start\">
+        <div class=\"tablet\" style=\"padding:12px;border-radius:48px;transform:rotate(-2deg)\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"height:1040px;display:block;border-radius:38px\"></div>
+        <div class=\"tablet\" style=\"padding:12px;border-radius:48px;transform:rotate(2deg);margin-left:-150px;margin-top:240px\"><img src=\"file://$ROOT/website/screenshots/$2\" style=\"height:1040px;display:block;border-radius:38px\"></div>
+      </div>
+    </div>" "$4"
 }
 
 render_phone() { # locale suffix captions...
@@ -51,17 +63,29 @@ render_phone() { # locale suffix captions...
   rm -f "$dir/"*.png
   phone_slide "phone-adventure-map$s.png"   "$1" "$dir/1-adventure-map.png"
   phone_slide "phone-play-loops$s.png"      "$2" "$dir/2-play-loops.png"
-  phone_slide "phone-play-functions$s.png"  "$3" "$dir/3-play-functions.png"
-  phone_slide "phone-play-conditions$s.png" "$4" "$dir/4-play-conditions.png"
-  phone_slide "phone-solved$s.png"          "$5" "$dir/5-solved.png"
-  phone_slide "phone-warm-up$s.png"         "$6" "$dir/6-warm-up.png"
-  phone_slide "phone-parent-placement$s.png" "$7" "$dir/7-parents.png"
-  phone_slide "phone-parent-progress$s.png" "$8" "$dir/8-progress.png"
+  phone_slide "phone-play-code$s.png"       "$3" "$dir/3-code.png"
+  phone_slide "phone-play-functions$s.png"  "$4" "$dir/4-play-functions.png"
+  phone_slide "phone-play-conditions$s.png" "$5" "$dir/5-play-conditions.png"
+  phone_slide "phone-solved$s.png"          "$6" "$dir/6-solved.png"
+  phone_slide "phone-warm-up$s.png"         "$7" "$dir/7-warm-up.png"
+  phone_pair_slide "phone-parent-placement$s.png" "phone-parent-progress$s.png" "$8" "$dir/8-parents.png"
+}
+
+# pair_slide <image> <image> <caption> <out>: two framed tablet screenshots
+# side by side, slightly overlapping, for related screens.
+pair_slide() {
+  shot 1920 1080 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;height:1080px\">
+      <h1 style=\"font-size:72px\">$3</h1>
+      <div style=\"display:flex;align-items:flex-start\">
+        <div class=\"tablet\" style=\"padding:12px;border-radius:32px;transform:rotate(-2deg)\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"width:1040px;display:block;border-radius:20px\"></div>
+        <div class=\"tablet\" style=\"padding:12px;border-radius:32px;transform:rotate(2deg);margin-left:-300px;margin-top:220px\"><img src=\"file://$ROOT/website/screenshots/$2\" style=\"width:1040px;display:block;border-radius:20px\"></div>
+      </div>
+    </div>" "$4"
 }
 
 # slide <image> <caption> <out>: caption above a framed 1280 x 740 screenshot.
 slide() {
-  shot 1920 1080 "<div style=\"display:flex;flex-direction:column;align-items:center;gap:44px;padding-top:70px\">
+  shot 1920 1080 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px;height:1080px\">
       <h1 style=\"font-size:76px\">$2</h1>
       <div class=\"tablet\"><img src=\"file://$ROOT/website/screenshots/$1\" width=\"1280\" height=\"740\"></div>
     </div>" "$3"
@@ -88,52 +112,52 @@ render_locale() { # locale suffix tagline captions...
   rm -f "store/$locale/screenshots/"*.png
   slide "adventure-map$s.png"   "$1" "store/$locale/screenshots/1-adventure-map.png"
   slide "play-loops$s.png"      "$2" "store/$locale/screenshots/2-play-loops.png"
-  slide "play-functions$s.png"  "$3" "store/$locale/screenshots/3-play-functions.png"
-  slide "play-conditions$s.png" "$4" "store/$locale/screenshots/4-play-conditions.png"
-  slide "solved$s.png"          "$5" "store/$locale/screenshots/5-solved.png"
-  slide "warm-up-pattern$s.png" "$6" "store/$locale/screenshots/6-warm-up.png"
-  slide "parent-placement$s.png" "$7" "store/$locale/screenshots/7-parents.png"
-  slide "parent-progress$s.png"  "$8" "store/$locale/screenshots/8-progress.png"
+  slide "play-code$s.png"       "$3" "store/$locale/screenshots/3-code.png"
+  slide "play-functions$s.png"  "$4" "store/$locale/screenshots/4-play-functions.png"
+  slide "play-conditions$s.png" "$5" "store/$locale/screenshots/5-play-conditions.png"
+  slide "solved$s.png"          "$6" "store/$locale/screenshots/6-solved.png"
+  slide "warm-up-pattern$s.png" "$7" "store/$locale/screenshots/7-warm-up.png"
+  pair_slide "parent-placement$s.png" "parent-progress$s.png" "$8" "store/$locale/screenshots/8-parents.png"
 }
 
 render_locale id "-id" "Belajar coding sambil bermain" \
   "Jelajahi pulau-pulau coding" \
   "Blok bergambar, tanpa perlu membaca" \
+  "Sudah bisa membaca? Ketik kode sungguhan" \
   "Buat blok sendiri, pakai berkali-kali" \
   "Periksa jalan sebelum melangkah" \
   "Setiap percobaan disambut dengan semangat" \
   "Permainan pemanasan menemukan titik awal" \
-  "Orang tua tetap memegang kendali" \
-  "Fitur sponsor: laporan perkembangan anak"
+  "Orang tua memilih titik awal; sponsor melihat laporan"
 
 render_locale en-US "" "Learn to code through play" \
   "Explore the coding islands" \
   "Picture blocks, no reading needed" \
+  "Reading already? Type real code" \
   "Build your own block, use it again and again" \
   "Check the path before taking a step" \
   "Every try is met with encouragement" \
   "A warm-up game finds the right start" \
-  "Parents stay in charge" \
-  "Sponsor feature: your child's progress"
+  "Parents set the start; sponsors see progress"
 
 render_phone id "-id" \
   "Jelajahi pulau-pulau coding" \
   "Blok bergambar, tanpa perlu membaca" \
+  "Sudah bisa membaca? Ketik kode sungguhan" \
   "Buat blok sendiri, pakai berkali-kali" \
   "Periksa jalan sebelum melangkah" \
   "Setiap percobaan disambut dengan semangat" \
   "Permainan pemanasan menemukan titik awal" \
-  "Orang tua tetap memegang kendali" \
-  "Fitur sponsor: laporan perkembangan anak"
+  "Orang tua memilih titik awal; sponsor melihat laporan"
 
 render_phone en-US "" \
   "Explore the coding islands" \
   "Picture blocks, no reading needed" \
+  "Reading already? Type real code" \
   "Build your own block, use it again and again" \
   "Check the path before taking a step" \
   "Every try is met with encouragement" \
   "A warm-up game finds the right start" \
-  "Parents stay in charge" \
-  "Sponsor feature: your child's progress"
+  "Parents set the start; sponsors see progress"
 
 echo "Store graphics rendered."

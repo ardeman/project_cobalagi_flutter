@@ -388,8 +388,8 @@ void main() {
       PackageInfo.setMockInitialValues(
         appName: 'Coba Lagi',
         packageName: 'com.ardeman.cobalagi',
-        version: '1.0.1',
-        buildNumber: '4',
+        version: '1.0.2',
+        buildNumber: '6',
         buildSignature: '',
       );
       tester.view.physicalSize = _size * 2;

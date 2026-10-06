@@ -1,0 +1,6 @@
+- Pulau baru Kotak Langkah: simpan jumlah langkah lalu pakai lagi.
+- Anak yang sudah bisa membaca dapat pindah ke tab Kode dan mengetik program yang sama.
+- Tombol urungkan dan kembalikan memunculkan lagi blok yang terhapus tanpa sengaja.
+- Musik latar kini langsung berbunyi.
+- Tampilan lebih pas di ponsel dan tablet, tegak maupun miring. Menggeser di atas blok kini menggulir layar, bukan memindahkan blok.
+- Aplikasi memberi tahu saat ada pembaruan di Google Play.

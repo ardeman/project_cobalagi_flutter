@@ -6,12 +6,12 @@ import 'package:flutter_test/flutter_test.dart';
 const _screenshots = {
   '1-adventure-map.png',
   '2-play-loops.png',
-  '3-play-functions.png',
-  '4-play-conditions.png',
-  '5-solved.png',
-  '6-warm-up.png',
-  '7-parents.png',
-  '8-progress.png',
+  '3-code.png',
+  '4-play-functions.png',
+  '5-play-conditions.png',
+  '6-solved.png',
+  '7-warm-up.png',
+  '8-parents.png',
 };
 
 void main() {
