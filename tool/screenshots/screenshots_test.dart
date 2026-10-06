@@ -90,7 +90,7 @@ ExerciseResult _result(String concept, String level, {int seconds = 80}) =>
     );
 
 /// Eclo has finished the first three islands and started Magic Block.
-Future<Database> _seed(String language) async {
+Future<Database> _seed(String language, {bool reader = false}) async {
   final db = await newDatabaseFactoryMemory().openDatabase('shots.db');
   final eclo = await ProfileRepository(db).add(nickname: 'Eclo', avatar: 0);
   await ProfileRepository(db).add(nickname: 'Gito', avatar: 2);
@@ -105,7 +105,7 @@ Future<Database> _seed(String language) async {
       placement: Placement(
         startConcept: 'directions',
         levels: const {},
-        readsWords: false,
+        readsWords: reader,
         at: DateTime(2026, 9, 28),
         byParent: false,
       ),
@@ -355,12 +355,13 @@ void main() {
       WidgetTester tester, {
       Plan plan = Plan.free,
       Size size = _size,
+      bool reader = false,
     }) async {
       tester.view.physicalSize = size * 2;
       tester.view.devicePixelRatio = 2;
       addTearDown(tester.view.reset);
       rootBundle.clear();
-      final db = await tester.runAsync(() => _seed(language));
+      final db = await tester.runAsync(() => _seed(language, reader: reader));
       await tester.pumpWidget(
         CobaLagiApp(
           profiles: ProfileRepository(db!),
@@ -418,8 +419,11 @@ void main() {
 
     for (final (prefix, size) in [('', _size), ('phone-', _phone)]) {
       group('${prefix.isEmpty ? 'tablet' : 'phone'} $language', () {
-        Future<void> device(WidgetTester tester, {Plan plan = Plan.free}) =>
-            pumpApp(tester, plan: plan, size: size);
+        Future<void> device(
+          WidgetTester tester, {
+          Plan plan = Plan.free,
+          bool reader = false,
+        }) => pumpApp(tester, plan: plan, size: size, reader: reader);
 
         testWidgets('map', (tester) async {
           await device(tester);
@@ -463,7 +467,8 @@ void main() {
         });
 
         testWidgets('typed code', (tester) async {
-          await device(tester);
+          // A reader, so the Code tab shows.
+          await device(tester, reader: true);
           await _open(tester, '/child/1/replay/loops-03');
           await _buildLoopAnswer(tester, 'loops-03');
           final code = language == 'id' ? 'Kode' : 'Code';
