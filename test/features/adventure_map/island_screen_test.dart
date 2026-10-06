@@ -76,8 +76,9 @@ void main() {
 
     expect(find.text('Directions'), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
-    // Lessons 2-5 haven't been played yet.
-    expect(find.byIcon(Icons.lock_rounded), findsNWidgets(4));
+    // Every lesson after the first hasn't been played yet.
+    final lessons = cubit.curriculum.lessons['directions']!.length;
+    expect(find.byIcon(Icons.lock_rounded), findsNWidgets(lessons - 1));
     expect(find.byIcon(Icons.star_rounded), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.lock_rounded).first);

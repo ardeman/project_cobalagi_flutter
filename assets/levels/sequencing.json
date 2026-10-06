@@ -4,7 +4,11 @@
       "id": "sequencing-01",
       "concept": "sequencing",
       "facing": "east",
-      "palette": ["move", "turnLeft", "turnRight"],
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
       "rows": [
         "#######",
         "#S...*#",
@@ -17,7 +21,11 @@
       "id": "sequencing-02",
       "concept": "sequencing",
       "facing": "east",
-      "palette": ["move", "turnLeft", "turnRight"],
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
       "rows": [
         "########",
         "#S.#####",
@@ -33,7 +41,11 @@
       "id": "sequencing-03",
       "concept": "sequencing",
       "facing": "west",
-      "palette": ["move", "turnLeft", "turnRight"],
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
       "rows": [
         "########",
         "#*.S..G#",
@@ -44,7 +56,11 @@
       "id": "sequencing-04",
       "concept": "sequencing",
       "facing": "north",
-      "palette": ["move", "turnLeft", "turnRight"],
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
       "rows": [
         "#######",
         "#...*.#",
@@ -53,6 +69,42 @@
         "#S#.#.#",
         "###...#",
         "#######"
+      ]
+    },
+    {
+      "id": "sequencing-05",
+      "concept": "sequencing",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "rows": [
+        "#######",
+        "#*.S..#",
+        "#####.#",
+        "#####G#",
+        "#######"
+      ]
+    },
+    {
+      "id": "sequencing-06",
+      "concept": "sequencing",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "rows": [
+        "#########",
+        "#S......#",
+        "#######.#",
+        "#.......#",
+        "#.#######",
+        "#...*..G#",
+        "#########"
       ]
     }
   ]

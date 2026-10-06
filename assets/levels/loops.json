@@ -80,6 +80,49 @@
         "#G#####",
         "#######"
       ]
+    },
+    {
+      "id": "loops-05",
+      "concept": "loops",
+      "facing": "north",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "######",
+        "#.*..#",
+        "#.##.#",
+        "#.##.#",
+        "#S##G#",
+        "######"
+      ]
+    },
+    {
+      "id": "loops-06",
+      "concept": "loops",
+      "facing": "west",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "maxBlocks": 9,
+      "rows": [
+        "######",
+        "###.G#",
+        "###.##",
+        "##..##",
+        "##.###",
+        "#..###",
+        "#.####",
+        "#.S###",
+        "######"
+      ]
     }
   ]
 }

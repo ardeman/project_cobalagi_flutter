@@ -4,7 +4,9 @@
       "id": "directions-01",
       "concept": "directions",
       "facing": "east",
-      "palette": ["move"],
+      "palette": [
+        "move"
+      ],
       "rows": [
         "######",
         "#S..G#",
@@ -15,7 +17,10 @@
       "id": "directions-02",
       "concept": "directions",
       "facing": "east",
-      "palette": ["move", "turnLeft"],
+      "palette": [
+        "move",
+        "turnLeft"
+      ],
       "rows": [
         "#####",
         "###G#",
@@ -28,7 +33,10 @@
       "id": "directions-03",
       "concept": "directions",
       "facing": "east",
-      "palette": ["move", "turnRight"],
+      "palette": [
+        "move",
+        "turnRight"
+      ],
       "rows": [
         "#####",
         "#S..#",
@@ -41,7 +49,11 @@
       "id": "directions-04",
       "concept": "directions",
       "facing": "north",
-      "palette": ["move", "turnLeft", "turnRight"],
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
       "rows": [
         "#####",
         "#S.G#",
@@ -52,12 +64,31 @@
       "id": "directions-05",
       "concept": "directions",
       "facing": "east",
-      "palette": ["move", "turnLeft", "turnRight"],
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
       "rows": [
         "######",
         "#S.*##",
         "###..#",
         "####G#",
+        "######"
+      ]
+    },
+    {
+      "id": "directions-06",
+      "concept": "directions",
+      "facing": "west",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "rows": [
+        "######",
+        "#S..G#",
         "######"
       ]
     }
