@@ -14,6 +14,9 @@ import '../../../engine/generator/solver.dart';
 import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
 import '../../../engine/program/instruction.dart';
+import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
+import 'package:cobalagi/features/editors/typed/data/typed_program.dart';
+import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import '../../../engine/world/level.dart';
 import '../../../learning/exercise_result.dart';
 import '../../../learning/learning_engine.dart';
@@ -66,6 +69,9 @@ class _PlayViewState extends State<PlayView> {
   late final _level = widget.exercise.level;
   late final _blocks = BlocksCubit(maxBlocks: _level.maxBlocks);
   late final _play = PlayCubit(_level);
+  late final _typed = TypedCodeCubit(_level);
+  var _codeMode = false;
+  var _codeSeeded = false;
   late final _game = WorldGame(
     level: _level,
     onEventShown: _play.eventShown,
@@ -95,6 +101,7 @@ class _PlayViewState extends State<PlayView> {
   @override
   void dispose() {
     _blocks.close();
+    _typed.close();
     _play.close();
     super.dispose();
   }
@@ -178,100 +185,174 @@ class _PlayViewState extends State<PlayView> {
   }
 
   @override
-  Widget build(BuildContext context) => MultiBlocProvider(
-    providers: [
-      BlocProvider.value(value: _blocks),
-      BlocProvider.value(value: _play),
-    ],
-    child: MultiBlocListener(
-      listeners: [
-        BlocListener<PlayCubit, PlayState>(listener: _onPlayChanged),
-        // Editing the program after a run puts the world back at the start.
-        // A click when a block lands in the program.
-        BlocListener<BlocksCubit, BlockProgram>(
-          listenWhen: (before, after) => _count(after) > _count(before),
-          listener: (_, _) =>
-              context.read<AudioService>().playEffect(SoundEffect.drop),
-        ),
-        BlocListener<BlocksCubit, Object>(
-          listener: (_, _) {
-            final play = _play.state;
-            if (play.phase != PlayPhase.editing || play.issues.isNotEmpty) {
-              _play.reset();
-            }
-          },
-        ),
+  Widget build(BuildContext context) {
+    final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _blocks),
+        BlocProvider.value(value: _play),
+        BlocProvider.value(value: _typed),
       ],
-      child: Scaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: WindowClassBuilder(
-              builder: (context, windowClass) {
-                final compact = windowClass == WindowClass.compact;
-                final world = Column(
-                  children: [
-                    _TopBar(
-                      plan: widget.exercise.plan,
-                      goal: _goal(_level).$1(AppLocalizations.of(context)),
-                      onListen: _sayGoal,
-                      homePath: widget.homePath,
-                    ),
-                    const SizedBox(height: 12),
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(24),
-                        child: GameWidget(game: _game),
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<PlayCubit, PlayState>(listener: _onPlayChanged),
+          BlocListener<TypedCodeCubit, TypedCodeState>(
+            listener: (_, _) {
+              if (_play.state.phase != PlayPhase.editing) _play.reset();
+            },
+          ),
+          // Editing the program after a run puts the world back at the start.
+          // A click when a block lands in the program.
+          BlocListener<BlocksCubit, BlockProgram>(
+            listenWhen: (before, after) => _count(after) > _count(before),
+            listener: (_, _) =>
+                context.read<AudioService>().playEffect(SoundEffect.drop),
+          ),
+          BlocListener<BlocksCubit, Object>(
+            listener: (_, _) {
+              final play = _play.state;
+              if (play.phase != PlayPhase.editing || play.issues.isNotEmpty) {
+                _play.reset();
+              }
+            },
+          ),
+        ],
+        child: Scaffold(
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: WindowClassBuilder(
+                builder: (context, windowClass) {
+                  final compact = windowClass == WindowClass.compact;
+                  final world = Column(
+                    children: [
+                      _TopBar(
+                        plan: widget.exercise.plan,
+                        goal: _goal(_level).$1(AppLocalizations.of(context)),
+                        onListen: _sayGoal,
+                        homePath: widget.homePath,
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Feedback replaces the controls, so it never hides the
-                    // world, and the controls aren't usable meanwhile anyway.
-                    _feedbackCard(context) ??
-                        _RunControls(
-                          onHint: _finished ? null : _showHint,
-                          howTo: widget.showHowTo,
-                          compact: compact,
+                      const SizedBox(height: 12),
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(24),
+                          child: GameWidget(game: _game),
                         ),
-                  ],
-                );
-                final editor = BlocBuilder<PlayCubit, PlayState>(
-                  builder: (context, play) => BlockEditor(
-                    palette: _level.palette,
-                    blockSize: compact ? 56.0 : 72.0,
-                    activeBlockId: play.activeBlockId,
-                    issueBlockIds: {
-                      for (final issue in play.issues) ?issue.blockId,
-                    },
-                    enabled: !_finished && play.phase != PlayPhase.running,
-                    showHowTo: widget.showHowTo && play.runs == 0,
-                    words: widget.words,
-                  ),
-                );
-                return compact
-                    ? Column(
+                      ),
+                      const SizedBox(height: 12),
+                      // Feedback replaces the controls, so it never hides the
+                      // world, and the controls aren't usable meanwhile anyway.
+                      _feedbackCard(context) ??
+                          _RunControls(
+                            onHint: _finished ? null : _showHint,
+                            howTo: widget.showHowTo,
+                            compact: compact,
+                            codeMode: _codeMode,
+                          ),
+                    ],
+                  );
+                  final editor = BlocBuilder<PlayCubit, PlayState>(
+                    builder: (context, play) {
+                      final enabled =
+                          !_finished && play.phase != PlayPhase.running;
+                      final l = AppLocalizations.of(context);
+                      return Column(
                         children: [
-                          // Phones: the editor needs as much room as the
-                          // world, more with the star row.
-                          Expanded(flex: 4, child: world),
-                          const SizedBox(height: 12),
-                          Expanded(flex: 5, child: editor),
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          Expanded(flex: 3, child: world),
-                          const SizedBox(width: 16),
-                          Expanded(flex: 2, child: editor),
+                          Row(
+                            children: [
+                              for (final code in [false, true])
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: OutlinedButton.icon(
+                                      style: OutlinedButton.styleFrom(
+                                        minimumSize: const Size(64, 64),
+                                        backgroundColor: _codeMode == code
+                                            ? Theme.of(
+                                                context,
+                                              ).colorScheme.primaryContainer
+                                            : null,
+                                      ),
+                                      onPressed: enabled
+                                          ? () {
+                                              if (_codeMode == code) return;
+                                              FocusManager.instance.primaryFocus
+                                                  ?.unfocus();
+                                              if (code && !_codeSeeded) {
+                                                _typed.edit(
+                                                  formatCode(_blocks.program),
+                                                );
+                                                _codeSeeded = true;
+                                              }
+                                              _play.reset();
+                                              setState(() => _codeMode = code);
+                                            }
+                                          : null,
+                                      icon: Icon(
+                                        code
+                                            ? Icons.code_rounded
+                                            : Icons.view_module_rounded,
+                                      ),
+                                      label: Text(
+                                        code ? l.editorCode : l.editorBlocks,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          Expanded(
+                            child: _codeMode
+                                ? TypedCodeEditor(
+                                    enabled: enabled,
+                                    activeBlockId: play.activeBlockId,
+                                  )
+                                : BlockEditor(
+                                    palette: _level.palette,
+                                    blockSize: compact ? 56.0 : 72.0,
+                                    activeBlockId: play.activeBlockId,
+                                    issueBlockIds: {
+                                      for (final issue in play.issues)
+                                        ?issue.blockId,
+                                    },
+                                    enabled: enabled,
+                                    showHowTo:
+                                        widget.showHowTo && play.runs == 0,
+                                    words: widget.words,
+                                  ),
+                          ),
                         ],
                       );
-              },
+                    },
+                  );
+                  if (compact && _codeMode && keyboardOpen) {
+                    return editor;
+                  }
+                  return compact
+                      ? Column(
+                          children: [
+                            // Phones: the editor needs as much room as the
+                            // world, more with the star row.
+                            Expanded(flex: 4, child: world),
+                            const SizedBox(height: 12),
+                            Expanded(flex: 5, child: editor),
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Expanded(flex: 3, child: world),
+                            const SizedBox(width: 16),
+                            Expanded(flex: 2, child: editor),
+                          ],
+                        );
+                },
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 
   /// The card after a run or a finished exercise, or null while editing.
   Widget? _feedbackCard(BuildContext context) {
@@ -395,18 +476,26 @@ class _TopBar extends StatelessWidget {
           size: 36,
         ),
         const SizedBox(width: 8),
-        Text(
-          conceptName(l10n, plan.conceptId),
-          style: Theme.of(context).textTheme.headlineSmall,
+        Expanded(
+          child: Text(
+            conceptName(l10n, plan.conceptId),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
         ),
         if (plan.mode == ExerciseMode.review) ...[
           const SizedBox(width: 16),
-          Chip(
-            avatar: const Icon(Icons.diamond_rounded, color: Color(0xFF26C6DA)),
-            label: Text(l10n.bonusAdventure),
+          Flexible(
+            child: Chip(
+              avatar: const Icon(
+                Icons.diamond_rounded,
+                color: Color(0xFF26C6DA),
+              ),
+              label: Text(l10n.bonusAdventure, overflow: TextOverflow.ellipsis),
+            ),
           ),
         ],
-        const Spacer(),
         IconButton.filledTonal(
           tooltip: '${l10n.listenAgain}: $goal',
           onPressed: onListen,
@@ -468,12 +557,14 @@ class _RunControls extends StatelessWidget {
     required this.onHint,
     this.howTo = false,
     this.compact = false,
+    this.codeMode = false,
   });
 
   final VoidCallback? onHint;
 
   /// Narrow screens (phones): tighter spacing so all four buttons fit.
   final bool compact;
+  final bool codeMode;
 
   /// Pulse the Go button until the first run, once there's a block.
   final bool howTo;
@@ -483,7 +574,9 @@ class _RunControls extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final play = context.watch<PlayCubit>().state;
     final blocks = context.watch<BlocksCubit>();
-    final hasBlocks = !blocks.state.isEmpty;
+    final typed = context.watch<TypedCodeCubit>().state;
+    final program = codeMode ? typed.program : blocks.program;
+    final hasBlocks = codeMode ? typed.canRun : !blocks.state.isEmpty;
     final running = play.phase == PlayPhase.running;
     final canGo = hasBlocks && (play.phase == PlayPhase.editing || running);
 
@@ -500,7 +593,7 @@ class _RunControls extends StatelessWidget {
                   )
                 : null,
             onPressed: canGo && !(running && !play.stepping)
-                ? () => context.read<PlayCubit>().run(blocks.program)
+                ? () => context.read<PlayCubit>().run(program!)
                 : null,
             icon: const Icon(Icons.play_arrow_rounded, size: 40),
             label: Text(l10n.run),
@@ -510,7 +603,7 @@ class _RunControls extends StatelessWidget {
         IconButton.filledTonal(
           tooltip: l10n.step,
           onPressed: canGo && (!running || (play.stepping && !play.playing))
-              ? () => context.read<PlayCubit>().step(blocks.program)
+              ? () => context.read<PlayCubit>().step(program!)
               : null,
           icon: const Icon(Icons.skip_next_rounded),
         ),

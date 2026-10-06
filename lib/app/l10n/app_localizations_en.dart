@@ -503,4 +503,77 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get updateOpenFailed =>
       'The update could not be opened. You can try again or keep playing.';
+
+  @override
+  String get editorBlocks => 'Blocks';
+
+  @override
+  String get editorCode => 'Code';
+
+  @override
+  String get codeDrafts =>
+      'Each editor keeps its own draft. Your first code draft comes from your blocks.';
+
+  @override
+  String get codeHelp => 'Code guide';
+
+  @override
+  String get codeSource => 'Your code';
+
+  @override
+  String get codeGuide =>
+      'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces.';
+
+  @override
+  String get codeSyntax =>
+      'Check the command name, parentheses, braces and semicolon.';
+
+  @override
+  String get codeNumber => 'Choose a repeat count from 1 to 9.';
+
+  @override
+  String get codeDuplicateStar => 'Keep just one define star section.';
+
+  @override
+  String get codeNestedStar => 'Put define star outside repeats and checks.';
+
+  @override
+  String get codeTooLarge =>
+      'Try a shorter program with fewer nested sections.';
+
+  @override
+  String get codeDisallowed => 'Use the commands shown for this puzzle.';
+
+  @override
+  String get codeLimit => 'Try fewer commands to fit the block limit.';
+
+  @override
+  String get codeEmptyBody => 'Add a command inside the braces.';
+
+  @override
+  String get codeEmptyStar =>
+      'Add commands to define star before using star();.';
+
+  @override
+  String get codeRecursiveStar =>
+      'Use moves, turns, repeats or checks inside define star.';
+
+  @override
+  String get codeReady => 'Ready to run';
+
+  @override
+  String get codeStart => 'Add a command to begin.';
+
+  @override
+  String codeLine(int line, String message) {
+    return 'Line $line: $message';
+  }
+
+  @override
+  String codeRunningLine(int line) {
+    return 'Running line $line';
+  }
+
+  @override
+  String get codeDefineStar => 'Define my block';
 }

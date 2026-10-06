@@ -490,4 +490,79 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get updateOpenFailed =>
       'Pembaruan belum bisa dibuka. Coba lagi atau lanjut bermain.';
+
+  @override
+  String get editorBlocks => 'Blok';
+
+  @override
+  String get editorCode => 'Kode';
+
+  @override
+  String get codeDrafts =>
+      'Setiap editor menyimpan draf sendiri. Draf kode pertama berasal dari blokmu.';
+
+  @override
+  String get codeHelp => 'Panduan kode';
+
+  @override
+  String get codeSource => 'Kodemu';
+
+  @override
+  String get codeGuide =>
+      'Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal.';
+
+  @override
+  String get codeSyntax =>
+      'Periksa nama perintah, tanda kurung, kurung kurawal, dan titik koma.';
+
+  @override
+  String get codeNumber => 'Pilih jumlah pengulangan dari 1 sampai 9.';
+
+  @override
+  String get codeDuplicateStar => 'Gunakan satu bagian define star saja.';
+
+  @override
+  String get codeNestedStar =>
+      'Letakkan define star di luar pengulangan dan pemeriksaan.';
+
+  @override
+  String get codeTooLarge =>
+      'Coba program yang lebih pendek dengan lebih sedikit bagian bertingkat.';
+
+  @override
+  String get codeDisallowed =>
+      'Gunakan perintah yang tersedia untuk teka-teki ini.';
+
+  @override
+  String get codeLimit => 'Coba kurangi perintah agar sesuai batas blok.';
+
+  @override
+  String get codeEmptyBody => 'Tambahkan perintah di dalam kurung kurawal.';
+
+  @override
+  String get codeEmptyStar =>
+      'Tambahkan perintah ke define star sebelum memakai star();.';
+
+  @override
+  String get codeRecursiveStar =>
+      'Gunakan langkah, belokan, pengulangan, atau pemeriksaan di dalam define star.';
+
+  @override
+  String get codeReady => 'Siap dijalankan';
+
+  @override
+  String get codeStart => 'Tambahkan perintah untuk mulai.';
+
+  @override
+  String codeLine(int line, String message) {
+    return 'Baris $line: $message';
+  }
+
+  @override
+  String codeRunningLine(int line) {
+    return 'Menjalankan baris $line';
+  }
+
+  @override
+  String get codeDefineStar => 'Buat blokku';
 }

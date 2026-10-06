@@ -148,5 +148,43 @@
   "updateAvailableBody": "Versi terbaru Coba Lagi sudah tersedia. Minta bantuan orang dewasa untuk memperbarui aplikasi.",
   "updateWithParent": "Minta bantuan untuk memperbarui",
   "updateContinue": "Lanjut bermain",
-  "updateOpenFailed": "Pembaruan belum bisa dibuka. Coba lagi atau lanjut bermain."
+  "updateOpenFailed": "Pembaruan belum bisa dibuka. Coba lagi atau lanjut bermain.",
+  "editorBlocks": "Blok",
+  "editorCode": "Kode",
+  "codeDrafts": "Setiap editor menyimpan draf sendiri. Draf kode pertama berasal dari blokmu.",
+  "codeHelp": "Panduan kode",
+  "codeSource": "Kodemu",
+  "codeGuide": "Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal.",
+  "codeSyntax": "Periksa nama perintah, tanda kurung, kurung kurawal, dan titik koma.",
+  "codeNumber": "Pilih jumlah pengulangan dari 1 sampai 9.",
+  "codeDuplicateStar": "Gunakan satu bagian define star saja.",
+  "codeNestedStar": "Letakkan define star di luar pengulangan dan pemeriksaan.",
+  "codeTooLarge": "Coba program yang lebih pendek dengan lebih sedikit bagian bertingkat.",
+  "codeDisallowed": "Gunakan perintah yang tersedia untuk teka-teki ini.",
+  "codeLimit": "Coba kurangi perintah agar sesuai batas blok.",
+  "codeEmptyBody": "Tambahkan perintah di dalam kurung kurawal.",
+  "codeEmptyStar": "Tambahkan perintah ke define star sebelum memakai star();.",
+  "codeRecursiveStar": "Gunakan langkah, belokan, pengulangan, atau pemeriksaan di dalam define star.",
+  "codeReady": "Siap dijalankan",
+  "codeStart": "Tambahkan perintah untuk mulai.",
+  "codeLine": "Baris {line}: {message}",
+  "codeRunningLine": "Menjalankan baris {line}",
+  "codeDefineStar": "Buat blokku",
+  "@codeLine": {
+    "placeholders": {
+      "line": {
+        "type": "int"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@codeRunningLine": {
+    "placeholders": {
+      "line": {
+        "type": "int"
+      }
+    }
+  }
 }

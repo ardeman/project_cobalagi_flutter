@@ -991,6 +991,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The update could not be opened. You can try again or keep playing.'**
   String get updateOpenFailed;
+
+  /// No description provided for @editorBlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocks'**
+  String get editorBlocks;
+
+  /// No description provided for @editorCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get editorCode;
+
+  /// No description provided for @codeDrafts.
+  ///
+  /// In en, this message translates to:
+  /// **'Each editor keeps its own draft. Your first code draft comes from your blocks.'**
+  String get codeDrafts;
+
+  /// No description provided for @codeHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Code guide'**
+  String get codeHelp;
+
+  /// No description provided for @codeSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Your code'**
+  String get codeSource;
+
+  /// No description provided for @codeGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces.'**
+  String get codeGuide;
+
+  /// No description provided for @codeSyntax.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the command name, parentheses, braces and semicolon.'**
+  String get codeSyntax;
+
+  /// No description provided for @codeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a repeat count from 1 to 9.'**
+  String get codeNumber;
+
+  /// No description provided for @codeDuplicateStar.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep just one define star section.'**
+  String get codeDuplicateStar;
+
+  /// No description provided for @codeNestedStar.
+  ///
+  /// In en, this message translates to:
+  /// **'Put define star outside repeats and checks.'**
+  String get codeNestedStar;
+
+  /// No description provided for @codeTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a shorter program with fewer nested sections.'**
+  String get codeTooLarge;
+
+  /// No description provided for @codeDisallowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the commands shown for this puzzle.'**
+  String get codeDisallowed;
+
+  /// No description provided for @codeLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Try fewer commands to fit the block limit.'**
+  String get codeLimit;
+
+  /// No description provided for @codeEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a command inside the braces.'**
+  String get codeEmptyBody;
+
+  /// No description provided for @codeEmptyStar.
+  ///
+  /// In en, this message translates to:
+  /// **'Add commands to define star before using star();.'**
+  String get codeEmptyStar;
+
+  /// No description provided for @codeRecursiveStar.
+  ///
+  /// In en, this message translates to:
+  /// **'Use moves, turns, repeats or checks inside define star.'**
+  String get codeRecursiveStar;
+
+  /// No description provided for @codeReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to run'**
+  String get codeReady;
+
+  /// No description provided for @codeStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a command to begin.'**
+  String get codeStart;
+
+  /// No description provided for @codeLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line}: {message}'**
+  String codeLine(int line, String message);
+
+  /// No description provided for @codeRunningLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Running line {line}'**
+  String codeRunningLine(int line);
+
+  /// No description provided for @codeDefineStar.
+  ///
+  /// In en, this message translates to:
+  /// **'Define my block'**
+  String get codeDefineStar;
 }
 
 class _AppLocalizationsDelegate

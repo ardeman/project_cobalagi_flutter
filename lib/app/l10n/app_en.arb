@@ -255,5 +255,43 @@
   "updateAvailableBody": "A newer version of Coba Lagi is ready. Ask a grown-up to help update the app.",
   "updateWithParent": "Ask a grown-up to update",
   "updateContinue": "Continue playing",
-  "updateOpenFailed": "The update could not be opened. You can try again or keep playing."
+  "updateOpenFailed": "The update could not be opened. You can try again or keep playing.",
+  "editorBlocks": "Blocks",
+  "editorCode": "Code",
+  "codeDrafts": "Each editor keeps its own draft. Your first code draft comes from your blocks.",
+  "codeHelp": "Code guide",
+  "codeSource": "Your code",
+  "codeGuide": "Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces.",
+  "codeSyntax": "Check the command name, parentheses, braces and semicolon.",
+  "codeNumber": "Choose a repeat count from 1 to 9.",
+  "codeDuplicateStar": "Keep just one define star section.",
+  "codeNestedStar": "Put define star outside repeats and checks.",
+  "codeTooLarge": "Try a shorter program with fewer nested sections.",
+  "codeDisallowed": "Use the commands shown for this puzzle.",
+  "codeLimit": "Try fewer commands to fit the block limit.",
+  "codeEmptyBody": "Add a command inside the braces.",
+  "codeEmptyStar": "Add commands to define star before using star();.",
+  "codeRecursiveStar": "Use moves, turns, repeats or checks inside define star.",
+  "codeReady": "Ready to run",
+  "codeStart": "Add a command to begin.",
+  "codeLine": "Line {line}: {message}",
+  "codeRunningLine": "Running line {line}",
+  "codeDefineStar": "Define my block",
+  "@codeLine": {
+    "placeholders": {
+      "line": {
+        "type": "int"
+      },
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "@codeRunningLine": {
+    "placeholders": {
+      "line": {
+        "type": "int"
+      }
+    }
+  }
 }

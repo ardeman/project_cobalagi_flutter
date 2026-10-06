@@ -3,8 +3,8 @@
 A coding-learning app for children of all ages, in Bahasa Indonesia and English.
 
 - **Tier 1** (pre-readers, about 4–7): icon blocks and voice instructions.
-- **Tier 2** (early readers, about 7–10, planned): word blocks such as `move 3`.
-- **Tier 3** (about 10–14+, planned): blocks that flip to real code, then typed code.
+- **Tier 2** (early readers, about 7–10): word blocks such as `move 3`.
+- **Tier 3** (about 10–14+): blocks that can switch to typed code.
 
 Every tier drives the same game world. A short, voice-led placement game picks each child's starting point, and the app then chooses to advance, practise or review after every lesson.
 
@@ -235,9 +235,9 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 | 3. Learning loop ✅ | Attempt tracking, mastery, advance/practice/review, generated variations, Loops levels, adventure map |
 | 4. Pretest ✅ | Reading check and pre-skills, voice-led and adaptive; placement; parent override |
 | 5. Hardening ✅ (code) | Donations through Google Play Billing (any donation unlocks sponsor features), release config, voice clips, tablet performance |
-
 | 6. After MVP ✅ | Magic Block island (own block), parent progress report, sound effects and music, splash, how-to hint, warm-up second chance, Tier 2 word blocks for readers |
 | 7. Conditions ✅ | Look Ahead island, six lessons, generated practice and an eye block that runs its contents only when the cell ahead is clear |
+| 8. Typed code ✅ | Switch between blocks and code on every island, command buttons, line feedback and step highlighting, with the same engine and lesson limits |
 
 The eye block checks once before running its contents. Put a forward block
 inside it to move safely; put the eye block inside a repeat to check again
@@ -245,7 +245,32 @@ on every turn of the loop. Tap a repeat or eye block, then a palette block
 to fill it, or drag blocks into it. Checks appear as green (clear) or orange
 (blocked) rings in the world. The Conditions island follows Magic Block.
 
-Later: Rive characters, Tier 3 (typed code), variables.
+The Code button opens a small teaching language. The first code draft is
+copied from the current blocks; each editor then keeps its own draft for the
+current puzzle. Commands use the same names in both app languages:
+
+```text
+define star {
+  move();
+  turn_right();
+}
+repeat(3) {
+  if_path_clear {
+    move();
+  }
+}
+star();
+```
+
+Actions end with `();`. Repeats take counts from 1 to 9, and `//` starts a
+comment. `turn_left();` turns left. Command buttons offer only the current
+lesson's palette. The parser compiles to `Program` with source IDs; the shared
+validator checks the palette, block limit, empty bodies and recursive calls.
+Run and Step use the same interpreter as blocks. Editing and switching put the
+world back at the start. On phones, the code editor fills the space while the
+keyboard is open.
+
+Later: Rive characters and variables.
 
 ## Documentation map
 
