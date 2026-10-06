@@ -247,5 +247,8 @@
     }
   },
   "levelLocked": "Not open yet",
-  "answerWas": "The answer is this one!"
+  "answerWas": "The answer is this one!",
+  "conceptConditions": "Look ahead",
+  "blockIfPathClear": "If clear",
+  "playGoalConditions": "Look ahead! Put a move inside the eye block. It moves only when the path is clear."
 }

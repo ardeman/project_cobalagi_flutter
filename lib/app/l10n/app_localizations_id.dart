@@ -463,4 +463,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get answerWas => 'Jawabannya yang ini!';
+
+  @override
+  String get conceptConditions => 'Lihat depan';
+
+  @override
+  String get blockIfPathClear => 'Jika kosong';
+
+  @override
+  String get playGoalConditions =>
+      'Lihat ke depan! Taruh balok maju di dalam balok mata. Ia maju hanya jika jalan di depan kosong.';
 }

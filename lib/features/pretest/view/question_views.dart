@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/glass_surface.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/voice_clips.dart';
@@ -227,14 +228,8 @@ class _Board extends StatelessWidget {
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(28),
-    ),
-    child: child,
-  );
+  Widget build(BuildContext context) =>
+      GlassSurface(padding: const EdgeInsets.all(24), radius: 28, child: child);
 }
 
 /// How an option looks after the child answers.

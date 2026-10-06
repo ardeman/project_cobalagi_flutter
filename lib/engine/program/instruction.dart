@@ -1,6 +1,6 @@
 /// The shared instruction set. Every editor (icon blocks, word blocks, typed
 /// code) compiles to these, and only these are executed by the interpreter.
-enum InstructionKind { move, turnLeft, turnRight, repeat, call }
+enum InstructionKind { move, turnLeft, turnRight, repeat, call, ifPathClear }
 
 sealed class Instruction {
   const Instruction({this.blockId});
@@ -58,4 +58,18 @@ final class Call extends Instruction {
 
   @override
   InstructionKind get kind => InstructionKind.call;
+}
+
+/// Checks the cell directly ahead once. Runs [body] only when it is open.
+final class IfPathClear extends Instruction {
+  const IfPathClear(this.body, {super.blockId});
+
+  final List<Instruction> body;
+
+  @override
+  InstructionKind get kind => InstructionKind.ifPathClear;
+
+  @override
+  int get blockCount =>
+      1 + body.fold(0, (sum, instruction) => sum + instruction.blockCount);
 }

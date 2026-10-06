@@ -6,6 +6,49 @@ import 'package:flutter_test/flutter_test.dart';
 List<BlockType> types(BlocksCubit c) => [for (final b in c.state.main) b.type];
 
 void main() {
+  test('conditions compile with child ids and can be filled by tapping', () {
+    final c = BlocksCubit()..add(BlockType.ifPathClear);
+    addTearDown(c.close);
+    final eye = c.state.main.single.id;
+    c.pickContainer(eye);
+    c.tap(BlockType.forward);
+    final condition = c.program.body.single as IfPathClear;
+    expect(condition.blockId, eye);
+    expect(condition.body.single, isA<Move>());
+    expect(
+      condition.body.single.blockId,
+      c.state.main.single.children.single.id,
+    );
+    expect(c.blockCount, 2);
+    c.pickRow(star: false);
+    c.tap(BlockType.turnRight);
+    expect(c.state.main.last.type, BlockType.turnRight);
+  });
+
+  test(
+    'a repeat can hold a condition; containers cannot move into themselves',
+    () {
+      final c = BlocksCubit()..add(BlockType.repeat);
+      addTearDown(c.close);
+      final loop = c.state.main.single.id;
+      c.add(BlockType.ifPathClear, parentId: loop);
+      final eye = c.state.main.single.children.single.id;
+      c.add(BlockType.forward, parentId: eye);
+      expect(c.add(BlockType.repeat, parentId: eye), isFalse);
+      expect(c.add(BlockType.ifPathClear, parentId: eye), isFalse);
+      final before = c.state;
+      c.move(eye, parentId: eye, index: 0);
+      expect(c.state, same(before));
+      c.move(loop, parentId: eye, index: 0);
+      expect(c.state, same(before));
+      c.pickContainer(eye);
+      c.removeLast();
+      expect(c.state.selectedContainer, isNull);
+      c.tap(BlockType.forward);
+      expect(c.state.main.single.type, BlockType.forward);
+    },
+  );
+
   test('add, insert, move and remove keep order', () {
     final c = BlocksCubit()
       ..add(BlockType.forward)

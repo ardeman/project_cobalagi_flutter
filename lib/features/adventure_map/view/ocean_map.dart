@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/learning/view/concepts.dart';
+import 'package:cobalagi/features/adventure_map/view/map_connections.dart';
 
 /// One island on the [OceanMap].
 final class MapIsland {
@@ -67,12 +68,12 @@ class _OceanMapState extends State<OceanMap> {
       final size = wide
           ? min(
               constraints.maxHeight * 0.24,
-              width / (n * 1.7),
+              width / (max(n, 1) * 2.2),
             ).clamp(72.0, 170.0).toDouble()
           : min(width * 0.32, 150.0).clamp(72.0, 150.0).toDouble();
       final height = wide
           ? constraints.maxHeight
-          : max(constraints.maxHeight, size * 0.9 + n * size * 2.1);
+          : max(constraints.maxHeight, size * 0.9 + n * size * 2.35);
       final centres = [
         for (var i = 0; i < n; i++)
           wide
@@ -82,7 +83,7 @@ class _OceanMapState extends State<OceanMap> {
                 )
               : Offset(
                   width * (i.isEven ? 0.3 : 0.7),
-                  size * 1.15 + i * size * 2.1,
+                  size * 1.15 + i * size * 2.35,
                 ),
       ];
       // The path is bright up to the furthest island the child can open.
@@ -98,19 +99,11 @@ class _OceanMapState extends State<OceanMap> {
               child: CustomPaint(
                 painter: _SeaPainter(
                   reached: reached,
-                  // From shore to shore, around the islands' labels.
-                  legs: [
-                    for (var i = 0; i + 1 < n; i++)
-                      wide
-                          ? (
-                              centres[i] + Offset(size * 0.8, size * 0.12),
-                              centres[i + 1] - Offset(size * 0.8, -size * 0.12),
-                            )
-                          : (
-                              centres[i] + Offset(0, size * 1.05),
-                              centres[i + 1] - Offset(0, size * 0.62),
-                            ),
-                  ],
+                  paths: mapConnections(
+                    centres: centres,
+                    islandSize: size,
+                    wide: wide,
+                  ),
                 ),
               ),
             ),
@@ -149,10 +142,10 @@ class _OceanMapState extends State<OceanMap> {
 
 /// The sea, its little waves and the dotted path between islands.
 class _SeaPainter extends CustomPainter {
-  _SeaPainter({required this.legs, required this.reached});
+  _SeaPainter({required this.paths, required this.reached});
 
   /// Where the path leaves one island and reaches the next.
-  final List<(Offset, Offset)> legs;
+  final List<Path> paths;
   final int reached;
 
   @override
@@ -190,20 +183,40 @@ class _SeaPainter extends CustomPainter {
     }
 
     // The path: dots along a gentle curve from island to island.
-    for (var i = 0; i < legs.length; i++) {
-      final (a, b) = legs[i];
-      final mid = Offset.lerp(a, b, 0.5)!;
-      final bend = Offset(-(b.dy - a.dy), b.dx - a.dx) * 0.15;
-      final path = Path()
-        ..moveTo(a.dx, a.dy)
-        ..quadraticBezierTo(mid.dx + bend.dx, mid.dy + bend.dy, b.dx, b.dy);
-      final dot = Paint()
-        ..color = i + 1 <= reached
-            ? const Color(0xFFFFF3C4)
-            : Colors.white.withValues(alpha: 0.4);
+    for (var i = 0; i < paths.length; i++) {
+      final path = paths[i];
+      final unlocked = i + 1 <= reached;
+      final color = unlocked
+          ? const Color(0xFFFFF1BB)
+          : const Color(0xFFECFBFF).withValues(alpha: 0.45);
+      canvas.drawPath(
+        path,
+        Paint()
+          ..color = color.withValues(alpha: unlocked ? 0.18 : 0.08)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = unlocked ? 12 : 8
+          ..strokeCap = StrokeCap.round,
+      );
       for (final metric in path.computeMetrics()) {
-        for (var d = 0.0; d <= metric.length; d += 18) {
-          canvas.drawCircle(metric.getTangentForOffset(d)!.position, 4.5, dot);
+        final count = max(2, (metric.length / 18).round());
+        for (var dot = 0; dot < count; dot++) {
+          final distance = metric.length * (dot + 0.5) / count;
+          final at = metric.getTangentForOffset(distance)!.position;
+          if (unlocked) {
+            canvas.drawCircle(
+              at + const Offset(0, 1.5),
+              5,
+              Paint()..color = const Color(0xFF317A85).withValues(alpha: 0.18),
+            );
+          }
+          canvas.drawCircle(at, unlocked ? 4.5 : 3.2, Paint()..color = color);
+          if (unlocked) {
+            canvas.drawCircle(
+              at - const Offset(1, 1),
+              1.4,
+              Paint()..color = Colors.white.withValues(alpha: 0.8),
+            );
+          }
         }
       }
     }
@@ -211,7 +224,7 @@ class _SeaPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SeaPainter old) =>
-      old.reached != reached || old.legs != legs;
+      old.reached != reached || old.paths != paths;
 }
 
 /// A sand island with the concept's emblem, its stars, name and levels.
@@ -290,7 +303,15 @@ class _Island extends StatelessWidget {
                         width: emblem,
                         height: emblem,
                         decoration: BoxDecoration(
-                          color: color,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color.lerp(color, Colors.white, 0.28)!,
+                              color,
+                              Color.lerp(color, Colors.black, 0.12)!,
+                            ],
+                          ),
                           shape: BoxShape.circle,
                           border: Border.all(
                             width: emblem * 0.08,

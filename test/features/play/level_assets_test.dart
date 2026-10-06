@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
+import 'package:cobalagi/engine/interpreter/run_event.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/program/program.dart';
 import 'package:cobalagi/engine/program/validation.dart';
@@ -103,6 +104,46 @@ void main() {
   });
 
   for (final level in levels) {
+    if (level.concept == 'conditions') {
+      test('${level.id} teaches checked steps with its own palette', () {
+        final steps = solve(level)!.body;
+        final checked = <Instruction>[];
+        // Exercise a blocked check at the start of the introductory lesson.
+        if (!level.isOpen(level.start.step(level.startFacing))) {
+          checked.add(const IfPathClear([Move()]));
+        }
+        for (var i = 0; i < steps.length;) {
+          if (steps[i] is! Move) {
+            checked.add(steps[i++]);
+            continue;
+          }
+          final start = i;
+          while (i < steps.length && steps[i] is Move) {
+            i++;
+          }
+          if (level.palette.contains(InstructionKind.repeat)) {
+            checked.add(
+              const Repeat(9, [
+                IfPathClear([Move()]),
+              ]),
+            );
+          } else {
+            checked.addAll([
+              for (var j = start; j < i; j++) const IfPathClear([Move()]),
+            ]);
+          }
+        }
+        final solution = Program(checked);
+        expect(validateProgram(solution, level), isEmpty);
+        final run = runProgram(solution, level);
+        expect(run.succeeded, isTrue);
+        expect(run.events.whereType<PathChecked>().any((e) => e.clear), isTrue);
+        expect(
+          run.events.whereType<PathChecked>().any((e) => !e.clear),
+          isTrue,
+        );
+      });
+    }
     test('${level.id} is solvable with its palette and block limit', () {
       final straight = solve(level);
       expect(straight, isNotNull, reason: 'no route to the goal');

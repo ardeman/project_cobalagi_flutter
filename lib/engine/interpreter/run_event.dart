@@ -37,6 +37,14 @@ final class Collected extends RunEvent {
   final GridPoint star;
 }
 
+/// The interpreter checked the path; the world only shows this result.
+final class PathChecked extends RunEvent {
+  const PathChecked(this.ahead, this.clear, super.blockId);
+
+  final GridPoint ahead;
+  final bool clear;
+}
+
 enum RunOutcome {
   /// Reached the goal with every star collected.
   success,

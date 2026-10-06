@@ -943,6 +943,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The answer is this one!'**
   String get answerWas;
+
+  /// No description provided for @conceptConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Look ahead'**
+  String get conceptConditions;
+
+  /// No description provided for @blockIfPathClear.
+  ///
+  /// In en, this message translates to:
+  /// **'If clear'**
+  String get blockIfPathClear;
+
+  /// No description provided for @playGoalConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Look ahead! Put a move inside the eye block. It moves only when the path is clear.'**
+  String get playGoalConditions;
 }
 
 class _AppLocalizationsDelegate

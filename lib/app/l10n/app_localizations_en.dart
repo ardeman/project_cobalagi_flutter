@@ -476,4 +476,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get answerWas => 'The answer is this one!';
+
+  @override
+  String get conceptConditions => 'Look ahead';
+
+  @override
+  String get blockIfPathClear => 'If clear';
+
+  @override
+  String get playGoalConditions =>
+      'Look ahead! Put a move inside the eye block. It moves only when the path is clear.';
 }

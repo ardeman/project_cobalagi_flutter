@@ -13,6 +13,7 @@ Future<BlocksCubit> pumpEditor(
   bool star = false,
   bool showHowTo = false,
   bool words = false,
+  bool conditions = false,
 }) async {
   final cubit = BlocksCubit(maxBlocks: maxBlocks);
   addTearDown(cubit.close);
@@ -32,6 +33,7 @@ Future<BlocksCubit> pumpEditor(
                 InstructionKind.turnLeft,
                 InstructionKind.turnRight,
                 if (star) InstructionKind.call else InstructionKind.repeat,
+                if (conditions) InstructionKind.ifPathClear,
               },
               blockSize: 64,
               showHowTo: showHowTo,
@@ -48,6 +50,53 @@ Future<BlocksCubit> pumpEditor(
 Finder paletteBlock(IconData icon) => find.byIcon(icon).first;
 
 void main() {
+  testWidgets('tap a condition then a palette action to fill it', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester, conditions: true);
+    await tester.tap(paletteBlock(Icons.visibility_rounded));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.visibility_rounded).last);
+    await tester.pump();
+    await tester.tap(paletteBlock(Icons.arrow_upward_rounded));
+    await tester.pump();
+    final condition = cubit.program.body.single as IfPathClear;
+    expect(condition.body.single, isA<Move>());
+    expect(find.bySemanticsLabel('Put blocks here'), findsOneWidget);
+  });
+
+  testWidgets('drag actions into a condition', (tester) async {
+    final cubit = await pumpEditor(tester, conditions: true);
+    await tester.tap(paletteBlock(Icons.visibility_rounded));
+    await tester.pump();
+    final start = tester.getCenter(paletteBlock(Icons.arrow_upward_rounded));
+    final gesture = await tester.startGesture(start);
+    await gesture.moveBy(const Offset(0, 30));
+    await gesture.moveTo(
+      tester.getCenter(find.bySemanticsLabel('Put blocks here')),
+    );
+    await gesture.up();
+    await tester.pump();
+    expect((cubit.program.body.single as IfPathClear).body.single, isA<Move>());
+  });
+
+  for (final words in [false, true]) {
+    testWidgets('a condition inside a repeat fits a phone (words: $words)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(360, 760);
+      tester.view.devicePixelRatio = 1;
+      final cubit = await pumpEditor(tester, conditions: true, words: words);
+      cubit.add(BlockType.repeat);
+      final loop = cubit.state.main.single.id;
+      cubit.add(BlockType.ifPathClear, parentId: loop);
+      final eye = cubit.state.main.single.children.single.id;
+      cubit.add(BlockType.forward, parentId: eye);
+      await tester.pump();
+      // Layout errors are reported by the widget test framework.
+    });
+  }
+
   testWidgets('tapping palette blocks appends them', (tester) async {
     final cubit = await pumpEditor(tester);
     await tester.tap(paletteBlock(Icons.arrow_upward_rounded));

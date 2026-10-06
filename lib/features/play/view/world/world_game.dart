@@ -185,6 +185,28 @@ class WorldGame extends FlameGame {
             },
           ),
         );
+      case PathChecked(:final ahead, :final clear):
+        // Green or orange ring shows the check without moving the actor.
+        // The result comes from the interpreter, never from this world.
+        final ring = CircleComponent(
+          radius: 0.32,
+          position: tileCenter(ahead),
+          anchor: Anchor.center,
+          paint: Paint()
+            ..color = clear ? const Color(0xFF43A047) : const Color(0xFFFB8C00)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.06,
+        );
+        world.add(ring);
+        ring.add(
+          OpacityEffect.fadeOut(
+            EffectController(duration: 0.3),
+            onComplete: () {
+              ring.removeFromParent();
+              done();
+            },
+          ),
+        );
     }
   }
 }

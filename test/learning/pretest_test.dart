@@ -35,7 +35,9 @@ Program program(List<InstructionKind> kinds) => Program([
       InstructionKind.move => const Move(),
       InstructionKind.turnLeft => const TurnLeft(),
       InstructionKind.turnRight => const TurnRight(),
-      InstructionKind.repeat || InstructionKind.call => throw ArgumentError(),
+      InstructionKind.repeat ||
+      InstructionKind.ifPathClear ||
+      InstructionKind.call => throw ArgumentError(),
     },
 ]);
 

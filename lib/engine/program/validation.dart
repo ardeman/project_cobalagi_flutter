@@ -26,6 +26,10 @@ final class EmptyRepeat extends ProgramIssue {
   const EmptyRepeat(super.blockId);
 }
 
+final class EmptyCondition extends ProgramIssue {
+  const EmptyCondition(super.blockId);
+}
+
 /// A call to the child's own block while that block is still empty.
 final class EmptyProcedure extends ProgramIssue {
   const EmptyProcedure(super.blockId);
@@ -68,6 +72,9 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
             issues.add(CountOutOfRange(times, instruction.blockId));
           }
           if (body.isEmpty) issues.add(EmptyRepeat(instruction.blockId));
+          visit(body, inProcedure: inProcedure);
+        case IfPathClear(:final body):
+          if (body.isEmpty) issues.add(EmptyCondition(instruction.blockId));
           visit(body, inProcedure: inProcedure);
         case Call() when inProcedure:
           issues.add(CallInProcedure(instruction.blockId));

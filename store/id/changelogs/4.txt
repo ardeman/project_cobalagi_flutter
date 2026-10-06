@@ -1,0 +1,4 @@
+- Pulau Lihat Depan dengan enam pelajaran dan latihan tentang kondisi.
+- Balok mata memeriksa jalan sebelum menjalankan balok di dalamnya. Isi balok perulangan dan mata dengan mengetuk atau menyeret.
+- Panel dan tombol bergaya kaca buram, dengan dukungan mode gelap dan kontras tinggi.
+- Jalur peta petualangan lebih halus dengan titik berjarak merata.

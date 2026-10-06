@@ -18,7 +18,7 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 
 | | |
 | --- | --- |
-| ![Adventure map with four islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: a repeat block holding a forward block, with hint footprints on the path](website/screenshots/play-loops.png) |
+| ![Adventure map with five islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: a repeat block holding a forward block, with hint footprints on the path](website/screenshots/play-loops.png) |
 | **Adventure map:** one island per concept, with stars for mastery. | **Loops puzzle:** a repeat block, the block limit, and a hint showing the route. |
 | ![A solved puzzle with a cheer and a Next button](website/screenshots/solved.png) | ![Warm-up game asking what comes next in a pattern of shapes](website/screenshots/warm-up-pattern.png) |
 | **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** picture-based, voice-led placement for children who can't read yet. |
@@ -26,6 +26,8 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 | **Parent area:** behind a grown-up check; set the starting island or replay the warm-up. | **Bahasa Indonesia:** every screen in Indonesian and English. |
 | ![A Magic Block puzzle: the star row holds a stair step, called four times](website/screenshots/play-functions.png) | ![A child's progress report with puzzles, play time and islands](website/screenshots/parent-progress.png) |
 | **Magic Block:** build your own block once, then use it again and again. | **Progress report** (sponsor feature): puzzles, play time and every island. |
+| ![Look Ahead: an eye block inside a repeat checks before moving](website/screenshots/play-conditions.png) | ![Look Ahead on a phone](website/screenshots/phone-play-conditions.png) |
+| **Look Ahead:** check the path before taking a step. | **Phone editor:** nested conditions and repeats also work in portrait. |
 
 | | |
 | --- | --- |
@@ -81,7 +83,8 @@ be bypassed with `--no-verify`; they do not enforce remote repository policy.
 lib/
   main.dart        Opens storage, wires services, starts the app
   app/             App widget, router, theme, l10n (ARB files + generated code)
-  core/            Shared services: storage, settings, entitlement, audio, responsive
+  core/            Shared services: storage, settings, entitlement, audio, responsive,
+                   widgets (bounded glass panels and the ambient background)
   engine/          Pure Dart: instruction set (program/), levels (world/), interpreter, solver + puzzle generator
   learning/        Pure Dart: skill graph, mastery scoring, advance/practice/review rules
   features/        One folder per feature (profiles, adventure_map, play, editors,
@@ -202,7 +205,7 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 
 `store/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80), `full_description.txt` (max 4,000) and `changelogs/<versionCode>.txt` with each build's release notes (max 500), plus `feature_graphic.png` (1024 × 500), `screenshots/` (1920 × 1080, 16:9) for the 7-inch and 10-inch tablet sections and `phone_screenshots/` (1080 × 1920, 9:16) for the phone section. The app icon for the listing is `branding/play_store_icon.png`.
 
-`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders screenshots from the real app with sample data into `website/screenshots/`: the tablet map, Magic Block and progress screenshots, and every `phone-*` screenshot in portrait (the other tablet ones were captured on a device). `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
+`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders screenshots from the real app with sample data into `website/screenshots/`: the tablet map, Magic Block, Look Ahead and progress screenshots, and every `phone-*` screenshot in portrait (the other tablet ones were captured on a device). `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
 
 ## Roadmap (MVP)
 
@@ -216,8 +219,15 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 | 5. Hardening ✅ (code) | Donations through Google Play Billing (any donation unlocks sponsor features), release config, voice clips, tablet performance |
 
 | 6. After MVP ✅ | Magic Block island (own block), parent progress report, sound effects and music, splash, how-to hint, warm-up second chance, Tier 2 word blocks for readers |
+| 7. Conditions ✅ | Look Ahead island, six lessons, generated practice and an eye block that runs its contents only when the cell ahead is clear |
 
-Later: Rive characters, Tier 3 (typed code), conditions, variables.
+The eye block checks once before running its contents. Put a forward block
+inside it to move safely; put the eye block inside a repeat to check again
+on every turn of the loop. Tap a repeat or eye block, then a palette block
+to fill it, or drag blocks into it. Checks appear as green (clear) or orange
+(blocked) rings in the world. The Conditions island follows Magic Block.
+
+Later: Rive characters, Tier 3 (typed code), variables.
 
 ## Documentation map
 

@@ -1,0 +1,126 @@
+{
+  "levels": [
+    {
+      "id": "conditions-01",
+      "concept": "conditions",
+      "facing": "north",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "ifPathClear"
+      ],
+      "rows": [
+        "#####",
+        "#S.G#",
+        "#####"
+      ]
+    },
+    {
+      "id": "conditions-02",
+      "concept": "conditions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "ifPathClear",
+        "repeat"
+      ],
+      "rows": [
+        "#####",
+        "#S..#",
+        "###.#",
+        "###G#",
+        "#####"
+      ]
+    },
+    {
+      "id": "conditions-03",
+      "concept": "conditions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "ifPathClear",
+        "repeat"
+      ],
+      "rows": [
+        "#######",
+        "#S....#",
+        "#####*#",
+        "###...#",
+        "###.###",
+        "###G###",
+        "#######"
+      ]
+    },
+    {
+      "id": "conditions-04",
+      "concept": "conditions",
+      "facing": "south",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "ifPathClear",
+        "repeat"
+      ],
+      "rows": [
+        "########",
+        "#S######",
+        "#.######",
+        "#.######",
+        "#..*####",
+        "###.####",
+        "###...G#",
+        "########"
+      ]
+    },
+    {
+      "id": "conditions-05",
+      "concept": "conditions",
+      "facing": "west",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "ifPathClear",
+        "repeat"
+      ],
+      "rows": [
+        "########",
+        "#G######",
+        "#.######",
+        "#.######",
+        "#..*####",
+        "###.####",
+        "###...S#",
+        "########"
+      ]
+    },
+    {
+      "id": "conditions-06",
+      "concept": "conditions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "ifPathClear",
+        "repeat"
+      ],
+      "rows": [
+        "############",
+        "#S....######",
+        "#####.######",
+        "#####.*.####",
+        "#######.####",
+        "#######.####",
+        "#######...G#",
+        "############"
+      ]
+    }
+  ]
+}

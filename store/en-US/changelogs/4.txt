@@ -1,0 +1,4 @@
+- Look Ahead island with six lessons and practice puzzles about conditions.
+- Eye blocks check the path before running the blocks inside. Fill repeats and eye blocks by tapping or dragging.
+- Frosted glass panels and controls, with dark and high-contrast support.
+- Smoother adventure-map paths with evenly spaced dots.

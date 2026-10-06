@@ -36,20 +36,39 @@ class BlocksCubit extends Cubit<BlockProgram> {
   /// Adds a tapped palette block to the row the child picked last, the main
   /// row unless they tapped the star row. A star tapped while the star row is
   /// picked goes to the main row.
-  bool tap(BlockType type) => add(
-    type,
-    parentId: state.tapToStar && type != BlockType.star ? starRow : null,
-  );
+  bool tap(BlockType type) {
+    final selected = state.selectedContainer;
+    // A new repeat starts in the main row; actions go inside the selected
+    // container. A condition can go inside a repeat.
+    final parent = selected != null && _fits(type, selected)
+        ? selected
+        : state.tapToStar && type != BlockType.star
+        ? starRow
+        : null;
+    return add(type, parentId: parent);
+  }
 
   /// Picks the row that tapped palette blocks go to.
   void pickRow({required bool star}) {
-    if (state.tapToStar != star) emit(state.copyWith(tapToStar: star));
+    if (state.tapToStar != star || state.selectedContainer != null) {
+      emit(state.copyWith(tapToStar: star, selectedContainer: () => null));
+    }
+  }
+
+  void pickContainer(String id) {
+    final block = _find(id);
+    if (block?.type == BlockType.repeat ||
+        block?.type == BlockType.ifPathClear) {
+      emit(state.copyWith(selectedContainer: () => id));
+    }
   }
 
   /// Moves block [id] into [parentId] before the block now at [index].
   void move(String id, {String? parentId, required int index}) {
     final block = _find(id);
     if (block == null || !_fits(block.type, parentId)) return;
+    // A container cannot be moved into itself or one of its descendants.
+    if (block.selfAndDescendants.any((b) => b.id == parentId)) return;
     final (oldParent, oldIndex) = _locate(id)!;
     final adjusted = oldParent == parentId && oldIndex < index
         ? index - 1
@@ -67,7 +86,17 @@ class BlocksCubit extends Cubit<BlockProgram> {
     }
   }
 
-  void remove(String id) => emit(_removed(id));
+  void remove(String id) {
+    final selected = state.selectedContainer;
+    final removesSelection =
+        _find(id)?.selfAndDescendants.any((b) => b.id == selected) ?? false;
+    final removed = _removed(id);
+    emit(
+      removesSelection
+          ? removed.copyWith(selectedContainer: () => null)
+          : removed,
+    );
+  }
 
   void setCount(String id, int count) {
     if (count < minCount || count > maxCount) return;
@@ -82,7 +111,7 @@ class BlocksCubit extends Cubit<BlockProgram> {
   /// Removes the last block of the main row (the undo button).
   void removeLast() {
     if (state.main.isNotEmpty) {
-      emit(state.copyWith(main: state.main.sublist(0, state.main.length - 1)));
+      remove(state.main.last.id);
     }
   }
 
@@ -92,8 +121,16 @@ class BlocksCubit extends Cubit<BlockProgram> {
     if (parentId == null) return true;
     if (parentId == starRow) return type != BlockType.star;
     final parent = _find(parentId);
-    if (parent?.type != BlockType.repeat) return false;
-    if (type == BlockType.repeat) return false;
+    if (parent?.type != BlockType.repeat &&
+        parent?.type != BlockType.ifPathClear) {
+      return false;
+    }
+    // Keep container nesting to one repeat holding one condition. Children
+    // of a condition are actions, so the editor stays usable on phones.
+    if (type == BlockType.repeat ||
+        (type == BlockType.ifPathClear && parent?.type != BlockType.repeat)) {
+      return false;
+    }
     // A repeat inside the star row may not hold a star either.
     return type != BlockType.star || !_inStar(parentId);
   }

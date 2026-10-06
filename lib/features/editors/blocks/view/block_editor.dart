@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../app/l10n/app_localizations.dart';
 import '../../../../engine/program/instruction.dart';
+import 'package:cobalagi/core/responsive/window_class.dart';
+import 'package:cobalagi/core/widgets/glass_surface.dart';
 import '../../../../engine/program/validation.dart';
 import '../cubit/blocks_cubit.dart';
 import '../data/block.dart';
@@ -71,15 +73,9 @@ class _BlockEditorState extends State<BlockEditor> {
       children: [
         DragTarget<Block>(
           onAcceptWithDetails: (d) => cubit.remove(d.data.id),
-          builder: (context, candidates, _) => AnimatedContainer(
-            duration: const Duration(milliseconds: 150),
+          builder: (context, candidates, _) => GlassSurface(
             padding: EdgeInsets.all(gap),
-            decoration: BoxDecoration(
-              color: candidates.isEmpty
-                  ? scheme.surfaceContainerHigh
-                  : scheme.errorContainer,
-              borderRadius: BorderRadius.circular(24),
-            ),
+            tint: candidates.isEmpty ? null : scheme.errorContainer,
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: gap,
@@ -119,20 +115,15 @@ class _BlockEditorState extends State<BlockEditor> {
                   widget.enabled && (d.data is Block || !cubit.isFull),
               onAcceptWithDetails: (d) =>
                   cubit.drop(d.data, index: blocks.length),
-              builder: (context, candidates, _) => AnimatedContainer(
-                duration: const Duration(milliseconds: 150),
+              builder: (context, candidates, _) => GlassSurface(
                 padding: EdgeInsets.all(gap),
-                decoration: BoxDecoration(
-                  color: scheme.surfaceContainerLowest,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    // The thicker border marks where tapped blocks go.
-                    width: showStar && !cubit.state.tapToStar ? 5 : 3,
-                    color: candidates.isEmpty
-                        ? scheme.outlineVariant
-                        : scheme.primary,
-                  ),
-                ),
+                tint: candidates.isEmpty ? null : scheme.primaryContainer,
+                borderColor: candidates.isNotEmpty
+                    ? scheme.primary
+                    : showStar && !cubit.state.tapToStar
+                    ? scheme.primary.withValues(alpha: 0.6)
+                    : null,
+                borderWidth: showStar && !cubit.state.tapToStar ? 3 : 1.2,
                 child: SingleChildScrollView(
                   child: _BlockRow(
                     parentId: null,
@@ -270,7 +261,11 @@ class _PaletteBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tile = BlockTile(type: type, size: size, words: words);
+    final tile = BlockTile(
+      type: type,
+      size: type == BlockType.ifPathClear && size < 64 ? 64 : size,
+      words: words,
+    );
     if (!enabled) return Opacity(opacity: 0.4, child: tile);
     return Draggable<BlockType>(
       data: type,
@@ -300,8 +295,9 @@ class _PlacedBlock extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = style.size;
-    final Widget body = block.type == BlockType.repeat
-        ? _RepeatBlock(block: block, style: style)
+    final Widget body =
+        block.type == BlockType.repeat || block.type == BlockType.ifPathClear
+        ? _ContainerBlock(block: block, style: style)
         : BlockTile(
             key: ValueKey(block.id),
             words: style.words,
@@ -345,109 +341,127 @@ class _PlacedBlock extends StatelessWidget {
   }
 }
 
-/// A repeat block: a count the child can change and a row of blocks inside.
-class _RepeatBlock extends StatelessWidget {
-  const _RepeatBlock({required this.block, required this.style});
+/// A repeat or condition holding its own row of blocks.
+class _ContainerBlock extends StatelessWidget {
+  const _ContainerBlock({required this.block, required this.style});
 
   final Block block;
   final _BlockStyle style;
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<BlocksCubit>();
+    final cubit = context.watch<BlocksCubit>();
     final size = style.size;
-    final color = BlockType.repeat.color;
+    final conditional = block.type == BlockType.ifPathClear;
+    final color = block.type.color;
     final active = block.selfAndDescendants.any(
       (b) => b.id == style.activeBlockId,
     );
     final hasIssue = style.issueBlockIds.contains(block.id);
-    // Drops here land at the end of the repeat (the drop area around it
-    // appends).
-    final addSpot = Icon(
-      Icons.add_rounded,
-      size: size * 0.6,
-      color: color.withValues(alpha: 0.6),
-      semanticLabel: AppLocalizations.of(context).dropBlocksHere,
-    );
-
-    return AnimatedContainer(
-      key: ValueKey(block.id),
-      duration: const Duration(milliseconds: 150),
-      padding: EdgeInsets.all(style.gap * 0.6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(size * 0.28),
-        border: Border.all(
-          width: size * 0.07,
-          color: hasIssue
-              ? const Color(0xFFE53935)
-              : active
-              ? const Color(0xFFFFD54F)
-              : color,
-        ),
+    final addSpot = Semantics(
+      container: true,
+      child: Icon(
+        Icons.add_rounded,
+        size: size * 0.6,
+        color: color.withValues(alpha: 0.6),
+        semanticLabel: AppLocalizations.of(context).dropBlocksHere,
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              BlockTile(
-                type: BlockType.repeat,
-                size: size * 0.8,
-                words: style.words,
-              ),
-              SizedBox(height: style.gap * 0.5),
-              _CountStepper(
-                count: block.count,
-                size: size,
-                color: color,
-                onChanged: style.enabled
-                    ? (count) => cubit.setCount(block.id, count)
-                    : null,
-              ),
-            ],
-          ),
-          SizedBox(width: style.gap),
-          // The blocks inside wrap within the width that is left.
-          Flexible(
-            child: DragTarget<Object>(
-              onWillAcceptWithDetails: (d) =>
-                  style.enabled &&
-                  d.data != block &&
-                  d.data != BlockType.repeat &&
-                  (d.data is Block || !cubit.isFull),
-              onAcceptWithDetails: (d) => cubit.drop(
-                d.data,
-                parentId: block.id,
-                index: block.children.length,
-              ),
-              builder: (context, candidates, _) => Container(
-                constraints: BoxConstraints(
-                  minWidth: size * 1.4,
-                  minHeight: size * 1.2,
-                ),
-                padding: EdgeInsets.all(style.gap * 0.5),
-                decoration: BoxDecoration(
-                  color: candidates.isEmpty
-                      ? Colors.white.withValues(alpha: 0.6)
-                      : color.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(size * 0.2),
-                ),
-                child: block.children.isEmpty
-                    ? addSpot
-                    : _BlockRow(
-                        parentId: block.id,
-                        blocks: block.children,
-                        style: style,
-                        // Without this there is nowhere to drop a block at
-                        // the end once the repeat holds blocks.
-                        trailing: style.enabled ? addSpot : null,
-                      ),
-              ),
-            ),
+    );
+    final header = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        BlockTile(type: block.type, size: size * 0.8, words: style.words),
+        if (!conditional) ...[
+          SizedBox(height: style.gap * 0.5),
+          _CountStepper(
+            count: block.count,
+            size: size,
+            color: color,
+            onChanged: style.enabled
+                ? (count) => cubit.setCount(block.id, count)
+                : null,
           ),
         ],
+      ],
+    );
+    final body = DragTarget<Object>(
+      onWillAcceptWithDetails: (d) =>
+          style.enabled &&
+          d.data != block &&
+          d.data != BlockType.repeat &&
+          (!conditional || d.data != BlockType.ifPathClear) &&
+          (d.data is Block || !cubit.isFull),
+      onAcceptWithDetails: (d) =>
+          cubit.drop(d.data, parentId: block.id, index: block.children.length),
+      builder: (context, candidates, _) => Container(
+        constraints: BoxConstraints(
+          minWidth: size * 1.4,
+          minHeight: size * 1.2,
+        ),
+        padding: EdgeInsets.all(style.gap * 0.5),
+        decoration: BoxDecoration(
+          color: candidates.isEmpty
+              ? Colors.white.withValues(alpha: 0.6)
+              : color.withValues(alpha: 0.25),
+          borderRadius: BorderRadius.circular(size * 0.2),
+        ),
+        child: block.children.isEmpty
+            ? addSpot
+            : _BlockRow(
+                parentId: block.id,
+                blocks: block.children,
+                style: style,
+                trailing: style.enabled ? addSpot : null,
+              ),
+      ),
+    );
+    return GestureDetector(
+      onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
+      child: AnimatedContainer(
+        key: ValueKey(block.id),
+        duration: const Duration(milliseconds: 150),
+        padding: EdgeInsets.all(style.gap * 0.6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(size * 0.28),
+          border: Border.all(
+            width: cubit.state.selectedContainer == block.id
+                ? size * 0.1
+                : size * 0.07,
+            color: hasIssue
+                ? const Color(0xFFE53935)
+                : active
+                ? const Color(0xFFFFD54F)
+                : color,
+          ),
+        ),
+        child: WindowClassBuilder(
+          builder: (context, windowClass) {
+            final stacked =
+                windowClass == WindowClass.compact &&
+                style.words &&
+                (conditional ||
+                    block.children.any((b) => b.type == BlockType.ifPathClear));
+            return stacked
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      header,
+                      SizedBox(height: style.gap),
+                      body,
+                    ],
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      header,
+                      SizedBox(width: style.gap),
+                      Flexible(child: body),
+                    ],
+                  );
+          },
+        ),
       ),
     );
   }

@@ -18,6 +18,49 @@ final level = Level.fromRows(
 );
 
 void main() {
+  test('the world finishes clear and blocked check animations', () async {
+    final checkedLevel = Level.fromRows(
+      id: 'checks',
+      concept: 'conditions',
+      rows: ['#####', '#S.G#', '#####'],
+      startFacing: Direction.north,
+      palette: InstructionKind.values.toSet(),
+    );
+    final sounds = <SoundEffect>[];
+    final play = PlayCubit(checkedLevel);
+    addTearDown(play.close);
+    final game = await initializeGame(
+      () => WorldGame(
+        level: checkedLevel,
+        onEventShown: play.eventShown,
+        onSound: sounds.add,
+      ),
+    );
+    final subscription = play.stream.listen(game.apply);
+    addTearDown(subscription.cancel);
+    play.run(
+      const Program([
+        IfPathClear([Move()], blockId: 'blocked'),
+        TurnRight(),
+        Repeat(3, [
+          IfPathClear([Move()], blockId: 'clear'),
+        ]),
+      ]),
+    );
+    for (var i = 0; i < 100 && play.state.phase == PlayPhase.running; i++) {
+      await Future<void>.delayed(Duration.zero);
+      game.update(0.1);
+    }
+    await Future<void>.delayed(Duration.zero);
+    expect(play.state.phase, PlayPhase.succeeded);
+    expect(sounds, [
+      SoundEffect.turn,
+      SoundEffect.step,
+      SoundEffect.step,
+      SoundEffect.goal,
+    ]);
+  });
+
   test(
     'the world plays a sound with each event and celebrates success',
     () async {

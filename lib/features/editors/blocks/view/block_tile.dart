@@ -12,6 +12,7 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnRight => Icons.turn_right_rounded,
     BlockType.repeat => Icons.repeat_rounded,
     BlockType.star => Icons.star_rounded,
+    BlockType.ifPathClear => Icons.visibility_rounded,
   };
 
   Color get color => switch (this) {
@@ -20,6 +21,7 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnRight => const Color(0xFFFB8C00),
     BlockType.repeat => const Color(0xFF8E24AA),
     BlockType.star => const Color(0xFFD81B60),
+    BlockType.ifPathClear => const Color(0xFF00897B),
   };
 
   /// Spoken by screen readers; pre-readers rely on the icon alone.
@@ -29,6 +31,7 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnRight => l10n.blockTurnRight,
     BlockType.repeat => l10n.blockRepeat,
     BlockType.star => l10n.blockStar,
+    BlockType.ifPathClear => l10n.blockIfPathClear,
   };
 }
 
@@ -66,7 +69,15 @@ class BlockTile extends StatelessWidget {
         constraints: words ? BoxConstraints(minWidth: size * 1.4) : null,
         padding: words ? EdgeInsets.symmetric(horizontal: size * 0.16) : null,
         decoration: BoxDecoration(
-          color: type.color,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color.lerp(type.color, Colors.white, 0.18)!,
+              type.color,
+              Color.lerp(type.color, Colors.black, 0.08)!,
+            ],
+          ),
           borderRadius: BorderRadius.circular(size * 0.24),
           border: Border.all(
             width: size * 0.07,

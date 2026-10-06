@@ -2,6 +2,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cobalagi/core/widgets/glass_surface.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
@@ -327,7 +328,9 @@ class _PlayViewState extends State<PlayView> {
 
   /// The spoken goal of a level: its words and its voice clip.
   static (String Function(AppLocalizations), String) _goal(Level level) =>
-      level.palette.contains(InstructionKind.call)
+      level.palette.contains(InstructionKind.ifPathClear)
+      ? ((l) => l.playGoalConditions, VoiceClips.playGoalConditions)
+      : level.palette.contains(InstructionKind.call)
       ? ((l) => l.playGoalFunctions, VoiceClips.playGoalFunctions)
       : level.palette.contains(InstructionKind.repeat)
       ? ((l) => l.playGoalLoops, VoiceClips.playGoalLoops)
@@ -428,8 +431,7 @@ class _FeedbackCard extends StatelessWidget {
   final List<Widget> actions;
 
   @override
-  Widget build(BuildContext context) => Card(
-    margin: EdgeInsets.zero,
+  Widget build(BuildContext context) => GlassSurface(
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Wrap(

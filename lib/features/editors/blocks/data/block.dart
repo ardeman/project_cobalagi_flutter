@@ -8,6 +8,7 @@ enum BlockType {
   turnLeft(InstructionKind.turnLeft),
   turnRight(InstructionKind.turnRight),
   repeat(InstructionKind.repeat),
+  ifPathClear(InstructionKind.ifPathClear),
 
   /// The child's own block: runs the star row.
   star(InstructionKind.call);
@@ -55,6 +56,7 @@ final class BlockProgram {
     this.main = const [],
     this.star = const [],
     this.tapToStar = false,
+    this.selectedContainer,
   });
 
   final List<Block> main;
@@ -63,6 +65,9 @@ final class BlockProgram {
   /// Where tapped palette blocks go: the star row, or else the main row.
   final bool tapToStar;
 
+  /// A tapped repeat or condition receives palette actions without dragging.
+  final String? selectedContainer;
+
   /// Nothing to run: the main row is empty.
   bool get isEmpty => main.isEmpty;
 
@@ -70,10 +75,14 @@ final class BlockProgram {
     List<Block>? main,
     List<Block>? star,
     bool? tapToStar,
+    String? Function()? selectedContainer,
   }) => BlockProgram(
     main: main ?? this.main,
     star: star ?? this.star,
     tapToStar: tapToStar ?? this.tapToStar,
+    selectedContainer: selectedContainer != null
+        ? selectedContainer()
+        : this.selectedContainer,
   );
 }
 
@@ -92,4 +101,7 @@ Instruction _compile(Block block) => switch (block.type) {
     for (final child in block.children) _compile(child),
   ], blockId: block.id),
   BlockType.star => Call(blockId: block.id),
+  BlockType.ifPathClear => IfPathClear([
+    for (final child in block.children) _compile(child),
+  ], blockId: block.id),
 };

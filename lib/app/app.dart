@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cobalagi/core/widgets/glass_background.dart';
 
 import '../core/audio/audio_service.dart';
 import '../core/audio/music_cubit.dart';
@@ -94,6 +95,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
+          builder: (context, child) => GlassBackground(child: child!),
           // null follows the device; languages other than id/en fall back to English.
           locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,

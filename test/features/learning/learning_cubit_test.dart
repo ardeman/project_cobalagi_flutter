@@ -3,6 +3,7 @@ import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/learning/exercise_result.dart';
+import 'package:cobalagi/learning/learner_state.dart';
 import 'package:cobalagi/learning/learning_engine.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
@@ -90,6 +91,39 @@ void main() {
       expect(lessons.every((l) => l.concept == concept.id), isTrue);
     }
   });
+
+  test(
+    'Conditions practice skips saved fingerprints after reloading',
+    () async {
+      await progress.save(
+        1,
+        curriculum.engine
+            .initialState(startConcept: 'conditions')
+            .copyWith(
+              progress: {
+                'conditions': ConceptProgress(
+                  difficulty: 1,
+                  attemptedLessons: curriculum.lessonIds['conditions']!.toSet(),
+                ),
+              },
+            ),
+      );
+      final cubit = await newCubit();
+      final first = cubit.nextExercise();
+      expect(first.plan.mode, ExerciseMode.practice);
+      await cubit.record(resultFor(first));
+      final reloaded = await newCubit();
+      final second = reloaded.nextExercise();
+      expect(second.plan.conceptId, 'conditions');
+      expect(second.level.fingerprint, isNot(first.level.fingerprint));
+      expect(
+        reloaded.state.learner!.seenPuzzles,
+        contains(first.level.fingerprint),
+      );
+      // Flush the served-state update and persistence before closing the Cubit.
+      await reloaded.record(resultFor(second));
+    },
+  );
 
   test('a replay is logged but never changes what comes next', () async {
     final cubit = await newCubit();

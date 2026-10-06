@@ -9,7 +9,7 @@ import '../world/level.dart';
 import 'solver.dart';
 
 /// Puzzle families the generator can produce, one per early skill-map concept.
-enum PuzzleKind { directions, sequencing, loops, functions }
+enum PuzzleKind { directions, sequencing, loops, functions, conditions }
 
 const minDifficulty = 1;
 const maxDifficulty = 5;
@@ -40,12 +40,18 @@ GeneratedPuzzle generatePuzzle(
     'difficulty',
   );
   final random = Random(seed);
+  if (kind == PuzzleKind.conditions) {
+    return _conditions(random, difficulty, seed);
+  }
   for (var attempt = 0; attempt < 200; attempt++) {
     final solution = switch (kind) {
       PuzzleKind.directions => _directions(random, difficulty),
       PuzzleKind.sequencing => _sequencing(random, difficulty),
       PuzzleKind.loops => _loops(random, difficulty),
       PuzzleKind.functions => _functions(random, difficulty),
+      PuzzleKind.conditions => throw StateError(
+        'conditions use a checked route',
+      ),
     };
     final puzzle = _buildPuzzle(
       kind,
@@ -68,6 +74,43 @@ const _sequencePalette = {
 const _loopPalette = {..._sequencePalette, InstructionKind.repeat};
 
 const _functionPalette = {..._sequencePalette, InstructionKind.call};
+
+const _conditionPalette = {..._loopPalette, InstructionKind.ifPathClear};
+
+/// Variable-length corridors: repeat a checked step, stop safely at each
+/// wall, then turn. Both clear and blocked checks occur before the goal.
+GeneratedPuzzle _conditions(Random random, int difficulty, int seed) {
+  for (var attempt = 0; attempt < 200; attempt++) {
+    final route = <Instruction>[];
+    final checked = <Instruction>[];
+    for (var segment = 0; segment < difficulty + 1; segment++) {
+      if (segment > 0) {
+        final turn = _turn(random);
+        route.add(turn);
+        checked.add(turn);
+      }
+      route.addAll(_moves(2 + random.nextInt(4)));
+      checked.add(
+        const Repeat(6, [
+          IfPathClear([Move()]),
+        ]),
+      );
+    }
+    final puzzle = _buildPuzzle(
+      PuzzleKind.conditions,
+      Program(route),
+      Direction.values[random.nextInt(4)],
+      id: 'conditions-d$difficulty-s$seed',
+      difficulty: difficulty,
+    );
+    if (puzzle == null) continue;
+    final solution = Program(checked);
+    if (runProgram(solution, puzzle.level).succeeded) {
+      return GeneratedPuzzle(puzzle.level, solution);
+    }
+  }
+  throw StateError('no valid conditions puzzle for seed $seed');
+}
 
 Instruction _turn(Random random) =>
     random.nextBool() ? const TurnLeft() : const TurnRight();
@@ -173,6 +216,8 @@ GeneratedPuzzle? _buildPuzzle(
           }
         case Call():
           walk(solution.procedure);
+        case IfPathClear():
+          throw StateError('trace the route before adding path checks');
       }
     }
   }
@@ -194,6 +239,7 @@ GeneratedPuzzle? _buildPuzzle(
   final palette = switch (kind) {
     PuzzleKind.loops => _loopPalette,
     PuzzleKind.functions => _functionPalette,
+    PuzzleKind.conditions => _conditionPalette,
     PuzzleKind.directions || PuzzleKind.sequencing => _sequencePalette,
   };
   final limited = kind == PuzzleKind.loops || kind == PuzzleKind.functions;

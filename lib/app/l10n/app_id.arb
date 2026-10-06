@@ -140,5 +140,8 @@
   "continueAdventure": "Lanjutkan petualangan",
   "levelNumber": "Level {number}",
   "levelLocked": "Belum terbuka",
-  "answerWas": "Jawabannya yang ini!"
+  "answerWas": "Jawabannya yang ini!",
+  "conceptConditions": "Lihat depan",
+  "blockIfPathClear": "Jika kosong",
+  "playGoalConditions": "Lihat ke depan! Taruh balok maju di dalam balok mata. Ia maju hanya jika jalan di depan kosong."
 }

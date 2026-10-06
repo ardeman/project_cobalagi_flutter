@@ -3,6 +3,7 @@
     { "id": "directions", "prerequisites": [] },
     { "id": "sequencing", "prerequisites": ["directions"] },
     { "id": "loops", "prerequisites": ["sequencing"] },
-    { "id": "functions", "prerequisites": ["loops"] }
+    { "id": "functions", "prerequisites": ["loops"] },
+    { "id": "conditions", "prerequisites": ["functions"] }
   ]
 }

@@ -154,6 +154,25 @@ Future<void> _open(WidgetTester tester, String path) async {
   await _settle(tester);
 }
 
+/// Builds checked corridor sweeps for a Conditions lesson.
+Future<void> _buildConditionAnswer(WidgetTester tester) async {
+  final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
+  cubit.add(BlockType.repeat);
+  final loop = cubit.state.main.single.id;
+  cubit.setCount(loop, 6);
+  cubit.add(BlockType.ifPathClear, parentId: loop);
+  final eye = cubit.state.main.single.children.single.id;
+  cubit.add(BlockType.forward, parentId: eye);
+  cubit.add(BlockType.turnRight);
+  cubit.add(BlockType.repeat);
+  final secondLoop = cubit.state.main.last.id;
+  cubit.setCount(secondLoop, 6);
+  cubit.add(BlockType.ifPathClear, parentId: secondLoop);
+  final secondEye = cubit.state.main.last.children.single.id;
+  cubit.add(BlockType.forward, parentId: secondEye);
+  await _settle(tester);
+}
+
 /// Builds a star-block answer to [levelId] in the editor, like a child would.
 Future<void> _buildAnswer(WidgetTester tester, String levelId) async {
   final level = parseLevelPack(
@@ -333,11 +352,24 @@ void main() {
       await shoot('adventure-map');
     });
 
+    testWidgets('profiles ($language)', (tester) async {
+      await pumpApp(tester);
+      await _open(tester, '/');
+      await shoot('profiles');
+    });
+
     testWidgets('magic block ($language)', (tester) async {
       await pumpApp(tester);
       await _open(tester, '/child/1/replay/functions-02');
       await _buildAnswer(tester, 'functions-02');
       await shoot('play-functions');
+    });
+
+    testWidgets('look ahead ($language)', (tester) async {
+      await pumpApp(tester);
+      await _open(tester, '/child/1/replay/conditions-02');
+      await _buildConditionAnswer(tester);
+      await shoot('play-conditions');
     });
 
     testWidgets('progress report ($language)', (tester) async {
@@ -360,6 +392,12 @@ void main() {
         await shoot('phone-adventure-map');
       });
 
+      testWidgets('profiles ($language)', (tester) async {
+        await phone(tester);
+        await _open(tester, '/');
+        await shoot('phone-profiles');
+      });
+
       testWidgets('loops puzzle ($language)', (tester) async {
         await phone(tester);
         await _open(tester, '/child/1/replay/loops-03');
@@ -372,6 +410,13 @@ void main() {
         await _open(tester, '/child/1/replay/functions-01');
         await _buildAnswer(tester, 'functions-01');
         await shoot('phone-play-functions');
+      });
+
+      testWidgets('look ahead ($language)', (tester) async {
+        await phone(tester);
+        await _open(tester, '/child/1/replay/conditions-02');
+        await _buildConditionAnswer(tester);
+        await shoot('phone-play-conditions');
       });
 
       testWidgets('solved ($language)', (tester) async {

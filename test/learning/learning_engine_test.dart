@@ -48,16 +48,21 @@ ExerciseResult result(
 
 void main() {
   group('skill graph', () {
-    test('follows Directions → Sequencing → Loops → Functions', () {
-      expect(graph.first, 'directions');
-      expect(graph.nextAfter('directions'), 'sequencing');
-      expect(graph.nextAfter('sequencing'), 'loops');
-      expect(graph.nextAfter('loops'), 'functions');
-      expect(graph.nextAfter('functions'), isNull);
-      expect(graph.reviewTargetFor('functions'), 'loops');
-      expect(graph.reviewTargetFor('loops'), 'sequencing');
-      expect(graph.reviewTargetFor('directions'), isNull);
-    });
+    test(
+      'follows Directions → Sequencing → Loops → Functions → Conditions',
+      () {
+        expect(graph.first, 'directions');
+        expect(graph.nextAfter('directions'), 'sequencing');
+        expect(graph.nextAfter('sequencing'), 'loops');
+        expect(graph.nextAfter('loops'), 'functions');
+        expect(graph.nextAfter('functions'), 'conditions');
+        expect(graph.nextAfter('conditions'), isNull);
+        expect(graph.reviewTargetFor('conditions'), 'functions');
+        expect(graph.reviewTargetFor('functions'), 'loops');
+        expect(graph.reviewTargetFor('loops'), 'sequencing');
+        expect(graph.reviewTargetFor('directions'), isNull);
+      },
+    );
 
     test('rejects prerequisites listed later and duplicates', () {
       expect(
@@ -160,8 +165,8 @@ void main() {
 
     test('mastering the last concept completes the map', () {
       final (_, decision) = play(
-        engine.initialState(startConcept: 'functions'),
-        [for (var i = 0; i < config.minExercises; i++) result('functions')],
+        engine.initialState(startConcept: 'conditions'),
+        [for (var i = 0; i < config.minExercises; i++) result('conditions')],
       );
       expect(decision, isA<MapComplete>());
     });

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:cobalagi/core/widgets/glass_surface.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
@@ -153,31 +154,34 @@ class _Report extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final headerStyle = Theme.of(context).textTheme.titleMedium;
     final lastPlayed = report.lastPlayed;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(l10n.progressThisWeek, style: headerStyle),
-        const SizedBox(height: 8),
-        _Stats(
-          puzzles: report.weekPuzzlesSolved,
-          playTime: report.weekPlayTime,
-        ),
-        const SizedBox(height: 24),
-        Text(l10n.progressAllTime, style: headerStyle),
-        const SizedBox(height: 8),
-        _Stats(puzzles: report.puzzlesSolved, playTime: report.playTime),
-        const SizedBox(height: 8),
-        Text(
-          lastPlayed == null
-              ? l10n.progressNotPlayed
-              : l10n.progressLastPlayed(
-                  DateFormat.yMMMMd(l10n.localeName).format(lastPlayed),
-                ),
-        ),
-        const SizedBox(height: 32),
-        Text(l10n.progressIslands, style: headerStyle),
-        for (final concept in report.concepts) _IslandRow(concept: concept),
-      ],
+    return GlassSurface(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(l10n.progressThisWeek, style: headerStyle),
+          const SizedBox(height: 8),
+          _Stats(
+            puzzles: report.weekPuzzlesSolved,
+            playTime: report.weekPlayTime,
+          ),
+          const SizedBox(height: 24),
+          Text(l10n.progressAllTime, style: headerStyle),
+          const SizedBox(height: 8),
+          _Stats(puzzles: report.puzzlesSolved, playTime: report.playTime),
+          const SizedBox(height: 8),
+          Text(
+            lastPlayed == null
+                ? l10n.progressNotPlayed
+                : l10n.progressLastPlayed(
+                    DateFormat.yMMMMd(l10n.localeName).format(lastPlayed),
+                  ),
+          ),
+          const SizedBox(height: 32),
+          Text(l10n.progressIslands, style: headerStyle),
+          for (final concept in report.concepts) _IslandRow(concept: concept),
+        ],
+      ),
     );
   }
 }
@@ -266,7 +270,7 @@ class _SponsorOnly extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Card(
+    return GlassSurface(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

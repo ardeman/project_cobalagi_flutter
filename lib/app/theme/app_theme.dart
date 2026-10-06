@@ -16,6 +16,7 @@ abstract final class AppTheme {
     );
     const shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(24)),
+      side: BorderSide(color: Color(0x99FFFFFF), width: 1.2),
     );
     const buttonSize = Size(64, 64);
     const buttonPadding = EdgeInsets.symmetric(horizontal: 32, vertical: 16);
@@ -28,20 +29,79 @@ abstract final class AppTheme {
 
     return ThemeData(
       colorScheme: scheme,
+      scaffoldBackgroundColor: Colors.transparent,
       materialTapTargetSize: MaterialTapTargetSize.padded,
-      cardTheme: const CardThemeData(shape: shape, elevation: 2),
-      dialogTheme: const DialogThemeData(shape: shape),
+      appBarTheme: AppBarThemeData(
+        backgroundColor: scheme.surface.withValues(alpha: 0.7),
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
+      cardTheme: CardThemeData(
+        shape: shape,
+        elevation: 0,
+        color: scheme.surface.withValues(alpha: 0.8),
+        surfaceTintColor: Colors.transparent,
+      ),
+      dialogTheme: DialogThemeData(
+        shape: shape,
+        backgroundColor: scheme.surface.withValues(alpha: 0.97),
+        surfaceTintColor: Colors.transparent,
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        shape: shape,
+        backgroundColor: scheme.surface.withValues(alpha: 0.97),
+        surfaceTintColor: Colors.transparent,
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: scheme.surface.withValues(alpha: 0.72),
+        side: const BorderSide(color: Color(0x99FFFFFF)),
+        shape: shape,
+      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           minimumSize: buttonSize,
           padding: buttonPadding,
           shape: shape,
           textStyle: buttonText,
-        ),
+        ).copyWith(backgroundBuilder: _buttonGlass),
       ),
       iconButtonTheme: IconButtonThemeData(
-        style: IconButton.styleFrom(minimumSize: buttonSize),
+        style: IconButton.styleFrom(
+          minimumSize: buttonSize,
+          shape: shape,
+        ).copyWith(backgroundBuilder: _buttonGlass),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          minimumSize: buttonSize,
+          shape: shape,
+        ).copyWith(backgroundBuilder: _buttonGlass),
       ),
     );
   }
+
+  /// Button highlights have no blur, keeping frequently repeated controls
+  /// cheap to paint while preserving Material focus, ink and disabled states.
+  static Widget _buttonGlass(
+    BuildContext context,
+    Set<WidgetState> states,
+    Widget? child,
+  ) => DecoratedBox(
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(24),
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [
+          Colors.white.withValues(
+            alpha: states.contains(WidgetState.disabled) ? 0.06 : 0.22,
+          ),
+          Colors.white.withValues(alpha: 0.02),
+          Colors.black.withValues(alpha: 0.06),
+        ],
+      ),
+    ),
+    child: child,
+  );
 }

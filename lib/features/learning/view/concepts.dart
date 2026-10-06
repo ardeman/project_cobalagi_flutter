@@ -8,6 +8,7 @@ String conceptName(AppLocalizations l10n, String id) => switch (id) {
   'sequencing' => l10n.conceptSequencing,
   'loops' => l10n.conceptLoops,
   'functions' => l10n.conceptFunctions,
+  'conditions' => l10n.conceptConditions,
   _ => id,
 };
 
@@ -16,6 +17,7 @@ IconData conceptIcon(String id) => switch (id) {
   'sequencing' => Icons.route_rounded,
   'loops' => Icons.repeat_rounded,
   'functions' => Icons.star_rounded,
+  'conditions' => Icons.visibility_rounded,
   _ => Icons.terrain_rounded,
 };
 
@@ -24,5 +26,6 @@ Color conceptColor(String id) => switch (id) {
   'sequencing' => const Color(0xFF66BB6A),
   'loops' => const Color(0xFFAB47BC),
   'functions' => const Color(0xFFEC407A),
+  'conditions' => const Color(0xFF00897B),
   _ => const Color(0xFF8D6E63),
 };

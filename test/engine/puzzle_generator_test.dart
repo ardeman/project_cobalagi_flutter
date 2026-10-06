@@ -1,6 +1,7 @@
 import 'package:cobalagi/engine/generator/puzzle_generator.dart';
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
+import 'package:cobalagi/engine/interpreter/run_event.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/program/validation.dart';
 import 'package:cobalagi/engine/world/level.dart';
@@ -41,6 +42,14 @@ void main() {
             expect(level.palette, contains(InstructionKind.call));
             expect(level.palette, isNot(contains(InstructionKind.repeat)));
             expect(solve(level)!.blockCount, greaterThan(level.maxBlocks!));
+          } else if (kind == PuzzleKind.conditions) {
+            final checks = runProgram(
+              puzzle.solution,
+              level,
+            ).events.whereType<PathChecked>();
+            expect(checks.any((check) => check.clear), isTrue);
+            expect(checks.any((check) => !check.clear), isTrue);
+            expect(level.palette, contains(InstructionKind.ifPathClear));
           } else {
             expect(level.palette, isNot(contains(InstructionKind.repeat)));
           }

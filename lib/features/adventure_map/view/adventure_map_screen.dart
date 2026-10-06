@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cobalagi/core/widgets/glass_surface.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
@@ -39,7 +40,13 @@ class AdventureMapScreen extends StatelessWidget {
           children: [
             ProfileAvatar(avatar: profile.avatar, size: 44),
             const SizedBox(width: 12),
-            Text(l10n.greeting(profile.nickname)),
+            Expanded(
+              child: Text(
+                l10n.greeting(profile.nickname),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),
@@ -67,15 +74,10 @@ class AdventureMapScreen extends StatelessWidget {
                   ),
                 Expanded(
                   child: OceanMap(
-                    marker: Container(
+                    marker: GlassSurface(
                       padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(color: Colors.black26, blurRadius: 4),
-                        ],
-                      ),
+                      radius: 48,
+                      blur: false,
                       child: ProfileAvatar(avatar: profile.avatar, size: 40),
                     ),
                     islands: [
@@ -186,8 +188,8 @@ class _BonusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Card(
-      color: const Color(0xFFFFF3C4),
+    return GlassSurface(
+      tint: const Color(0xFFFFF3C4),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         child: Row(
@@ -199,16 +201,18 @@ class _BonusBanner extends StatelessWidget {
               color: Color(0xFF26C6DA),
             ),
             const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  l10n.bonusAdventure,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Text(conceptName(l10n, conceptId)),
-              ],
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.bonusAdventure,
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(conceptName(l10n, conceptId)),
+                ],
+              ),
             ),
           ],
         ),

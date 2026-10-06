@@ -5,7 +5,13 @@ import 'package:flutter/services.dart';
 import '../../../engine/world/level.dart';
 
 /// Hand-made lesson packs, one per concept, named after the concept id.
-const levelPacks = ['directions', 'sequencing', 'loops', 'functions'];
+const levelPacks = [
+  'directions',
+  'sequencing',
+  'loops',
+  'functions',
+  'conditions',
+];
 
 /// Parses a pack file: `{"levels": [<level JSON>, ...]}`.
 List<Level> parseLevelPack(String source) {

@@ -93,6 +93,12 @@ final class _Run {
           }
           execute(procedure);
           _depth--;
+        case IfPathClear(:final body):
+          _tick();
+          final ahead = position.step(facing);
+          final clear = level.isOpen(ahead);
+          events.add(PathChecked(ahead, clear, instruction.blockId));
+          if (clear) execute(body);
       }
     }
   }
