@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../../play/level_assets_test.dart' show withOneRepeat, withOneProcedure;
+import '../../play/level_assets_test.dart'
+    show withOneRepeat, withOneProcedure, withSavedSteps;
 
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
@@ -14,6 +15,26 @@ import 'package:cobalagi/features/editors/typed/data/typed_program.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('variable syntax keeps IDs, validates ordering and round-trips', () {
+    const source = 'steps = 3;\nmove(steps);\nsteps = 2;\nmove(steps);';
+    final program = compileCode(source);
+    expect((program.body.first as SetSteps).value, 3);
+    expect(program.body[1], isA<MoveSteps>());
+    expect(codeLine(source, program.body[2].blockId), 3);
+    final roundTrip = compileCode(formatCode(program));
+    expect(roundTrip.blockCount, 4);
+    expect((roundTrip.body[2] as SetSteps).value, 2);
+    for (final invalid in [
+      'steps = 0;',
+      'steps = 10;',
+      'steps = two;',
+      'steps 3;',
+      'move(other);',
+    ]) {
+      expect(() => compileCode(invalid), throwsA(isA<CodeIssue>()));
+    }
+  });
+
   test(
     'compiles nested checks, repeats and a procedure to shared instructions',
     () {
@@ -120,7 +141,9 @@ void main() {
           final level = Level.fromJson((json as Map).cast<String, Object?>());
           final straight = solve(level)!;
           final max = level.maxBlocks;
-          final solution = max == null || straight.blockCount <= max
+          final solution = level.concept == 'variables'
+              ? withSavedSteps(straight.body)
+              : max == null || straight.blockCount <= max
               ? straight
               : level.palette.contains(InstructionKind.call)
               ? withOneProcedure(straight.body, max)!

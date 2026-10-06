@@ -83,6 +83,27 @@ Program? withOneProcedure(List<Instruction> steps, int maxBlocks) {
   return null;
 }
 
+/// Saves each corridor length once and reuses it until the route needs a
+/// different distance. Used to verify variables lessons in both editors.
+Program withSavedSteps(List<Instruction> steps) {
+  final commands = <Instruction>[];
+  int? stored;
+  for (var i = 0; i < steps.length;) {
+    if (steps[i] is! Move) {
+      commands.add(steps[i++]);
+      continue;
+    }
+    var count = 0;
+    while (i < steps.length && steps[i] is Move) {
+      count += (steps[i++] as Move).steps;
+    }
+    if (count != stored) commands.add(SetSteps(count));
+    stored = count;
+    commands.add(const MoveSteps());
+  }
+  return Program(commands);
+}
+
 void main() {
   test('each pack holds only its own concept', () {
     for (final pack in levelPacks) {
@@ -104,6 +125,15 @@ void main() {
   });
 
   for (final level in levels) {
+    if (level.concept == 'variables') {
+      test('${level.id} teaches saving and using a value', () {
+        final answer = withSavedSteps(solve(level)!.body);
+        expect(answer.body, contains(isA<SetSteps>()));
+        expect(answer.body, contains(isA<MoveSteps>()));
+        expect(validateProgram(answer, level), isEmpty);
+        expect(runProgram(answer, level).succeeded, isTrue);
+      });
+    }
     if (level.concept == 'conditions') {
       test('${level.id} teaches checked steps with its own palette', () {
         final steps = solve(level)!.body;
@@ -149,7 +179,9 @@ void main() {
       expect(straight, isNotNull, reason: 'no route to the goal');
       final max = level.maxBlocks;
       final calls = level.palette.contains(InstructionKind.call);
-      final solution = max == null || straight!.blockCount <= max
+      final solution = level.concept == 'variables'
+          ? withSavedSteps(straight!.body)
+          : max == null || straight!.blockCount <= max
           ? straight!
           : calls
           ? withOneProcedure(straight.body, max)

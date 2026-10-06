@@ -238,6 +238,7 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 | 6. After MVP ✅ | Magic Block island (own block), parent progress report, sound effects and music, splash, how-to hint, warm-up second chance, Tier 2 word blocks for readers |
 | 7. Conditions ✅ | Look Ahead island, six lessons, generated practice and an eye block that runs its contents only when the cell ahead is clear |
 | 8. Typed code ✅ | Switch between blocks and code on every island, command buttons, line feedback and step highlighting, with the same engine and lesson limits |
+| 9. Variables ✅ | Step Box island, six lessons, generated practice, stored-distance blocks and typed assignments |
 
 The eye block checks once before running its contents. Put a forward block
 inside it to move safely; put the eye block inside a repeat to check again
@@ -270,7 +271,21 @@ Run and Step use the same interpreter as blocks. Editing and switching put the
 world back at the start. On phones, the code editor fills the space while the
 keyboard is open.
 
-Later: Rive characters and variables.
+Variables follow Look Ahead on the map. The six Step Box lessons teach saving
+a number, reusing it across equal-length corridors, changing it for a new
+distance and collecting stars along the way. Generated practice follows the
+same progression across five difficulty levels. The palette offers Save steps,
+Use steps and turns; its command limit keeps the focus on stored distances.
+
+Save steps has number buttons (1–9) and picture dots. Use steps moves the
+current saved distance. In code, write `steps = 3;` then `move(steps);`.
+The box starts empty on each run; using it before saving is highlighted before
+execution. A save inside a conditional does not guarantee a value outside it.
+The number shown in the world follows playback, including Step, and resets
+when the program is edited. Both editors compile to shared `SetSteps` and
+`MoveSteps` instructions; the world only displays interpreter events.
+
+Later: Rive characters.
 
 ## Documentation map
 

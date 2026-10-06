@@ -141,6 +141,23 @@ class WorldGame extends FlameGame {
 
   void _animate(RunEvent event, void Function() done) {
     switch (event) {
+      case StepsStored():
+        // The number is displayed by PlayView from the same event stream.
+        _actor.add(
+          ScaleEffect.to(
+            Vector2.all(1.12),
+            EffectController(duration: 0.15),
+            onComplete: () {
+              _actor.add(
+                ScaleEffect.to(
+                  Vector2.all(1),
+                  EffectController(duration: 0.15),
+                  onComplete: done,
+                ),
+              );
+            },
+          ),
+        );
       case Moved(:final to):
         onSound(SoundEffect.step);
         _actor.add(

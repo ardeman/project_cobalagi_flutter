@@ -38,6 +38,81 @@ Widget app(Widget child, {String locale = 'en', double scale = 1}) =>
     );
 
 void main() {
+  for (final code in [false, true]) {
+    testWidgets(
+      'Variables on a phone show the box and reset it after editing ($code)',
+      (tester) async {
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.reset);
+        final variables = Level.fromRows(
+          id: 'v',
+          concept: 'variables',
+          rows: ['S..G'],
+          startFacing: Direction.east,
+          palette: const {InstructionKind.setSteps, InstructionKind.moveSteps},
+          maxBlocks: 2,
+        );
+        await tester.pumpWidget(
+          app(
+            RepositoryProvider<AudioService>.value(
+              value: const SilentAudioService(),
+              child: PlayView(
+                exercise: Exercise(
+                  plan: const ExercisePlan(
+                    conceptId: 'variables',
+                    mode: ExerciseMode.replay,
+                    difficulty: 1,
+                  ),
+                  level: variables,
+                  key: 'variables',
+                ),
+                skipAfterRuns: 3,
+                homePath: '/',
+                onFinished: (_) async => null,
+                onNext: () {},
+                words: true,
+              ),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 100));
+        expect(find.text('Step Box'), findsOneWidget);
+        expect(find.text('Step Box: —'), findsOneWidget);
+        if (code) {
+          await tester.tap(find.text('Code'));
+          await tester.pump();
+          await tester.enterText(
+            find.byKey(const Key('typedCodeSource')),
+            'move(steps);',
+          );
+          await tester.pump();
+          expect(
+            find.textContaining('Save a number with steps'),
+            findsOneWidget,
+          );
+          await tester.enterText(
+            find.byKey(const Key('typedCodeSource')),
+            'steps = 2;\nmove(steps);',
+          );
+          await tester.pump();
+        } else {
+          await tester.tap(find.text('save steps').first);
+          await tester.pump();
+          await tester.tap(find.text('use steps').first);
+          await tester.pump();
+        }
+        await tester.tap(find.byTooltip('One step'));
+        await tester.pump();
+        expect(find.text('Step Box: 2'), findsOneWidget);
+        await tester.tap(find.byTooltip('Start over'));
+        await tester.pump();
+        expect(find.text('Step Box: —'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
   for (final locale in ['en', 'id']) {
     for (final scale in [1.0, 2.0]) {
       testWidgets(

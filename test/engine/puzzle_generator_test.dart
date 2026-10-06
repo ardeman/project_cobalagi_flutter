@@ -42,6 +42,19 @@ void main() {
             expect(level.palette, contains(InstructionKind.call));
             expect(level.palette, isNot(contains(InstructionKind.repeat)));
             expect(solve(level)!.blockCount, greaterThan(level.maxBlocks!));
+          } else if (kind == PuzzleKind.variables) {
+            expect(puzzle.solution.body, contains(isA<SetSteps>()));
+            expect(puzzle.solution.body, contains(isA<MoveSteps>()));
+            expect(level.palette, isNot(contains(InstructionKind.move)));
+            expect(
+              puzzle.solution.blockCount,
+              lessThanOrEqualTo(level.maxBlocks!),
+            );
+            final stores = runProgram(
+              puzzle.solution,
+              level,
+            ).events.whereType<StepsStored>();
+            expect(stores.length, difficulty < 3 ? 1 : greaterThan(1));
           } else if (kind == PuzzleKind.conditions) {
             final checks = runProgram(
               puzzle.solution,

@@ -509,14 +509,14 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal.';
+      'Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal. Simpan angka dengan steps = 3; dan pakai move(steps); untuk maju sebanyak itu. Angka tetap sama sampai kamu menyimpan yang baru. Simpan sebelum memakainya.';
 
   @override
   String get codeSyntax =>
       'Periksa nama perintah, tanda kurung, kurung kurawal, dan titik koma.';
 
   @override
-  String get codeNumber => 'Pilih jumlah pengulangan dari 1 sampai 9.';
+  String get codeNumber => 'Pilih angka dari 1 sampai 9.';
 
   @override
   String get codeDuplicateStar => 'Gunakan satu bagian define star saja.';
@@ -565,4 +565,36 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get codeDefineStar => 'Buat blokku';
+
+  @override
+  String get conceptVariables => 'Kotak Langkah';
+
+  @override
+  String get blockSetSteps => 'Simpan langkah';
+
+  @override
+  String get blockMoveSteps => 'Pakai langkah';
+
+  @override
+  String get stepsFewer => 'Simpan angka lebih kecil';
+
+  @override
+  String get stepsMore => 'Simpan angka lebih besar';
+
+  @override
+  String get playGoalVariables =>
+      'Simpan angka di Kotak Langkahmu, lalu pakai untuk maju sebanyak itu! Angkanya bisa dipakai lagi atau diganti. Sampai ke bendera dan kumpulkan semua bintang.';
+
+  @override
+  String stepBoxValue(String value) {
+    return 'Kotak Langkah: $value';
+  }
+
+  @override
+  String get codeUnsetSteps =>
+      'Simpan angka dengan steps = 2; sebelum memakai move(steps);.';
+
+  @override
+  String get variableHint =>
+      'Simpan angka dulu, lalu pakai kotak untuk maju. Angka tetap sama sampai kamu menggantinya.';
 }

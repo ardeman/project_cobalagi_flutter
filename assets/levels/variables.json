@@ -1,0 +1,125 @@
+{
+  "levels": [
+    {
+      "id": "variables-01",
+      "concept": "variables",
+      "facing": "east",
+      "palette": [
+        "setSteps",
+        "moveSteps"
+      ],
+      "maxBlocks": 2,
+      "rows": [
+        "######",
+        "#S..G#",
+        "######"
+      ]
+    },
+    {
+      "id": "variables-02",
+      "concept": "variables",
+      "facing": "east",
+      "palette": [
+        "setSteps",
+        "moveSteps",
+        "turnRight"
+      ],
+      "maxBlocks": 4,
+      "rows": [
+        "######",
+        "#S...#",
+        "####.#",
+        "####.#",
+        "####G#",
+        "######"
+      ]
+    },
+    {
+      "id": "variables-03",
+      "concept": "variables",
+      "facing": "east",
+      "palette": [
+        "setSteps",
+        "moveSteps",
+        "turnRight"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "#####",
+        "#S..#",
+        "###.#",
+        "###.#",
+        "###.#",
+        "###G#",
+        "#####"
+      ]
+    },
+    {
+      "id": "variables-04",
+      "concept": "variables",
+      "facing": "south",
+      "palette": [
+        "setSteps",
+        "moveSteps",
+        "turnLeft",
+        "turnRight"
+      ],
+      "maxBlocks": 6,
+      "rows": [
+        "######",
+        "#S####",
+        "#.####",
+        "#.####",
+        "#..*.#",
+        "####.#",
+        "####.#",
+        "####G#",
+        "######"
+      ]
+    },
+    {
+      "id": "variables-05",
+      "concept": "variables",
+      "facing": "west",
+      "palette": [
+        "setSteps",
+        "moveSteps",
+        "turnLeft",
+        "turnRight"
+      ],
+      "maxBlocks": 8,
+      "rows": [
+        "#######",
+        "###..S#",
+        "###.###",
+        "###*###",
+        "###.###",
+        "#G..###",
+        "#######"
+      ]
+    },
+    {
+      "id": "variables-06",
+      "concept": "variables",
+      "facing": "east",
+      "palette": [
+        "setSteps",
+        "moveSteps",
+        "turnLeft",
+        "turnRight"
+      ],
+      "maxBlocks": 11,
+      "rows": [
+        "##########",
+        "#S....####",
+        "#####.####",
+        "#####.*..#",
+        "########.#",
+        "########.#",
+        "########.#",
+        "########G#",
+        "##########"
+      ]
+    }
+  ]
+}

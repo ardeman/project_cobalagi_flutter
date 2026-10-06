@@ -95,6 +95,10 @@ class _BlockEditorState extends State<BlockEditor> {
           ),
         ),
         SizedBox(height: gap),
+        if (widget.palette.contains(InstructionKind.setSteps)) ...[
+          Text(l10n.variableHint),
+          SizedBox(height: gap),
+        ],
         if (showStar) ...[
           GestureDetector(
             onTap: () => cubit.pickRow(star: true),
@@ -298,6 +302,8 @@ class _PlacedBlock extends StatelessWidget {
     final Widget body =
         block.type == BlockType.repeat || block.type == BlockType.ifPathClear
         ? _ContainerBlock(block: block, style: style)
+        : block.type == BlockType.setSteps
+        ? _SavedStepsBlock(block: block, style: style)
         : BlockTile(
             key: ValueKey(block.id),
             words: style.words,
@@ -336,6 +342,55 @@ class _PlacedBlock extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// The saved number is editable with large buttons and picture dots.
+class _SavedStepsBlock extends StatelessWidget {
+  const _SavedStepsBlock({required this.block, required this.style});
+  final Block block;
+  final _BlockStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Semantics(
+      label: l.stepBoxValue(block.count.toString()),
+      child: Container(
+        key: ValueKey(block.id),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: block.type.color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: style.issueBlockIds.contains(block.id)
+                ? Theme.of(context).colorScheme.error
+                : block.id == style.activeBlockId
+                ? const Color(0xFFFFD54F)
+                : block.type.color,
+            width: 3,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BlockTile(type: block.type, size: 64, words: style.words),
+            _CountStepper(
+              count: block.count,
+              size: 64,
+              color: block.type.color,
+              onChanged: style.enabled
+                  ? (value) =>
+                        context.read<BlocksCubit>().setCount(block.id, value)
+                  : null,
+              fewerLabel: l.stepsFewer,
+              moreLabel: l.stepsMore,
+              minimum: 1,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -551,8 +606,14 @@ class _CountStepper extends StatelessWidget {
     required this.size,
     required this.color,
     required this.onChanged,
+    this.fewerLabel,
+    this.moreLabel,
+    this.minimum = 2,
   });
 
+  final String? fewerLabel;
+  final String? moreLabel;
+  final int minimum;
   final int count;
   final double size;
   final Color color;
@@ -563,10 +624,10 @@ class _CountStepper extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     Widget button(IconData icon, int to, String tooltip) => IconButton(
       tooltip: tooltip,
-      visualDensity: VisualDensity.compact,
+      constraints: const BoxConstraints(minWidth: 64, minHeight: 64),
       iconSize: size * 0.4,
       color: color,
-      onPressed: onChanged != null && to >= 2 && to <= maxCount
+      onPressed: onChanged != null && to >= minimum && to <= maxCount
           ? () => onChanged!(to)
           : null,
       icon: Icon(icon),
@@ -577,7 +638,11 @@ class _CountStepper extends StatelessWidget {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            button(Icons.remove_circle_rounded, count - 1, l10n.repeatFewer),
+            button(
+              Icons.remove_circle_rounded,
+              count - 1,
+              fewerLabel ?? l10n.repeatFewer,
+            ),
             Text(
               '$count',
               style: TextStyle(
@@ -586,7 +651,11 @@ class _CountStepper extends StatelessWidget {
                 color: color,
               ),
             ),
-            button(Icons.add_circle_rounded, count + 1, l10n.repeatMore),
+            button(
+              Icons.add_circle_rounded,
+              count + 1,
+              moreLabel ?? l10n.repeatMore,
+            ),
           ],
         ),
         SizedBox(

@@ -236,7 +236,37 @@ class _PlayViewState extends State<PlayView> {
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(24),
-                          child: GameWidget(game: _game),
+                          child: Stack(
+                            children: [
+                              Positioned.fill(child: GameWidget(game: _game)),
+                              if (_level.palette.contains(
+                                InstructionKind.setSteps,
+                              ))
+                                Positioned(
+                                  top: 8,
+                                  left: 8,
+                                  right: 8,
+                                  child: BlocBuilder<PlayCubit, PlayState>(
+                                    builder: (context, play) => IgnorePointer(
+                                      child: GlassSurface(
+                                        padding: const EdgeInsets.all(8),
+                                        child: Text(
+                                          AppLocalizations.of(
+                                            context,
+                                          ).stepBoxValue(
+                                            play.storedSteps?.toString() ?? '—',
+                                          ),
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(
+                                            context,
+                                          ).textTheme.titleMedium,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -409,7 +439,9 @@ class _PlayViewState extends State<PlayView> {
 
   /// The spoken goal of a level: its words and its voice clip.
   static (String Function(AppLocalizations), String) _goal(Level level) =>
-      level.palette.contains(InstructionKind.ifPathClear)
+      level.palette.contains(InstructionKind.setSteps)
+      ? ((l) => l.playGoalVariables, VoiceClips.playGoalVariables)
+      : level.palette.contains(InstructionKind.ifPathClear)
       ? ((l) => l.playGoalConditions, VoiceClips.playGoalConditions)
       : level.palette.contains(InstructionKind.call)
       ? ((l) => l.playGoalFunctions, VoiceClips.playGoalFunctions)

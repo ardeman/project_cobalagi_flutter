@@ -2,6 +2,7 @@ import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
+import 'package:cobalagi/engine/program/program.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,6 +51,76 @@ Future<BlocksCubit> pumpEditor(
 Finder paletteBlock(IconData icon) => find.byIcon(icon).first;
 
 void main() {
+  for (final words in [false, true]) {
+    testWidgets('Step Box buttons save 1–9 with 64dp targets ($words)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      final cubit = BlocksCubit(maxBlocks: 2);
+      addTearDown(cubit.close);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: cubit,
+              child: BlockEditor(
+                palette: const {
+                  InstructionKind.setSteps,
+                  InstructionKind.moveSteps,
+                },
+                blockSize: 64,
+                words: words,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(paletteBlock(Icons.inventory_2_rounded));
+      await tester.pump();
+      expect(cubit.state.main.single.count, 2);
+      final fewer = find.byTooltip('Save a smaller number');
+      final more = find.byTooltip('Save a bigger number');
+      expect(tester.getSize(fewer).width, greaterThanOrEqualTo(64));
+      expect(tester.getSize(more).height, greaterThanOrEqualTo(64));
+      await tester.tap(fewer);
+      await tester.pump();
+      expect(cubit.state.main.single.count, 1);
+      expect(
+        tester
+            .widget<IconButton>(
+              find.widgetWithIcon(IconButton, Icons.remove_circle_rounded),
+            )
+            .onPressed,
+        isNull,
+      );
+      for (var i = 0; i < 8; i++) {
+        await tester.tap(more);
+        await tester.pump();
+      }
+      expect(cubit.state.main.single.count, 9);
+      expect(
+        tester
+            .widget<IconButton>(
+              find.widgetWithIcon(IconButton, Icons.add_circle_rounded),
+            )
+            .onPressed,
+        isNull,
+      );
+      await tester.tap(paletteBlock(Icons.forward_rounded));
+      await tester.pump();
+      final Program program = cubit.program;
+      expect((program.body.first as SetSteps).value, 9);
+      expect(program.body.last, isA<MoveSteps>());
+      expect(program.body.first.blockId, cubit.state.main.first.id);
+      expect(program.body.last.blockId, cubit.state.main.last.id);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('tap a condition then a palette action to fill it', (
     tester,
   ) async {

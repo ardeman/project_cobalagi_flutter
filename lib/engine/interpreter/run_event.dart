@@ -45,6 +45,12 @@ final class PathChecked extends RunEvent {
   final bool clear;
 }
 
+/// The interpreter saved a new value; editors and the world only display it.
+final class StepsStored extends RunEvent {
+  const StepsStored(this.value, super.blockId);
+  final int value;
+}
+
 enum RunOutcome {
   /// Reached the goal with every star collected.
   success,

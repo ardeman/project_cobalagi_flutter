@@ -261,9 +261,9 @@
   "codeDrafts": "Each editor keeps its own draft. Your first code draft comes from your blocks.",
   "codeHelp": "Code guide",
   "codeSource": "Your code",
-  "codeGuide": "Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces.",
+  "codeGuide": "Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it.",
   "codeSyntax": "Check the command name, parentheses, braces and semicolon.",
-  "codeNumber": "Choose a repeat count from 1 to 9.",
+  "codeNumber": "Choose a number from 1 to 9.",
   "codeDuplicateStar": "Keep just one define star section.",
   "codeNestedStar": "Put define star outside repeats and checks.",
   "codeTooLarge": "Try a shorter program with fewer nested sections.",
@@ -291,6 +291,22 @@
     "placeholders": {
       "line": {
         "type": "int"
+      }
+    }
+  },
+  "conceptVariables": "Step Box",
+  "blockSetSteps": "Save steps",
+  "blockMoveSteps": "Use steps",
+  "stepsFewer": "Save a smaller number",
+  "stepsMore": "Save a bigger number",
+  "playGoalVariables": "Save a number in your Step Box, then use it to move that many steps! You can use the number again or change it. Reach the flag and collect every star.",
+  "stepBoxValue": "Step Box: {value}",
+  "codeUnsetSteps": "Save a number with steps = 2; before using move(steps);.",
+  "variableHint": "Save a number first, then use the box to move. The number stays until you change it.",
+  "@stepBoxValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
       }
     }
   }

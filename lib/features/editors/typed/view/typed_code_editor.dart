@@ -74,10 +74,13 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
             EmptyProcedure() => l.codeEmptyStar,
             CallInProcedure() => l.codeRecursiveStar,
             CountOutOfRange() => l.codeNumber,
+            UnsetSteps() => l.codeUnsetSteps,
           }
         : null;
     final snippets = <InstructionKind, (String, String)>{
       InstructionKind.move: (l.blockForward, 'move();'),
+      InstructionKind.setSteps: (l.blockSetSteps, 'steps = 2;'),
+      InstructionKind.moveSteps: (l.blockMoveSteps, 'move(steps);'),
       InstructionKind.turnLeft: (l.blockTurnLeft, 'turn_left();'),
       InstructionKind.turnRight: (l.blockTurnRight, 'turn_right();'),
       InstructionKind.repeat: (l.blockRepeat, 'repeat(2) {\n  \n}'),

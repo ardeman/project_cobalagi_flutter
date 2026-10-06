@@ -92,18 +92,17 @@ void main() {
     }
   });
 
-  test(
-    'Conditions practice skips saved fingerprints after reloading',
-    () async {
+  for (final concept in ['conditions', 'variables']) {
+    test('$concept practice skips saved fingerprints after reloading', () async {
       await progress.save(
         1,
         curriculum.engine
-            .initialState(startConcept: 'conditions')
+            .initialState(startConcept: concept)
             .copyWith(
               progress: {
-                'conditions': ConceptProgress(
+                concept: ConceptProgress(
                   difficulty: 1,
-                  attemptedLessons: curriculum.lessonIds['conditions']!.toSet(),
+                  attemptedLessons: curriculum.lessonIds[concept]!.toSet(),
                 ),
               },
             ),
@@ -114,7 +113,7 @@ void main() {
       await cubit.record(resultFor(first));
       final reloaded = await newCubit();
       final second = reloaded.nextExercise();
-      expect(second.plan.conceptId, 'conditions');
+      expect(second.plan.conceptId, concept);
       expect(second.level.fingerprint, isNot(first.level.fingerprint));
       expect(
         reloaded.state.learner!.seenPuzzles,
@@ -122,8 +121,8 @@ void main() {
       );
       // Flush the served-state update and persistence before closing the Cubit.
       await reloaded.record(resultFor(second));
-    },
-  );
+    });
+  }
 
   test('a replay is logged but never changes what comes next', () async {
     final cubit = await newCubit();

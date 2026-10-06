@@ -1,6 +1,15 @@
 /// The shared instruction set. Every editor (icon blocks, word blocks, typed
 /// code) compiles to these, and only these are executed by the interpreter.
-enum InstructionKind { move, turnLeft, turnRight, repeat, call, ifPathClear }
+enum InstructionKind {
+  move,
+  turnLeft,
+  turnRight,
+  repeat,
+  call,
+  ifPathClear,
+  setSteps,
+  moveSteps,
+}
 
 sealed class Instruction {
   const Instruction({this.blockId});
@@ -21,6 +30,23 @@ final class Move extends Instruction {
 
   @override
   InstructionKind get kind => InstructionKind.move;
+}
+
+/// Saves a number in the child's Step Box for later moves in this run.
+final class SetSteps extends Instruction {
+  const SetSteps(this.value, {super.blockId});
+  final int value;
+
+  @override
+  InstructionKind get kind => InstructionKind.setSteps;
+}
+
+/// Reads the current Step Box value and moves that many cells.
+final class MoveSteps extends Instruction {
+  const MoveSteps({super.blockId});
+
+  @override
+  InstructionKind get kind => InstructionKind.moveSteps;
 }
 
 final class TurnLeft extends Instruction {

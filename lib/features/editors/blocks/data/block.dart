@@ -8,6 +8,8 @@ enum BlockType {
   turnLeft(InstructionKind.turnLeft),
   turnRight(InstructionKind.turnRight),
   repeat(InstructionKind.repeat),
+  setSteps(InstructionKind.setSteps),
+  moveSteps(InstructionKind.moveSteps),
   ifPathClear(InstructionKind.ifPathClear),
 
   /// The child's own block: runs the star row.
@@ -29,7 +31,7 @@ final class Block {
   final String id;
   final BlockType type;
 
-  /// Repeat count; ignored by other block types.
+  /// Repeat count or saved Step Box value; ignored by other block types.
   final int count;
   final List<Block> children;
 
@@ -95,6 +97,8 @@ Program compileBlocks(List<Block> blocks, {List<Block> star = const []}) =>
 
 Instruction _compile(Block block) => switch (block.type) {
   BlockType.forward => Move(blockId: block.id),
+  BlockType.setSteps => SetSteps(block.count, blockId: block.id),
+  BlockType.moveSteps => MoveSteps(blockId: block.id),
   BlockType.turnLeft => TurnLeft(blockId: block.id),
   BlockType.turnRight => TurnRight(blockId: block.id),
   BlockType.repeat => Repeat(block.count, [

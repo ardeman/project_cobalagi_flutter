@@ -4,10 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final wide in [false, true]) {
-    test('five-island connections avoid labels and turn smoothly ($wide)', () {
+    test('six-island connections avoid labels and turn smoothly ($wide)', () {
       const size = 110.0;
       final centres = [
-        for (var i = 0; i < 5; i++)
+        for (var i = 0; i < 6; i++)
           wide
               ? Offset(160 + i * 235, i.isEven ? 210 : 370)
               : Offset(i.isEven ? 120 : 280, 130 + i * size * 2.35),
@@ -26,7 +26,7 @@ void main() {
         islandSize: size,
         wide: wide,
       );
-      expect(paths, hasLength(4));
+      expect(paths, hasLength(centres.length - 1));
       for (final path in paths) {
         final metric = path.computeMetrics().single;
         expect(metric.length, greaterThan(40));

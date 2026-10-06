@@ -5,7 +5,7 @@ import '../world/grid_point.dart';
 import '../world/level.dart';
 import 'run_event.dart';
 
-/// Each single-cell move and each turn counts as one step.
+/// Each single-cell move, turn, path check and value save counts as one step.
 const defaultStepLimit = 1000;
 
 /// How deep calls may nest before the run stops, so a procedure that calls
@@ -68,6 +68,7 @@ final class _Run {
   GridPoint position;
   Direction facing;
   var steps = 0;
+  int? _storedSteps;
 
   bool get isSolved =>
       position == level.goal && collected.length == level.stars.length;
@@ -75,6 +76,18 @@ final class _Run {
   void execute(List<Instruction> body) {
     for (final instruction in body) {
       switch (instruction) {
+        case SetSteps(:final value):
+          _tick();
+          _storedSteps = value;
+          events.add(StepsStored(value, instruction.blockId));
+        case MoveSteps():
+          final value = _storedSteps;
+          // Validation reports this before running; direct engine callers
+          // also stop safely if a value has not been saved.
+          if (value == null) throw const _Halt(RunOutcome.stoppedShort);
+          for (var i = 0; i < value; i++) {
+            _step(instruction);
+          }
         case Move(:final steps):
           for (var i = 0; i < steps; i++) {
             _step(instruction);

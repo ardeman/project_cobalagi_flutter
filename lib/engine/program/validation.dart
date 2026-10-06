@@ -46,7 +46,11 @@ final class CountOutOfRange extends ProgramIssue {
   final int value;
 }
 
-/// Smallest and largest number a block may carry (move steps, repeat times).
+final class UnsetSteps extends ProgramIssue {
+  const UnsetSteps(super.blockId);
+}
+
+/// Smallest and largest number a block may carry (moves, repeats, saved values).
 const minCount = 1;
 const maxCount = 9;
 
@@ -65,6 +69,8 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
         );
       }
       switch (instruction) {
+        case SetSteps(:final value) when value < minCount || value > maxCount:
+          issues.add(CountOutOfRange(value, instruction.blockId));
         case Move(:final steps) when steps < minCount || steps > maxCount:
           issues.add(CountOutOfRange(steps, instruction.blockId));
         case Repeat(:final times, :final body):
@@ -80,7 +86,12 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
           issues.add(CallInProcedure(instruction.blockId));
         case Call() when program.procedure.isEmpty:
           issues.add(EmptyProcedure(instruction.blockId));
-        case Call() || Move() || TurnLeft() || TurnRight():
+        case Call() ||
+            Move() ||
+            TurnLeft() ||
+            TurnRight() ||
+            SetSteps() ||
+            MoveSteps():
           break;
       }
     }
@@ -88,5 +99,33 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
 
   visit(program.body);
   visit(program.procedure, inProcedure: true);
+  // A value set inside a condition is not guaranteed to be available after
+  // it. Procedures read the caller's value; repeats execute at least once.
+  bool checkSteps(
+    List<Instruction> body,
+    bool assigned, {
+    bool inProcedure = false,
+  }) {
+    for (final instruction in body) {
+      switch (instruction) {
+        case SetSteps():
+          assigned = true;
+        case MoveSteps() when !assigned:
+          issues.add(UnsetSteps(instruction.blockId));
+        case Repeat(:final times, :final body):
+          final after = checkSteps(body, assigned, inProcedure: inProcedure);
+          if (times >= minCount) assigned = after;
+        case IfPathClear(:final body):
+          checkSteps(body, assigned, inProcedure: inProcedure);
+        case Call() when !inProcedure:
+          assigned = checkSteps(program.procedure, assigned, inProcedure: true);
+        case MoveSteps() || Move() || TurnLeft() || TurnRight() || Call():
+          break;
+      }
+    }
+    return assigned;
+  }
+
+  checkSteps(program.body, false);
   return issues;
 }

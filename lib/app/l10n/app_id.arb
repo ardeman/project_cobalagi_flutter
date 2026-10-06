@@ -154,9 +154,9 @@
   "codeDrafts": "Setiap editor menyimpan draf sendiri. Draf kode pertama berasal dari blokmu.",
   "codeHelp": "Panduan kode",
   "codeSource": "Kodemu",
-  "codeGuide": "Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal.",
+  "codeGuide": "Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal. Simpan angka dengan steps = 3; dan pakai move(steps); untuk maju sebanyak itu. Angka tetap sama sampai kamu menyimpan yang baru. Simpan sebelum memakainya.",
   "codeSyntax": "Periksa nama perintah, tanda kurung, kurung kurawal, dan titik koma.",
-  "codeNumber": "Pilih jumlah pengulangan dari 1 sampai 9.",
+  "codeNumber": "Pilih angka dari 1 sampai 9.",
   "codeDuplicateStar": "Gunakan satu bagian define star saja.",
   "codeNestedStar": "Letakkan define star di luar pengulangan dan pemeriksaan.",
   "codeTooLarge": "Coba program yang lebih pendek dengan lebih sedikit bagian bertingkat.",
@@ -184,6 +184,22 @@
     "placeholders": {
       "line": {
         "type": "int"
+      }
+    }
+  },
+  "conceptVariables": "Kotak Langkah",
+  "blockSetSteps": "Simpan langkah",
+  "blockMoveSteps": "Pakai langkah",
+  "stepsFewer": "Simpan angka lebih kecil",
+  "stepsMore": "Simpan angka lebih besar",
+  "playGoalVariables": "Simpan angka di Kotak Langkahmu, lalu pakai untuk maju sebanyak itu! Angkanya bisa dipakai lagi atau diganti. Sampai ke bendera dan kumpulkan semua bintang.",
+  "stepBoxValue": "Kotak Langkah: {value}",
+  "codeUnsetSteps": "Simpan angka dengan steps = 2; sebelum memakai move(steps);.",
+  "variableHint": "Simpan angka dulu, lalu pakai kotak untuk maju. Angka tetap sama sampai kamu menggantinya.",
+  "@stepBoxValue": {
+    "placeholders": {
+      "value": {
+        "type": "String"
       }
     }
   }

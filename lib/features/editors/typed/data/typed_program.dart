@@ -27,6 +27,8 @@ String formatCode(Program program) {
       instructions.map((instruction) {
         final indent = '  ' * depth;
         return switch (instruction) {
+          SetSteps(:final value) => '${indent}steps = $value;\n',
+          MoveSteps() => '${indent}move(steps);\n',
           Move(:final steps) => List.filled(steps, '${indent}move();\n').join(),
           TurnLeft() => '${indent}turn_left();\n',
           TurnRight() => '${indent}turn_right();\n',
@@ -60,7 +62,7 @@ final class _Parser {
 
   Program parse() {
     if (source.length > 8000) throw const CodeIssue(CodeProblem.tooLarge, 1);
-    final word = RegExp(r'[a-z_]+|[0-9]+|[(){};]');
+    final word = RegExp(r'[a-z_]+|[0-9]+|[(){};=]');
     var line = 1;
     var offset = 0;
     while (offset < source.length) {
@@ -106,14 +108,24 @@ final class _Parser {
       switch (token.text) {
         case 'move' || 'turn_left' || 'turn_right' || 'star':
           _expect('(');
+          final variableMove = token.text == 'move' && _take('steps');
           _expect(')');
           _expect(';');
           result.add(switch (token.text) {
-            'move' => Move(blockId: id),
+            'move' => variableMove ? MoveSteps(blockId: id) : Move(blockId: id),
             'turn_left' => TurnLeft(blockId: id),
             'turn_right' => TurnRight(blockId: id),
             _ => Call(blockId: id),
           });
+        case 'steps':
+          _expect('=');
+          final value = int.tryParse(_current.text);
+          if (value == null || value < 1 || value > 9) {
+            _fail(CodeProblem.number);
+          }
+          _cursor++;
+          _expect(';');
+          result.add(SetSteps(value, blockId: id));
         case 'repeat':
           _expect('(');
           final count = int.tryParse(_current.text);

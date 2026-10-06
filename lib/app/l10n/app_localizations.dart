@@ -1025,7 +1025,7 @@ abstract class AppLocalizations {
   /// No description provided for @codeGuide.
   ///
   /// In en, this message translates to:
-  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces.'**
+  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it.'**
   String get codeGuide;
 
   /// No description provided for @codeSyntax.
@@ -1037,7 +1037,7 @@ abstract class AppLocalizations {
   /// No description provided for @codeNumber.
   ///
   /// In en, this message translates to:
-  /// **'Choose a repeat count from 1 to 9.'**
+  /// **'Choose a number from 1 to 9.'**
   String get codeNumber;
 
   /// No description provided for @codeDuplicateStar.
@@ -1117,6 +1117,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Define my block'**
   String get codeDefineStar;
+
+  /// No description provided for @conceptVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'Step Box'**
+  String get conceptVariables;
+
+  /// No description provided for @blockSetSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Save steps'**
+  String get blockSetSteps;
+
+  /// No description provided for @blockMoveSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Use steps'**
+  String get blockMoveSteps;
+
+  /// No description provided for @stepsFewer.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a smaller number'**
+  String get stepsFewer;
+
+  /// No description provided for @stepsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a bigger number'**
+  String get stepsMore;
+
+  /// No description provided for @playGoalVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a number in your Step Box, then use it to move that many steps! You can use the number again or change it. Reach the flag and collect every star.'**
+  String get playGoalVariables;
+
+  /// No description provided for @stepBoxValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Step Box: {value}'**
+  String stepBoxValue(String value);
+
+  /// No description provided for @codeUnsetSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a number with steps = 2; before using move(steps);.'**
+  String get codeUnsetSteps;
+
+  /// No description provided for @variableHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a number first, then use the box to move. The number stays until you change it.'**
+  String get variableHint;
 }
 
 class _AppLocalizationsDelegate

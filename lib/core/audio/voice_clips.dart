@@ -20,6 +20,7 @@ abstract final class VoiceClips {
   static const playGoalLoops = 'play_goal_loops';
   static const playGoalFunctions = 'play_goal_functions';
   static const playGoalConditions = 'play_goal_conditions';
+  static const playGoalVariables = 'play_goal_variables';
   static const playHowTo = 'play_how_to';
 
   static const feedbackBumped = 'feedback_bumped';
@@ -58,6 +59,7 @@ abstract final class VoiceClips {
     playGoalLoops: 'playGoalLoops',
     playGoalFunctions: 'playGoalFunctions',
     playGoalConditions: 'playGoalConditions',
+    playGoalVariables: 'playGoalVariables',
     playHowTo: 'playHowTo',
     feedbackBumped: 'feedbackBumped',
     feedbackStoppedShort: 'feedbackStoppedShort',

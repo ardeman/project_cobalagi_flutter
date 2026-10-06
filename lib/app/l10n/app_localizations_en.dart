@@ -522,14 +522,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces.';
+      'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it.';
 
   @override
   String get codeSyntax =>
       'Check the command name, parentheses, braces and semicolon.';
 
   @override
-  String get codeNumber => 'Choose a repeat count from 1 to 9.';
+  String get codeNumber => 'Choose a number from 1 to 9.';
 
   @override
   String get codeDuplicateStar => 'Keep just one define star section.';
@@ -576,4 +576,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get codeDefineStar => 'Define my block';
+
+  @override
+  String get conceptVariables => 'Step Box';
+
+  @override
+  String get blockSetSteps => 'Save steps';
+
+  @override
+  String get blockMoveSteps => 'Use steps';
+
+  @override
+  String get stepsFewer => 'Save a smaller number';
+
+  @override
+  String get stepsMore => 'Save a bigger number';
+
+  @override
+  String get playGoalVariables =>
+      'Save a number in your Step Box, then use it to move that many steps! You can use the number again or change it. Reach the flag and collect every star.';
+
+  @override
+  String stepBoxValue(String value) {
+    return 'Step Box: $value';
+  }
+
+  @override
+  String get codeUnsetSteps =>
+      'Save a number with steps = 2; before using move(steps);.';
+
+  @override
+  String get variableHint =>
+      'Save a number first, then use the box to move. The number stays until you change it.';
 }

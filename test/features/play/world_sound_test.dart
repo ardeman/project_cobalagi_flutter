@@ -18,6 +18,35 @@ final level = Level.fromRows(
 );
 
 void main() {
+  test(
+    'the world completes a save animation without implementing variable logic',
+    () async {
+      final variables = Level.fromRows(
+        id: 'v',
+        concept: 'variables',
+        rows: ['S.G'],
+        startFacing: Direction.east,
+        palette: const {InstructionKind.setSteps, InstructionKind.moveSteps},
+      );
+      final play = PlayCubit(variables);
+      addTearDown(play.close);
+      final game = await initializeGame(
+        () => WorldGame(level: variables, onEventShown: play.eventShown),
+      );
+      final subscription = play.stream.listen(game.apply);
+      addTearDown(subscription.cancel);
+      play.run(const Program([SetSteps(2), MoveSteps()]));
+      for (var i = 0; i < 100 && play.state.phase == PlayPhase.running; i++) {
+        await Future<void>.delayed(Duration.zero);
+        game.update(0.1);
+      }
+      expect(play.state.phase, PlayPhase.succeeded);
+      expect(play.state.storedSteps, 2);
+      play.reset();
+      expect(play.state.storedSteps, isNull);
+    },
+  );
+
   test('the world finishes clear and blocked check animations', () async {
     final checkedLevel = Level.fromRows(
       id: 'checks',

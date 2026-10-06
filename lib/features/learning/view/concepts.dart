@@ -9,6 +9,7 @@ String conceptName(AppLocalizations l10n, String id) => switch (id) {
   'loops' => l10n.conceptLoops,
   'functions' => l10n.conceptFunctions,
   'conditions' => l10n.conceptConditions,
+  'variables' => l10n.conceptVariables,
   _ => id,
 };
 
@@ -18,6 +19,7 @@ IconData conceptIcon(String id) => switch (id) {
   'loops' => Icons.repeat_rounded,
   'functions' => Icons.star_rounded,
   'conditions' => Icons.visibility_rounded,
+  'variables' => Icons.inventory_2_rounded,
   _ => Icons.terrain_rounded,
 };
 
@@ -27,5 +29,6 @@ Color conceptColor(String id) => switch (id) {
   'loops' => const Color(0xFFAB47BC),
   'functions' => const Color(0xFFEC407A),
   'conditions' => const Color(0xFF00897B),
+  'variables' => const Color(0xFFEF6C00),
   _ => const Color(0xFF8D6E63),
 };

@@ -45,6 +45,14 @@ class PlayState {
     return cursor < events.length ? events[cursor] : null;
   }
 
+  /// The saved value shown so far in playback, cleared when editing resets.
+  int? get storedSteps {
+    final events = result?.events;
+    if (events == null) return null;
+    final shown = phase == PlayPhase.running ? events.take(cursor + 1) : events;
+    return shown.whereType<StepsStored>().lastOrNull?.value;
+  }
+
   /// The editor block to highlight while running.
   String? get activeBlockId {
     final events = result?.events;

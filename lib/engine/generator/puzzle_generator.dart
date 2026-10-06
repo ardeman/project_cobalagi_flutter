@@ -9,7 +9,14 @@ import '../world/level.dart';
 import 'solver.dart';
 
 /// Puzzle families the generator can produce, one per early skill-map concept.
-enum PuzzleKind { directions, sequencing, loops, functions, conditions }
+enum PuzzleKind {
+  directions,
+  sequencing,
+  loops,
+  functions,
+  conditions,
+  variables,
+}
 
 const minDifficulty = 1;
 const maxDifficulty = 5;
@@ -40,6 +47,7 @@ GeneratedPuzzle generatePuzzle(
     'difficulty',
   );
   final random = Random(seed);
+  if (kind == PuzzleKind.variables) return _variables(random, difficulty, seed);
   if (kind == PuzzleKind.conditions) {
     return _conditions(random, difficulty, seed);
   }
@@ -49,6 +57,7 @@ GeneratedPuzzle generatePuzzle(
       PuzzleKind.sequencing => _sequencing(random, difficulty),
       PuzzleKind.loops => _loops(random, difficulty),
       PuzzleKind.functions => _functions(random, difficulty),
+      PuzzleKind.variables => throw StateError('variables use a stored value'),
       PuzzleKind.conditions => throw StateError(
         'conditions use a checked route',
       ),
@@ -74,6 +83,54 @@ const _sequencePalette = {
 const _loopPalette = {..._sequencePalette, InstructionKind.repeat};
 
 const _functionPalette = {..._sequencePalette, InstructionKind.call};
+
+const _variablePalette = {
+  InstructionKind.setSteps,
+  InstructionKind.moveSteps,
+  InstructionKind.turnLeft,
+  InstructionKind.turnRight,
+};
+
+/// Reuse one stored distance on early routes; later routes need new values.
+GeneratedPuzzle _variables(Random random, int difficulty, int seed) {
+  for (var attempt = 0; attempt < 200; attempt++) {
+    final route = <Instruction>[];
+    final commands = <Instruction>[];
+    var stored = 0;
+    final first = 2 + random.nextInt(3);
+    for (var segment = 0; segment < difficulty + 1; segment++) {
+      if (segment > 0) {
+        final turn = _turn(random);
+        route.add(turn);
+        commands.add(turn);
+      }
+      final count = difficulty < 3 || segment.isEven
+          ? first
+          : (first == 4 ? 2 : first + 1);
+      route.addAll(_moves(count));
+      if (stored != count) commands.add(SetSteps(count));
+      stored = count;
+      commands.add(const MoveSteps());
+    }
+    final puzzle = _buildPuzzle(
+      PuzzleKind.variables,
+      Program(route),
+      Direction.values[random.nextInt(4)],
+      id: 'variables-d$difficulty-s$seed',
+      difficulty: difficulty,
+    );
+    if (puzzle == null) continue;
+    final solution = Program(commands);
+    final level = Level.fromJson({
+      ...puzzle.level.toJson(),
+      'maxBlocks': solution.blockCount,
+    });
+    if (runProgram(solution, level).succeeded) {
+      return GeneratedPuzzle(level, solution);
+    }
+  }
+  throw StateError('no valid variables puzzle for seed $seed');
+}
 
 const _conditionPalette = {..._loopPalette, InstructionKind.ifPathClear};
 
@@ -216,6 +273,8 @@ GeneratedPuzzle? _buildPuzzle(
           }
         case Call():
           walk(solution.procedure);
+        case SetSteps() || MoveSteps():
+          throw StateError('trace the route before adding variables');
         case IfPathClear():
           throw StateError('trace the route before adding path checks');
       }
@@ -240,6 +299,7 @@ GeneratedPuzzle? _buildPuzzle(
     PuzzleKind.loops => _loopPalette,
     PuzzleKind.functions => _functionPalette,
     PuzzleKind.conditions => _conditionPalette,
+    PuzzleKind.variables => _variablePalette,
     PuzzleKind.directions || PuzzleKind.sequencing => _sequencePalette,
   };
   final limited = kind == PuzzleKind.loops || kind == PuzzleKind.functions;

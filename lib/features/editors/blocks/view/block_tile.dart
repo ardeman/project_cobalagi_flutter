@@ -11,6 +11,8 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnLeft => Icons.turn_left_rounded,
     BlockType.turnRight => Icons.turn_right_rounded,
     BlockType.repeat => Icons.repeat_rounded,
+    BlockType.setSteps => Icons.inventory_2_rounded,
+    BlockType.moveSteps => Icons.forward_rounded,
     BlockType.star => Icons.star_rounded,
     BlockType.ifPathClear => Icons.visibility_rounded,
   };
@@ -20,6 +22,8 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnLeft => const Color(0xFF1E88E5),
     BlockType.turnRight => const Color(0xFFFB8C00),
     BlockType.repeat => const Color(0xFF8E24AA),
+    BlockType.setSteps => const Color(0xFFFFB300),
+    BlockType.moveSteps => const Color(0xFFEF6C00),
     BlockType.star => const Color(0xFFD81B60),
     BlockType.ifPathClear => const Color(0xFF00897B),
   };
@@ -30,6 +34,8 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnLeft => l10n.blockTurnLeft,
     BlockType.turnRight => l10n.blockTurnRight,
     BlockType.repeat => l10n.blockRepeat,
+    BlockType.setSteps => l10n.blockSetSteps,
+    BlockType.moveSteps => l10n.blockMoveSteps,
     BlockType.star => l10n.blockStar,
     BlockType.ifPathClear => l10n.blockIfPathClear,
   };
