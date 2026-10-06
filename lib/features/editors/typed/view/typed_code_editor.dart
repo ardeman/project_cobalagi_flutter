@@ -102,6 +102,9 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
     return GlassSurface(
       padding: const EdgeInsets.all(12),
       child: ListView(
+        // The panel pads itself; the screen's padding (such as glass bars)
+        // belongs to the page, not to this list.
+        padding: EdgeInsets.zero,
         // Phones scroll the whole page instead.
         shrinkWrap: widget.fitContent,
         physics: widget.fitContent

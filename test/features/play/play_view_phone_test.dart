@@ -7,6 +7,7 @@ import 'package:cobalagi/engine/world/level.dart';
 import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
+import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/play/view/play_view.dart';
 import 'package:cobalagi/learning/exercise_result.dart';
@@ -168,5 +169,19 @@ void main() {
       tester.getRect(find.widgetWithText(FilledButton, 'Go!')).bottom,
       greaterThan(1280 - 120),
     );
+  });
+
+  testWidgets('on a phone, code starts at the top of its panel', (
+    tester,
+  ) async {
+    await _pumpPhone(tester);
+    await tester.tap(find.byTooltip('Code'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    final panel = tester.getRect(find.byType(TypedCodeEditor));
+    final source = tester.getRect(find.byKey(const Key('typedCodeSource')));
+    // No gap the size of the glass top bar above the code.
+    expect(source.top - panel.top, lessThan(48));
+    expect(tester.takeException(), isNull);
   });
 }
