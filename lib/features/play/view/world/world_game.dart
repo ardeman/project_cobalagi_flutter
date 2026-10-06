@@ -11,6 +11,7 @@ import '../../../../engine/interpreter/run_event.dart';
 import '../../../../engine/world/grid_point.dart';
 import '../../../../engine/world/level.dart';
 import '../../cubit/play_cubit.dart';
+import 'hint_mark.dart';
 import 'world_components.dart';
 
 /// Renders a level and replays run events as animations. Holds no game logic:
@@ -114,30 +115,44 @@ class WorldGame extends FlameGame {
     }
   }
 
-  /// Shows the route as footprints that appear one by one, then fade away.
-  void showHint(List<GridPoint> route) {
+  /// Shows a solution as small blocks on the map, one by one in the order
+  /// they run, then shrinks them away.
+  void showHint(List<HintMark> marks) {
     if (!isLoaded) return;
-    for (var i = 0; i < route.length; i++) {
+    world.children.whereType<HintMarkComponent>().forEach(
+      (old) => old.removeFromParent(),
+    );
+    const step = 0.35;
+    final fadeAt = marks.length * step + _hintVisible;
+    for (var i = 0; i < marks.length; i++) {
       world.add(
-        CircleComponent(
-          radius: 0.12,
-          position: tileCenter(route[i]),
-          anchor: Anchor.center,
-          paint: Paint()..color = const Color(0xCCFF7A59),
-          scale: Vector2.zero(),
-        )..addAll([
-          ScaleEffect.to(
-            Vector2.all(1),
-            EffectController(duration: 0.15, startDelay: i * 0.12),
-          ),
-          OpacityEffect.fadeOut(
-            EffectController(duration: 0.6, startDelay: 2.5 + i * 0.05),
-          ),
-          RemoveEffect(delay: 3.4 + i * 0.05),
-        ]),
+        HintMarkComponent(marks[i])
+          ..scale = Vector2.zero()
+          ..addAll([
+            ScaleEffect.to(
+              Vector2.all(1),
+              EffectController(
+                duration: 0.25,
+                startDelay: i * step,
+                curve: Curves.easeOutBack,
+              ),
+            ),
+            ScaleEffect.to(
+              Vector2.zero(),
+              EffectController(
+                duration: 0.3,
+                startDelay: fadeAt + i * 0.05,
+                curve: Curves.easeIn,
+              ),
+            ),
+            RemoveEffect(delay: fadeAt + i * 0.05 + 0.35),
+          ]),
       );
     }
   }
+
+  /// How long a hint stays after its last block appears, in seconds.
+  static const _hintVisible = 5.0;
 
   void _animate(RunEvent event, void Function() done) {
     switch (event) {
