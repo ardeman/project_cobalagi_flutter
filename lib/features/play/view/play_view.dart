@@ -230,6 +230,7 @@ class _PlayViewState extends State<PlayView> {
                         _RunControls(
                           onHint: _finished ? null : _showHint,
                           howTo: widget.showHowTo,
+                          compact: compact,
                         ),
                   ],
                 );
@@ -249,9 +250,11 @@ class _PlayViewState extends State<PlayView> {
                 return compact
                     ? Column(
                         children: [
-                          Expanded(flex: 5, child: world),
-                          const SizedBox(height: 16),
-                          Expanded(flex: 4, child: editor),
+                          // Phones: the editor needs as much room as the
+                          // world, more with the star row.
+                          Expanded(flex: 4, child: world),
+                          const SizedBox(height: 12),
+                          Expanded(flex: 5, child: editor),
                         ],
                       )
                     : Row(
@@ -459,9 +462,16 @@ class _FeedbackCard extends StatelessWidget {
 }
 
 class _RunControls extends StatelessWidget {
-  const _RunControls({required this.onHint, this.howTo = false});
+  const _RunControls({
+    required this.onHint,
+    this.howTo = false,
+    this.compact = false,
+  });
 
   final VoidCallback? onHint;
+
+  /// Narrow screens (phones): tighter spacing so all four buttons fit.
+  final bool compact;
 
   /// Pulse the Go button until the first run, once there's a block.
   final bool howTo;
@@ -475,12 +485,18 @@ class _RunControls extends StatelessWidget {
     final running = play.phase == PlayPhase.running;
     final canGo = hasBlocks && (play.phase == PlayPhase.editing || running);
 
+    final gap = compact ? 8.0 : 16.0;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _Pulse(
           active: howTo && hasBlocks && play.runs == 0 && !running,
           child: FilledButton.icon(
+            style: compact
+                ? FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                  )
+                : null,
             onPressed: canGo && !(running && !play.stepping)
                 ? () => context.read<PlayCubit>().run(blocks.program)
                 : null,
@@ -488,7 +504,7 @@ class _RunControls extends StatelessWidget {
             label: Text(l10n.run),
           ),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: gap),
         IconButton.filledTonal(
           tooltip: l10n.step,
           onPressed: canGo && (!running || (play.stepping && !play.playing))
@@ -496,7 +512,7 @@ class _RunControls extends StatelessWidget {
               : null,
           icon: const Icon(Icons.skip_next_rounded),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: gap),
         IconButton.filledTonal(
           tooltip: l10n.reset,
           onPressed: play.phase == PlayPhase.editing
@@ -504,7 +520,7 @@ class _RunControls extends StatelessWidget {
               : context.read<PlayCubit>().reset,
           icon: const Icon(Icons.replay_rounded),
         ),
-        const SizedBox(width: 16),
+        SizedBox(width: gap),
         IconButton.filledTonal(
           tooltip: l10n.hint,
           onPressed: running ? null : onHint,
