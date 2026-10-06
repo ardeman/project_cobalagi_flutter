@@ -340,8 +340,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get retakePretest => 'Main pemanasan lagi';
 
   @override
-  String placementStartsAt(String island) {
-    return 'Mulai di: $island';
+  String placementNowAt(String island) {
+    return 'Sekarang di: $island';
   }
 
   @override

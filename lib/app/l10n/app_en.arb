@@ -192,8 +192,8 @@
   },
   "startingIsland": "Starting island",
   "retakePretest": "Play the warm-up game again",
-  "placementStartsAt": "Starts at: {island}",
-  "@placementStartsAt": {
+  "placementNowAt": "Now at: {island}",
+  "@placementNowAt": {
     "placeholders": {
       "island": {
         "type": "String"

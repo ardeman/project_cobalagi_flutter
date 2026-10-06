@@ -710,11 +710,11 @@ abstract class AppLocalizations {
   /// **'Play the warm-up game again'**
   String get retakePretest;
 
-  /// No description provided for @placementStartsAt.
+  /// No description provided for @placementNowAt.
   ///
   /// In en, this message translates to:
-  /// **'Starts at: {island}'**
-  String placementStartsAt(String island);
+  /// **'Now at: {island}'**
+  String placementNowAt(String island);
 
   /// No description provided for @placementNotYet.
   ///

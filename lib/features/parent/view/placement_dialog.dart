@@ -25,7 +25,7 @@ Future<void> showPlacementDialog(
   );
 }
 
-/// One line describing where a child starts.
+/// One line describing where a child is now on the skill map.
 String placementSummary(
   AppLocalizations l10n,
   Curriculum curriculum,
@@ -33,9 +33,7 @@ String placementSummary(
 ) {
   final placement = learner?.placement;
   if (learner == null || placement == null) return l10n.placementNotYet;
-  final line = l10n.placementStartsAt(
-    conceptName(l10n, learner.currentConcept),
-  );
+  final line = l10n.placementNowAt(conceptName(l10n, learner.currentConcept));
   return placement.byParent ? '$line (${l10n.setByParent})' : line;
 }
 

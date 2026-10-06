@@ -102,7 +102,7 @@
   "wordsWithColor": "{object} {color}",
   "startingIsland": "Pulau awal",
   "retakePretest": "Main pemanasan lagi",
-  "placementStartsAt": "Mulai di: {island}",
+  "placementNowAt": "Sekarang di: {island}",
   "placementNotYet": "Belum main pemanasan",
   "setByParent": "diatur orang dewasa",
   "cheerCelebrate1": "Hebat!",

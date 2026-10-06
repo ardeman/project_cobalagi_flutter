@@ -353,8 +353,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retakePretest => 'Play the warm-up game again';
 
   @override
-  String placementStartsAt(String island) {
-    return 'Starts at: $island';
+  String placementNowAt(String island) {
+    return 'Now at: $island';
   }
 
   @override
