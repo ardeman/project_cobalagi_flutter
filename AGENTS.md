@@ -42,7 +42,10 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - **Platform folders** (`android/`, `ios/`, etc.) are mostly generated. Edit them only for platform config such as permissions, the app ID or signing. Never edit `ios/Flutter/Generated.xcconfig`, `**/GeneratedPluginRegistrant.*` or anything under `build/` or `.dart_tool/`.
 - **Secrets:** never commit keystores, `key.properties`, `google-services.json`/`GoogleService-Info.plist` with real keys, `.env` files or API tokens.
 - **App identity:** don't change the package name `cobalagi` or the ID `com.ardeman.cobalagi` without being asked.
-- **Version:** bump `version:` in `pubspec.yaml` only when asked.
+- **Version:** bump `version:` in `pubspec.yaml` only when asked. It is `NAME+BUILD`:
+  - The name follows semantic versioning for people: PATCH (1.1.0 → 1.1.1) for fixes only, MINOR (1.1.x → 1.2.0) for new features such as an island or a tool, MAJOR for big changes such as a redesign or a new age group.
+  - The build (Android versionCode) is one counter that only goes up, by one per upload, and never resets: Google Play rejects a build number it has seen before.
+  - Repeated test uploads of the same release keep the name and only raise the build, e.g. 1.1.0+8, 1.1.0+9.
 
 ## App icon
 
@@ -97,3 +100,4 @@ Record architectural choices here as one line each: date, decision, reason.
 - 2026-10-06: Variables start with one Step Box storing an integer from 1 to 9. Shared `SetSteps` and `MoveSteps` instructions reset the value each run, validate saving before use and emit `StepsStored` for playback; blocks and code share the same semantics.
 - 2026-10-06: Liquid-glass bars and pop-ups: content scrolls under app bars and phone bottom bars, which blur only while something is beneath (`GlassBar`); dialogs blur the screen behind a translucent panel, sheets are clipped glass. High contrast stays opaque. `GlassFrame` reports its bars as `MediaQuery` padding so revealed content (new blocks) stops clear of them.
 - 2026-10-06: Word blocks (Tier 2) are dropped: blocks are always pictures, and readers switch to typed code. `Placement.readsWords` (the warm-up's reading result, or a parent's Code tab switch in the progress screen) decides whether a child sees the Code tab; pre-readers see picture blocks only.
+- 2026-10-07: Versions use semantic version names and one ever-increasing build number. Builds 1–7 bumped only the patch even for new features; from 1.1.0 on, features raise the minor version.
