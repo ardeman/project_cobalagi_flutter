@@ -486,4 +486,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get playGoalConditions =>
       'Look ahead! Put a move inside the eye block. It moves only when the path is clear.';
+
+  @override
+  String get updateAvailableTitle => 'An update is available';
+
+  @override
+  String get updateAvailableBody =>
+      'A newer version of Coba Lagi is ready. Ask a grown-up to help update the app.';
+
+  @override
+  String get updateWithParent => 'Ask a grown-up to update';
+
+  @override
+  String get updateContinue => 'Continue playing';
+
+  @override
+  String get updateOpenFailed =>
+      'The update could not be opened. You can try again or keep playing.';
 }

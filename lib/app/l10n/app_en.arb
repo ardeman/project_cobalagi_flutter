@@ -250,5 +250,10 @@
   "answerWas": "The answer is this one!",
   "conceptConditions": "Look ahead",
   "blockIfPathClear": "If clear",
-  "playGoalConditions": "Look ahead! Put a move inside the eye block. It moves only when the path is clear."
+  "playGoalConditions": "Look ahead! Put a move inside the eye block. It moves only when the path is clear.",
+  "updateAvailableTitle": "An update is available",
+  "updateAvailableBody": "A newer version of Coba Lagi is ready. Ask a grown-up to help update the app.",
+  "updateWithParent": "Ask a grown-up to update",
+  "updateContinue": "Continue playing",
+  "updateOpenFailed": "The update could not be opened. You can try again or keep playing."
 }

@@ -473,4 +473,21 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get playGoalConditions =>
       'Lihat ke depan! Taruh balok maju di dalam balok mata. Ia maju hanya jika jalan di depan kosong.';
+
+  @override
+  String get updateAvailableTitle => 'Pembaruan tersedia';
+
+  @override
+  String get updateAvailableBody =>
+      'Versi terbaru Coba Lagi sudah tersedia. Minta bantuan orang dewasa untuk memperbarui aplikasi.';
+
+  @override
+  String get updateWithParent => 'Minta bantuan untuk memperbarui';
+
+  @override
+  String get updateContinue => 'Lanjut bermain';
+
+  @override
+  String get updateOpenFailed =>
+      'Pembaruan belum bisa dibuka. Coba lagi atau lanjut bermain.';
 }

@@ -961,6 +961,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Look ahead! Put a move inside the eye block. It moves only when the path is clear.'**
   String get playGoalConditions;
+
+  /// No description provided for @updateAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'An update is available'**
+  String get updateAvailableTitle;
+
+  /// No description provided for @updateAvailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A newer version of Coba Lagi is ready. Ask a grown-up to help update the app.'**
+  String get updateAvailableBody;
+
+  /// No description provided for @updateWithParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a grown-up to update'**
+  String get updateWithParent;
+
+  /// No description provided for @updateContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue playing'**
+  String get updateContinue;
+
+  /// No description provided for @updateOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The update could not be opened. You can try again or keep playing.'**
+  String get updateOpenFailed;
 }
 
 class _AppLocalizationsDelegate

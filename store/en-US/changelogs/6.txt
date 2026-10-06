@@ -1,0 +1,3 @@
+- The app now lets you know at launch when a Google Play update is available.
+- A grown-up can help install the update, or you can continue playing.
+- Playing still works when the update check is unavailable.

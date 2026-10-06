@@ -143,5 +143,10 @@
   "answerWas": "Jawabannya yang ini!",
   "conceptConditions": "Lihat depan",
   "blockIfPathClear": "Jika kosong",
-  "playGoalConditions": "Lihat ke depan! Taruh balok maju di dalam balok mata. Ia maju hanya jika jalan di depan kosong."
+  "playGoalConditions": "Lihat ke depan! Taruh balok maju di dalam balok mata. Ia maju hanya jika jalan di depan kosong.",
+  "updateAvailableTitle": "Pembaruan tersedia",
+  "updateAvailableBody": "Versi terbaru Coba Lagi sudah tersedia. Minta bantuan orang dewasa untuk memperbarui aplikasi.",
+  "updateWithParent": "Minta bantuan untuk memperbarui",
+  "updateContinue": "Lanjut bermain",
+  "updateOpenFailed": "Pembaruan belum bisa dibuka. Coba lagi atau lanjut bermain."
 }

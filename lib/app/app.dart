@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_background.dart';
+import 'package:cobalagi/features/splash/data/app_update_service.dart';
 
 import '../core/audio/audio_service.dart';
 import '../core/audio/music_cubit.dart';
@@ -27,6 +28,7 @@ class CobaLagiApp extends StatefulWidget {
     required this.audio,
     required this.curriculum,
     required this.progress,
+    this.updates = const NoAppUpdateService(),
   });
 
   final ProfileRepository profiles;
@@ -35,6 +37,7 @@ class CobaLagiApp extends StatefulWidget {
   final AudioService audio;
   final CurriculumRepository curriculum;
   final ProgressRepository progress;
+  final AppUpdateService updates;
 
   @override
   State<CobaLagiApp> createState() => _CobaLagiAppState();
@@ -70,6 +73,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
       RepositoryProvider.value(value: widget.audio),
       RepositoryProvider.value(value: widget.curriculum),
       RepositoryProvider.value(value: widget.progress),
+      RepositoryProvider.value(value: widget.updates),
     ],
     child: MultiBlocProvider(
       providers: [

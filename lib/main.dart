@@ -12,6 +12,7 @@ import 'core/storage/app_database.dart';
 import 'features/learning/data/curriculum_repository.dart';
 import 'features/learning/data/progress_repository.dart';
 import 'features/profiles/data/profile_repository.dart';
+import 'package:cobalagi/features/splash/data/app_update_factory.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,7 @@ Future<void> main() async {
       audio: AudioplayersAudioService(),
       curriculum: CurriculumRepository(),
       progress: ProgressRepository(db),
+      updates: createAppUpdateService(),
     ),
   );
 }

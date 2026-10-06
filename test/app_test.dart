@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cobalagi/app/app.dart';
+import 'package:cobalagi/features/splash/data/app_update_service.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
 import 'package:cobalagi/core/entitlement/entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/plan.dart';
@@ -35,9 +36,11 @@ class CodeEntitlementService extends StaticEntitlementService {
 Future<void> pumpApp(
   WidgetTester tester, {
   EntitlementService entitlement = const StaticEntitlementService(Plan.free),
+  AppUpdateService updates = const NoAppUpdateService(),
+  Size size = const Size(2560, 1600),
 }) async {
   // Landscape tablet, the primary target.
-  tester.view.physicalSize = const Size(2560, 1600);
+  tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
 
@@ -49,6 +52,7 @@ Future<void> pumpApp(
       profiles: ProfileRepository(db!),
       settings: SettingsRepository(db),
       entitlement: entitlement,
+      updates: updates,
       audio: const SilentAudioService(),
       curriculum: CurriculumRepository(),
       progress: ProgressRepository(db),
@@ -72,7 +76,76 @@ Future<void> passParentGate(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
+class AvailableUpdateService implements AppUpdateService {
+  var opened = 0;
+
+  @override
+  Future<AvailableUpdate?> check() async =>
+      const AvailableUpdate(buildNumber: 6);
+
+  @override
+  Future<bool> openUpdate(AvailableUpdate update) async {
+    opened++;
+    return true;
+  }
+}
+
 void main() {
+  testWidgets('launch update can be skipped without opening a store', (
+    tester,
+  ) async {
+    final updates = AvailableUpdateService();
+    await pumpApp(tester, updates: updates);
+    expect(find.text('An update is available'), findsOneWidget);
+    expect(find.textContaining('A newer version of Coba Lagi'), findsOneWidget);
+    await tester.tap(find.text('Continue playing'));
+    await tester.pumpAndSettle();
+    expect(find.text("Who's playing?"), findsOneWidget);
+    expect(updates.opened, 0);
+  });
+
+  testWidgets('launch notice can be skipped on a small portrait phone', (
+    tester,
+  ) async {
+    final updates = AvailableUpdateService();
+    await pumpApp(tester, updates: updates, size: const Size(640, 1200));
+    expect(tester.takeException(), isNull);
+    await tester.ensureVisible(find.text('Continue playing'));
+    await tester.tap(find.text('Continue playing'));
+    await tester.pumpAndSettle();
+    expect(find.text("Who's playing?"), findsOneWidget);
+    expect(updates.opened, 0);
+  });
+
+  testWidgets('launch update requires a successful parent gate', (
+    tester,
+  ) async {
+    final updates = AvailableUpdateService();
+    await pumpApp(tester, updates: updates);
+    await tester.tap(find.text('Ask a grown-up to update'));
+    await tester.pumpAndSettle();
+    expect(updates.opened, 0);
+    await tester.enterText(find.byKey(const Key('parentGateAnswer')), '0');
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(updates.opened, 0);
+    final question = tester
+        .widget<TextField>(find.byType(TextField))
+        .decoration!
+        .labelText!;
+    final numbers = RegExp(r'(\d+) × (\d+)').firstMatch(question)!;
+    final answer = int.parse(numbers[1]!) * int.parse(numbers[2]!);
+    await tester.enterText(
+      find.byKey(const Key('parentGateAnswer')),
+      '$answer',
+    );
+    await tester.tap(find.text('OK'));
+    await tester.pumpAndSettle();
+    expect(updates.opened, 1);
+    await tester.tap(find.text('Continue playing'));
+    await tester.pumpAndSettle();
+  });
+
   testWidgets('free plan: add one player, then the add tile is locked', (
     tester,
   ) async {

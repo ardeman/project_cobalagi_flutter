@@ -89,7 +89,7 @@ lib/
   engine/          Pure Dart: instruction set (program/), levels (world/), interpreter, solver + puzzle generator
   learning/        Pure Dart: skill graph, mastery scoring, advance/practice/review rules
   features/        One folder per feature (profiles, adventure_map, play, editors,
-                   learning, pretest, parent)
+                   learning, pretest, parent, splash)
 test/              Mirrors lib/
 integration_test/  Tests that drive the real app on a device (e.g. warm-up voice timing)
 .githooks/         Versioned Git hooks for commit-message validation
@@ -184,6 +184,19 @@ After adding or replacing clips, Android builds may keep using an old asset list
 
 - **Donations:** create one-time in-app products whose ids match `assets/config/donations.json` (`supporter_small`, `supporter_medium`, `supporter_large`), with prices of your choice. Any of them unlocks the sponsor plan. Test with license testers.
 - **Families policy:** target audience is children, with no ads and no data collection. The release build has no internet permission. Privacy policy URL: `https://cobalagi.ardeman.com/privacy.html`.
+
+## Launch updates
+
+On Android, the splash checks Google Play for an available update for up to two
+seconds. If one is available, the notice offers continuing to play or asking a
+parent to update. The update action requires the parent gate; Google Play handles
+the download and installation. Unavailable stores, offline devices and slow
+checks continue to play without a notice. iOS, web and desktop skip the check.
+
+Use a Google Play test track to verify the real update flow: install an older
+build from Play with the test account, then make a higher version code available
+to that account. Direct APK installs do not have a separate update source. See
+[Google's in-app update testing guide](https://developer.android.com/guide/playcore/in-app-updates/test).
 
 ## macOS
 

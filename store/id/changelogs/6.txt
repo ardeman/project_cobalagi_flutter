@@ -1,0 +1,3 @@
+- Aplikasi kini memberi tahu saat dibuka jika ada pembaruan di Google Play.
+- Orang dewasa dapat membantu memasang pembaruan, atau kamu bisa lanjut bermain.
+- Bermain tetap bisa dilakukan saat pemeriksaan pembaruan tidak tersedia.
