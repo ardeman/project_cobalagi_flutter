@@ -36,6 +36,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - **Dependencies:** before adding a package, confirm on pub.dev that it supports Android, iOS and web. Add it with `flutter pub add <pkg>` (not by hand-editing versions), commit `pubspec.lock` (this is an app), and record the choice under "Decisions".
 - **Children's app (Google Play Families):** no ads, analytics, tracking or crash-reporting SDKs and no network calls. Data stays on the device, and a profile holds only a nickname and avatar. Settings, purchases and external links sit behind the parent gate (`showParentGate`). Never show purchase prompts to children.
 - **Builds:** build and run only for Android or macOS desktop. Don't trigger iOS builds. Keep code compatible with iOS, web and desktop anyway. macOS builds are Apple Silicon only for now (see README → macOS).
+- **Installable APKs:** split release APKs by Android architecture using the command in README → Commands. Use an App Bundle for Google Play uploads.
 - **Platform folders** (`android/`, `ios/`, etc.) are mostly generated. Edit them only for platform config such as permissions, the app ID or signing. Never edit `ios/Flutter/Generated.xcconfig`, `**/GeneratedPluginRegistrant.*` or anything under `build/` or `.dart_tool/`.
 - **Secrets:** never commit keystores, `key.properties`, `google-services.json`/`GoogleService-Info.plist` with real keys, `.env` files or API tokens.
 - **App identity:** don't change the package name `cobalagi` or the ID `com.ardeman.cobalagi` without being asked.

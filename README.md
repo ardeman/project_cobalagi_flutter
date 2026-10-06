@@ -59,6 +59,7 @@ flutter run            # choose a device; or: flutter run -d chrome
 | On-device tests (real app and audio; not part of Checks) | `flutter test integration_test -d macos` |
 | Enable commit-message hook (once per clone) | `git config --local core.hooksPath .githooks` |
 | Release build | `flutter build <apk\|appbundle\|ipa\|web\|macos\|linux\|windows>` |
+| Installable Android APKs (one per architecture) | `flutter build apk --release --split-per-abi` |
 
 **Checks** — run all three before every commit. They must pass with no errors or warnings:
 
