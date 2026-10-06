@@ -56,11 +56,38 @@
             <li data-en="Ages 4+">Usia 4+</li>
           </ul>
         </div>
-        <div class="tablet">
-          <img src="screenshots/play-loops-id.png" width="1280" height="740"
-               data-en-src="screenshots/play-loops.png"
-               alt="Teka-teki Perulangan: blok ulangi berisi blok maju dan belok, menuju bendera"
-               data-en-alt="A Loops puzzle: a repeat block holding forward and turn blocks, on the way to the flag">
+        <div class="carousel hero-show" data-carousel data-autoplay="4500"
+             aria-roledescription="carousel" aria-label="Cuplikan aplikasi"
+             data-en-label="App screenshots">
+          <div class="tablet">
+            <div class="track" tabindex="0">
+              <figure class="slide">
+                <img src="screenshots/adventure-map-id.png" width="1280" height="740"
+                     data-en-src="screenshots/adventure-map.png"
+                     alt="Peta petualangan dengan pulau-pulau di laut"
+                     data-en-alt="The adventure map with islands on the sea">
+              </figure>
+              <figure class="slide">
+                <img src="screenshots/play-loops-id.png" width="1280" height="740" loading="lazy"
+                     data-en-src="screenshots/play-loops.png"
+                     alt="Teka-teki Perulangan: blok ulangi berisi blok maju dan belok"
+                     data-en-alt="A Loops puzzle: a repeat block holding forward and turn blocks">
+              </figure>
+              <figure class="slide">
+                <img src="screenshots/play-functions-id.png" width="1280" height="740" loading="lazy"
+                     data-en-src="screenshots/play-functions.png"
+                     alt="Blok Ajaib: blok bintang buatan sendiri dipakai berkali-kali"
+                     data-en-alt="Magic Block: the child’s own star block, used again and again">
+              </figure>
+              <figure class="slide">
+                <img src="screenshots/play-code-id.png" width="1280" height="740" loading="lazy"
+                     data-en-src="screenshots/play-code.png"
+                     alt="Tab Kode: program perulangan yang diketik sebagai teks"
+                     data-en-alt="The Code tab: a loop program typed as text">
+              </figure>
+            </div>
+          </div>
+          <div class="dots"></div>
         </div>
       </div>
     </div>
@@ -162,55 +189,83 @@
           <h2 data-en="Six islands to explore">Enam pulau untuk dijelajahi</h2>
           <p data-en="Each island teaches one idea of coding, one small puzzle at a time.">Setiap pulau mengajarkan satu konsep coding, satu teka-teki kecil setiap kali.</p>
         </div>
-        <div class="islands">
-          <article class="island">
-            <img src="screenshots/island-directions-id.png" width="1280" height="740" loading="lazy"
-                 data-en-src="screenshots/island-directions.png"
-                 alt="Pulau Arah: jalan pendek menuju bendera"
-                 data-en-alt="The Directions island: a short path to the flag">
-            <h3 data-en="Directions">Arah</h3>
-            <p data-en="Forward, turn left, turn right.">Maju, belok kiri, belok kanan.</p>
-          </article>
-          <article class="island">
-            <img src="screenshots/island-sequencing-id.png" width="1280" height="740" loading="lazy"
-                 data-en-src="screenshots/island-sequencing.png"
-                 alt="Pulau Langkah demi langkah: jalan menuju bendera"
-                 data-en-alt="The Step by step island: a path to the flag">
-            <h3 data-en="Step by step">Langkah demi langkah</h3>
-            <p data-en="Putting steps in the right order.">Menyusun urutan langkah yang tepat.</p>
-          </article>
-          <article class="island">
-            <img src="screenshots/play-loops-id.png" width="1280" height="740" loading="lazy"
-                 data-en-src="screenshots/play-loops.png"
-                 alt="Pulau Perulangan: blok ulangi di dalam program"
-                 data-en-alt="The Loops island: a repeat block in the program">
-            <h3 data-en="Loops">Perulangan</h3>
-            <p data-en="The repeat block does more with fewer blocks.">Blok ulangi membuat langkah lebih sedikit.</p>
-          </article>
-          <article class="island">
-            <img src="screenshots/play-functions-id.png" width="1280" height="740" loading="lazy"
-                 data-en-src="screenshots/play-functions.png"
-                 alt="Pulau Blok Ajaib: blok bintang buatan sendiri"
-                 data-en-alt="The Magic Block island: a star block built by the child">
-            <h3 data-en="Magic Block">Blok Ajaib</h3>
-            <p data-en="Build your own block, then use it again and again.">Buat blok sendiri, lalu pakai berkali-kali.</p>
-          </article>
-          <article class="island">
-            <img src="screenshots/play-conditions-id.png" width="1280" height="740" loading="lazy"
-                 data-en-src="screenshots/play-conditions.png"
-                 alt="Pulau Lihat depan: blok mata di dalam blok ulangi"
-                 data-en-alt="The Look ahead island: an eye block inside a repeat">
-            <h3 data-en="Look ahead">Lihat depan</h3>
-            <p data-en="Check that the path is clear before stepping.">Periksa jalan di depan kosong sebelum melangkah.</p>
-          </article>
-          <article class="island">
-            <img src="screenshots/play-variables-id.png" width="1280" height="740" loading="lazy"
-                 data-en-src="screenshots/play-variables.png"
-                 alt="Pulau Kotak Langkah: menyimpan angka 3 lalu memakainya"
-                 data-en-alt="The Step Box island: saving 3 and using it">
-            <h3 data-en="Step Box">Kotak Langkah</h3>
-            <p data-en="Save a number of steps and use it again.">Simpan jumlah langkah lalu pakai lagi.</p>
-          </article>
+        <div class="carousel island-show" data-carousel
+             aria-roledescription="carousel" aria-label="Enam pulau"
+             data-en-label="Six islands">
+          <div class="tabs" role="group">
+            <button type="button" data-slide="0" style="--c: #29B6F6" data-en="Directions">Arah</button>
+            <button type="button" data-slide="1" style="--c: #66BB6A" data-en="Step by step">Langkah demi langkah</button>
+            <button type="button" data-slide="2" style="--c: #AB47BC" data-en="Loops">Perulangan</button>
+            <button type="button" data-slide="3" style="--c: #EC407A" data-en="Magic Block">Blok Ajaib</button>
+            <button type="button" data-slide="4" style="--c: #00897B" data-en="Look ahead">Lihat depan</button>
+            <button type="button" data-slide="5" style="--c: #EF6C00" data-en="Step Box">Kotak Langkah</button>
+          </div>
+          <div class="stage">
+            <div class="track" tabindex="0">
+            <figure class="slide" style="--c: #29B6F6">
+              <img src="screenshots/island-directions-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/island-directions.png"
+                   alt="Pulau Arah: jalan pendek menuju bendera"
+                   data-en-alt="The Directions island: a short path to the flag">
+              <figcaption>
+                <strong data-en="Directions">Arah</strong>
+                <span data-en="Forward, turn left, turn right, in a meadow full of bushes.">Maju, belok kiri, belok kanan, di padang penuh semak.</span>
+              </figcaption>
+            </figure>
+            <figure class="slide" style="--c: #66BB6A">
+              <img src="screenshots/island-sequencing-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/island-sequencing.png"
+                   alt="Pulau Langkah demi langkah: jalan setapak di taman menuju rumah"
+                   data-en-alt="The Step by step island: a garden path to a little house">
+              <figcaption>
+                <strong data-en="Step by step">Langkah demi langkah</strong>
+                <span data-en="Putting steps in the right order, through a flower garden to a little house.">Menyusun urutan langkah yang tepat, melewati taman bunga menuju rumah kecil.</span>
+              </figcaption>
+            </figure>
+            <figure class="slide" style="--c: #AB47BC">
+              <img src="screenshots/play-loops-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/play-loops.png"
+                   alt="Pulau Perulangan: blok ulangi di pantai berbatu"
+                   data-en-alt="The Loops island: a repeat block on a rocky beach">
+              <figcaption>
+                <strong data-en="Loops">Perulangan</strong>
+                <span data-en="The repeat block does more with fewer blocks, on a beach with hidden treasure.">Blok ulangi membuat langkah lebih sedikit, di pantai dengan harta karun.</span>
+              </figcaption>
+            </figure>
+            <figure class="slide" style="--c: #EC407A">
+              <img src="screenshots/play-functions-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/play-functions.png"
+                   alt="Pulau Blok Ajaib: blok bintang buatan sendiri di lembah kristal"
+                   data-en-alt="The Magic Block island: the child’s own star block in the crystal valley">
+              <figcaption>
+                <strong data-en="Magic Block">Blok Ajaib</strong>
+                <span data-en="Build your own block, then use it again and again, in the crystal valley.">Buat blok sendiri, lalu pakai berkali-kali, di lembah kristal.</span>
+              </figcaption>
+            </figure>
+            <figure class="slide" style="--c: #00897B">
+              <img src="screenshots/play-conditions-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/play-conditions.png"
+                   alt="Pulau Lihat depan: blok mata di dalam blok ulangi, di hutan bersalju"
+                   data-en-alt="The Look ahead island: an eye block inside a repeat, in a snowy forest">
+              <figcaption>
+                <strong data-en="Look ahead">Lihat depan</strong>
+                <span data-en="Check that the path is clear before stepping, in a snowy forest.">Periksa jalan di depan kosong sebelum melangkah, di hutan bersalju.</span>
+              </figcaption>
+            </figure>
+            <figure class="slide" style="--c: #EF6C00">
+              <img src="screenshots/play-variables-id.png" width="1280" height="740" loading="lazy"
+                   data-en-src="screenshots/play-variables.png"
+                   alt="Pulau Kotak Langkah: menyimpan angka 3 lalu memakainya di gurun"
+                   data-en-alt="The Step Box island: saving 3 and using it in the desert">
+              <figcaption>
+                <strong data-en="Step Box">Kotak Langkah</strong>
+                <span data-en="Save a number of steps and use it again, across the desert.">Simpan jumlah langkah lalu pakai lagi, melintasi gurun.</span>
+              </figcaption>
+            </figure>
+            </div>
+            <button type="button" class="nav prev" aria-label="Sebelumnya" data-en-label="Previous">&#8249;</button>
+            <button type="button" class="nav next" aria-label="Berikutnya" data-en-label="Next">&#8250;</button>
+          </div>
         </div>
         <div class="step reader">
           <div class="step-text">

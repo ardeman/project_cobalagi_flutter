@@ -9,10 +9,12 @@
   var texts = document.querySelectorAll('[data-en]');
   var alts = document.querySelectorAll('[data-en-alt]');
   var srcs = document.querySelectorAll('[data-en-src]');
+  var labels = document.querySelectorAll('[data-en-label]');
   var links = document.querySelectorAll('a[data-keep-lang]');
   texts.forEach(function (n) { n.dataset.id = n.innerHTML; });
   alts.forEach(function (n) { n.dataset.idAlt = n.alt; });
   srcs.forEach(function (n) { n.dataset.idSrc = n.getAttribute('src'); });
+  labels.forEach(function (n) { n.dataset.idLabel = n.getAttribute('aria-label'); });
   links.forEach(function (n) { n.dataset.href = n.getAttribute('href'); });
 
   var button = document.getElementById('lang');
@@ -22,6 +24,10 @@
     texts.forEach(function (n) { n.innerHTML = en ? n.dataset.en : n.dataset.id; });
     alts.forEach(function (n) { n.alt = en ? n.dataset.enAlt : n.dataset.idAlt; });
     srcs.forEach(function (n) { n.src = en ? n.dataset.enSrc : n.dataset.idSrc; });
+    labels.forEach(function (n) {
+      n.setAttribute('aria-label', en ? n.dataset.enLabel : n.dataset.idLabel);
+    });
+    document.dispatchEvent(new CustomEvent('langchange', { detail: lang }));
     // Links between pages keep the chosen language even without storage.
     links.forEach(function (n) {
       var url = n.dataset.href.split('#');
@@ -46,4 +52,104 @@
       apply(current);
     });
   }
+})();
+
+// Slideshows. Without JavaScript they are rows to swipe or scroll; this adds
+// arrows, dots or tabs, keyboard keys and, where asked, gentle autoplay that
+// stops for good once the visitor takes over (and never runs for visitors
+// who prefer reduced motion).
+(function () {
+  document.documentElement.classList.add('js');
+  var still = matchMedia('(prefers-reduced-motion: reduce)');
+
+  document.querySelectorAll('[data-carousel]').forEach(function (show) {
+    var track = show.querySelector('.track');
+    var slides = Array.prototype.slice.call(track.children);
+    var count = slides.length;
+    var buttons = Array.prototype.slice.call(show.querySelectorAll('[data-slide]'));
+    var dots = show.querySelector('.dots');
+    if (dots) {
+      slides.forEach(function (_, i) {
+        var dot = document.createElement('button');
+        dot.type = 'button';
+        dot.dataset.slide = i;
+        dot.setAttribute('aria-label', (i + 1) + ' / ' + count);
+        dots.appendChild(dot);
+        buttons.push(dot);
+      });
+    }
+    var current = 0;
+
+    function go(i, user) {
+      if (user) stop();
+      current = (i + count) % count;
+      track.scrollTo({
+        left: current * track.clientWidth,
+        behavior: still.matches ? 'auto' : 'smooth'
+      });
+      mark();
+    }
+    function mark() {
+      buttons.forEach(function (b) {
+        var on = Number(b.dataset.slide) === current;
+        b.setAttribute('aria-current', on ? 'true' : 'false');
+      });
+      slides.forEach(function (slide, i) {
+        slide.setAttribute('aria-hidden', i === current ? 'false' : 'true');
+      });
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function () { go(Number(b.dataset.slide), true); });
+    });
+    var prev = show.querySelector('.prev');
+    var next = show.querySelector('.next');
+    if (prev) prev.addEventListener('click', function () { go(current - 1, true); });
+    if (next) next.addEventListener('click', function () { go(current + 1, true); });
+    track.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight') { e.preventDefault(); go(current + 1, true); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); go(current - 1, true); }
+    });
+
+    // A swipe or scroll lands on a slide: follow it.
+    var settle;
+    track.addEventListener('scroll', function () {
+      clearTimeout(settle);
+      settle = setTimeout(function () {
+        var i = Math.round(track.scrollLeft / track.clientWidth);
+        if (i !== current) { current = i; mark(); }
+      }, 80);
+    }, { passive: true });
+    track.addEventListener('touchstart', function () { stop(); }, { passive: true });
+    track.addEventListener('wheel', function (e) {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) stop();
+    }, { passive: true });
+    addEventListener('resize', function () {
+      track.scrollTo({ left: current * track.clientWidth });
+    });
+
+    var timer = null;
+    var stopped = false;
+    function stop() { stopped = true; pause(); }
+    function pause() { clearInterval(timer); timer = null; }
+    function play() {
+      if (stopped || timer || still.matches || !show.dataset.autoplay) return;
+      timer = setInterval(function () { go(current + 1); }, Number(show.dataset.autoplay));
+    }
+    show.addEventListener('mouseenter', pause);
+    show.addEventListener('mouseleave', play);
+    show.addEventListener('focusin', pause);
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) pause(); else play();
+    });
+    // Only move while on screen.
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        if (entries[0].isIntersecting) play(); else pause();
+      }, { threshold: 0.4 }).observe(show);
+    } else {
+      play();
+    }
+    mark();
+  });
 })();

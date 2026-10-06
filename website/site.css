@@ -161,16 +161,66 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.15; margin: 0 0 12p
 }
 
 
-.islands { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-@media (max-width: 900px) { .islands { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .islands { grid-template-columns: 1fr; } }
-.island {
-  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
-  overflow: hidden; box-shadow: 0 1px 0 var(--line);
+
+/* Slideshows: rows that snap to each slide; site.js adds the controls. */
+.carousel { position: relative; }
+.track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; overscroll-behavior-x: contain;
 }
-.island img { width: 100%; height: auto; display: block; border-bottom: 1px solid var(--line); }
-.island h3 { margin: 16px 20px 4px; font-size: 1.15rem; }
-.island p { margin: 0 20px 20px; color: var(--muted); }
+.track::-webkit-scrollbar { display: none; }
+.track:focus-visible { outline: 3px solid var(--teal); outline-offset: 4px; }
+.slide { flex: 0 0 100%; min-width: 0; margin: 0; scroll-snap-align: start; }
+.dots { display: none; justify-content: center; gap: 8px; margin-top: 18px; }
+.js .dots { display: flex; }
+.dots button {
+  width: 10px; height: 10px; padding: 0; border: 0; border-radius: 999px;
+  background: var(--line); cursor: pointer; transition: width 0.2s, background 0.2s;
+}
+.dots button[aria-current="true"] { width: 28px; background: var(--teal); }
+.hero-show .tablet .track { border-radius: 22px; }
+
+.island-show { max-width: 900px; margin-inline: auto; }
+.island-show .stage { position: relative; }
+.island-show .track {
+  border-radius: var(--radius); border: 1px solid var(--line);
+  background: var(--surface); box-shadow: var(--shadow);
+}
+.island-show img { width: 100%; height: auto; }
+.island-show figcaption {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px;
+  padding: 18px 24px 22px; border-top: 4px solid var(--c);
+}
+.island-show figcaption strong { font-size: 1.3rem; color: var(--c); }
+.island-show figcaption span { color: var(--muted); }
+.tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
+.tabs button {
+  display: none; align-items: center; gap: 8px;
+  font: 700 0.95rem var(--font); color: var(--text); cursor: pointer;
+  background: var(--surface); border: 2px solid var(--line); border-radius: 999px;
+  padding: 8px 16px; min-height: 44px;
+}
+.js .tabs button { display: inline-flex; }
+.tabs button::before {
+  content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--c);
+}
+.tabs button[aria-current="true"] { background: var(--c); border-color: var(--c); color: #fff; }
+.tabs button[aria-current="true"]::before { background: #fff; }
+.nav {
+  display: none; position: absolute; top: 40%; z-index: 1;
+  width: 52px; height: 52px; border-radius: 50%; place-items: center;
+  font: 800 2rem/1 var(--font); color: var(--text); cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
+}
+.js .nav { display: grid; }
+.nav:hover { border-color: var(--teal); }
+.prev { left: -22px; }
+.next { right: -22px; }
+@media (max-width: 760px) {
+  .prev { left: 8px; }
+  .next { right: 8px; }
+  .nav { width: 44px; height: 44px; top: 30%; }
+}
 .reader { margin-top: 56px; }
 .reader h3 { font-size: 1.6rem; margin: 0 0 8px; }
 .phones-head { margin: 56px 0 24px; }
@@ -180,7 +230,14 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.15; margin: 0 0 12p
   width: min(30%, 240px); height: auto; border-radius: 28px; border: 8px solid #1d2b2b;
   box-shadow: var(--shadow);
 }
-@media (max-width: 560px) { .phones img { width: 46%; } }
+@media (max-width: 560px) {
+  .phones {
+    flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto;
+    scroll-snap-type: x mandatory; scrollbar-width: none; padding: 4px 4px 12px;
+  }
+  .phones::-webkit-scrollbar { display: none; }
+  .phones img { flex: 0 0 64%; width: 64%; scroll-snap-align: center; }
+}
 .shot.dialog { max-width: 360px; width: 100%; justify-self: center; border-radius: 32px; }
 .parents { background: var(--surface-2); border-radius: 40px; padding: 56px; }
 @media (max-width: 700px) { .parents { padding: 32px 20px; border-radius: 28px; } }
@@ -201,6 +258,7 @@ footer { padding: 40px 0 56px; color: var(--muted); font-size: 0.95rem; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .dots button { transition: none; }
   .tablet { transform: none; }
 }
   
