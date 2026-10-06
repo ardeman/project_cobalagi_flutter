@@ -43,6 +43,8 @@ class _ReplayScreenState extends State<ReplayScreen> {
       homePath: islandPath,
       onFinished: learning.recordReplay,
       onNext: () => context.go(islandPath),
+      // Readers (from the warm-up game, or a parent's choice) can type code.
+      allowCode: learning.state.learner!.placement?.readsWords ?? false,
     );
   }
 }

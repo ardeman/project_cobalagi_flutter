@@ -72,6 +72,7 @@ void main() {
                 homePath: '/',
                 onFinished: (_) async => null,
                 onNext: () {},
+                allowCode: true,
               ),
             ),
           ),
@@ -200,6 +201,7 @@ void main() {
               homePath: '/',
               onFinished: (_) async => null,
               onNext: () {},
+              allowCode: true,
             ),
           ),
         ),
@@ -268,6 +270,7 @@ void main() {
                 return null;
               },
               onNext: () {},
+              allowCode: true,
             ),
           ),
         ),

@@ -30,6 +30,7 @@ Future<void> _pumpPhone(
   WidgetTester tester, {
   Size size = const Size(400, 760),
   Level? level,
+  bool allowCode = true,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -55,6 +56,7 @@ Future<void> _pumpPhone(
           homePath: '/',
           onFinished: (_) async => null,
           onNext: () {},
+          allowCode: allowCode,
         ),
       ),
     ),
@@ -211,4 +213,20 @@ void main() {
       expect(tester.takeException(), isNull);
     },
   );
+
+  for (final size in [const Size(400, 760), const Size(1280, 800)]) {
+    testWidgets('the Code tab shows only when allowed ($size)', (tester) async {
+      await _pumpPhone(tester, size: size, allowCode: false);
+      expect(find.byTooltip('Code'), findsNothing);
+      expect(find.text('Code'), findsNothing);
+      expect(find.byType(BlockEditor), findsOneWidget);
+
+      await _pumpPhone(tester, size: size);
+      expect(
+        find.byTooltip('Code').evaluate().isNotEmpty ||
+            find.text('Code').evaluate().isNotEmpty,
+        isTrue,
+      );
+    });
+  }
 }

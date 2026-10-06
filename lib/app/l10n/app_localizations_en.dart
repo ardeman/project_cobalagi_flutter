@@ -501,6 +501,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'The update could not be opened. You can try again or keep playing.';
 
   @override
+  String get codeTab => 'Code tab';
+
+  @override
+  String get codeTabHint =>
+      'Lets this child type code as well as use picture blocks. The warm-up game turns it on for readers.';
+
+  @override
   String get editorBlocks => 'Blocks';
 
   @override

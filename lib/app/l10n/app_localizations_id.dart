@@ -488,6 +488,13 @@ class AppLocalizationsId extends AppLocalizations {
       'Pembaruan belum bisa dibuka. Coba lagi atau lanjut bermain.';
 
   @override
+  String get codeTab => 'Tab Kode';
+
+  @override
+  String get codeTabHint =>
+      'Anak bisa mengetik kode selain memakai blok bergambar. Permainan pemanasan menyalakannya untuk anak yang sudah bisa membaca.';
+
+  @override
   String get editorBlocks => 'Blok';
 
   @override

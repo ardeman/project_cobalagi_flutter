@@ -32,6 +32,25 @@ class ParentPlacement {
     );
   }
 
+  /// Whether this child sees the Code tab beside the picture blocks. Kept
+  /// until the warm-up game is played again, which sets it from reading.
+  Future<void> setCodeTab(int profileId, {required bool on}) async {
+    final current = await load(profileId);
+    final placement = current.placement;
+    await progress.save(
+      profileId,
+      current.copyWith(
+        placement: () => Placement(
+          startConcept: placement?.startConcept ?? current.currentConcept,
+          levels: placement?.levels ?? const {},
+          readsWords: on,
+          at: placement?.at ?? DateTime.now(),
+          byParent: placement?.byParent ?? true,
+        ),
+      ),
+    );
+  }
+
   /// The child plays the warm-up game again next time. Progress is kept.
   Future<void> retakePretest(int profileId) async {
     final current = await load(profileId);

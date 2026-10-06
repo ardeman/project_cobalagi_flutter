@@ -43,9 +43,14 @@ class PlayView extends StatefulWidget {
     required this.onFinished,
     required this.onNext,
     this.showHowTo = false,
+    this.allowCode = false,
   });
 
   final Exercise exercise;
+
+  /// Offers the Code tab beside the blocks: for children who read, or when
+  /// a parent turns it on. Otherwise only picture blocks show.
+  final bool allowCode;
 
   /// For a child who hasn't solved a puzzle yet: a hand shows how to add a
   /// block, then the Go button pulses, until the first run.
@@ -261,7 +266,7 @@ class _PlayViewState extends State<PlayView> {
                   compact: tight,
                   // Phones keep the editor switch up here, so the world
                   // keeps its height.
-                  editorSwitch: tight || stacked
+                  editorSwitch: widget.allowCode && (tight || stacked)
                       ? BlocBuilder<PlayCubit, PlayState>(
                           builder: (context, play) => _EditorSwitch(
                             codeMode: _codeMode,
@@ -431,19 +436,20 @@ class _PlayViewState extends State<PlayView> {
                         flex: 2,
                         child: Column(
                           children: [
-                            BlocBuilder<PlayCubit, PlayState>(
-                              builder: (context, play) => Padding(
-                                padding: const EdgeInsets.only(bottom: 8),
-                                child: _EditorSwitch(
-                                  codeMode: _codeMode,
-                                  onPick:
-                                      !_finished &&
-                                          play.phase != PlayPhase.running
-                                      ? _pickEditor
-                                      : null,
+                            if (widget.allowCode)
+                              BlocBuilder<PlayCubit, PlayState>(
+                                builder: (context, play) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 8),
+                                  child: _EditorSwitch(
+                                    codeMode: _codeMode,
+                                    onPick:
+                                        !_finished &&
+                                            play.phase != PlayPhase.running
+                                        ? _pickEditor
+                                        : null,
+                                  ),
                                 ),
                               ),
-                            ),
                             Expanded(child: editorFor(fit: false)),
                           ],
                         ),

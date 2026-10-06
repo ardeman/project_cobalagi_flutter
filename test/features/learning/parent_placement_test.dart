@@ -54,4 +54,20 @@ void main() {
       expect(reloaded.progress['directions']!.exercises, 1);
     },
   );
+
+  test(
+    'a parent can turn the Code tab on and off, keeping the start',
+    () async {
+      await placement.setStart(1, 'loops');
+      await placement.setCodeTab(1, on: true);
+      var learner = (await progress.load(1))!;
+      expect(learner.placement!.readsWords, isTrue);
+      expect(learner.currentConcept, 'loops');
+      expect(learner.placement!.startConcept, 'loops');
+
+      await placement.setCodeTab(1, on: false);
+      learner = (await progress.load(1))!;
+      expect(learner.placement!.readsWords, isFalse);
+    },
+  );
 }

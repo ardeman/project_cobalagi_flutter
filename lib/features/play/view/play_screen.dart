@@ -31,6 +31,8 @@ class _PlayScreenState extends State<PlayScreen> {
       homePath: '/child/${widget.profileId}',
       onFinished: learning.record,
       onNext: () => setState(() => _exercise = learning.nextExercise()),
+      // Readers (from the warm-up game, or a parent's choice) can type code.
+      allowCode: learning.state.learner!.placement?.readsWords ?? false,
       // Until the child has solved a first puzzle.
       showHowTo: learning.state.learner!.progress.values.every(
         (p) => p.solvedLessons.isEmpty && p.scores.every((s) => s == 0),

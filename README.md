@@ -3,7 +3,7 @@
 A coding-learning app for children of all ages, in Bahasa Indonesia and English.
 
 - **Picture blocks** (pre-readers, about 4–7): icon blocks and voice instructions.
-- **Typed code** (readers, about 7–14+): the same program typed as text, a tap away from the blocks.
+- **Typed code** (readers, about 7–14+): the same program typed as text, a tap away from the blocks. The Code tab shows for children the warm-up game finds can read; parents can turn it on or off per child.
 
 Blocks and code drive the same game world. A short, voice-led placement game picks each child's starting point, and the app then chooses to advance, practise or review after every lesson.
 
@@ -271,7 +271,7 @@ world back at the start. On phones, the code editor fills the space while the
 keyboard is open.
 
 On phones (portrait), the world and the editor scroll as one page under a
-glass top bar, which holds the Blocks/Code switch, and glass controls (Go and
+glass top bar, which holds the Blocks/Code switch for readers, and glass controls (Go and
 its buttons) at the bottom; the bars frost only while content is under them.
 Phones held sideways (under 500 dp tall) keep the world and Go on the left and
 scroll the editor on its own on the right, with the same small blocks; the

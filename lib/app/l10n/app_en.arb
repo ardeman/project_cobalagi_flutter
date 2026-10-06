@@ -255,6 +255,8 @@
   "updateWithParent": "Ask a grown-up to update",
   "updateContinue": "Continue playing",
   "updateOpenFailed": "The update could not be opened. You can try again or keep playing.",
+  "codeTab": "Code tab",
+  "codeTabHint": "Lets this child type code as well as use picture blocks. The warm-up game turns it on for readers.",
   "editorBlocks": "Blocks",
   "editorCode": "Code",
   "codeDrafts": "Each editor keeps its own draft. Your first code draft comes from your blocks.",

@@ -986,6 +986,18 @@ abstract class AppLocalizations {
   /// **'The update could not be opened. You can try again or keep playing.'**
   String get updateOpenFailed;
 
+  /// No description provided for @codeTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Code tab'**
+  String get codeTab;
+
+  /// No description provided for @codeTabHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Lets this child type code as well as use picture blocks. The warm-up game turns it on for readers.'**
+  String get codeTabHint;
+
   /// No description provided for @editorBlocks.
   ///
   /// In en, this message translates to:

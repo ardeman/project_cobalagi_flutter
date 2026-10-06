@@ -148,6 +148,8 @@
   "updateWithParent": "Minta bantuan untuk memperbarui",
   "updateContinue": "Lanjut bermain",
   "updateOpenFailed": "Pembaruan belum bisa dibuka. Coba lagi atau lanjut bermain.",
+  "codeTab": "Tab Kode",
+  "codeTabHint": "Anak bisa mengetik kode selain memakai blok bergambar. Permainan pemanasan menyalakannya untuk anak yang sudah bisa membaca.",
   "editorBlocks": "Blok",
   "editorCode": "Kode",
   "codeDrafts": "Setiap editor menyimpan draf sendiri. Draf kode pertama berasal dari blokmu.",

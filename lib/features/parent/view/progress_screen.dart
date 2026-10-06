@@ -38,6 +38,9 @@ typedef _Loaded = ({
 class _ProgressScreenState extends State<ProgressScreen> {
   late Future<_Loaded> _data = _load();
 
+  /// The Code tab switch as just set, shown before the save completes.
+  bool? _code;
+
   Future<_Loaded> _load() async {
     final progress = context.read<ProgressRepository>();
     final curriculum = await context.read<CurriculumRepository>().load();
@@ -113,6 +116,18 @@ class _ProgressScreenState extends State<ProgressScreen> {
                         setState(() => _data = _load());
                       },
                     ),
+                  ),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    secondary: const Icon(Icons.code_rounded),
+                    title: Text(l10n.codeTab),
+                    subtitle: Text(l10n.codeTabHint),
+                    value: _code ?? data.learner.placement?.readsWords ?? false,
+                    onChanged: (on) {
+                      setState(() => _code = on);
+                      data.placement.setCodeTab(widget.profileId, on: on);
+                    },
                   ),
                   const SizedBox(height: 24),
                   if (plan == Plan.full)
