@@ -36,9 +36,13 @@ class PlayView extends StatefulWidget {
     required this.onFinished,
     required this.onNext,
     this.showHowTo = false,
+    this.words = false,
   });
 
   final Exercise exercise;
+
+  /// Tier 2: word blocks instead of picture blocks.
+  final bool words;
 
   /// For a child who hasn't solved a puzzle yet: a hand shows how to add a
   /// block, then the Go button pulses, until the first run.
@@ -239,6 +243,7 @@ class _PlayViewState extends State<PlayView> {
                     },
                     enabled: !_finished && play.phase != PlayPhase.running,
                     showHowTo: widget.showHowTo && play.runs == 0,
+                    words: widget.words,
                   ),
                 );
                 return compact

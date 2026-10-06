@@ -28,6 +28,7 @@ class _PlayScreenState extends State<PlayScreen> {
       key: ValueKey(exercise.key),
       exercise: exercise,
       skipAfterRuns: learning.engine.config.offerSkipAfterRuns,
+      words: learning.state.learner!.placement?.readsWords ?? false,
       homePath: '/child/${widget.profileId}',
       onFinished: learning.record,
       onNext: () => setState(() => _exercise = learning.nextExercise()),

@@ -12,6 +12,7 @@ Future<BlocksCubit> pumpEditor(
   int? maxBlocks,
   bool star = false,
   bool showHowTo = false,
+  bool words = false,
 }) async {
   final cubit = BlocksCubit(maxBlocks: maxBlocks);
   addTearDown(cubit.close);
@@ -34,6 +35,7 @@ Future<BlocksCubit> pumpEditor(
               },
               blockSize: 64,
               showHowTo: showHowTo,
+              words: words,
             ),
           ),
         ),
@@ -216,5 +218,18 @@ void main() {
     await pumpEditor(tester);
     await tester.pump(const Duration(milliseconds: 800));
     expect(find.byIcon(Icons.touch_app_rounded), findsNothing);
+  });
+
+  testWidgets('word blocks show their words and add like pictures', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester, words: true);
+    expect(find.text('forward'), findsOneWidget);
+    expect(find.text('turn left'), findsOneWidget);
+    await tester.tap(find.text('forward'));
+    await tester.pump();
+    expect(cubit.state.main.single.type, BlockType.forward);
+    // The palette block and the placed one.
+    expect(find.text('forward'), findsNWidgets(2));
   });
 }

@@ -36,6 +36,9 @@ typedef _Loaded = ({
 class _ProgressScreenState extends State<ProgressScreen> {
   late Future<_Loaded> _data = _load();
 
+  /// The word-blocks switch as just set, shown before the save completes.
+  bool? _words;
+
   Future<_Loaded> _load() async {
     final progress = context.read<ProgressRepository>();
     final curriculum = await context.read<CurriculumRepository>().load();
@@ -109,7 +112,23 @@ class _ProgressScreenState extends State<ProgressScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 8),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    secondary: const Icon(Icons.text_fields_rounded),
+                    title: Text(l10n.wordBlocks),
+                    subtitle: Text(l10n.wordBlocksHint),
+                    value:
+                        _words ?? data.learner.placement?.readsWords ?? false,
+                    onChanged: (words) {
+                      setState(() => _words = words);
+                      data.placement.setWordBlocks(
+                        widget.profileId,
+                        words: words,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
                   if (plan == Plan.full)
                     _Report(report: data.report)
                   else

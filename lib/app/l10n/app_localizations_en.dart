@@ -160,6 +160,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get soundEffectsHint => 'Voices always play.';
 
   @override
+  String get wordBlocks => 'Word blocks';
+
+  @override
+  String get wordBlocksHint =>
+      'Blocks show words, for children who can read. Set by the warm-up game.';
+
+  @override
   String get supportCobaLagi => 'Support Coba Lagi';
 
   @override

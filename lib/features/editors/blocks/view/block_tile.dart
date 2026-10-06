@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../../../app/l10n/app_localizations.dart';
@@ -30,19 +32,22 @@ extension BlockTypeStyle on BlockType {
   };
 }
 
-/// A square icon block. [highlighted] marks the block that is running;
-/// [hasIssue] marks a block the child needs to fix.
+/// A block: a square picture (Tier 1) or, with [words], a wide block with a
+/// small picture and its word (Tier 2). [highlighted] marks the block that is
+/// running; [hasIssue] marks a block the child needs to fix.
 class BlockTile extends StatelessWidget {
   const BlockTile({
     super.key,
     required this.type,
     required this.size,
+    this.words = false,
     this.highlighted = false,
     this.hasIssue = false,
   });
 
   final BlockType type;
   final double size;
+  final bool words;
   final bool highlighted;
   final bool hasIssue;
 
@@ -54,8 +59,12 @@ class BlockTile extends StatelessWidget {
       scale: highlighted ? 1.12 : 1,
       duration: const Duration(milliseconds: 150),
       child: Container(
-        width: size,
-        height: size,
+        width: words ? null : size,
+        // Word blocks are flatter, so a row of words still fits, but never
+        // below a 64 dp tap target.
+        height: words ? max(size * 0.62, 64) : size,
+        constraints: words ? BoxConstraints(minWidth: size * 1.4) : null,
+        padding: words ? EdgeInsets.symmetric(horizontal: size * 0.16) : null,
         decoration: BoxDecoration(
           color: type.color,
           borderRadius: BorderRadius.circular(size * 0.24),
@@ -75,7 +84,24 @@ class BlockTile extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(type.icon, color: Colors.white, size: size * 0.6),
+        child: words
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(type.icon, color: Colors.white, size: size * 0.3),
+                  SizedBox(width: size * 0.06),
+                  Text(
+                    type.label(AppLocalizations.of(context)).toLowerCase(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: size * 0.26,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              )
+            : Icon(type.icon, color: Colors.white, size: size * 0.6),
       ),
     ),
   );

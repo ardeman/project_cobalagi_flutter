@@ -20,7 +20,11 @@ class BlockEditor extends StatefulWidget {
     this.issueBlockIds = const {},
     this.enabled = true,
     this.showHowTo = false,
+    this.words = false,
   });
+
+  /// Tier 2: blocks show their word next to a small picture.
+  final bool words;
 
   /// Shows a hand dragging the first palette block into the program, for a
   /// child who hasn't played yet. Hidden once the program has a block.
@@ -54,6 +58,7 @@ class _BlockEditorState extends State<BlockEditor> {
     final gap = widget.blockSize * 0.18;
     final showStar = widget.palette.contains(InstructionKind.call);
     final style = _BlockStyle(
+      words: widget.words,
       size: widget.blockSize,
       gap: gap,
       enabled: widget.enabled,
@@ -84,6 +89,7 @@ class _BlockEditorState extends State<BlockEditor> {
                   _PaletteBlock(
                     key: type == types.first ? _firstBlock : null,
                     type: type,
+                    words: widget.words,
                     size: widget.blockSize,
                     enabled: widget.enabled && !cubit.isFull,
                     onTap: () => cubit.tap(type),
@@ -178,6 +184,7 @@ class _BlockEditorState extends State<BlockEditor> {
         Positioned.fill(
           child: IgnorePointer(
             child: _HowToHand(
+              words: widget.words,
               stack: _stack,
               from: _firstBlock,
               to: _program,
@@ -193,6 +200,7 @@ class _BlockEditorState extends State<BlockEditor> {
 /// Shared look and state for placed blocks.
 final class _BlockStyle {
   const _BlockStyle({
+    required this.words,
     required this.size,
     required this.gap,
     required this.enabled,
@@ -200,6 +208,7 @@ final class _BlockStyle {
     required this.issueBlockIds,
   });
 
+  final bool words;
   final double size;
   final double gap;
   final bool enabled;
@@ -247,25 +256,27 @@ class _PaletteBlock extends StatelessWidget {
   const _PaletteBlock({
     super.key,
     required this.type,
+    required this.words,
     required this.size,
     required this.enabled,
     required this.onTap,
   });
 
   final BlockType type;
+  final bool words;
   final double size;
   final bool enabled;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final tile = BlockTile(type: type, size: size);
+    final tile = BlockTile(type: type, size: size, words: words);
     if (!enabled) return Opacity(opacity: 0.4, child: tile);
     return Draggable<BlockType>(
       data: type,
       feedback: Material(
         type: MaterialType.transparency,
-        child: BlockTile(type: type, size: size * 1.1),
+        child: BlockTile(type: type, size: size * 1.1, words: words),
       ),
       childWhenDragging: Opacity(opacity: 0.5, child: tile),
       child: GestureDetector(onTap: onTap, child: tile),
@@ -293,6 +304,7 @@ class _PlacedBlock extends StatelessWidget {
         ? _RepeatBlock(block: block, style: style)
         : BlockTile(
             key: ValueKey(block.id),
+            words: style.words,
             type: block.type,
             size: size,
             highlighted: block.id == style.activeBlockId,
@@ -317,7 +329,11 @@ class _PlacedBlock extends StatelessWidget {
               data: block,
               feedback: Material(
                 type: MaterialType.transparency,
-                child: BlockTile(type: block.type, size: size * 1.1),
+                child: BlockTile(
+                  type: block.type,
+                  size: size * 1.1,
+                  words: style.words,
+                ),
               ),
               childWhenDragging: Opacity(opacity: 0.3, child: body),
               child: body,
@@ -376,7 +392,11 @@ class _RepeatBlock extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              BlockTile(type: BlockType.repeat, size: size * 0.8),
+              BlockTile(
+                type: BlockType.repeat,
+                size: size * 0.8,
+                words: style.words,
+              ),
               SizedBox(height: style.gap * 0.5),
               _CountStepper(
                 count: block.count,
@@ -485,6 +505,7 @@ class _StarRow extends StatelessWidget {
         ),
         child: Row(
           children: [
+            // The row's label stays a picture, to leave room for the words.
             BlockTile(type: BlockType.star, size: size * 0.8),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: style.gap),
@@ -581,12 +602,14 @@ class _CountStepper extends StatelessWidget {
 /// A hand that drags from [from] to [to], over and over: how to add a block.
 class _HowToHand extends StatefulWidget {
   const _HowToHand({
+    required this.words,
     required this.stack,
     required this.from,
     required this.to,
     required this.size,
   });
 
+  final bool words;
   final GlobalKey stack;
   final GlobalKey from;
   final GlobalKey to;
@@ -643,7 +666,11 @@ class _HowToHandState extends State<_HowToHand>
               top: at.dy - size * 0.45,
               child: Opacity(
                 opacity: 0.75,
-                child: BlockTile(type: BlockType.forward, size: size * 0.9),
+                child: BlockTile(
+                  type: BlockType.forward,
+                  size: size * 0.9,
+                  words: widget.words,
+                ),
               ),
             ),
           Positioned(

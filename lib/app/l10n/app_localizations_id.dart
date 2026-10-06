@@ -148,6 +148,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get soundEffectsHint => 'Suara petunjuk tetap terdengar.';
 
   @override
+  String get wordBlocks => 'Blok kata';
+
+  @override
+  String get wordBlocksHint =>
+      'Blok berisi kata, untuk anak yang sudah bisa membaca. Diatur oleh permainan pemanasan.';
+
+  @override
   String get supportCobaLagi => 'Dukung Coba Lagi';
 
   @override

@@ -182,6 +182,17 @@ void main() {
       expect(find.text('Last 7 days'), findsNothing);
     });
 
+    testWidgets('a parent can switch a child to word blocks', (tester) async {
+      await openProgress(tester, Plan.free);
+      expect(find.text('Word blocks'), findsOneWidget);
+      await tester.tap(find.text('Word blocks'));
+      await tester.pumpAndSettle();
+      final tile = tester.widget<SwitchListTile>(
+        find.widgetWithText(SwitchListTile, 'Word blocks'),
+      );
+      expect(tile.value, isTrue);
+    });
+
     testWidgets('shows the report on the sponsor plan', (tester) async {
       await openProgress(tester, Plan.full);
       expect(find.text('Last 7 days'), findsOneWidget);

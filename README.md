@@ -215,7 +215,9 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 | 4. Pretest ✅ | Reading check and pre-skills, voice-led and adaptive; placement; parent override |
 | 5. Hardening ✅ (code) | Donations through Google Play Billing (any donation unlocks sponsor features), release config, voice clips, tablet performance |
 
-Later: Rive characters, Tiers 2 and 3, conditions, variables, functions.
+| 6. After MVP ✅ | Magic Block island (own block), parent progress report, sound effects and music, splash, how-to hint, warm-up second chance, Tier 2 word blocks for readers |
+
+Later: Rive characters, Tier 3 (typed code), conditions, variables.
 
 ## Documentation map
 

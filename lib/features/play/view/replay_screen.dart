@@ -40,6 +40,7 @@ class _ReplayScreenState extends State<ReplayScreen> {
       key: ValueKey(exercise.key),
       exercise: exercise,
       skipAfterRuns: learning.engine.config.offerSkipAfterRuns,
+      words: learning.state.learner!.placement?.readsWords ?? false,
       homePath: islandPath,
       onFinished: learning.recordReplay,
       onNext: () => context.go(islandPath),

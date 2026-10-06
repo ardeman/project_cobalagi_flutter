@@ -40,6 +40,8 @@
   "music": "Musik latar",
   "soundEffects": "Efek suara",
   "soundEffectsHint": "Suara petunjuk tetap terdengar.",
+  "wordBlocks": "Blok kata",
+  "wordBlocksHint": "Blok berisi kata, untuk anak yang sudah bisa membaca. Diatur oleh permainan pemanasan.",
   "supportCobaLagi": "Dukung Coba Lagi",
   "debugPlanOverride": "Debug: pakai versi lengkap",
   "players": "Pemain",
