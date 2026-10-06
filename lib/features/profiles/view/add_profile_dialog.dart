@@ -47,7 +47,10 @@ class _AddProfileDialogState extends State<_AddProfileDialog> {
               autofocus: true,
               maxLength: 16,
               decoration: InputDecoration(labelText: l10n.nickname),
-              onSubmitted: (_) => _submit(),
+              // Enter only closes the keyboard: the avatar comes next, and
+              // Save stays the one way to add the player.
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => FocusScope.of(context).unfocus(),
             ),
             const SizedBox(height: 16),
             Text(l10n.chooseAvatar),
