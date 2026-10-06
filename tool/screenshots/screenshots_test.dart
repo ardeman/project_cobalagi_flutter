@@ -64,6 +64,17 @@ Future<void> _loadFonts() async {
     'Roboto-Black.ttf',
   ]);
   await load('MaterialIcons', ['MaterialIcons-Regular.otf']);
+  // Typed code asks for 'monospace', which Android maps to its own mono
+  // font; tests have none, so borrow the Mac's.
+  final mono = FontLoader('monospace')
+    ..addFont(
+      Future.value(
+        ByteData.sublistView(
+          File('/System/Library/Fonts/SFNSMono.ttf').readAsBytesSync(),
+        ),
+      ),
+    );
+  await mono.load();
 }
 
 ExerciseResult _result(String concept, String level, {int seconds = 80}) =>
@@ -172,6 +183,17 @@ Future<void> _buildConditionAnswer(WidgetTester tester) async {
   cubit.add(BlockType.ifPathClear, parentId: secondLoop);
   final secondEye = cubit.state.main.last.children.single.id;
   cubit.add(BlockType.forward, parentId: secondEye);
+  await _settle(tester);
+}
+
+/// Builds the Step Box answer to variables-02: save 3, move, turn, move.
+Future<void> _buildStepBoxAnswer(WidgetTester tester) async {
+  final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
+  cubit.add(BlockType.setSteps);
+  cubit.setCount(cubit.state.main.single.id, 3);
+  cubit.add(BlockType.moveSteps);
+  cubit.add(BlockType.turnRight);
+  cubit.add(BlockType.moveSteps);
   await _settle(tester);
 }
 
@@ -427,6 +449,25 @@ void main() {
           await _open(tester, '/child/1/replay/conditions-02');
           await _buildConditionAnswer(tester);
           await shoot('${prefix}play-conditions');
+        });
+
+        testWidgets('step box', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/replay/variables-02');
+          await _buildStepBoxAnswer(tester);
+          await shoot('${prefix}play-variables');
+        });
+
+        testWidgets('typed code', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/replay/loops-03');
+          await _buildLoopAnswer(tester, 'loops-03');
+          final code = language == 'id' ? 'Kode' : 'Code';
+          await tester.tap(
+            prefix.isEmpty ? find.text(code) : find.byTooltip(code),
+          );
+          await _settle(tester);
+          await shoot('${prefix}play-code');
         });
 
         testWidgets('solved', (tester) async {
