@@ -1,0 +1,5 @@
+- Two new islands. Fix it!: find and fix the block that isn't quite right. Until the flag: a repeat that keeps going by itself.
+- Every island opens with a short "Watch me!" demo, and "Watch how" plays it again.
+- Tap a placed block, then a new one, to swap it in place.
+- Blocks that use the Step Box now show the number they will use.
+- Island stars now count finished lessons, so a completed island shows all three.

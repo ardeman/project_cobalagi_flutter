@@ -1,0 +1,5 @@
+- Dua pulau baru. Perbaiki!: temukan dan betulkan blok yang belum pas. Sampai bendera: blok ulangi yang terus jalan sendiri.
+- Setiap pulau dibuka dengan contoh singkat "Lihat aku!", dan "Lihat caranya" memutarnya lagi.
+- Ketuk blok yang sudah dipasang, lalu blok baru, untuk menggantinya di tempat.
+- Blok yang memakai Kotak Langkah kini menampilkan angka yang akan dipakai.
+- Bintang pulau kini menghitung pelajaran yang selesai, jadi pulau yang tuntas menampilkan tiga bintang.

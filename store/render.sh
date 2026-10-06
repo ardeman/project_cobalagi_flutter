@@ -65,9 +65,9 @@ render_phone() { # locale suffix captions...
   phone_slide "phone-play-loops$s.png"      "$2" "$dir/2-play-loops.png"
   phone_slide "phone-play-code$s.png"       "$3" "$dir/3-code.png"
   phone_slide "phone-play-functions$s.png"  "$4" "$dir/4-play-functions.png"
-  phone_slide "phone-play-conditions$s.png" "$5" "$dir/5-play-conditions.png"
+  phone_slide "phone-play-debugging$s.png"  "$5" "$dir/5-fix-it.png"
   phone_slide "phone-solved$s.png"          "$6" "$dir/6-solved.png"
-  phone_slide "phone-warm-up$s.png"         "$7" "$dir/7-warm-up.png"
+  phone_slide "phone-play-until$s.png"      "$7" "$dir/7-until.png"
   phone_pair_slide "phone-parent-placement$s.png" "phone-parent-progress$s.png" "$8" "$dir/8-parents.png"
 }
 
@@ -114,9 +114,9 @@ render_locale() { # locale suffix tagline captions...
   slide "play-loops$s.png"      "$2" "store/$locale/screenshots/2-play-loops.png"
   slide "play-code$s.png"       "$3" "store/$locale/screenshots/3-code.png"
   slide "play-functions$s.png"  "$4" "store/$locale/screenshots/4-play-functions.png"
-  slide "play-conditions$s.png" "$5" "store/$locale/screenshots/5-play-conditions.png"
+  slide "play-debugging$s.png"  "$5" "store/$locale/screenshots/5-fix-it.png"
   slide "solved$s.png"          "$6" "store/$locale/screenshots/6-solved.png"
-  slide "warm-up-pattern$s.png" "$7" "store/$locale/screenshots/7-warm-up.png"
+  slide "play-until$s.png"      "$7" "store/$locale/screenshots/7-until.png"
   pair_slide "parent-placement$s.png" "parent-progress$s.png" "$8" "store/$locale/screenshots/8-parents.png"
 }
 
@@ -125,9 +125,9 @@ render_locale id "-id" "Belajar coding sambil bermain" \
   "Blok bergambar, tanpa perlu membaca" \
   "Sudah bisa membaca? Ketik kode sungguhan" \
   "Buat blok sendiri, pakai berkali-kali" \
-  "Periksa jalan sebelum melangkah" \
+  "Temukan blok yang belum pas, lalu betulkan" \
   "Setiap percobaan disambut dengan semangat" \
-  "Permainan pemanasan menemukan titik awal" \
+  "Ulangi terus sampai bendera, tanpa menghitung" \
   "Orang tua memilih titik awal; sponsor melihat laporan"
 
 render_locale en-US "" "Learn to code through play" \
@@ -135,9 +135,9 @@ render_locale en-US "" "Learn to code through play" \
   "Picture blocks, no reading needed" \
   "Reading already? Type real code" \
   "Build your own block, use it again and again" \
-  "Check the path before taking a step" \
+  "Find the block that isn't quite right, and fix it" \
   "Every try is met with encouragement" \
-  "A warm-up game finds the right start" \
+  "Repeat until the flag, no counting needed" \
   "Parents set the start; sponsors see progress"
 
 render_phone id "-id" \
@@ -145,9 +145,9 @@ render_phone id "-id" \
   "Blok bergambar, tanpa perlu membaca" \
   "Sudah bisa membaca? Ketik kode sungguhan" \
   "Buat blok sendiri, pakai berkali-kali" \
-  "Periksa jalan sebelum melangkah" \
+  "Temukan blok yang belum pas, lalu betulkan" \
   "Setiap percobaan disambut dengan semangat" \
-  "Permainan pemanasan menemukan titik awal" \
+  "Ulangi terus sampai bendera, tanpa menghitung" \
   "Orang tua memilih titik awal; sponsor melihat laporan"
 
 render_phone en-US "" \
@@ -155,9 +155,9 @@ render_phone en-US "" \
   "Picture blocks, no reading needed" \
   "Reading already? Type real code" \
   "Build your own block, use it again and again" \
-  "Check the path before taking a step" \
+  "Find the block that isn't quite right, and fix it" \
   "Every try is met with encouragement" \
-  "A warm-up game finds the right start" \
+  "Repeat until the flag, no counting needed" \
   "Parents set the start; sponsors see progress"
 
 echo "Store graphics rendered."

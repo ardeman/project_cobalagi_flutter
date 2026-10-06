@@ -389,8 +389,8 @@ void main() {
       PackageInfo.setMockInitialValues(
         appName: 'Coba Lagi',
         packageName: 'com.ardeman.cobalagi',
-        version: '1.0.3',
-        buildNumber: '7',
+        version: '1.1.0',
+        buildNumber: '8',
         buildSignature: '',
       );
       tester.view.physicalSize = _size * 2;
@@ -538,6 +538,18 @@ void main() {
           }
           await _settle(tester);
           await shoot('${prefix}play-until');
+        });
+
+        testWidgets('watch me', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/tutorial/loops');
+          // Part-way: the hand is about to drop forward into the repeat.
+          for (var i = 0; i < 52; i++) {
+            await tester.pump(const Duration(milliseconds: 100));
+          }
+          await shoot('${prefix}tutorial-loops');
+          await tester.tap(find.text(language == 'id' ? 'Lewati' : 'Skip'));
+          await _settle(tester);
         });
 
         testWidgets('solved', (tester) async {
