@@ -194,7 +194,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reset => 'Start over';
 
   @override
-  String get undo => 'Remove last block';
+  String get undo => 'Undo';
+
+  @override
+  String get redo => 'Redo';
 
   @override
   String get clearBlocks => 'Remove all blocks';

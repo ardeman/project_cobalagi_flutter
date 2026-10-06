@@ -182,7 +182,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get reset => 'Mulai lagi';
 
   @override
-  String get undo => 'Hapus blok terakhir';
+  String get undo => 'Urungkan';
+
+  @override
+  String get redo => 'Kembalikan';
 
   @override
   String get clearBlocks => 'Hapus semua blok';

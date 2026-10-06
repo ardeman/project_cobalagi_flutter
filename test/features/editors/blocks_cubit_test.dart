@@ -42,7 +42,7 @@ void main() {
       c.move(loop, parentId: eye, index: 0);
       expect(c.state, same(before));
       c.pickContainer(eye);
-      c.removeLast();
+      c.remove(c.state.main.last.id);
       expect(c.state.selectedContainer, isNull);
       c.tap(BlockType.forward);
       expect(c.state.main.single.type, BlockType.forward);
@@ -65,9 +65,8 @@ void main() {
     c.move(c.state.main.last.id, index: 0); // back to the front
     expect(types(c).first, BlockType.turnRight);
 
-    c
-      ..remove(c.state.main.first.id)
-      ..removeLast();
+    c.remove(c.state.main.first.id);
+    c.remove(c.state.main.last.id);
     expect(types(c), [BlockType.forward]);
     c.clear();
     expect(c.state.main, isEmpty);
@@ -198,5 +197,76 @@ void main() {
       expect(c.state.main, isEmpty);
       expect(c.state.star, isEmpty);
     });
+  });
+
+  test('undo and redo step through edits, including clear', () {
+    final c = BlocksCubit()
+      ..add(BlockType.forward)
+      ..add(BlockType.repeat);
+    final loop = c.state.main.last.id;
+    c
+      ..add(BlockType.turnLeft, parentId: loop)
+      ..setCount(loop, 4);
+    final built = c.state;
+    expect(c.canRedo, isFalse);
+
+    c.clear();
+    expect(c.state.main, isEmpty);
+    c.undo();
+    expect(c.state.main, built.main);
+    expect(c.canRedo, isTrue);
+    c.redo();
+    expect(c.state.main, isEmpty);
+    c.undo();
+
+    // Back through the count, the nested block and both adds.
+    c.undo();
+    expect(c.state.main.last.count, 2);
+    c
+      ..undo()
+      ..undo()
+      ..undo();
+    expect(c.state.main, isEmpty);
+    expect(c.canUndo, isFalse);
+    c.undo(); // nothing left: no change
+    expect(c.state.main, isEmpty);
+
+    // A new edit after undo drops what could be redone.
+    c.redo();
+    expect(types(c), [BlockType.forward]);
+    c.add(BlockType.turnRight);
+    expect(c.canRedo, isFalse);
+  });
+
+  test('picking a row or container is not an edit', () {
+    final c = BlocksCubit()..add(BlockType.repeat);
+    final loop = c.state.main.single.id;
+    c
+      ..pickContainer(loop)
+      ..pickRow(star: true)
+      ..pickRow(star: false);
+    c.undo();
+    expect(c.state.main, isEmpty);
+    expect(c.canUndo, isFalse);
+  });
+
+  test('a block dragged away comes back with undo', () {
+    final c = BlocksCubit()
+      ..add(BlockType.forward)
+      ..add(BlockType.turnLeft);
+    c.remove(c.state.main.first.id);
+    c.undo();
+    expect(types(c), [BlockType.forward, BlockType.turnLeft]);
+  });
+
+  test('history keeps the last ${BlocksCubit.historyLimit} edits', () {
+    final c = BlocksCubit();
+    for (var i = 0; i < BlocksCubit.historyLimit + 10; i++) {
+      c.add(BlockType.forward);
+    }
+    for (var i = 0; i < BlocksCubit.historyLimit + 10; i++) {
+      c.undo();
+    }
+    expect(c.state.main, hasLength(10));
   });
 }

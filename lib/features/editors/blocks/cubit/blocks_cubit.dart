@@ -108,14 +108,55 @@ class BlocksCubit extends Cubit<BlockProgram> {
     );
   }
 
-  /// Removes the last block of the main row (the undo button).
-  void removeLast() {
-    if (state.main.isNotEmpty) {
-      remove(state.main.last.id);
-    }
+  void clear() => emit(BlockProgram(tapToStar: state.tapToStar));
+
+  /// Edits that can be undone, oldest first.
+  final _past = <BlockProgram>[];
+
+  /// Undone edits that can be redone, most recently undone last.
+  final _future = <BlockProgram>[];
+
+  /// How many edits [undo] can step back.
+  static const historyLimit = 50;
+
+  bool get canUndo => _past.isNotEmpty;
+  bool get canRedo => _future.isNotEmpty;
+
+  /// Puts the blocks back as they were before the last edit, including a
+  /// clear or a block dragged away by accident.
+  void undo() => _restore(from: _past, to: _future);
+
+  /// Applies the edit [undo] last took back.
+  void redo() => _restore(from: _future, to: _past);
+
+  void _restore({
+    required List<BlockProgram> from,
+    required List<BlockProgram> to,
+  }) {
+    if (from.isEmpty) return;
+    to.add(state);
+    final program = from.removeLast();
+    // Keep the row the child picked; a picked container may be gone.
+    super.emit(
+      program.copyWith(
+        tapToStar: state.tapToStar,
+        selectedContainer: () => null,
+      ),
+    );
   }
 
-  void clear() => emit(BlockProgram(tapToStar: state.tapToStar));
+  /// Records every change to the blocks, but not picking a row or container.
+  @override
+  void emit(BlockProgram state) {
+    final before = this.state;
+    if (!identical(state.main, before.main) ||
+        !identical(state.star, before.star)) {
+      _past.add(before);
+      if (_past.length > historyLimit) _past.removeAt(0);
+      _future.clear();
+    }
+    super.emit(state);
+  }
 
   bool _fits(BlockType type, String? parentId) {
     if (parentId == null) return true;
