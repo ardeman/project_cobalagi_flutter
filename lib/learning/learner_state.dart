@@ -109,6 +109,7 @@ final class LearnerState {
     this.seenPuzzles = const {},
     this.nextSeed = 0,
     this.placement,
+    this.tutorialsSeen = const {},
   });
 
   factory LearnerState.fromJson(Map<String, Object?> json) => LearnerState(
@@ -128,6 +129,10 @@ final class LearnerState {
       final Map<String, Object?> p => Placement.fromJson(p),
       _ => null,
     },
+    // Saves from before tutorials existed have none.
+    tutorialsSeen: {
+      ...((json['tutorials'] as List?) ?? const []).cast<String>(),
+    },
   );
 
   /// The concept the child is learning (where reviews return to).
@@ -146,6 +151,9 @@ final class LearnerState {
   /// Null until the warm-up game is played or a parent picks a start.
   final Placement? placement;
 
+  /// Islands whose "Watch me!" demo the child has seen, by concept id.
+  final Set<String> tutorialsSeen;
+
   /// The concept the next exercise belongs to.
   String get activeConcept => review?.conceptId ?? currentConcept;
 
@@ -156,6 +164,7 @@ final class LearnerState {
     Set<String>? seenPuzzles,
     int? nextSeed,
     Placement? Function()? placement,
+    Set<String>? tutorialsSeen,
   }) => LearnerState(
     currentConcept: currentConcept ?? this.currentConcept,
     progress: progress ?? this.progress,
@@ -163,6 +172,7 @@ final class LearnerState {
     seenPuzzles: seenPuzzles ?? this.seenPuzzles,
     nextSeed: nextSeed ?? this.nextSeed,
     placement: placement != null ? placement() : this.placement,
+    tutorialsSeen: tutorialsSeen ?? this.tutorialsSeen,
   );
 
   Map<String, Object?> toJson() => {
@@ -175,5 +185,6 @@ final class LearnerState {
     'seen': seenPuzzles.toList(),
     'nextSeed': nextSeed,
     'placement': placement?.toJson(),
+    'tutorials': tutorialsSeen.toList(),
   };
 }

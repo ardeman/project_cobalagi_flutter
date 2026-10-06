@@ -1,0 +1,343 @@
+{
+  "directions": {
+    "level": {
+      "id": "tutorial-directions",
+      "concept": "directions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "rows": [
+        "#####",
+        "#S..#",
+        "###G#",
+        "#####"
+      ]
+    },
+    "actions": [
+      {
+        "add": "forward"
+      },
+      {
+        "add": "forward"
+      },
+      {
+        "add": "turnRight"
+      },
+      {
+        "add": "forward"
+      },
+      "go"
+    ]
+  },
+  "sequencing": {
+    "level": {
+      "id": "tutorial-sequencing",
+      "concept": "sequencing",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "rows": [
+        "######",
+        "#S..##",
+        "###*##",
+        "###.G#",
+        "######"
+      ]
+    },
+    "actions": [
+      {
+        "add": "forward"
+      },
+      {
+        "add": "forward"
+      },
+      {
+        "add": "turnRight"
+      },
+      {
+        "add": "forward"
+      },
+      {
+        "add": "forward"
+      },
+      {
+        "add": "turnLeft"
+      },
+      {
+        "add": "forward"
+      },
+      "go"
+    ]
+  },
+  "loops": {
+    "level": {
+      "id": "tutorial-loops",
+      "concept": "loops",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat"
+      ],
+      "rows": [
+        "########",
+        "#S....G#",
+        "########"
+      ],
+      "maxBlocks": 2
+    },
+    "actions": [
+      {
+        "add": "repeat"
+      },
+      {
+        "count": [
+          0,
+          5
+        ]
+      },
+      {
+        "add": "forward",
+        "in": [
+          0
+        ]
+      },
+      "go"
+    ]
+  },
+  "functions": {
+    "level": {
+      "id": "tutorial-functions",
+      "concept": "functions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "call"
+      ],
+      "rows": [
+        "######",
+        "####G#",
+        "###..#",
+        "##..##",
+        "#S.###",
+        "######"
+      ],
+      "maxBlocks": 7
+    },
+    "actions": [
+      {
+        "add": "forward",
+        "star": true
+      },
+      {
+        "add": "turnLeft",
+        "star": true
+      },
+      {
+        "add": "forward",
+        "star": true
+      },
+      {
+        "add": "turnRight",
+        "star": true
+      },
+      {
+        "add": "star"
+      },
+      {
+        "add": "star"
+      },
+      {
+        "add": "star"
+      },
+      "go"
+    ]
+  },
+  "conditions": {
+    "level": {
+      "id": "tutorial-conditions",
+      "concept": "conditions",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "repeat",
+        "ifPathClear"
+      ],
+      "rows": [
+        "######",
+        "#S..G#",
+        "######"
+      ],
+      "maxBlocks": 3
+    },
+    "actions": [
+      {
+        "add": "repeat"
+      },
+      {
+        "count": [
+          0,
+          4
+        ]
+      },
+      {
+        "add": "ifPathClear",
+        "in": [
+          0
+        ]
+      },
+      {
+        "add": "forward",
+        "in": [
+          0,
+          0
+        ]
+      },
+      "go"
+    ]
+  },
+  "variables": {
+    "level": {
+      "id": "tutorial-variables",
+      "concept": "variables",
+      "facing": "east",
+      "palette": [
+        "setSteps",
+        "moveSteps",
+        "turnLeft",
+        "turnRight"
+      ],
+      "rows": [
+        "######",
+        "#S...#",
+        "####.#",
+        "####.#",
+        "####G#",
+        "######"
+      ],
+      "maxBlocks": 4
+    },
+    "actions": [
+      {
+        "add": "setSteps"
+      },
+      {
+        "count": [
+          0,
+          3
+        ]
+      },
+      {
+        "add": "moveSteps"
+      },
+      {
+        "add": "turnRight"
+      },
+      {
+        "add": "moveSteps"
+      },
+      "go"
+    ]
+  },
+  "debugging": {
+    "level": {
+      "id": "tutorial-debugging",
+      "concept": "debugging",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight"
+      ],
+      "rows": [
+        "#####",
+        "#S..#",
+        "###G#",
+        "#####"
+      ],
+      "maxBlocks": 4,
+      "starter": [
+        "move",
+        "move",
+        "turnLeft",
+        "move"
+      ]
+    },
+    "actions": [
+      "go",
+      {
+        "pick": [
+          2
+        ]
+      },
+      {
+        "tap": "turnRight"
+      },
+      "go"
+    ]
+  },
+  "until": {
+    "level": {
+      "id": "tutorial-until",
+      "concept": "until",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal"
+      ],
+      "rows": [
+        "#######",
+        "#####G#",
+        "####..#",
+        "###..##",
+        "##..###",
+        "#S.####",
+        "#######"
+      ],
+      "maxBlocks": 5
+    },
+    "actions": [
+      {
+        "add": "untilGoal"
+      },
+      {
+        "add": "forward",
+        "in": [
+          0
+        ]
+      },
+      {
+        "add": "turnLeft",
+        "in": [
+          0
+        ]
+      },
+      {
+        "add": "forward",
+        "in": [
+          0
+        ]
+      },
+      {
+        "add": "turnRight",
+        "in": [
+          0
+        ]
+      },
+      "go"
+    ]
+  }
+}

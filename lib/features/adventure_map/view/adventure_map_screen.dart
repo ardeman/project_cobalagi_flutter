@@ -53,6 +53,7 @@ class AdventureMapScreen extends StatelessWidget {
             stars: ProgressReport.starsFor(
               learner.progress[concepts[i].id],
               engine.config,
+              totalLessons: lessons[concepts[i].id]?.length ?? 0,
             ),
             solvedLessons:
                 learner.progress[concepts[i].id]?.solvedLessons.length ?? 0,

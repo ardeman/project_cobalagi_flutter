@@ -22,7 +22,9 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnRight => const Color(0xFFFB8C00),
     BlockType.repeat => const Color(0xFF8E24AA),
     BlockType.setSteps => const Color(0xFFFFB300),
-    BlockType.moveSteps => const Color(0xFFEF6C00),
+    // The Step Box's gold, darker than "save steps", and far from the
+    // orange of turning right.
+    BlockType.moveSteps => const Color(0xFFC58A00),
     BlockType.star => const Color(0xFFD81B60),
     BlockType.ifPathClear => const Color(0xFF00897B),
     BlockType.untilGoal => const Color(0xFF7CB342),
@@ -51,6 +53,7 @@ class BlockTile extends StatelessWidget {
     required this.size,
     this.highlighted = false,
     this.hasIssue = false,
+    this.stepValue,
   });
 
   final BlockType type;
@@ -58,10 +61,73 @@ class BlockTile extends StatelessWidget {
   final bool highlighted;
   final bool hasIssue;
 
+  /// On a placed "use steps" block: the Step Box number it will use, or
+  /// "?" before one is saved. Shown in a bubble in the Step Box's colour.
+  final String? stepValue;
+
+  /// "Use steps" shows the Step Box with an arrow, so it is clearly the
+  /// block that reads the saved number.
+  Widget _picture() {
+    if (type != BlockType.moveSteps) {
+      return Icon(type.icon, color: Colors.white, size: size * 0.6);
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.inventory_2_rounded, color: Colors.white, size: size * 0.34),
+        Icon(
+          Icons.arrow_forward_rounded,
+          color: Colors.white,
+          size: size * 0.4,
+        ),
+      ],
+    );
+  }
+
   @override
-  Widget build(BuildContext context) => Semantics(
-    label: type.label(AppLocalizations.of(context)),
-    button: true,
+  Widget build(BuildContext context) {
+    final tile = _tile();
+    final value = stepValue;
+    return Semantics(
+      label: value == null
+          ? type.label(AppLocalizations.of(context))
+          : '${type.label(AppLocalizations.of(context))}: $value',
+      button: true,
+      child: value == null
+          ? tile
+          : Stack(
+              clipBehavior: Clip.none,
+              children: [
+                tile,
+                Positioned(
+                  top: -size * 0.16,
+                  right: -size * 0.16,
+                  child: Container(
+                    width: size * 0.46,
+                    height: size * 0.46,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: BlockType.setSteps.color,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: Text(
+                      value,
+                      style: TextStyle(
+                        fontSize: size * 0.28,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _tile() => ExcludeSemantics(
     child: AnimatedScale(
       scale: highlighted ? 1.12 : 1,
       duration: const Duration(milliseconds: 150),
@@ -95,7 +161,7 @@ class BlockTile extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(type.icon, color: Colors.white, size: size * 0.6),
+        child: _picture(),
       ),
     ),
   );

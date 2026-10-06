@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../learning/cubit/learning_cubit.dart';
+import '../../tutorial/view/tutorial_view.dart';
 import 'play_view.dart';
 
 /// Serves exercises from the learning loop, one after another.
@@ -17,6 +18,9 @@ class PlayScreen extends StatefulWidget {
 class _PlayScreenState extends State<PlayScreen> {
   Exercise? _exercise;
 
+  /// Demos watched (or skipped) in this session, before the save lands.
+  final _watched = <String>{};
+
   @override
   Widget build(BuildContext context) {
     final learning = context.watch<LearningCubit>();
@@ -24,6 +28,21 @@ class _PlayScreenState extends State<PlayScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final exercise = _exercise ??= learning.nextExercise();
+    // The first visit to an island starts with its "Watch me!" demo.
+    final concept = exercise.plan.conceptId;
+    final tutorial = learning.curriculum.tutorials[concept];
+    if (tutorial != null &&
+        !_watched.contains(concept) &&
+        !learning.state.learner!.tutorialsSeen.contains(concept)) {
+      return TutorialView(
+        key: ValueKey('tutorial-$concept'),
+        tutorial: tutorial,
+        onDone: () {
+          setState(() => _watched.add(concept));
+          learning.markTutorialSeen(concept);
+        },
+      );
+    }
     return PlayView(
       key: ValueKey(exercise.key),
       exercise: exercise,

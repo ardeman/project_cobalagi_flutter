@@ -11,6 +11,7 @@ import '../features/play/view/replay_screen.dart';
 import '../features/pretest/view/pretest_screen.dart';
 import '../features/profiles/view/profiles_screen.dart';
 import '../features/splash/view/splash_screen.dart';
+import '../features/tutorial/view/tutorial_screen.dart';
 
 GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
   initialLocation: initialLocation,
@@ -37,6 +38,13 @@ GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
             GoRoute(
               path: 'island/:conceptId',
               builder: (_, state) => IslandScreen(
+                profileId: _profileId(state),
+                conceptId: state.pathParameters['conceptId']!,
+              ),
+            ),
+            GoRoute(
+              path: 'tutorial/:conceptId',
+              builder: (_, state) => TutorialScreen(
                 profileId: _profileId(state),
                 conceptId: state.pathParameters['conceptId']!,
               ),

@@ -121,6 +121,19 @@ class LearningCubit extends Cubit<LearningState> {
     return null;
   }
 
+  /// Remembers that the child has watched [conceptId]'s "Watch me!" demo,
+  /// so it plays only on the first visit.
+  Future<void> markTutorialSeen(String conceptId) async {
+    final current = _pending ?? state.learner!;
+    if (current.tutorialsSeen.contains(conceptId)) return;
+    _pending = null;
+    final learner = current.copyWith(
+      tutorialsSeen: {...current.tutorialsSeen, conceptId},
+    );
+    emit(LearningState(learner: learner, lastDecision: state.lastDecision));
+    await _progress.save(profileId, learner);
+  }
+
   /// A fresh warm-up game with new questions.
   PretestSession startPretest() => PretestSession(
     PretestGenerator.fromJson(curriculum.vocabulary, Random()),

@@ -93,14 +93,33 @@ final class ProgressReport {
   /// Null until the first puzzle is finished.
   final DateTime? lastPlayed;
 
-  /// The adventure map's stars: 3 at mastery, 2 while practising well, 1 once
-  /// started, 0 before.
-  static int starsFor(ConceptProgress? progress, AdaptiveConfig config) {
-    if (progress == null || progress.scores.isEmpty) return 0;
-    final mastery = progress.mastery;
-    if (mastery >= config.advanceAt) return 3;
-    if (mastery >= config.practiceAt) return 2;
-    return 1;
+  /// The adventure map's stars: the better of two measures, so they never
+  /// fall behind the lessons a child can see they finished.
+  ///
+  /// Lessons: 3 with every lesson solved, 2 with at least half, 1 with one.
+  /// Scores: 3 at mastery, 2 while practising well, 1 once started.
+  static int starsFor(
+    ConceptProgress? progress,
+    AdaptiveConfig config, {
+    required int totalLessons,
+  }) {
+    if (progress == null) return 0;
+    final solved = progress.solvedLessons.length;
+    final fromLessons = totalLessons > 0 && solved >= totalLessons
+        ? 3
+        : totalLessons > 0 && solved * 2 >= totalLessons && solved > 0
+        ? 2
+        : solved > 0
+        ? 1
+        : 0;
+    final fromScores = progress.scores.isEmpty
+        ? 0
+        : progress.mastery >= config.advanceAt
+        ? 3
+        : progress.mastery >= config.practiceAt
+        ? 2
+        : 1;
+    return fromLessons > fromScores ? fromLessons : fromScores;
   }
 
   static ConceptReport _concept(
@@ -109,7 +128,7 @@ final class ProgressReport {
     AdaptiveConfig config,
     int totalLessons,
   ) {
-    final stars = starsFor(progress, config);
+    final stars = starsFor(progress, config, totalLessons: totalLessons);
     return ConceptReport(
       conceptId: id,
       status: switch (stars) {

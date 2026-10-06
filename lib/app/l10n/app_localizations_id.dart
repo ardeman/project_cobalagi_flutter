@@ -620,4 +620,51 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get variableHint =>
       'Simpan angka dulu, lalu pakai kotak untuk maju. Angka tetap sama sampai kamu menggantinya.';
+
+  @override
+  String get tutorialTitle => 'Lihat aku!';
+
+  @override
+  String get tutorialWatchAgain => 'Lihat lagi';
+
+  @override
+  String get tutorialLetsPlay => 'Ayo main!';
+
+  @override
+  String get tutorialSkip => 'Lewati';
+
+  @override
+  String get watchHow => 'Lihat caranya';
+
+  @override
+  String get tutorialDirections =>
+      'Ketuk blok panah untuk memberi tahu temanmu ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!';
+
+  @override
+  String get tutorialSequencing =>
+      'Susun langkahnya berurutan, satu per satu, sampai ke bendera.';
+
+  @override
+  String get tutorialLoops =>
+      'Langkahnya sama terus? Masukkan ke blok ulangi, lalu pilih berapa kali!';
+
+  @override
+  String get tutorialFunctions =>
+      'Buat blok ajaibmu sendiri di baris bintang. Lalu pakai bintangnya berkali-kali!';
+
+  @override
+  String get tutorialConditions =>
+      'Blok mata melihat ke depan. Kalau jalannya kosong, temanmu maju. Kalau tidak, ia menunggu.';
+
+  @override
+  String get tutorialVariables =>
+      'Simpan angka di Kotak Langkah. Lalu pakai langkah untuk berjalan sebanyak itu!';
+
+  @override
+  String get tutorialDebugging =>
+      'Blok ini belum pas. Tekan Jalan dan perhatikan. Lalu ketuk blok yang perlu dibetulkan, dan ketuk blok yang tepat!';
+
+  @override
+  String get tutorialUntil =>
+      'Ulangi sampai bendera terus jalan sendiri, jadi kamu tidak perlu menghitung!';
 }

@@ -43,8 +43,25 @@ abstract final class VoiceClips {
 
   static String cheer(String mood, int number) => 'cheer_${mood}_$number';
 
+  /// The "Watch me!" demo's explanation for an island.
+  static String tutorial(String conceptId) => 'tutorial_$conceptId';
+
+  /// Islands with a demo explanation, in map order.
+  static const tutorialConcepts = [
+    'directions',
+    'sequencing',
+    'loops',
+    'functions',
+    'conditions',
+    'variables',
+    'debugging',
+    'until',
+  ];
+
   /// Clip id → ARB key.
   static final Map<String, String> all = {
+    for (final c in tutorialConcepts)
+      tutorial(c): 'tutorial${c[0].toUpperCase()}${c.substring(1)}',
     pretestWelcome: 'pretestWelcome',
     pretestReading: 'promptReading',
     pretestCounting: 'promptCounting',

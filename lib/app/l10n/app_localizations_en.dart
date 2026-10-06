@@ -631,4 +631,51 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get variableHint =>
       'Save a number first, then use the box to move. The number stays until you change it.';
+
+  @override
+  String get tutorialTitle => 'Watch me!';
+
+  @override
+  String get tutorialWatchAgain => 'Watch again';
+
+  @override
+  String get tutorialLetsPlay => 'Let\'s play!';
+
+  @override
+  String get tutorialSkip => 'Skip';
+
+  @override
+  String get watchHow => 'Watch how';
+
+  @override
+  String get tutorialDirections =>
+      'Tap the arrow blocks to tell your friend where to go: forward, turn left, turn right. Then press Go!';
+
+  @override
+  String get tutorialSequencing =>
+      'Put the steps in order, one after another, all the way to the flag.';
+
+  @override
+  String get tutorialLoops =>
+      'The same steps again and again? Put them in the repeat block, and choose how many times!';
+
+  @override
+  String get tutorialFunctions =>
+      'Build your own magic block in the star row. Then use the star again and again!';
+
+  @override
+  String get tutorialConditions =>
+      'The eye block looks ahead. If the path is clear, your friend steps forward. If not, it waits.';
+
+  @override
+  String get tutorialVariables =>
+      'Save a number in the Step Box. Then use steps to walk that many cells!';
+
+  @override
+  String get tutorialDebugging =>
+      'These blocks aren\'t quite right. Press Go and watch. Then tap the block to fix, and tap the right one!';
+
+  @override
+  String get tutorialUntil =>
+      'Repeat until the flag keeps going by itself, so you never have to count!';
 }

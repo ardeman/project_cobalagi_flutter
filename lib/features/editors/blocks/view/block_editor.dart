@@ -26,12 +26,17 @@ class BlockEditor extends StatefulWidget {
     this.enabled = true,
     this.showHowTo = false,
     this.showTips = true,
+    this.pointAt,
     this.fitContent = false,
   });
 
   /// Shows a hand dragging the first palette block into the program, for a
   /// child who hasn't played yet. Hidden once the program has a block.
   final bool showHowTo;
+
+  /// A palette block a "Watch me!" demo is about to tap: it grows a little
+  /// and a hand points at it.
+  final BlockType? pointAt;
 
   /// Shows written tips, such as how the Step Box works. Phones leave them
   /// out to keep room for the blocks; the goal voice explains the same.
@@ -74,6 +79,7 @@ class _BlockEditorState extends State<BlockEditor> {
       enabled: widget.enabled,
       activeBlockId: widget.activeBlockId,
       issueBlockIds: widget.issueBlockIds,
+      stepValues: _stepValues(blocks),
       // Placed blocks sit in rows that scroll, on tablets too.
       holdToDrag: true,
     );
@@ -100,6 +106,7 @@ class _BlockEditorState extends State<BlockEditor> {
                       widget.enabled &&
                       (!cubit.isFull || cubit.state.pickedBlock != null),
                   hold: widget.fitContent,
+                  pointed: type == widget.pointAt,
                   onTap: () => cubit.tap(type),
                 ),
             ],
@@ -280,6 +287,7 @@ final class _BlockStyle {
     required this.activeBlockId,
     required this.issueBlockIds,
     this.holdToDrag = false,
+    this.stepValues = const {},
   });
 
   final double size;
@@ -290,6 +298,28 @@ final class _BlockStyle {
 
   /// See [_dragSource].
   final bool holdToDrag;
+
+  /// The Step Box number each "use steps" block will use, by block id.
+  final Map<String, String> stepValues;
+}
+
+/// Walks the main row in order, like a run: each "save steps" sets the
+/// number for the "use steps" blocks after it ("?" before any is saved).
+Map<String, String> _stepValues(List<Block> main) {
+  final values = <String, String>{};
+  int? saved;
+  void walk(List<Block> row) {
+    for (final block in row) {
+      if (block.type == BlockType.setSteps) saved = block.count;
+      if (block.type == BlockType.moveSteps) {
+        values[block.id] = saved?.toString() ?? '?';
+      }
+      walk(block.children);
+    }
+  }
+
+  walk(main);
+  return values;
 }
 
 /// How long a finger rests on a block before it lifts where its row
@@ -420,6 +450,7 @@ class _PaletteBlock extends StatelessWidget {
     required this.enabled,
     required this.onTap,
     this.hold = false,
+    this.pointed = false,
   });
 
   final BlockType type;
@@ -427,6 +458,7 @@ class _PaletteBlock extends StatelessWidget {
   final bool enabled;
   final VoidCallback onTap;
   final bool hold;
+  final bool pointed;
 
   @override
   Widget build(BuildContext context) {
@@ -434,6 +466,28 @@ class _PaletteBlock extends StatelessWidget {
       type: type,
       size: type == BlockType.ifPathClear && size < 64 ? 64 : size,
     );
+    if (pointed) {
+      return Stack(
+        clipBehavior: Clip.none,
+        children: [
+          AnimatedScale(
+            scale: 1.15,
+            duration: const Duration(milliseconds: 200),
+            child: tile,
+          ),
+          Positioned(
+            right: -size * 0.25,
+            bottom: -size * 0.3,
+            child: Icon(
+              Icons.touch_app_rounded,
+              size: size * 0.7,
+              color: Colors.white,
+              shadows: const [Shadow(blurRadius: 6, color: Colors.black54)],
+            ),
+          ),
+        ],
+      );
+    }
     if (!enabled) return Opacity(opacity: 0.4, child: tile);
     return _dragSource<BlockType>(
       hold: hold,
@@ -475,6 +529,7 @@ class _PlacedBlock extends StatelessWidget {
             size: size,
             highlighted: block.id == style.activeBlockId,
             hasIssue: style.issueBlockIds.contains(block.id),
+            stepValue: style.stepValues[block.id],
           );
     if (!style.enabled) return plain;
     final cubit = context.read<BlocksCubit>();

@@ -79,10 +79,24 @@ class IslandScreen extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 40),
-                    FilledButton.icon(
-                      icon: const Icon(Icons.play_arrow_rounded, size: 40),
-                      label: Text(l10n.continueAdventure),
-                      onPressed: () => context.go('/child/$profileId/play'),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      spacing: 16,
+                      runSpacing: 16,
+                      children: [
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.ondemand_video_rounded),
+                          label: Text(l10n.watchHow),
+                          onPressed: () => context.go(
+                            '/child/$profileId/tutorial/$conceptId',
+                          ),
+                        ),
+                        FilledButton.icon(
+                          icon: const Icon(Icons.play_arrow_rounded, size: 40),
+                          label: Text(l10n.continueAdventure),
+                          onPressed: () => context.go('/child/$profileId/play'),
+                        ),
+                      ],
                     ),
                   ],
                 ),

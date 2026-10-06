@@ -209,5 +209,18 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tutorialTitle": "Lihat aku!",
+  "tutorialWatchAgain": "Lihat lagi",
+  "tutorialLetsPlay": "Ayo main!",
+  "tutorialSkip": "Lewati",
+  "watchHow": "Lihat caranya",
+  "tutorialDirections": "Ketuk blok panah untuk memberi tahu temanmu ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!",
+  "tutorialSequencing": "Susun langkahnya berurutan, satu per satu, sampai ke bendera.",
+  "tutorialLoops": "Langkahnya sama terus? Masukkan ke blok ulangi, lalu pilih berapa kali!",
+  "tutorialFunctions": "Buat blok ajaibmu sendiri di baris bintang. Lalu pakai bintangnya berkali-kali!",
+  "tutorialConditions": "Blok mata melihat ke depan. Kalau jalannya kosong, temanmu maju. Kalau tidak, ia menunggu.",
+  "tutorialVariables": "Simpan angka di Kotak Langkah. Lalu pakai langkah untuk berjalan sebanyak itu!",
+  "tutorialDebugging": "Blok ini belum pas. Tekan Jalan dan perhatikan. Lalu ketuk blok yang perlu dibetulkan, dan ketuk blok yang tepat!",
+  "tutorialUntil": "Ulangi sampai bendera terus jalan sendiri, jadi kamu tidak perlu menghitung!"
 }

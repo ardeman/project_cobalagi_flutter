@@ -316,5 +316,18 @@
         "type": "String"
       }
     }
-  }
+  },
+  "tutorialTitle": "Watch me!",
+  "tutorialWatchAgain": "Watch again",
+  "tutorialLetsPlay": "Let's play!",
+  "tutorialSkip": "Skip",
+  "watchHow": "Watch how",
+  "tutorialDirections": "Tap the arrow blocks to tell your friend where to go: forward, turn left, turn right. Then press Go!",
+  "tutorialSequencing": "Put the steps in order, one after another, all the way to the flag.",
+  "tutorialLoops": "The same steps again and again? Put them in the repeat block, and choose how many times!",
+  "tutorialFunctions": "Build your own magic block in the star row. Then use the star again and again!",
+  "tutorialConditions": "The eye block looks ahead. If the path is clear, your friend steps forward. If not, it waits.",
+  "tutorialVariables": "Save a number in the Step Box. Then use steps to walk that many cells!",
+  "tutorialDebugging": "These blocks aren't quite right. Press Go and watch. Then tap the block to fix, and tap the right one!",
+  "tutorialUntil": "Repeat until the flag keeps going by itself, so you never have to count!"
 }

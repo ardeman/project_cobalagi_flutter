@@ -5,6 +5,7 @@ import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/engine/program/program.dart';
 import 'package:cobalagi/engine/program/program_json.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
+import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -106,7 +107,14 @@ void main() {
           .onPressed,
       isNull,
     );
-    await tester.tap(paletteBlock(Icons.forward_rounded));
+    // "Use steps": the Step Box with an arrow.
+    await tester.tap(
+      find
+          .byWidgetPredicate(
+            (w) => w is BlockTile && w.type == BlockType.moveSteps,
+          )
+          .first,
+    );
     await tester.pump();
     final Program program = cubit.program;
     expect((program.body.first as SetSteps).value, 9);
@@ -361,6 +369,61 @@ void main() {
       ]);
     },
   );
+
+  testWidgets('each use-steps block shows the number it will use', (
+    tester,
+  ) async {
+    final cubit = BlocksCubit(
+      start: programFromJson([
+        'moveSteps',
+        {'setSteps': 3},
+        'moveSteps',
+        'turnRight',
+        'moveSteps',
+        {'setSteps': 2},
+        'moveSteps',
+      ]),
+    );
+    addTearDown(cubit.close);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            child: BlockEditor(
+              palette: const {
+                InstructionKind.setSteps,
+                InstructionKind.moveSteps,
+                InstructionKind.turnRight,
+              },
+              blockSize: 64,
+            ),
+          ),
+        ),
+      ),
+    );
+    final uses = [
+      for (final b in cubit.state.main)
+        if (b.type == BlockType.moveSteps) b.id,
+    ];
+    String? bubble(String id) =>
+        tester.widget<BlockTile>(find.byKey(ValueKey(id))).stepValue;
+    expect([for (final id in uses) bubble(id)], ['?', '3', '3', '2']);
+    // Screen readers hear the number too.
+    final semantics = tester.ensureSemantics();
+    await tester.pump();
+    expect(find.bySemanticsLabel(RegExp('^Use steps: 3')), findsNWidgets(2));
+    semantics.dispose();
+    // The palette block has no number.
+    expect(
+      tester
+          .widgetList<BlockTile>(find.byType(BlockTile))
+          .where((t) => t.type == BlockType.moveSteps && t.stepValue == null),
+      hasLength(1),
+    );
+  });
 
   testWidgets('tap a condition then a palette action to fill it', (
     tester,

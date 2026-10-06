@@ -8,6 +8,7 @@ import '../../../learning/learning_engine.dart';
 import '../../../learning/placement/placement.dart';
 import '../../../learning/skill_graph.dart';
 import '../../play/data/level_repository.dart';
+import '../../tutorial/data/tutorial.dart';
 
 /// The skill map, the learning thresholds and the hand-made lessons.
 final class Curriculum {
@@ -17,6 +18,7 @@ final class Curriculum {
     required this.placementRules,
     required this.vocabulary,
     required this.pretestSecondChances,
+    this.tutorials = const {},
   });
 
   final LearningEngine engine;
@@ -30,6 +32,9 @@ final class Curriculum {
 
   /// Lessons per concept id, in play order.
   final Map<String, List<Level>> lessons;
+
+  /// Each island's "Watch me!" demo, by concept id.
+  final Map<String, Tutorial> tutorials;
 
   Map<String, List<String>> get lessonIds => {
     for (final MapEntry(:key, :value) in lessons.entries)
@@ -74,6 +79,9 @@ class CurriculumRepository {
       placementRules: rules,
       vocabulary: pretest['vocabulary']! as Map<String, Object?>,
       pretestSecondChances: pretest['secondChances']! as int,
+      tutorials: parseTutorials(
+        await _bundle.loadString('assets/config/tutorials.json'),
+      ),
     );
   }
 }

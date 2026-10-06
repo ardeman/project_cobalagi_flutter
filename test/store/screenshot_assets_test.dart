@@ -8,9 +8,9 @@ const _screenshots = {
   '2-play-loops.png',
   '3-code.png',
   '4-play-functions.png',
-  '5-play-conditions.png',
+  '5-fix-it.png',
   '6-solved.png',
-  '7-warm-up.png',
+  '7-until.png',
   '8-parents.png',
 };
 

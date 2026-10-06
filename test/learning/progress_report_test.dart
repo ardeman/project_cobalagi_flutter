@@ -99,13 +99,53 @@ void main() {
   });
 
   test('stars match the adventure map rule', () {
-    expect(ProgressReport.starsFor(null, config), 0);
+    int stars(ConceptProgress? p) =>
+        ProgressReport.starsFor(p, config, totalLessons: 6);
+    Set<String> solved(int n) => {for (var i = 1; i <= n; i++) 'l-0$i'};
+    expect(stars(null), 0);
+    expect(stars(const ConceptProgress(scores: [0.2], difficulty: 1)), 1);
+    // Every lesson solved shows three stars, even with low recent scores
+    // (hints, a bonus review): the child can see the island is done.
     expect(
-      ProgressReport.starsFor(
-        const ConceptProgress(scores: [0.2], difficulty: 1),
-        config,
+      stars(
+        ConceptProgress(
+          scores: const [0.3, 0.4],
+          difficulty: 2,
+          solvedLessons: solved(6),
+        ),
+      ),
+      3,
+    );
+    expect(
+      stars(
+        ConceptProgress(
+          scores: const [0.3],
+          difficulty: 2,
+          solvedLessons: solved(4),
+        ),
+      ),
+      2,
+    );
+    expect(
+      stars(
+        ConceptProgress(
+          scores: const [0.3],
+          difficulty: 2,
+          solvedLessons: solved(1),
+        ),
       ),
       1,
+    );
+    // Strong scores still count before the lessons are done.
+    expect(
+      stars(
+        ConceptProgress(
+          scores: const [1, 1, 1],
+          difficulty: 2,
+          solvedLessons: solved(1),
+        ),
+      ),
+      3,
     );
   });
 }

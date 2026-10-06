@@ -5,6 +5,8 @@ import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/world/direction.dart';
 import 'package:cobalagi/engine/world/level.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
+import 'package:cobalagi/features/editors/blocks/data/block.dart';
+import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
 import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
 import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
@@ -108,7 +110,16 @@ void main() {
               .first;
           await tester.tap(palette(Icons.inventory_2_rounded));
           await tester.pump();
-          await tester.tap(palette(Icons.forward_rounded));
+          await tester.tap(
+            find
+                .descendant(
+                  of: find.byType(BlockEditor),
+                  matching: find.byWidgetPredicate(
+                    (w) => w is BlockTile && w.type == BlockType.moveSteps,
+                  ),
+                )
+                .first,
+          );
           await tester.pump();
         }
         await tester.tap(find.byTooltip('One step'));

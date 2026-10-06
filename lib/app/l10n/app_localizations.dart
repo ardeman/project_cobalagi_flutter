@@ -1213,6 +1213,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save a number first, then use the box to move. The number stays until you change it.'**
   String get variableHint;
+
+  /// No description provided for @tutorialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch me!'**
+  String get tutorialTitle;
+
+  /// No description provided for @tutorialWatchAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch again'**
+  String get tutorialWatchAgain;
+
+  /// No description provided for @tutorialLetsPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s play!'**
+  String get tutorialLetsPlay;
+
+  /// No description provided for @tutorialSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get tutorialSkip;
+
+  /// No description provided for @watchHow.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch how'**
+  String get watchHow;
+
+  /// No description provided for @tutorialDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the arrow blocks to tell your friend where to go: forward, turn left, turn right. Then press Go!'**
+  String get tutorialDirections;
+
+  /// No description provided for @tutorialSequencing.
+  ///
+  /// In en, this message translates to:
+  /// **'Put the steps in order, one after another, all the way to the flag.'**
+  String get tutorialSequencing;
+
+  /// No description provided for @tutorialLoops.
+  ///
+  /// In en, this message translates to:
+  /// **'The same steps again and again? Put them in the repeat block, and choose how many times!'**
+  String get tutorialLoops;
+
+  /// No description provided for @tutorialFunctions.
+  ///
+  /// In en, this message translates to:
+  /// **'Build your own magic block in the star row. Then use the star again and again!'**
+  String get tutorialFunctions;
+
+  /// No description provided for @tutorialConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'The eye block looks ahead. If the path is clear, your friend steps forward. If not, it waits.'**
+  String get tutorialConditions;
+
+  /// No description provided for @tutorialVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a number in the Step Box. Then use steps to walk that many cells!'**
+  String get tutorialVariables;
+
+  /// No description provided for @tutorialDebugging.
+  ///
+  /// In en, this message translates to:
+  /// **'These blocks aren\'t quite right. Press Go and watch. Then tap the block to fix, and tap the right one!'**
+  String get tutorialDebugging;
+
+  /// No description provided for @tutorialUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat until the flag keeps going by itself, so you never have to count!'**
+  String get tutorialUntil;
 }
 
 class _AppLocalizationsDelegate
