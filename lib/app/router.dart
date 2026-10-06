@@ -10,9 +10,12 @@ import '../features/play/view/play_screen.dart';
 import '../features/play/view/replay_screen.dart';
 import '../features/pretest/view/pretest_screen.dart';
 import '../features/profiles/view/profiles_screen.dart';
+import '../features/splash/view/splash_screen.dart';
 
-GoRouter createRouter() => GoRouter(
+GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
+  initialLocation: initialLocation,
   routes: [
+    GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
     GoRoute(path: '/', builder: (_, _) => const ProfilesScreen()),
     // Everything a child sees shares one learning loop.
     ShellRoute(

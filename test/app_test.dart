@@ -54,6 +54,8 @@ Future<void> pumpApp(
       progress: ProgressRepository(db),
     ),
   );
+  // Past the splash screen.
+  await tester.pump(const Duration(seconds: 2));
   await tester.pumpAndSettle();
 }
 
@@ -188,5 +190,35 @@ void main() {
       expect(find.textContaining('Not started'), findsNWidgets(4));
       expect(find.textContaining('Sponsors see the full'), findsNothing);
     });
+  });
+
+  testWidgets('the app opens on a splash with the version', (tester) async {
+    PackageInfo.setMockInitialValues(
+      appName: 'Coba Lagi',
+      packageName: 'com.ardeman.cobalagi',
+      version: '1.0.0',
+      buildNumber: '3',
+      buildSignature: '',
+    );
+    final db = await tester.runAsync(
+      () => newDatabaseFactoryMemory().openDatabase('splash.db'),
+    );
+    await tester.pumpWidget(
+      CobaLagiApp(
+        profiles: ProfileRepository(db!),
+        settings: SettingsRepository(db),
+        entitlement: const StaticEntitlementService(Plan.free),
+        audio: const SilentAudioService(),
+        curriculum: CurriculumRepository(),
+        progress: ProgressRepository(db),
+      ),
+    );
+    await tester.pump();
+    expect(find.text('App version 1.0.0 (3)'), findsOneWidget);
+    expect(find.text("Who's playing?"), findsNothing);
+
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(find.text("Who's playing?"), findsOneWidget);
   });
 }

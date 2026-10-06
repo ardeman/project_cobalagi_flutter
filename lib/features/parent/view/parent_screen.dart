@@ -2,13 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/sound_effects_cubit.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/plan.dart';
 import '../../../core/settings/settings_cubit.dart';
+import '../../../core/version/app_version_text.dart';
 import '../../../learning/learner_state.dart';
 import '../../learning/data/curriculum_repository.dart';
 import '../../learning/data/parent_placement.dart';
@@ -121,39 +121,11 @@ class ParentScreen extends StatelessWidget {
                   onDelete: () => _confirmDelete(context, profile),
                 ),
               const SizedBox(height: 32),
-              const _AppVersion(),
+              const AppVersionText(),
             ],
           ),
         ),
       ),
-    );
-  }
-}
-
-/// The installed version and build, so testers can say which one they use.
-class _AppVersion extends StatefulWidget {
-  const _AppVersion();
-
-  @override
-  State<_AppVersion> createState() => _AppVersionState();
-}
-
-class _AppVersionState extends State<_AppVersion> {
-  final _info = PackageInfo.fromPlatform();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return FutureBuilder(
-      future: _info,
-      builder: (context, snapshot) {
-        final info = snapshot.data;
-        return Text(
-          info == null ? '' : l10n.appVersion(info.version, info.buildNumber),
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall,
-        );
-      },
     );
   }
 }

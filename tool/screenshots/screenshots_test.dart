@@ -29,6 +29,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sembast/sembast_memory.dart';
 
 /// Screenshots are 1280 x 740 logical pixels, rendered at 2x.
@@ -225,6 +226,8 @@ void main() {
           progress: ProgressRepository(db),
         ),
       );
+      // Past the splash screen.
+      await tester.pump(const Duration(seconds: 2));
       await _settle(tester);
     }
 
@@ -232,6 +235,41 @@ void main() {
       find.byType(CobaLagiApp),
       matchesGoldenFile('out/$name$suffix.png'),
     );
+
+    testWidgets('splash ($language)', (tester) async {
+      // A test-only API: this file is a test, but lives in tool/ so it stays
+      // out of the Checks.
+      // ignore: invalid_use_of_visible_for_testing_member
+      PackageInfo.setMockInitialValues(
+        appName: 'Coba Lagi',
+        packageName: 'com.ardeman.cobalagi',
+        version: '1.0.0',
+        buildNumber: '4',
+        buildSignature: '',
+      );
+      tester.view.physicalSize = _size * 2;
+      tester.view.devicePixelRatio = 2;
+      addTearDown(tester.view.reset);
+      final db = await tester.runAsync(() => _seed(language));
+      await tester.pumpWidget(
+        CobaLagiApp(
+          profiles: ProfileRepository(db!),
+          settings: SettingsRepository(db),
+          entitlement: const StaticEntitlementService(Plan.free),
+          audio: const SilentAudioService(),
+          curriculum: CurriculumRepository(),
+          progress: ProgressRepository(db),
+        ),
+      );
+      // Decode the logo, but stay on the splash.
+      await tester.runAsync(() async {
+        final logo = tester.element(find.byType(Image));
+        await precacheImage(const AssetImage('assets/images/logo.png'), logo);
+      });
+      await tester.pump(const Duration(milliseconds: 100));
+      await shoot('splash');
+      await tester.pump(const Duration(seconds: 2));
+    });
 
     testWidgets('adventure map ($language)', (tester) async {
       await pumpApp(tester);
