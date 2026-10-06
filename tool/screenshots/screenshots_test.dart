@@ -325,7 +325,11 @@ Future<void> _openPlacement(WidgetTester tester, String language) async {
 Future<void> _showSolved(WidgetTester tester, String language) async {
   await _open(tester, '/child/1/replay/loops-03');
   await _buildLoopAnswer(tester, 'loops-03');
-  await tester.tap(find.text(language == 'id' ? 'Jalan!' : 'Go!'));
+  final go = language == 'id' ? 'Jalan!' : 'Go!';
+  // Small phones show Go as a picture with a tooltip.
+  await tester.tap(
+    find.text(go).evaluate().isNotEmpty ? find.text(go) : find.byTooltip(go),
+  );
   for (var i = 0; i < 200; i++) {
     await tester.pump(const Duration(milliseconds: 50));
     await tester.runAsync(
@@ -463,9 +467,9 @@ void main() {
           await _open(tester, '/child/1/replay/loops-03');
           await _buildLoopAnswer(tester, 'loops-03');
           final code = language == 'id' ? 'Kode' : 'Code';
-          await tester.tap(
-            prefix.isEmpty ? find.text(code) : find.byTooltip(code),
-          );
+          // Phones show the switch as icons with tooltips.
+          final icon = find.byTooltip(code);
+          await tester.tap(icon.evaluate().isNotEmpty ? icon : find.text(code));
           await _settle(tester);
           await shoot('${prefix}play-code');
         });
