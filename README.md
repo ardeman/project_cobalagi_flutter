@@ -271,6 +271,11 @@ Run and Step use the same interpreter as blocks. Editing and switching put the
 world back at the start. On phones, the code editor fills the space while the
 keyboard is open.
 
+On phones (portrait), the world and the editor scroll as one page between a
+fixed top bar, which holds the Blocks/Code switch, and Go with its buttons at
+the bottom. A new block scrolls into view; Go and Step scroll back to the world
+so the child watches the run.
+
 Variables follow Look Ahead on the map. The six Step Box lessons teach saving
 a number, reusing it across equal-length corridors, changing it for a new
 distance and collecting stars along the way. Generated practice follows the

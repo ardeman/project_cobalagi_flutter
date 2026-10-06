@@ -22,6 +22,8 @@ class BlockEditor extends StatefulWidget {
     this.issueBlockIds = const {},
     this.enabled = true,
     this.showHowTo = false,
+    this.showTips = true,
+    this.fitContent = false,
     this.words = false,
   });
 
@@ -31,6 +33,14 @@ class BlockEditor extends StatefulWidget {
   /// Shows a hand dragging the first palette block into the program, for a
   /// child who hasn't played yet. Hidden once the program has a block.
   final bool showHowTo;
+
+  /// Shows written tips, such as how the Step Box works. Phones leave them
+  /// out to keep room for the blocks; the goal voice explains the same.
+  final bool showTips;
+
+  /// Phones place the editor in a page that scrolls with the world: it takes
+  /// the height of its blocks instead of filling the space it is given.
+  final bool fitContent;
 
   final Set<InstructionKind> palette;
   final double blockSize;
@@ -68,77 +78,85 @@ class _BlockEditorState extends State<BlockEditor> {
       issueBlockIds: widget.issueBlockIds,
     );
 
-    final column = Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        DragTarget<Block>(
-          onAcceptWithDetails: (d) => cubit.remove(d.data.id),
-          builder: (context, candidates, _) => GlassSurface(
-            padding: EdgeInsets.all(gap),
-            tint: candidates.isEmpty ? null : scheme.errorContainer,
-            child: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: gap,
-              runSpacing: gap,
-              children: [
-                for (final type in types)
-                  _PaletteBlock(
-                    key: type == types.first ? _firstBlock : null,
-                    type: type,
-                    words: widget.words,
-                    size: widget.blockSize,
-                    enabled: widget.enabled && !cubit.isFull,
-                    onTap: () => cubit.tap(type),
-                  ),
-              ],
-            ),
+    final top = <Widget>[
+      DragTarget<Block>(
+        onAcceptWithDetails: (d) => cubit.remove(d.data.id),
+        builder: (context, candidates, _) => GlassSurface(
+          padding: EdgeInsets.all(gap),
+          tint: candidates.isEmpty ? null : scheme.errorContainer,
+          child: Wrap(
+            alignment: WrapAlignment.center,
+            spacing: gap,
+            runSpacing: gap,
+            children: [
+              for (final type in types)
+                _PaletteBlock(
+                  key: type == types.first ? _firstBlock : null,
+                  type: type,
+                  words: widget.words,
+                  size: widget.blockSize,
+                  enabled: widget.enabled && !cubit.isFull,
+                  onTap: () => cubit.tap(type),
+                ),
+            ],
+          ),
+        ),
+      ),
+      SizedBox(height: gap),
+      if (widget.showTips &&
+          widget.palette.contains(InstructionKind.setSteps)) ...[
+        Text(l10n.variableHint),
+        SizedBox(height: gap),
+      ],
+      if (showStar) ...[
+        GestureDetector(
+          onTap: () => cubit.pickRow(star: true),
+          child: _StarRow(
+            blocks: cubit.state.star,
+            style: style,
+            picked: cubit.state.tapToStar,
           ),
         ),
         SizedBox(height: gap),
-        if (widget.palette.contains(InstructionKind.setSteps)) ...[
-          Text(l10n.variableHint),
-          SizedBox(height: gap),
-        ],
-        if (showStar) ...[
-          GestureDetector(
-            onTap: () => cubit.pickRow(star: true),
-            child: _StarRow(
-              blocks: cubit.state.star,
-              style: style,
-              picked: cubit.state.tapToStar,
-            ),
-          ),
-          SizedBox(height: gap),
-        ],
-        Expanded(
-          key: _program,
-          child: GestureDetector(
-            onTap: () => cubit.pickRow(star: false),
-            child: DragTarget<Object>(
-              onWillAcceptWithDetails: (d) =>
-                  widget.enabled && (d.data is Block || !cubit.isFull),
-              onAcceptWithDetails: (d) =>
-                  cubit.drop(d.data, index: blocks.length),
-              builder: (context, candidates, _) => GlassSurface(
-                padding: EdgeInsets.all(gap),
-                tint: candidates.isEmpty ? null : scheme.primaryContainer,
-                borderColor: candidates.isNotEmpty
-                    ? scheme.primary
-                    : showStar && !cubit.state.tapToStar
-                    ? scheme.primary.withValues(alpha: 0.6)
-                    : null,
-                borderWidth: showStar && !cubit.state.tapToStar ? 3 : 1.2,
-                child: SingleChildScrollView(
-                  child: _BlockRow(
-                    parentId: null,
-                    blocks: blocks,
-                    style: style,
-                  ),
-                ),
-              ),
-            ),
-          ),
+      ],
+    ];
+    final row = _BlockRow(parentId: null, blocks: blocks, style: style);
+    final program = GestureDetector(
+      onTap: () => cubit.pickRow(star: false),
+      child: DragTarget<Object>(
+        onWillAcceptWithDetails: (d) =>
+            widget.enabled && (d.data is Block || !cubit.isFull),
+        onAcceptWithDetails: (d) => cubit.drop(d.data, index: blocks.length),
+        builder: (context, candidates, _) => GlassSurface(
+          padding: EdgeInsets.all(gap),
+          tint: candidates.isEmpty ? null : scheme.primaryContainer,
+          borderColor: candidates.isNotEmpty
+              ? scheme.primary
+              : showStar && !cubit.state.tapToStar
+              ? scheme.primary.withValues(alpha: 0.6)
+              : null,
+          borderWidth: showStar && !cubit.state.tapToStar ? 3 : 1.2,
+          child: widget.fitContent ? row : SingleChildScrollView(child: row),
         ),
+      ),
+    );
+
+    final column = Column(
+      mainAxisSize: widget.fitContent ? MainAxisSize.min : MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (widget.fitContent) ...[
+          ...top,
+          ConstrainedBox(
+            key: _program,
+            // Always room to drop a block.
+            constraints: BoxConstraints(minHeight: widget.blockSize + gap * 4),
+            child: program,
+          ),
+        ] else ...[
+          ...top,
+          Expanded(key: _program, child: program),
+        ],
         SizedBox(height: gap),
         Row(
           children: [
@@ -169,13 +187,33 @@ class _BlockEditorState extends State<BlockEditor> {
         ),
       ],
     );
+    final editor = widget.fitContent
+        ? BlocListener<BlocksCubit, BlockProgram>(
+            // A new block in the program comes into view, even when the
+            // program sits below the fold on a phone.
+            listenWhen: (before, after) =>
+                _count(after.main) > _count(before.main),
+            listener: (_, _) => WidgetsBinding.instance.addPostFrameCallback((
+              _,
+            ) {
+              final program = _program.currentContext;
+              if (program == null || !program.mounted) return;
+              Scrollable.ensureVisible(
+                program,
+                duration: const Duration(milliseconds: 250),
+                alignmentPolicy: ScrollPositionAlignmentPolicy.keepVisibleAtEnd,
+              );
+            }),
+            child: column,
+          )
+        : column;
     if (!widget.showHowTo || !widget.enabled || blocks.isNotEmpty) {
-      return column;
+      return editor;
     }
     return Stack(
       key: _stack,
       children: [
-        column,
+        editor,
         Positioned.fill(
           child: IgnorePointer(
             child: _HowToHand(
@@ -191,6 +229,9 @@ class _BlockEditorState extends State<BlockEditor> {
     );
   }
 }
+
+int _count(List<Block> blocks) =>
+    blocks.expand((block) => block.selfAndDescendants).length;
 
 /// Shared look and state for placed blocks.
 final class _BlockStyle {
@@ -376,7 +417,7 @@ class _SavedStepsBlock extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            BlockTile(type: block.type, size: 64, words: style.words),
+            BlockTile(type: block.type, size: style.size, words: style.words),
             _CountStepper(
               count: block.count,
               size: 64,

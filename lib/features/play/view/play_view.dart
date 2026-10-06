@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,6 +72,7 @@ class _PlayViewState extends State<PlayView> {
   late final _blocks = BlocksCubit(maxBlocks: _level.maxBlocks);
   late final _play = PlayCubit(_level);
   late final _typed = TypedCodeCubit(_level);
+  final _page = ScrollController();
   var _codeMode = false;
   var _codeSeeded = false;
   late final _game = WorldGame(
@@ -102,6 +105,7 @@ class _PlayViewState extends State<PlayView> {
   void dispose() {
     _blocks.close();
     _typed.close();
+    _page.dispose();
     _play.close();
     super.dispose();
   }
@@ -196,6 +200,21 @@ class _PlayViewState extends State<PlayView> {
       child: MultiBlocListener(
         listeners: [
           BlocListener<PlayCubit, PlayState>(listener: _onPlayChanged),
+          // Go or Step on a phone brings the world back into view.
+          BlocListener<PlayCubit, PlayState>(
+            listenWhen: (before, after) =>
+                after.phase == PlayPhase.running &&
+                before.phase != PlayPhase.running,
+            listener: (_, _) {
+              if (_page.hasClients && _page.offset > 0) {
+                _page.animateTo(
+                  0,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeOut,
+                );
+              }
+            },
+          ),
           BlocListener<TypedCodeCubit, TypedCodeState>(
             listener: (_, _) {
               if (_play.state.phase != PlayPhase.editing) _play.reset();
@@ -224,157 +243,160 @@ class _PlayViewState extends State<PlayView> {
               child: WindowClassBuilder(
                 builder: (context, windowClass) {
                   final compact = windowClass == WindowClass.compact;
-                  final world = Column(
-                    children: [
-                      _TopBar(
-                        plan: widget.exercise.plan,
-                        goal: _goal(_level).$1(AppLocalizations.of(context)),
-                        onListen: _sayGoal,
-                        homePath: widget.homePath,
+                  final topBar = _TopBar(
+                    plan: widget.exercise.plan,
+                    goal: _goal(_level).$1(AppLocalizations.of(context)),
+                    onListen: _sayGoal,
+                    homePath: widget.homePath,
+                    compact: compact,
+                    // Phones keep the editor switch up here, so the world
+                    // keeps its height.
+                    editorSwitch: compact
+                        ? BlocBuilder<PlayCubit, PlayState>(
+                            builder: (context, play) => _EditorSwitch(
+                              codeMode: _codeMode,
+                              iconOnly: true,
+                              onPick:
+                                  !_finished && play.phase != PlayPhase.running
+                                  ? _pickEditor
+                                  : null,
+                            ),
+                          )
+                        : null,
+                  );
+                  final panel = ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    // The Step Box sits beside or above the world, never over
+                    // it, so it never hides a cell.
+                    child: ColoredBox(
+                      color: _game.backgroundColor(),
+                      child: Flex(
+                        direction: compact ? Axis.horizontal : Axis.vertical,
+                        children: [
+                          if (_level.palette.contains(InstructionKind.setSteps))
+                            Padding(
+                              padding: compact
+                                  ? const EdgeInsets.fromLTRB(8, 8, 0, 8)
+                                  : const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                              child: _StepBoxValue(compact: compact),
+                            ),
+                          Expanded(child: GameWidget(game: _game)),
+                        ],
                       ),
-                      const SizedBox(height: 12),
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(24),
-                          child: Stack(
-                            children: [
-                              Positioned.fill(child: GameWidget(game: _game)),
-                              if (_level.palette.contains(
-                                InstructionKind.setSteps,
-                              ))
-                                Positioned(
-                                  top: 8,
-                                  left: 8,
-                                  right: 8,
-                                  child: BlocBuilder<PlayCubit, PlayState>(
-                                    builder: (context, play) => IgnorePointer(
-                                      child: GlassSurface(
-                                        padding: const EdgeInsets.all(8),
-                                        child: Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          ).stepBoxValue(
-                                            play.storedSteps?.toString() ?? '—',
-                                          ),
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(
-                                            context,
-                                          ).textTheme.titleMedium,
-                                        ),
-                                      ),
+                    ),
+                  );
+                  // Feedback replaces the controls, so it never hides the
+                  // world, and the controls aren't usable meanwhile anyway.
+                  final controls =
+                      _feedbackCard(context) ??
+                      _RunControls(
+                        onHint: _finished ? null : _showHint,
+                        howTo: widget.showHowTo,
+                        compact: compact,
+                        codeMode: _codeMode,
+                      );
+                  Widget editorFor({required bool fit}) =>
+                      BlocBuilder<PlayCubit, PlayState>(
+                        builder: (context, play) {
+                          final enabled =
+                              !_finished && play.phase != PlayPhase.running;
+                          return _codeMode
+                              ? TypedCodeEditor(
+                                  enabled: enabled,
+                                  activeBlockId: play.activeBlockId,
+                                  fitContent: fit,
+                                )
+                              : BlockEditor(
+                                  palette: _level.palette,
+                                  blockSize: compact ? 56.0 : 72.0,
+                                  activeBlockId: play.activeBlockId,
+                                  issueBlockIds: {
+                                    for (final issue in play.issues)
+                                      ?issue.blockId,
+                                  },
+                                  enabled: enabled,
+                                  showTips: !compact,
+                                  fitContent: fit,
+                                  showHowTo: widget.showHowTo && play.runs == 0,
+                                  words: widget.words,
+                                );
+                        },
+                      );
+                  if (compact && _codeMode && keyboardOpen) {
+                    return editorFor(fit: false);
+                  }
+                  if (compact) {
+                    // Phones: the world and the editor scroll as one page
+                    // between a fixed top bar and the controls at the bottom.
+                    return Column(
+                      children: [
+                        topBar,
+                        const SizedBox(height: 12),
+                        Expanded(
+                          child: LayoutBuilder(
+                            builder: (context, box) => SingleChildScrollView(
+                              controller: _page,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  SizedBox(
+                                    // Large, with the editor peeking below.
+                                    height: min(
+                                      box.maxHeight * 0.75,
+                                      box.maxWidth,
                                     ),
+                                    child: panel,
                                   ),
-                                ),
-                            ],
+                                  const SizedBox(height: 12),
+                                  editorFor(fit: true),
+                                ],
+                              ),
+                            ),
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        controls,
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          children: [
+                            topBar,
+                            const SizedBox(height: 12),
+                            Expanded(child: panel),
+                            const SizedBox(height: 12),
+                            controls,
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 12),
-                      // Feedback replaces the controls, so it never hides the
-                      // world, and the controls aren't usable meanwhile anyway.
-                      _feedbackCard(context) ??
-                          _RunControls(
-                            onHint: _finished ? null : _showHint,
-                            howTo: widget.showHowTo,
-                            compact: compact,
-                            codeMode: _codeMode,
-                          ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          children: [
+                            BlocBuilder<PlayCubit, PlayState>(
+                              builder: (context, play) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _EditorSwitch(
+                                  codeMode: _codeMode,
+                                  onPick:
+                                      !_finished &&
+                                          play.phase != PlayPhase.running
+                                      ? _pickEditor
+                                      : null,
+                                ),
+                              ),
+                            ),
+                            Expanded(child: editorFor(fit: false)),
+                          ],
+                        ),
+                      ),
                     ],
                   );
-                  final editor = BlocBuilder<PlayCubit, PlayState>(
-                    builder: (context, play) {
-                      final enabled =
-                          !_finished && play.phase != PlayPhase.running;
-                      final l = AppLocalizations.of(context);
-                      return Column(
-                        children: [
-                          Row(
-                            children: [
-                              for (final code in [false, true])
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(bottom: 8),
-                                    child: OutlinedButton.icon(
-                                      style: OutlinedButton.styleFrom(
-                                        minimumSize: const Size(64, 64),
-                                        backgroundColor: _codeMode == code
-                                            ? Theme.of(
-                                                context,
-                                              ).colorScheme.primaryContainer
-                                            : null,
-                                      ),
-                                      onPressed: enabled
-                                          ? () {
-                                              if (_codeMode == code) return;
-                                              FocusManager.instance.primaryFocus
-                                                  ?.unfocus();
-                                              if (code && !_codeSeeded) {
-                                                _typed.edit(
-                                                  formatCode(_blocks.program),
-                                                );
-                                                _codeSeeded = true;
-                                              }
-                                              _play.reset();
-                                              setState(() => _codeMode = code);
-                                            }
-                                          : null,
-                                      icon: Icon(
-                                        code
-                                            ? Icons.code_rounded
-                                            : Icons.view_module_rounded,
-                                      ),
-                                      label: Text(
-                                        code ? l.editorCode : l.editorBlocks,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          Expanded(
-                            child: _codeMode
-                                ? TypedCodeEditor(
-                                    enabled: enabled,
-                                    activeBlockId: play.activeBlockId,
-                                  )
-                                : BlockEditor(
-                                    palette: _level.palette,
-                                    blockSize: compact ? 56.0 : 72.0,
-                                    activeBlockId: play.activeBlockId,
-                                    issueBlockIds: {
-                                      for (final issue in play.issues)
-                                        ?issue.blockId,
-                                    },
-                                    enabled: enabled,
-                                    showHowTo:
-                                        widget.showHowTo && play.runs == 0,
-                                    words: widget.words,
-                                  ),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                  if (compact && _codeMode && keyboardOpen) {
-                    return editor;
-                  }
-                  return compact
-                      ? Column(
-                          children: [
-                            // Phones: the editor needs as much room as the
-                            // world, more with the star row.
-                            Expanded(flex: 4, child: world),
-                            const SizedBox(height: 12),
-                            Expanded(flex: 5, child: editor),
-                          ],
-                        )
-                      : Row(
-                          children: [
-                            Expanded(flex: 3, child: world),
-                            const SizedBox(width: 16),
-                            Expanded(flex: 2, child: editor),
-                          ],
-                        );
                 },
               ),
             ),
@@ -382,6 +404,17 @@ class _PlayViewState extends State<PlayView> {
         ),
       ),
     );
+  }
+
+  void _pickEditor(bool code) {
+    if (_codeMode == code) return;
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (code && !_codeSeeded) {
+      _typed.edit(formatCode(_blocks.program));
+      _codeSeeded = true;
+    }
+    _play.reset();
+    setState(() => _codeMode = code);
   }
 
   /// The card after a run or a finished exercise, or null while editing.
@@ -484,12 +517,19 @@ class _TopBar extends StatelessWidget {
     required this.goal,
     required this.onListen,
     required this.homePath,
+    this.compact = false,
+    this.editorSwitch,
   });
 
   final ExercisePlan plan;
   final String goal;
   final VoidCallback onListen;
   final String homePath;
+
+  /// Phones show the island's emblem without its name, to make room for
+  /// [editorSwitch].
+  final bool compact;
+  final Widget? editorSwitch;
 
   @override
   Widget build(BuildContext context) {
@@ -502,31 +542,57 @@ class _TopBar extends StatelessWidget {
           icon: const Icon(Icons.home_rounded),
         ),
         const SizedBox(width: 16),
-        Icon(
-          conceptIcon(plan.conceptId),
-          color: conceptColor(plan.conceptId),
-          size: 36,
+        Tooltip(
+          message: conceptName(l10n, plan.conceptId),
+          child: Icon(
+            conceptIcon(plan.conceptId),
+            color: conceptColor(plan.conceptId),
+            size: 36,
+            semanticLabel: compact ? conceptName(l10n, plan.conceptId) : null,
+          ),
         ),
         const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            conceptName(l10n, plan.conceptId),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-        if (plan.mode == ExerciseMode.review) ...[
-          const SizedBox(width: 16),
-          Flexible(
-            child: Chip(
-              avatar: const Icon(
-                Icons.diamond_rounded,
-                color: Color(0xFF26C6DA),
-              ),
-              label: Text(l10n.bonusAdventure, overflow: TextOverflow.ellipsis),
+        if (compact)
+          const Spacer()
+        else
+          Expanded(
+            child: Text(
+              conceptName(l10n, plan.conceptId),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ),
+        if (plan.mode == ExerciseMode.review) ...[
+          const SizedBox(width: 8),
+          if (compact)
+            Tooltip(
+              message: l10n.bonusAdventure,
+              child: Icon(
+                Icons.diamond_rounded,
+                color: const Color(0xFF26C6DA),
+                size: 32,
+                semanticLabel: l10n.bonusAdventure,
+              ),
+            )
+          else
+            Flexible(
+              child: Chip(
+                avatar: const Icon(
+                  Icons.diamond_rounded,
+                  color: Color(0xFF26C6DA),
+                ),
+                label: Text(
+                  l10n.bonusAdventure,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ),
+          const SizedBox(width: 8),
+        ],
+        if (editorSwitch case final editorSwitch?) ...[
+          editorSwitch,
+          const SizedBox(width: 8),
         ],
         IconButton.filledTonal(
           tooltip: '${l10n.listenAgain}: $goal',
@@ -534,6 +600,117 @@ class _TopBar extends StatelessWidget {
           icon: const Icon(Icons.volume_up_rounded),
         ),
       ],
+    );
+  }
+}
+
+/// Switches between the block editor and typed code. Phones show only the
+/// icons, with the words as tooltips.
+class _EditorSwitch extends StatelessWidget {
+  const _EditorSwitch({
+    required this.codeMode,
+    required this.onPick,
+    this.iconOnly = false,
+  });
+
+  final bool codeMode;
+  final ValueChanged<bool>? onPick;
+  final bool iconOnly;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    Widget button(bool code) {
+      final icon = Icon(code ? Icons.code_rounded : Icons.view_module_rounded);
+      final label = code ? l.editorCode : l.editorBlocks;
+      final style = OutlinedButton.styleFrom(
+        minimumSize: const Size(64, 64),
+        padding: iconOnly ? EdgeInsets.zero : null,
+        backgroundColor: codeMode == code ? scheme.primaryContainer : null,
+      );
+      final onPressed = onPick == null ? null : () => onPick!(code);
+      if (iconOnly) {
+        return Tooltip(
+          message: label,
+          child: Semantics(
+            selected: codeMode == code,
+            label: label,
+            excludeSemantics: true,
+            button: true,
+            child: OutlinedButton(
+              style: style,
+              onPressed: onPressed,
+              child: icon,
+            ),
+          ),
+        );
+      }
+      return OutlinedButton.icon(
+        style: style,
+        onPressed: onPressed,
+        icon: icon,
+        label: Text(label),
+      );
+    }
+
+    if (iconOnly) {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [button(false), const SizedBox(width: 4), button(true)],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(child: button(false)),
+        Expanded(child: button(true)),
+      ],
+    );
+  }
+}
+
+/// The number saved in the Step Box: a wide banner above the world, or a
+/// narrow box beside it on phones.
+class _StepBoxValue extends StatelessWidget {
+  const _StepBoxValue({required this.compact});
+
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final value = context.select<PlayCubit, String>(
+      (cubit) => cubit.state.storedSteps?.toString() ?? '—',
+    );
+    final text = Theme.of(context).textTheme;
+    if (!compact) {
+      return GlassSurface(
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          l.stepBoxValue(value),
+          textAlign: TextAlign.center,
+          style: text.titleMedium,
+        ),
+      );
+    }
+    return Semantics(
+      label: l.stepBoxValue(value),
+      excludeSemantics: true,
+      child: GlassSurface(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              conceptIcon('variables'),
+              color: conceptColor('variables'),
+              size: 32,
+            ),
+            const SizedBox(height: 4),
+            Text(value, style: text.headlineSmall),
+          ],
+        ),
+      ),
     );
   }
 }

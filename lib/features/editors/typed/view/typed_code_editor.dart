@@ -8,9 +8,17 @@ import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
 import 'package:cobalagi/features/editors/typed/data/typed_program.dart';
 
 class TypedCodeEditor extends StatefulWidget {
-  const TypedCodeEditor({super.key, required this.enabled, this.activeBlockId});
+  const TypedCodeEditor({
+    super.key,
+    required this.enabled,
+    this.activeBlockId,
+    this.fitContent = false,
+  });
   final bool enabled;
   final String? activeBlockId;
+
+  /// Takes the height of its content, for a page that scrolls (phones).
+  final bool fitContent;
 
   @override
   State<TypedCodeEditor> createState() => _TypedCodeEditorState();
@@ -93,6 +101,11 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
     return GlassSurface(
       padding: const EdgeInsets.all(12),
       child: ListView(
+        // Phones scroll the whole page instead.
+        shrinkWrap: widget.fitContent,
+        physics: widget.fitContent
+            ? const NeverScrollableScrollPhysics()
+            : null,
         children: [
           TextField(
             key: const Key('typedCodeSource'),

@@ -121,6 +121,83 @@ void main() {
     });
   }
 
+  testWidgets('in a scrolling page the editor shows each new block', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(400, 320);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final cubit = BlocksCubit();
+    addTearDown(cubit.close);
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: BlocProvider.value(
+            value: cubit,
+            // Phones scroll the world and the editor as one page.
+            child: SingleChildScrollView(
+              child: BlockEditor(
+                palette: const {
+                  InstructionKind.move,
+                  InstructionKind.turnLeft,
+                  InstructionKind.turnRight,
+                  InstructionKind.call,
+                },
+                blockSize: 56,
+                fitContent: true,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    for (var i = 0; i < 12; i++) {
+      // Like a tap on the palette, which may have scrolled away by now.
+      cubit.tap(BlockType.turnLeft);
+      await tester.pumpAndSettle();
+    }
+    expect(cubit.state.main, hasLength(12));
+    // The palette scrolled away and the newest block is on screen.
+    final last = find.byKey(ValueKey(cubit.state.main.last.id));
+    expect(tester.getRect(last).bottom, lessThanOrEqualTo(320));
+    expect(tester.takeException(), isNull);
+  });
+
+  for (final showTips in [true, false]) {
+    testWidgets('the written Step Box tip follows showTips ($showTips)', (
+      tester,
+    ) async {
+      final cubit = BlocksCubit();
+      addTearDown(cubit.close);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: BlocProvider.value(
+              value: cubit,
+              child: BlockEditor(
+                palette: const {
+                  InstructionKind.setSteps,
+                  InstructionKind.moveSteps,
+                },
+                blockSize: 56,
+                showTips: showTips,
+              ),
+            ),
+          ),
+        ),
+      );
+      final context = tester.element(find.byType(BlockEditor));
+      expect(
+        find.text(AppLocalizations.of(context).variableHint),
+        showTips ? findsOneWidget : findsNothing,
+      );
+    });
+  }
+
   testWidgets('tap a condition then a palette action to fill it', (
     tester,
   ) async {

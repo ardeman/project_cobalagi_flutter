@@ -77,10 +77,11 @@ void main() {
           ),
         );
         await tester.pump(const Duration(milliseconds: 100));
-        expect(find.text('Step Box'), findsOneWidget);
-        expect(find.text('Step Box: —'), findsOneWidget);
+        // Phones show the island's emblem and a small box beside the world.
+        expect(find.byTooltip('Step Box'), findsOneWidget);
+        expect(find.bySemanticsLabel('Step Box: —'), findsOneWidget);
         if (code) {
-          await tester.tap(find.text('Code'));
+          await tester.tap(find.byTooltip('Code'));
           await tester.pump();
           await tester.enterText(
             find.byKey(const Key('typedCodeSource')),
@@ -104,10 +105,10 @@ void main() {
         }
         await tester.tap(find.byTooltip('One step'));
         await tester.pump();
-        expect(find.text('Step Box: 2'), findsOneWidget);
+        expect(find.bySemanticsLabel('Step Box: 2'), findsOneWidget);
         await tester.tap(find.byTooltip('Start over'));
         await tester.pump();
-        expect(find.text('Step Box: —'), findsOneWidget);
+        expect(find.bySemanticsLabel('Step Box: —'), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
@@ -197,7 +198,7 @@ void main() {
         ),
       );
       await tester.pump(const Duration(milliseconds: 100));
-      await tester.tap(find.text('Code'));
+      await tester.tap(find.byTooltip('Code'));
       await tester.pump();
       final source = find.byKey(const Key('typedCodeSource'));
       await tester.enterText(source, 'turn_left();');
@@ -225,7 +226,7 @@ void main() {
         isNotNull,
       );
       expect(
-        tester.getSize(find.widgetWithText(OutlinedButton, 'Code')).height,
+        tester.getSize(find.byTooltip('Code')).height,
         greaterThanOrEqualTo(64),
       );
       expect(tester.takeException(), isNull);
