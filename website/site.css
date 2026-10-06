@@ -66,18 +66,42 @@ header {
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--text); text-decoration: none; }
 .brand svg { width: 38px; height: 38px; }
 nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
-nav a { color: var(--muted); text-decoration: none; font-weight: 600; }
-nav a:hover { color: var(--text); }
+nav .links { display: flex; gap: 22px; align-items: center; }
+nav .links a { color: var(--muted); text-decoration: none; font-weight: 600; }
+nav .links a:hover, nav .links a[aria-current="page"] { color: var(--text); }
+nav .links a[aria-current="page"] { text-decoration: underline 3px var(--teal); text-underline-offset: 6px; }
 .lang {
   border: 2px solid var(--line); background: var(--surface); color: var(--text);
   font: 700 0.95rem var(--font); border-radius: 999px; padding: 6px 14px; cursor: pointer;
 }
 .lang:hover { border-color: var(--teal); }
-/* The GitHub link stays on phones, as an icon. */
 nav .github { display: inline-grid; place-items: center; width: 36px; height: 36px; color: var(--muted); }
 nav .github:hover { color: var(--text); }
 nav .github svg { width: 24px; height: 24px; }
-@media (max-width: 720px) { nav a:not(.github) { display: none; } }
+.menu-toggle {
+  display: none; place-items: center; width: 44px; height: 44px; padding: 0; cursor: pointer;
+  color: var(--text); background: var(--surface); border: 2px solid var(--line); border-radius: 14px;
+}
+.menu-toggle svg { width: 24px; height: 24px; }
+/* Phones: the links fold into a panel under the header, opened by the button. */
+@media (max-width: 860px) {
+  nav { gap: 10px; }
+  .js .menu-toggle { display: inline-grid; }
+  .js nav .links {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 8px 16px 16px; background: var(--bg);
+    border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+  }
+  .js nav.open .links { display: flex; }
+  .js nav .links a { padding: 14px 8px; font-size: 1.1rem; border-radius: 12px; }
+  .js nav .links a + a { border-top: 1px solid var(--line); }
+  .js nav .links a[aria-current="page"] { text-decoration: none; background: var(--surface-2); }
+  /* Without JavaScript the links simply wrap under the logo. */
+  html:not(.js) .bar { flex-wrap: wrap; height: auto; padding: 10px 0; }
+  html:not(.js) nav { flex-wrap: wrap; }
+  html:not(.js) nav .links { flex-wrap: wrap; gap: 6px 16px; }
+}
 
 /* Hero */
 .hero { position: relative; overflow: hidden; padding: 64px 0 72px; }

@@ -153,3 +153,32 @@
     mark();
   });
 })();
+
+// The menu: marks the current page, and on phones opens from the ☰ button.
+(function () {
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('menu-toggle');
+  if (!nav || !toggle) return;
+  var page = location.pathname.split('/').pop() || 'index.html';
+  nav.querySelectorAll('.links a').forEach(function (a) {
+    var target = (a.getAttribute('href') || '').split(/[?#]/)[0];
+    if (target === page && page !== 'index.html') a.setAttribute('aria-current', 'page');
+  });
+  function set(open) {
+    nav.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  toggle.addEventListener('click', function (e) {
+    e.stopPropagation();
+    set(!nav.classList.contains('open'));
+  });
+  nav.querySelectorAll('.links a').forEach(function (a) {
+    a.addEventListener('click', function () { set(false); });
+  });
+  document.addEventListener('click', function (e) {
+    if (!nav.contains(e.target)) set(false);
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); toggle.focus(); }
+  });
+})();

@@ -56,6 +56,23 @@ String _bilingual(List<(bool, String)> id, List<(bool, String)> en) {
   return out.toString();
 }
 
+/// The site's shared header, taken from the privacy page so every page
+/// has the same menu.
+String _header(String root) {
+  final privacy = File('$root/website/privacy.html').readAsStringSync();
+  final start = privacy.indexOf('  <header>\n');
+  final end = privacy.indexOf('  </header>\n') + '  </header>\n'.length;
+  return privacy.substring(start, end);
+}
+
+/// The site's shared footer, also taken from the privacy page.
+String _footer(String root) {
+  final privacy = File('$root/website/privacy.html').readAsStringSync();
+  final start = privacy.indexOf('  <footer>\n');
+  final end = privacy.indexOf('  </footer>\n') + '  </footer>\n'.length;
+  return privacy.substring(start, end);
+}
+
 String buildChangelogPage({String root = '.'}) {
   final releases =
       (jsonDecode(File('$root/store/releases.json').readAsStringSync())
@@ -92,42 +109,14 @@ ${_bilingual(_notes(notes('id')), _notes(notes('en-US')))}    </article>
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
-  <header>
-    <div class="wrap bar">
-      <a class="brand" href="index.html" data-keep-lang aria-label="Coba Lagi">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <circle cx="33" cy="37" r="23" fill="#000" opacity=".12"/>
-          <circle cx="32" cy="34" r="23" fill="#ff7a59"/>
-          <circle cx="32" cy="41" r="11" fill="#ffb199"/>
-          <path d="M32 5l8 10H24z" fill="#ff7a59"/>
-          <circle cx="24" cy="26" r="6" fill="#fff"/><circle cx="40" cy="26" r="6" fill="#fff"/>
-          <circle cx="24" cy="24" r="3" fill="#263238"/><circle cx="40" cy="24" r="3" fill="#263238"/>
-        </svg>
-        Coba Lagi
-      </a>
-      <nav aria-label="Menu">
-        <a href="index.html" data-keep-lang data-en="Home">Beranda</a>
-        <a class="github" href="https://github.com/ardeman/project_cobalagi_flutter" aria-label="Kode sumber di GitHub" data-en-label="Source code on GitHub">
-          <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-        </a>
-        <button class="lang" id="lang" type="button" aria-label="Switch to English">EN</button>
-      </nav>
-    </div>
-  </header>
-
+${_header(root)}
   <main class="wrap doc">
     <h1 data-en="What's new">Yang baru</h1>
     <p class="updated" data-en="What changed in each version of Coba Lagi. The newest is at the top.">Apa yang berubah di setiap versi Coba Lagi. Yang terbaru ada di paling atas.</p>
 ${entries.toString().trimRight()}
   </main>
 
-  <footer>
-    <div class="wrap foot">
-      <p>© 2026 Ardeman · Coba Lagi · <a href="https://github.com/ardeman/project_cobalagi_flutter">GitHub</a></p>
-      <p><a href="index.html" data-keep-lang data-en="Back to home">Kembali ke beranda</a></p>
-    </div>
-  </footer>
-
+${_footer(root)}
   <script src="site.js"></script>
 </body>
 </html>
