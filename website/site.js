@@ -164,6 +164,41 @@
     var target = (a.getAttribute('href') || '').split(/[?#]/)[0];
     if (target === page && page !== 'index.html') a.setAttribute('aria-current', 'page');
   });
+  // On the home page, the link of the section on screen is marked as well.
+  var sectionLinks = Array.prototype.filter.call(
+    nav.querySelectorAll('.links a'),
+    function (a) { return (a.getAttribute('href') || '').charAt(0) === '#'; }
+  );
+  var sections = sectionLinks.map(function (a) {
+    return document.querySelector(a.getAttribute('href'));
+  });
+  var header = document.querySelector('header');
+  var queued = false;
+  function spy() {
+    queued = false;
+    // The section whose top has passed a line a third of the way down.
+    var line = header.getBoundingClientRect().bottom + innerHeight / 3;
+    var current = -1;
+    sections.forEach(function (section, i) {
+      if (section && section.getBoundingClientRect().top <= line) current = i;
+    });
+    // At the very bottom, the last section counts even if it is short.
+    if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) {
+      current = sections.length - 1;
+    }
+    sectionLinks.forEach(function (a, i) {
+      if (i === current) a.setAttribute('aria-current', 'location');
+      else a.removeAttribute('aria-current');
+    });
+  }
+  if (sectionLinks.length) {
+    addEventListener('scroll', function () {
+      if (!queued) { queued = true; requestAnimationFrame(spy); }
+    }, { passive: true });
+    addEventListener('resize', spy);
+    spy();
+  }
+
   function set(open) {
     nav.classList.toggle('open', open);
     toggle.setAttribute('aria-expanded', open ? 'true' : 'false');

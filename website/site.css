@@ -68,8 +68,8 @@ header {
 nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
 nav .links { display: flex; gap: 22px; align-items: center; }
 nav .links a { color: var(--muted); text-decoration: none; font-weight: 600; }
-nav .links a:hover, nav .links a[aria-current="page"] { color: var(--text); }
-nav .links a[aria-current="page"] { text-decoration: underline 3px var(--teal); text-underline-offset: 6px; }
+nav .links a:hover, nav .links a[aria-current] { color: var(--text); }
+nav .links a[aria-current] { text-decoration: underline 3px var(--teal); text-underline-offset: 6px; }
 .lang {
   border: 2px solid var(--line); background: var(--surface); color: var(--text);
   font: 700 0.95rem var(--font); border-radius: 999px; padding: 6px 14px; cursor: pointer;
@@ -96,7 +96,7 @@ nav .github svg { width: 24px; height: 24px; }
   .js nav.open .links { display: flex; }
   .js nav .links a { padding: 14px 8px; font-size: 1.1rem; border-radius: 12px; }
   .js nav .links a + a { border-top: 1px solid var(--line); }
-  .js nav .links a[aria-current="page"] { text-decoration: none; background: var(--surface-2); }
+  .js nav .links a[aria-current] { text-decoration: none; background: var(--surface-2); }
   /* Without JavaScript the links simply wrap under the logo. */
   html:not(.js) .bar { flex-wrap: wrap; height: auto; padding: 10px 0; }
   html:not(.js) nav { flex-wrap: wrap; }
