@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:cobalagi/core/widgets/glass_surface.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
+import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/progress_report.dart';
@@ -59,6 +61,7 @@ class AdventureMapScreen extends StatelessWidget {
                 learner.progress[concepts[i].id]?.solvedLessons.length ?? 0,
             totalLessons: lessons[concepts[i].id]?.length ?? 0,
             current: i == currentIndex,
+            unlocking: concepts[i].id == cubit.state.islandToCelebrate,
             locked:
                 i > currentIndex &&
                 !learner.progress.containsKey(concepts[i].id),
@@ -79,78 +82,86 @@ class AdventureMapScreen extends StatelessWidget {
       null => null,
     };
 
-    return Scaffold(
-      // Phones scroll the sea under the glass bars.
-      extendBodyBehindAppBar: true,
-      appBar: GlassAppBar(
-        leading: BackButton(onPressed: () => context.go('/')),
-        title: Row(
-          children: [
-            ProfileAvatar(avatar: profile.avatar, size: 44),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                l10n.greeting(profile.nickname),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+    return _CelebrationTrigger(
+      island: cubit.state.islandToCelebrate,
+      child: Scaffold(
+        // Phones scroll the sea under the glass bars.
+        extendBodyBehindAppBar: true,
+        appBar: GlassAppBar(
+          leading: BackButton(onPressed: () => context.go('/')),
+          title: Row(
+            children: [
+              ProfileAvatar(avatar: profile.avatar, size: 44),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.greeting(profile.nickname),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      body: WindowClassBuilder(
-        builder: (context, windowClass) {
-          final islandSize = switch (windowClass) {
-            WindowClass.compact => 104.0,
-            WindowClass.medium => 140.0,
-            WindowClass.expanded => 180.0,
-          };
-          if (learner.placement == null) {
-            return SafeArea(
-              child: _Welcome(
-                size: islandSize,
-                onStart: () => context.go('/child/$profileId/pretest'),
-              ),
-            );
-          }
-          // Phones held sideways use the full-screen sea too.
-          final short = MediaQuery.sizeOf(context).height < 500;
-          if (windowClass != WindowClass.compact && !short) {
-            return SafeArea(
-              child: Column(
+        body: WindowClassBuilder(
+          builder: (context, windowClass) {
+            final islandSize = switch (windowClass) {
+              WindowClass.compact => 104.0,
+              WindowClass.medium => 140.0,
+              WindowClass.expanded => 180.0,
+            };
+            if (learner.placement == null) {
+              return SafeArea(
+                child: _Welcome(
+                  size: islandSize,
+                  onStart: () => context.go('/child/$profileId/pretest'),
+                ),
+              );
+            }
+            // Phones held sideways use the full-screen sea too.
+            final short = MediaQuery.sizeOf(context).height < 500;
+            if (windowClass != WindowClass.compact && !short) {
+              return SafeArea(
+                child: Column(
+                  children: [
+                    if (banner != null)
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                        child: banner,
+                      ),
+                    Expanded(child: map(EdgeInsets.zero)),
+                    play,
+                  ],
+                ),
+              );
+            }
+            // Phones: the sea fills the screen and scrolls under the glass app
+            // bar and the Play bar; the bonus banner floats on top.
+            final top = MediaQuery.paddingOf(context).top;
+            return GlassFrame(
+              bottom: SafeArea(top: false, child: Center(child: play)),
+              builder: (context, insets) => Stack(
                 children: [
+                  Positioned.fill(
+                    child: map(
+                      EdgeInsets.only(
+                        top: top + (banner == null ? 0 : 88),
+                        bottom: insets.bottom,
+                      ),
+                    ),
+                  ),
                   if (banner != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    Positioned(
+                      top: top + 8,
+                      left: 16,
+                      right: 16,
                       child: banner,
                     ),
-                  Expanded(child: map(EdgeInsets.zero)),
-                  play,
                 ],
               ),
             );
-          }
-          // Phones: the sea fills the screen and scrolls under the glass app
-          // bar and the Play bar; the bonus banner floats on top.
-          final top = MediaQuery.paddingOf(context).top;
-          return GlassFrame(
-            bottom: SafeArea(top: false, child: Center(child: play)),
-            builder: (context, insets) => Stack(
-              children: [
-                Positioned.fill(
-                  child: map(
-                    EdgeInsets.only(
-                      top: top + (banner == null ? 0 : 88),
-                      bottom: insets.bottom,
-                    ),
-                  ),
-                ),
-                if (banner != null)
-                  Positioned(top: top + 8, left: 16, right: 16, child: banner),
-              ],
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -255,4 +266,38 @@ class _BonusBanner extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Plays the opening of a newly reached island once: a cheer while the map
+/// animates it, then it is marked as celebrated.
+class _CelebrationTrigger extends StatefulWidget {
+  const _CelebrationTrigger({required this.island, required this.child});
+
+  final String? island;
+  final Widget child;
+
+  @override
+  State<_CelebrationTrigger> createState() => _CelebrationTriggerState();
+}
+
+class _CelebrationTriggerState extends State<_CelebrationTrigger> {
+  Timer? _done;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.island == null) return;
+    final learning = context.read<LearningCubit>();
+    context.read<AudioService>().playEffect(SoundEffect.goal);
+    _done = Timer(const Duration(milliseconds: 2400), learning.celebrated);
+  }
+
+  @override
+  void dispose() {
+    _done?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

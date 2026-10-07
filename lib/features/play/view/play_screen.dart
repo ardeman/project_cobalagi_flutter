@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../learning/cubit/learning_cubit.dart';
 import '../../play_time/cubit/break_reminder_cubit.dart';
@@ -62,10 +63,17 @@ class _PlayScreenState extends State<PlayScreen> {
       skipAfterRuns: learning.engine.config.offerSkipAfterRuns,
       homePath: '/child/${widget.profileId}',
       onFinished: learning.record,
-      onNext: () => setState(() {
-        _exercise = null;
-        _onBreak = _breakDue();
-      }),
+      onNext: () {
+        // A new island opened: the map celebrates it before the next puzzle.
+        if (learning.state.islandToCelebrate != null) {
+          context.go('/child/${widget.profileId}');
+          return;
+        }
+        setState(() {
+          _exercise = null;
+          _onBreak = _breakDue();
+        });
+      },
       // Readers (from the warm-up game, or a parent's choice) can type code.
       allowCode: learning.state.learner!.placement?.readsWords ?? false,
       // Until the child has solved a first puzzle.

@@ -124,6 +124,22 @@ final class LearningEngine {
     );
   }
 
+  /// On the island the child is on, with every lesson solved: how many more
+  /// solved puzzles at most before it leads on to the next island (it may
+  /// come sooner, on good scores). Null when that doesn't apply: lessons
+  /// still to do, another island, or the last island.
+  int? puzzlesToMoveOn(
+    LearnerState state,
+    String conceptId, {
+    required List<String> lessons,
+  }) {
+    if (state.currentConcept != conceptId || state.review != null) return null;
+    if (graph.nextAfter(conceptId) == null || lessons.isEmpty) return null;
+    final progress = progressOf(state, conceptId);
+    if (!lessons.every(progress.solvedLessons.contains)) return null;
+    return max(1, config.practiceLimit - progress.exercises);
+  }
+
   /// Remembers a served puzzle so it is never served again.
   LearnerState markServed(LearnerState state, String fingerprint, int seed) =>
       state.copyWith(

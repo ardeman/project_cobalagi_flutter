@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/glass_surface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -78,6 +81,22 @@ class IslandScreen extends StatelessWidget {
                           ),
                       ],
                     ),
+                    if (cubit.engine.puzzlesToMoveOn(
+                          learner,
+                          conceptId,
+                          lessons: [for (final l in lessons) l.id],
+                        )
+                        case final left?) ...[
+                      const SizedBox(height: 32),
+                      _NextIslandTrail(
+                        left: left,
+                        slots: max(
+                          1,
+                          cubit.engine.config.practiceLimit - lessons.length,
+                        ),
+                        next: cubit.engine.graph.nextAfter(conceptId)!,
+                      ),
+                    ],
                     const SizedBox(height: 40),
                     Wrap(
                       alignment: WrapAlignment.center,
@@ -171,6 +190,74 @@ class _LevelTile extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Every lesson is solved: dots that fill with each practice puzzle and
+/// lead to the next island's emblem, so moving on is something to see.
+class _NextIslandTrail extends StatelessWidget {
+  const _NextIslandTrail({
+    required this.left,
+    required this.slots,
+    required this.next,
+  });
+
+  /// Solved puzzles left at most; [slots] dots in all.
+  final int left;
+  final int slots;
+  final String next;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final filled = slots - min(left, slots);
+    final color = conceptColor(next);
+    return Semantics(
+      label: l10n.nextIslandSoon(left, conceptName(l10n, next)),
+      excludeSemantics: true,
+      child: GlassSurface(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (var i = 0; i < slots; i++) ...[
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: 22,
+                    height: 22,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: i < filled ? const Color(0xFFFFC83D) : null,
+                      border: Border.all(
+                        color: const Color(0xFFFFC83D),
+                        width: 3,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                ],
+                Icon(Icons.arrow_forward_rounded, color: color),
+                const SizedBox(width: 10),
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: color,
+                  child: Icon(conceptIcon(next), color: Colors.white),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.nextIslandSoon(left, conceptName(l10n, next)),
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ],
         ),
       ),
     );

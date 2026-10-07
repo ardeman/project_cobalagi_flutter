@@ -165,4 +165,55 @@ void main() {
     expect(tester.getSize(find.text('Step Box')).height, greaterThan(14));
     expect(tester.takeException(), isNull);
   });
+
+  for (final still in [false, true]) {
+    testWidgets('a newly reached island opens with stars (still: $still)', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1280, 740);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: still),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: OceanMap(
+              marker: const Icon(Icons.face),
+              islands: [
+                island('directions'),
+                MapIsland(
+                  conceptId: 'sequencing',
+                  stars: 0,
+                  solvedLessons: 0,
+                  totalLessons: 6,
+                  current: true,
+                  locked: false,
+                  unlocking: true,
+                ),
+                island('loops', locked: true),
+              ],
+              onOpen: (_) {},
+            ),
+          ),
+        ),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
+      // Stars burst and the lock lifts, unless motion is reduced.
+      final stars = find.byIcon(Icons.star_rounded).evaluate().length;
+      final locks = find.byIcon(Icons.lock_rounded).evaluate().length;
+      if (still) {
+        expect(locks, 1, reason: 'only the locked island');
+      } else {
+        expect(locks, 2, reason: 'the lifting lock as well');
+        expect(stars, greaterThanOrEqualTo(10));
+      }
+      await tester.pump(const Duration(seconds: 3));
+      expect(tester.takeException(), isNull);
+    });
+  }
 }

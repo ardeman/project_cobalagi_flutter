@@ -62,6 +62,22 @@ void main() {
     expect(await progress.attempts(1), hasLength(3));
   });
 
+  test('a new island is celebrated once on the map', () async {
+    final cubit = await newCubit();
+    expect(cubit.state.islandToCelebrate, isNull);
+    Decision? decision;
+    while (decision is! Advance) {
+      decision = await cubit.record(resultFor(cubit.nextExercise()));
+    }
+    expect(cubit.state.islandToCelebrate, 'sequencing');
+    // Other updates keep it until the map has shown it.
+    await cubit.markTutorialSeen('sequencing');
+    expect(cubit.state.islandToCelebrate, 'sequencing');
+    cubit.celebrated();
+    expect(cubit.state.islandToCelebrate, isNull);
+    expect(cubit.state.learner!.currentConcept, 'sequencing');
+  });
+
   test('generated puzzles never repeat', () async {
     final cubit = await newCubit();
     // Use up the lessons so practice puzzles are generated.

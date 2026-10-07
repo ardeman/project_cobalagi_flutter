@@ -25,11 +25,18 @@ final class Exercise {
 }
 
 class LearningState {
-  const LearningState({this.learner, this.lastDecision});
+  const LearningState({
+    this.learner,
+    this.lastDecision,
+    this.islandToCelebrate,
+  });
 
   /// Null until loaded.
   final LearnerState? learner;
   final Decision? lastDecision;
+
+  /// An island just reached, whose opening the map celebrates once.
+  final String? islandToCelebrate;
 }
 
 /// Runs the learning loop for one child and saves every step.
@@ -83,7 +90,13 @@ class LearningCubit extends Cubit<LearningState> {
       _pending = learner;
       Future.microtask(() {
         if (isClosed || !identical(_pending, learner)) return;
-        emit(LearningState(learner: learner, lastDecision: state.lastDecision));
+        emit(
+          LearningState(
+            learner: learner,
+            lastDecision: state.lastDecision,
+            islandToCelebrate: state.islandToCelebrate,
+          ),
+        );
       });
       _progress.save(profileId, learner);
     }
@@ -115,7 +128,13 @@ class LearningCubit extends Cubit<LearningState> {
     final current = _pending ?? state.learner!;
     _pending = null;
     final learner = engine.recordReplay(current, result);
-    emit(LearningState(learner: learner, lastDecision: state.lastDecision));
+    emit(
+      LearningState(
+        learner: learner,
+        lastDecision: state.lastDecision,
+        islandToCelebrate: state.islandToCelebrate,
+      ),
+    );
     await _progress.logAttempt(profileId, result);
     await _progress.save(profileId, learner);
     return null;
@@ -130,8 +149,22 @@ class LearningCubit extends Cubit<LearningState> {
     final learner = current.copyWith(
       tutorialsSeen: {...current.tutorialsSeen, conceptId},
     );
-    emit(LearningState(learner: learner, lastDecision: state.lastDecision));
+    emit(
+      LearningState(
+        learner: learner,
+        lastDecision: state.lastDecision,
+        islandToCelebrate: state.islandToCelebrate,
+      ),
+    );
     await _progress.save(profileId, learner);
+  }
+
+  /// The map has celebrated the new island.
+  void celebrated() {
+    if (state.islandToCelebrate == null) return;
+    emit(
+      LearningState(learner: state.learner, lastDecision: state.lastDecision),
+    );
   }
 
   /// A fresh warm-up game with new questions.
@@ -162,7 +195,16 @@ class LearningCubit extends Cubit<LearningState> {
       result,
       lessons: curriculum.lessonIds,
     );
-    emit(LearningState(learner: learner, lastDecision: decision));
+    emit(
+      LearningState(
+        learner: learner,
+        lastDecision: decision,
+        islandToCelebrate: switch (decision) {
+          Advance(:final to) => to,
+          _ => state.islandToCelebrate,
+        },
+      ),
+    );
     await _progress.logAttempt(profileId, result);
     await _progress.save(profileId, learner);
     return decision;

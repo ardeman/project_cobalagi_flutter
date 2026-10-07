@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cobalagi/features/editors/blocks/data/block.dart';
+import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
@@ -222,6 +224,57 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
 }
 
 /// Highlights the executing source line without changing the child's selection.
+/// Commands coloured like their blocks, so code reads like the blocks a
+/// child knows: forward green, turns blue and orange, repeat purple.
+final _commandColours = <RegExp, BlockType>{
+  RegExp(r'\bmove\(\s*steps\s*\)'): BlockType.moveSteps,
+  RegExp(r'\bmove\b'): BlockType.forward,
+  RegExp(r'\bturn_left\b'): BlockType.turnLeft,
+  RegExp(r'\bturn_right\b'): BlockType.turnRight,
+  RegExp(r'\brepeat\b'): BlockType.repeat,
+  RegExp(r'\bif_path_clear\b'): BlockType.ifPathClear,
+  RegExp(r'\buntil_flag\b'): BlockType.untilGoal,
+  RegExp(r'\b(star|define)\b'): BlockType.star,
+  RegExp(r'\bsteps\b'): BlockType.setSteps,
+};
+
+/// [text] split into spans, commands in their block's colour (darkened a
+/// little to read well on the light editor) and comments greyed.
+@visibleForTesting
+List<TextSpan> colouredCode(String text) {
+  final colours = List<Color?>.filled(text.length, null);
+  final comment = RegExp(r'//[^\n]*');
+  for (final MapEntry(key: pattern, value: type) in _commandColours.entries) {
+    for (final match in pattern.allMatches(text)) {
+      for (var i = match.start; i < match.end; i++) {
+        colours[i] ??= Color.lerp(type.color, const Color(0xFF000000), 0.18);
+      }
+    }
+  }
+  for (final match in comment.allMatches(text)) {
+    for (var i = match.start; i < match.end; i++) {
+      colours[i] = const Color(0xFF7A8A8A);
+    }
+  }
+  final spans = <TextSpan>[];
+  var start = 0;
+  for (var i = 1; i <= text.length; i++) {
+    if (i == text.length || colours[i] != colours[start]) {
+      final colour = colours[start];
+      spans.add(
+        TextSpan(
+          text: text.substring(start, i),
+          style: colour == null
+              ? null
+              : TextStyle(color: colour, fontWeight: FontWeight.w700),
+        ),
+      );
+      start = i;
+    }
+  }
+  return spans;
+}
+
 class _CodeController extends TextEditingController {
   _CodeController({super.text});
   int? activeLine;
@@ -232,7 +285,8 @@ class _CodeController extends TextEditingController {
     TextStyle? style,
     required bool withComposing,
   }) {
-    if (activeLine == null || (withComposing && value.composing.isValid)) {
+    // While the keyboard composes a word, keep the platform's own styling.
+    if (withComposing && value.composing.isValid) {
       return super.buildTextSpan(
         context: context,
         style: style,
@@ -245,10 +299,12 @@ class _CodeController extends TextEditingController {
       children: [
         for (var i = 0; i < lines.length; i++)
           TextSpan(
-            text: '${lines[i]}${i < lines.length - 1 ? '\n' : ''}',
             style: i + 1 == activeLine
                 ? const TextStyle(backgroundColor: Color(0x66FFD54F))
                 : null,
+            children: colouredCode(
+              '${lines[i]}${i < lines.length - 1 ? '\n' : ''}',
+            ),
           ),
       ],
     );

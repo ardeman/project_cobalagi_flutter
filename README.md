@@ -268,7 +268,8 @@ lesson's palette. The parser compiles to `Program` with source IDs; the shared
 validator checks the palette, block limit, empty bodies and recursive calls.
 Run and Step use the same interpreter as blocks. Editing and switching put the
 world back at the start. On phones, the code editor fills the space while the
-keyboard is open.
+keyboard is open. Commands are coloured like their blocks (`colouredCode`), so
+a child can match a line of code to the block it came from.
 
 On phones (portrait), the world and the editor scroll as one page under a
 glass top bar, which holds the Blocks/Code switch for readers, and glass controls (Go and
@@ -279,6 +280,16 @@ adventure map puts the islands in one row that scrolls sideways, starting at the
 picture beside the answers. Tablets held upright use the stacked phone page
 with a large world. A new block scrolls into view; Go and Step scroll back to the world
 so the child watches the run.
+
+Once every lesson on an island is solved, practice puzzles lead on to the
+next island: after a solved puzzle at the practice mastery level, or after
+`practiceLimit` exercises at most (`assets/config/adaptive.json`). The island
+screen shows how many puzzles remain as a dotted trail to the next island's
+emblem (`LearningEngine.puzzlesToMoveOn`). When a child moves on, play returns
+to the map, where the new island grows in as its cloud and lock lift off
+(`LearningState.islandToCelebrate`, cleared by `celebrated`); it holds still
+when the system asks for fewer animations. Dropping a block gives a light
+haptic tick on devices that have one.
 
 Parents can set a break reminder (off, 15, 30 or 45 minutes of puzzle time; `PlayClock` pauses in the background). When it is due, the current puzzle finishes, then a "Time for a break!" screen comes before the next one; only a grown-up (parent gate) continues, which resets the time.
 

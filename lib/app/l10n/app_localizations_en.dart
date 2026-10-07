@@ -714,4 +714,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String breakMinutes(int minutes) {
     return '$minutes min';
   }
+
+  @override
+  String nextIslandSoon(int count, String island) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Up to $count more puzzles to $island!',
+      one: 'One more puzzle to $island!',
+    );
+    return '$_temp0';
+  }
 }

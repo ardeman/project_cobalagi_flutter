@@ -15,6 +15,7 @@ final class MapIsland {
     required this.totalLessons,
     required this.current,
     required this.locked,
+    this.unlocking = false,
   });
 
   final String conceptId;
@@ -25,6 +26,9 @@ final class MapIsland {
   final int totalLessons;
   final bool current;
   final bool locked;
+
+  /// Just reached: its lock and cloud lift away in a burst of stars.
+  final bool unlocking;
 }
 
 /// The adventure map: islands on the sea, joined by a dotted path that winds
@@ -152,13 +156,17 @@ class _OceanMapState extends State<OceanMap> {
                 left: centres[i].dx - size,
                 top: centres[i].dy - size * 0.85,
                 width: size * 2,
-                child: _Island(
-                  island: widget.islands[i],
+                child: _Celebrated(
+                  active: widget.islands[i].unlocking,
                   size: size,
-                  marker: widget.marker,
-                  // Phones show the label beside the island instead.
-                  label: wide,
-                  onTap: _open(i),
+                  child: _Island(
+                    island: widget.islands[i],
+                    size: size,
+                    marker: widget.marker,
+                    // Phones show the label beside the island instead.
+                    label: wide,
+                    onTap: _open(i),
+                  ),
                 ),
               ),
               if (!wide)
@@ -581,4 +589,88 @@ class _BobbingState extends State<_Bobbing>
     ),
     child: widget.child,
   );
+}
+
+/// The opening of a newly reached island: the island bounces in while its
+/// lock and cloud lift away and golden stars burst around it. Shown still,
+/// at its end, when the device asks for less motion.
+class _Celebrated extends StatelessWidget {
+  const _Celebrated({
+    required this.active,
+    required this.size,
+    required this.child,
+  });
+
+  final bool active;
+  final double size;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!active || MediaQuery.disableAnimationsOf(context)) return child;
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: const Duration(milliseconds: 2200),
+      builder: (context, t, child) {
+        // The island bounces up to full size in the first half.
+        final grow = Curves.elasticOut.transform(min(1, t * 2));
+        // The lock and cloud lift away early; the stars spread and fade.
+        final lift = Curves.easeOut.transform(min(1, t * 1.6));
+        final burst = Curves.easeOutCubic.transform(t);
+        final emblemTop = size * 0.05;
+        return Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topCenter,
+          children: [
+            Transform.scale(
+              scale: 0.7 + 0.3 * grow,
+              alignment: Alignment.bottomCenter,
+              child: child,
+            ),
+            for (var k = 0; k < 10; k++)
+              Positioned(
+                top:
+                    emblemTop +
+                    size * 0.35 +
+                    sin(k * 2 * pi / 10) * size * (0.2 + 0.9 * burst),
+                left:
+                    size +
+                    cos(k * 2 * pi / 10) * size * (0.2 + 1.0 * burst) -
+                    size * 0.1,
+                child: Opacity(
+                  opacity: (1 - burst).clamp(0, 1),
+                  child: Icon(
+                    Icons.star_rounded,
+                    size: size * 0.2,
+                    color: const Color(0xFFFFC83D),
+                  ),
+                ),
+              ),
+            Positioned(
+              top: emblemTop - size * 0.9 * lift,
+              child: Opacity(
+                opacity: (1 - lift).clamp(0, 1),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(
+                      Icons.cloud_rounded,
+                      size: size * 0.9,
+                      color: Colors.white,
+                    ),
+                    Icon(
+                      Icons.lock_rounded,
+                      size: size * 0.32,
+                      color: Colors.blueGrey,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      child: child,
+    );
+  }
 }

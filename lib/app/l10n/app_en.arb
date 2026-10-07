@@ -344,5 +344,12 @@
     "placeholders": {
       "minutes": {"type": "int"}
     }
+  },
+  "nextIslandSoon": "{count, plural, =1{One more puzzle to {island}!} other{Up to {count} more puzzles to {island}!}}",
+  "@nextIslandSoon": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "island": {"type": "String"}
+    }
   }
 }

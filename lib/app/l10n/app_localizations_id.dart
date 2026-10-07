@@ -703,4 +703,15 @@ class AppLocalizationsId extends AppLocalizations {
   String breakMinutes(int minutes) {
     return '$minutes mnt';
   }
+
+  @override
+  String nextIslandSoon(int count, String island) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Paling banyak $count teka-teki lagi menuju $island!',
+      one: 'Satu teka-teki lagi menuju $island!',
+    );
+    return '$_temp0';
+  }
 }

@@ -1351,6 +1351,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes} min'**
   String breakMinutes(int minutes);
+
+  /// No description provided for @nextIslandSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One more puzzle to {island}!} other{Up to {count} more puzzles to {island}!}}'**
+  String nextIslandSoon(int count, String island);
 }
 
 class _AppLocalizationsDelegate

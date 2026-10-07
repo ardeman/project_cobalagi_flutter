@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
@@ -241,8 +242,12 @@ class _PlayViewState extends State<PlayView> {
           // A click when a block lands in the program.
           BlocListener<BlocksCubit, BlockProgram>(
             listenWhen: (before, after) => _count(after) > _count(before),
-            listener: (_, _) =>
-                context.read<AudioService>().playEffect(SoundEffect.drop),
+            listener: (_, _) {
+              context.read<AudioService>().playEffect(SoundEffect.drop);
+              // A light tick, so the drop feels solid; Android leaves it out
+              // when the device's touch vibration is off.
+              HapticFeedback.selectionClick();
+            },
           ),
           BlocListener<BlocksCubit, Object>(
             listener: (_, _) {

@@ -232,5 +232,6 @@
   "breakReminder": "Pengingat istirahat",
   "breakReminderHint": "Setelah bermain teka-teki selama ini, anak diajak istirahat. Hanya orang dewasa yang bisa melanjutkan.",
   "breakOff": "Mati",
-  "breakMinutes": "{minutes} mnt"
+  "breakMinutes": "{minutes} mnt",
+  "nextIslandSoon": "{count, plural, =1{Satu teka-teki lagi menuju {island}!} other{Paling banyak {count} teka-teki lagi menuju {island}!}}"
 }

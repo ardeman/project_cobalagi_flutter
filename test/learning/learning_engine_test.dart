@@ -361,4 +361,39 @@ void main() {
       expect(after.currentConcept, 'directions');
     });
   });
+
+  test('puzzlesToMoveOn counts down on a finished island only', () {
+    final ids = [for (var i = 1; i <= 6; i++) 'directions-0$i'];
+    final lessons = {'directions': ids};
+    var state = engine.initialState();
+    expect(
+      engine.puzzlesToMoveOn(state, 'directions', lessons: ids),
+      isNull,
+      reason: 'lessons still to do',
+    );
+    (state, _) = play(state, [
+      for (final id in ids)
+        result(
+          'directions',
+          hints: 3,
+          runs: 3,
+          mode: ExerciseMode.lesson,
+          level: id,
+        ),
+    ], lessons: lessons);
+    final before = engine.puzzlesToMoveOn(state, 'directions', lessons: ids)!;
+    expect(before, config.practiceLimit - 6);
+    (state, _) = play(state, [
+      result('directions', hints: 3, runs: 3),
+    ], lessons: lessons);
+    expect(
+      engine.puzzlesToMoveOn(state, 'directions', lessons: ids),
+      before - 1,
+    );
+    expect(
+      engine.puzzlesToMoveOn(state, 'loops', lessons: const ['loops-01']),
+      isNull,
+      reason: 'not the island the child is on',
+    );
+  });
 }
