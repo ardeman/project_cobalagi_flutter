@@ -59,6 +59,7 @@ flutter run            # choose a device; or: flutter run -d chrome
 | Enable commit-message hook (once per clone) | `git config --local core.hooksPath .githooks` |
 | Release build | `flutter build <apk\|appbundle\|ipa\|web\|macos\|linux\|windows>` |
 | Installable Android APKs (one per architecture) | `flutter build apk --release --split-per-abi` |
+| Publish the APKs as a GitHub Release by hand (`--dry-run` to only build; `--latest` for a full release). Pushing a version bump to `master` does this automatically (`.github/workflows/release-apks.yml`). | `tool/release_apks.sh` |
 
 **Checks** — run all three before every commit. They must pass with no errors or warnings:
 

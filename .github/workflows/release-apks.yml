@@ -1,0 +1,100 @@
+# Builds the Android APKs and publishes them as a GitHub Release whenever
+# the version in pubspec.yaml changes on master (tool/release_apks.sh).
+# Needs these repository secrets, from the upload key:
+#   ANDROID_KEYSTORE_BASE64  the .jks file, base64-encoded
+#   ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+name: Release APKs
+
+on:
+  push:
+    branches: [master]
+    paths: ['pubspec.yaml']
+  workflow_dispatch:
+    inputs:
+      latest:
+        description: 'Publish as the latest full release (not a pre-release)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-apks
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # pubspec.yaml also changes for dependencies: release only versions
+      # that have no release yet.
+      - name: Check for a new version
+        id: version
+        run: |
+          version="$(sed -n 's/^version: *//p' pubspec.yaml)"
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
+          if gh release view "v$version" >/dev/null 2>&1; then
+            echo "v$version is already released; nothing to do."
+            echo "new=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "new=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.version.outputs.new == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - if: steps.version.outputs.new == 'true'
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.1'
+          channel: stable
+          cache: true
+
+      - name: Run the checks
+        if: steps.version.outputs.new == 'true'
+        run: |
+          flutter pub get
+          dart format --set-exit-if-changed .
+          flutter analyze
+          flutter test
+
+      - name: Set up the upload key
+        if: steps.version.outputs.new == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::The upload key secrets are not set."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/upload.jks
+          {
+            echo "storeFile=upload.jks"
+            echo "storePassword=$STORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > android/key.properties
+
+      - name: Build and publish
+        if: steps.version.outputs.new == 'true'
+        run: |
+          if [ "${{ inputs.latest }}" = "true" ]; then
+            tool/release_apks.sh --latest
+          else
+            tool/release_apks.sh
+          fi
+
+      - name: Remove the upload key
+        if: always()
+        run: rm -f android/app/upload.jks android/key.properties
