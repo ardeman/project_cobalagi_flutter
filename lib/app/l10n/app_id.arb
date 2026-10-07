@@ -251,5 +251,6 @@
   "promptShapeCircle": "Ketuk lingkaran!",
   "promptShapeSquare": "Ketuk persegi!",
   "promptShapeTriangle": "Ketuk segitiga!",
-  "promptShapeHeart": "Ketuk hati!"
+  "promptShapeHeart": "Ketuk hati!",
+  "playLevel": "Main level {number}"
 }

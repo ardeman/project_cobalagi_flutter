@@ -779,4 +779,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get promptShapeHeart => 'Tap the heart!';
+
+  @override
+  String playLevel(int number) {
+    return 'Play level $number';
+  }
 }

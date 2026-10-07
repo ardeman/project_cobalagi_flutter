@@ -4,6 +4,7 @@ import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/learning/exercise_result.dart';
+import 'package:cobalagi/learning/learner_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -88,5 +89,77 @@ void main() {
     await tester.tap(find.text('1'));
     await tester.pumpAndSettle();
     expect(find.text('replay directions-01'), findsOneWidget);
+  });
+
+  testWidgets('a passed island opens every lesson and offers the next one', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(2560, 1600);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+
+    final (curriculum, progress) = (await tester.runAsync(() async {
+      final db = await newDatabaseFactoryMemory().openDatabase('t.db');
+      return (await CurriculumRepository().load(), ProgressRepository(db));
+    }))!;
+    // Moved on to Loops (say, a new starting point) with one Directions
+    // lesson solved.
+    await tester.runAsync(
+      () => progress.save(
+        1,
+        const LearnerState(
+          currentConcept: 'loops',
+          progress: {
+            'directions': ConceptProgress(
+              difficulty: 1,
+              attemptedLessons: {'directions-01'},
+              solvedLessons: {'directions-01'},
+            ),
+          },
+        ),
+      ),
+    );
+    final cubit = LearningCubit(
+      profileId: 1,
+      curriculum: curriculum,
+      progress: progress,
+    );
+    addTearDown(cubit.close);
+    await tester.runAsync(cubit.load);
+
+    final router = GoRouter(
+      initialLocation: '/child/1/island/directions',
+      routes: [
+        GoRoute(
+          path: '/child/1/island/directions',
+          builder: (_, _) =>
+              const IslandScreen(profileId: 1, conceptId: 'directions'),
+        ),
+        GoRoute(
+          path: '/child/1/replay/:levelId',
+          builder: (_, state) =>
+              Text('replay ${state.pathParameters['levelId']}'),
+        ),
+        GoRoute(path: '/child/1/play', builder: (_, _) => const Text('play')),
+      ],
+    );
+    await tester.pumpWidget(
+      BlocProvider.value(
+        value: cubit,
+        child: MaterialApp.router(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.lock_rounded), findsNothing);
+    expect(find.text('Continue the adventure'), findsOneWidget);
+    await tester.tap(find.text('Play level 2'));
+    await tester.pumpAndSettle();
+    expect(find.text('replay directions-02'), findsOneWidget);
   });
 }

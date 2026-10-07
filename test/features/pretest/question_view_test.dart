@@ -110,4 +110,36 @@ void main() {
       reason: 'centred under it',
     );
   });
+
+  testWidgets('stacked step cards leave room for the label', (tester) async {
+    tester.view.physicalSize = const Size(1080, 4200);
+    tester.view.devicePixelRatio = 3;
+    addTearDown(tester.view.reset);
+    // A question whose right answer has another card under it.
+    late SequencingQuestion steps;
+    for (var seed = 0; ; seed++) {
+      steps =
+          PretestGenerator.fromJson(const {
+                'objects': ['sun', 'star', 'house', 'car'],
+                'colors': ['red', 'blue', 'green'],
+              }, Random(seed)).question(PretestSkill.sequencing, 1)
+              as SequencingQuestion;
+      if (steps.correct < steps.optionCount - 1) break;
+    }
+    final wrong = steps.optionCount - 1;
+    await pumpQuestion(tester, steps, chosen: wrong, size: 110);
+    final right = find.byType(Card).at(steps.correct);
+    final below = find.byType(Card).at(steps.correct + 1);
+    expect(
+      tester.getTopLeft(below).dy,
+      greaterThan(tester.getBottomLeft(right).dy + 40),
+      reason: 'the cards stack in one column',
+    );
+    final label = find.text('The answer is this one!');
+    expect(
+      tester.getBottomLeft(label).dy,
+      lessThanOrEqualTo(tester.getTopLeft(below).dy),
+      reason: 'the label ends before the next card',
+    );
+  });
 }

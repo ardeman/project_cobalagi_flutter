@@ -1465,6 +1465,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap the heart!'**
   String get promptShapeHeart;
+
+  /// No description provided for @playLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Play level {number}'**
+  String playLevel(int number);
 }
 
 class _AppLocalizationsDelegate

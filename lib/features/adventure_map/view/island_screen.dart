@@ -34,6 +34,18 @@ class IslandScreen extends StatelessWidget {
     final lessons = cubit.curriculum.lessons[conceptId] ?? const [];
     final progress = cubit.engine.progressOf(learner, conceptId);
     final color = conceptColor(conceptId);
+    // The adventure serves the current island's lessons in order. Any other
+    // island the child can open (passed, reviewed, or skipped by a new
+    // starting point) has every lesson open to play, so none is out of
+    // reach for good.
+    final current = learner.currentConcept == conceptId;
+    final firstUnsolved = current
+        ? null
+        : lessons.indexWhere((l) => !progress.solvedLessons.contains(l.id));
+    final next = firstUnsolved == null || firstUnsolved < 0
+        ? null
+        : firstUnsolved;
+    void play(int i) => context.go('/child/$profileId/replay/${lessons[i].id}');
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -69,15 +81,15 @@ class IslandScreen extends StatelessWidget {
                             number: i + 1,
                             size: tile,
                             color: color,
-                            played: progress.attemptedLessons.contains(
-                              lessons[i].id,
-                            ),
+                            played:
+                                !current ||
+                                progress.attemptedLessons.contains(
+                                  lessons[i].id,
+                                ),
                             solved: progress.solvedLessons.contains(
                               lessons[i].id,
                             ),
-                            onTap: () => context.go(
-                              '/child/$profileId/replay/${lessons[i].id}',
-                            ),
+                            onTap: () => play(i),
                           ),
                       ],
                     ),
@@ -110,11 +122,33 @@ class IslandScreen extends StatelessWidget {
                             '/child/$profileId/tutorial/$conceptId',
                           ),
                         ),
-                        FilledButton.icon(
-                          icon: const Icon(Icons.play_arrow_rounded, size: 40),
-                          label: Text(l10n.continueAdventure),
-                          onPressed: () => context.go('/child/$profileId/play'),
-                        ),
+                        // Lessons left here: playing them comes first, the
+                        // adventure (on another island) second.
+                        if (next != null) ...[
+                          OutlinedButton.icon(
+                            icon: const Icon(Icons.explore_rounded),
+                            label: Text(l10n.continueAdventure),
+                            onPressed: () =>
+                                context.go('/child/$profileId/play'),
+                          ),
+                          FilledButton.icon(
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 40,
+                            ),
+                            label: Text(l10n.playLevel(next + 1)),
+                            onPressed: () => play(next),
+                          ),
+                        ] else
+                          FilledButton.icon(
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 40,
+                            ),
+                            label: Text(l10n.continueAdventure),
+                            onPressed: () =>
+                                context.go('/child/$profileId/play'),
+                          ),
                       ],
                     ),
                   ],

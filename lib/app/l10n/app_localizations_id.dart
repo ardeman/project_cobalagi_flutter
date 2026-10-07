@@ -768,4 +768,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get promptShapeHeart => 'Ketuk hati!';
+
+  @override
+  String playLevel(int number) {
+    return 'Main level $number';
+  }
 }

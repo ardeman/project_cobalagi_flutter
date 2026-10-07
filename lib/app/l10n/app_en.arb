@@ -369,5 +369,11 @@
   "promptShapeCircle": "Tap the circle!",
   "promptShapeSquare": "Tap the square!",
   "promptShapeTriangle": "Tap the triangle!",
-  "promptShapeHeart": "Tap the heart!"
+  "promptShapeHeart": "Tap the heart!",
+  "playLevel": "Play level {number}",
+  "@playLevel": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  }
 }

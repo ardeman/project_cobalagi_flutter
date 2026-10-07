@@ -244,10 +244,14 @@ class QuestionView extends StatelessWidget {
         ],
       );
     }
+    // The label under the right answer needs room before the next row of
+    // cards, e.g. when step cards stack on a phone.
+    final labelled =
+        answerLabel != null && chosen != null && chosen != question.correct;
     final answers = Wrap(
       alignment: WrapAlignment.center,
       spacing: size * 0.2,
-      runSpacing: size * 0.2,
+      runSpacing: labelled ? math.max(size * 0.2, _labelRoom) : size * 0.2,
       children: cards,
     );
     // Phones held sideways: the picture goes beside the answers, so both
@@ -287,6 +291,10 @@ class _Board extends StatelessWidget {
 enum _Mark { none, right, wrong, faded }
 
 const _rightColor = Color(0xFF43A047);
+
+/// Height of the arrow and one line of "The answer is this one!" under a
+/// card, plus a little air.
+const _labelRoom = 96.0;
 const _wrongColor = Color(0xFFFB8C00);
 
 class _OptionCard extends StatelessWidget {
