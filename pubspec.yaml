@@ -3,7 +3,7 @@ description: "Coba Lagi: a coding-learning app for children."
 publish_to: 'none'
 
 # x.y.z+build → Android versionName+versionCode, iOS CFBundleShortVersionString+CFBundleVersion.
-version: 1.1.0+8
+version: 1.1.0+9
 
 environment:
   sdk: ^3.11.0

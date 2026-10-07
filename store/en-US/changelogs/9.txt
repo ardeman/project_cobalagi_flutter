@@ -1,0 +1,5 @@
+- No more getting stuck on a finished island. A dotted trail shows how many puzzles are left until the next island, and the new island opens with a small celebration.
+- Press the light bulb a second time to see the part that repeats. The bulb glows when a hint might help.
+- Parents can set a break reminder in the parent area.
+- Code now has the same colours as its blocks.
+- A gentle buzz when a block is placed.

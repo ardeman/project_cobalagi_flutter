@@ -1,0 +1,5 @@
+- Tidak ada lagi tertahan di pulau yang sudah tuntas. Jejak titik menunjukkan sisa teka-teki sampai pulau berikutnya, dan pulau baru dibuka dengan perayaan kecil.
+- Tekan lampu sekali lagi untuk melihat bagian yang berulang. Lampu menyala saat petunjuk bisa membantu.
+- Orang tua bisa mengatur pengingat istirahat di area orang tua.
+- Kode kini berwarna sama dengan bloknya.
+- Getaran lembut saat blok dipasang.
