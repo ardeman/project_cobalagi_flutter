@@ -49,7 +49,7 @@ ExerciseResult result(
 
 void main() {
   group('skill graph', () {
-    test('follows Directions → … → Variables → Fix it! → Until the flag', () {
+    test('follows Directions → … → Until the flag → Otherwise', () {
       expect(graph.first, 'directions');
       expect(graph.nextAfter('directions'), 'sequencing');
       expect(graph.nextAfter('sequencing'), 'loops');
@@ -58,7 +58,10 @@ void main() {
       expect(graph.nextAfter('conditions'), 'variables');
       expect(graph.nextAfter('variables'), 'debugging');
       expect(graph.nextAfter('debugging'), 'until');
-      expect(graph.nextAfter('until'), isNull);
+      expect(graph.nextAfter('until'), 'otherwise');
+      expect(graph.nextAfter('otherwise'), isNull);
+      // Struggling with "otherwise" reviews the plain eye block.
+      expect(graph.reviewTargetFor('otherwise'), 'conditions');
       expect(graph.reviewTargetFor('until'), 'loops');
       // Struggling to fix bugs reviews loops, where the bugs come from.
       expect(graph.reviewTargetFor('debugging'), 'loops');
@@ -169,9 +172,10 @@ void main() {
     });
 
     test('mastering the last concept completes the map', () {
-      final (_, decision) = play(engine.initialState(startConcept: 'until'), [
-        for (var i = 0; i < config.minExercises; i++) result('until'),
-      ]);
+      final (_, decision) = play(
+        engine.initialState(startConcept: 'otherwise'),
+        [for (var i = 0; i < config.minExercises; i++) result('otherwise')],
+      );
       expect(decision, isA<MapComplete>());
     });
 

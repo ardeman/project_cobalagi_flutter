@@ -1,4 +1,5 @@
 import 'package:cobalagi/engine/program/instruction.dart';
+import 'package:cobalagi/engine/program/program.dart';
 import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/engine/program/program_json.dart';
@@ -402,5 +403,71 @@ void main() {
       InstructionKind.ifPathClear,
       InstructionKind.turnLeft,
     ]);
+  });
+
+  group('otherwise block', () {
+    test('fills both rows by dragging or tapping a row first', () {
+      final cubit = BlocksCubit();
+      addTearDown(cubit.close);
+      cubit.add(BlockType.untilGoal);
+      final loop = cubit.state.main.single.id;
+      expect(cubit.add(BlockType.ifElse, parentId: loop), isTrue);
+      final check = cubit.state.main.single.children.single.id;
+      cubit.add(BlockType.forward, parentId: check);
+      // Tap the otherwise row, then a palette block.
+      cubit.pickContainer(BlocksCubit.otherwiseOf(check));
+      cubit.tap(BlockType.turnRight);
+      final block = cubit.state.main.single.children.single;
+      expect(block.children.single.type, BlockType.forward);
+      expect(block.otherwise.single.type, BlockType.turnRight);
+      final program = cubit.program;
+      final compiled =
+          (program.body.single as RepeatUntilGoal).body.single
+              as IfElsePathClear;
+      expect(compiled.body.single, isA<Move>());
+      expect(compiled.otherwise.single, isA<TurnRight>());
+      expect(compiled.blockId, check);
+    });
+
+    test('blocks move between its rows and out, and undo brings them back', () {
+      final cubit = BlocksCubit();
+      addTearDown(cubit.close);
+      cubit.add(BlockType.ifElse);
+      final check = cubit.state.main.single.id;
+      cubit.add(BlockType.forward, parentId: check);
+      final step = cubit.state.main.single.children.single;
+      cubit.move(step.id, parentId: BlocksCubit.otherwiseOf(check), index: 0);
+      expect(cubit.state.main.single.children, isEmpty);
+      expect(cubit.state.main.single.otherwise.single.id, step.id);
+      cubit.move(step.id, parentId: null, index: 1);
+      expect(cubit.state.main.map((b) => b.id), [check, step.id]);
+      cubit.undo();
+      expect(cubit.state.main.single.otherwise.single.id, step.id);
+      cubit.remove(step.id);
+      expect(cubit.state.main.single.otherwise, isEmpty);
+    });
+
+    test('holds no other check or loop, and comes from a starter', () {
+      final cubit = BlocksCubit(
+        start: const Program([
+          IfElsePathClear([Move()], [TurnLeft()]),
+        ]),
+      );
+      addTearDown(cubit.close);
+      final check = cubit.state.main.single;
+      expect(check.type, BlockType.ifElse);
+      expect(check.otherwise.single.type, BlockType.turnLeft);
+      final otherwise = BlocksCubit.otherwiseOf(check.id);
+      expect(cubit.add(BlockType.ifPathClear, parentId: otherwise), isFalse);
+      expect(cubit.add(BlockType.repeat, parentId: otherwise), isFalse);
+      expect(cubit.add(BlockType.ifElse, parentId: check.id), isFalse);
+      // A plain eye block has no otherwise row.
+      cubit.add(BlockType.ifPathClear);
+      final plain = cubit.state.main.last.id;
+      expect(
+        cubit.add(BlockType.forward, parentId: BlocksCubit.otherwiseOf(plain)),
+        isFalse,
+      );
+    });
   });
 }

@@ -10,6 +10,7 @@ enum InstructionKind {
   setSteps,
   moveSteps,
   untilGoal,
+  ifElse,
 }
 
 sealed class Instruction {
@@ -99,6 +100,24 @@ final class IfPathClear extends Instruction {
   @override
   int get blockCount =>
       1 + body.fold(0, (sum, instruction) => sum + instruction.blockCount);
+}
+
+/// Checks the cell directly ahead once, then runs [body] if it is open and
+/// [otherwise] if it isn't: the eye block with its "otherwise" row.
+final class IfElsePathClear extends Instruction {
+  const IfElsePathClear(this.body, this.otherwise, {super.blockId});
+
+  final List<Instruction> body;
+  final List<Instruction> otherwise;
+
+  @override
+  InstructionKind get kind => InstructionKind.ifElse;
+
+  @override
+  int get blockCount => [
+    ...body,
+    ...otherwise,
+  ].fold(1, (sum, instruction) => sum + instruction.blockCount);
 }
 
 /// Repeats [body] until the friend reaches the flag, with no count: the run

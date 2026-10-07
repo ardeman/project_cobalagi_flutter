@@ -2,7 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import '../../play/level_assets_test.dart'
-    show withOneRepeat, withOneProcedure, withSavedSteps, withUntilGoal;
+    show
+        followWalls,
+        withOneRepeat,
+        withOneProcedure,
+        withSavedSteps,
+        withUntilGoal;
 
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
@@ -141,7 +146,9 @@ void main() {
           final level = Level.fromJson((json as Map).cast<String, Object?>());
           final straight = solve(level)!;
           final max = level.maxBlocks;
-          final solution = level.concept == 'variables'
+          final solution = level.palette.contains(InstructionKind.ifElse)
+              ? followWalls(level)!
+              : level.concept == 'variables'
               ? withSavedSteps(straight.body)
               : max == null || straight.blockCount <= max
               ? straight

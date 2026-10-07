@@ -784,4 +784,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String playLevel(int number) {
     return 'Play level $number';
   }
+
+  @override
+  String get stickerBook => 'Sticker book';
+
+  @override
+  String get stickerBookHello => 'Look at all your stickers!';
+
+  @override
+  String get stickersIslands => 'Islands';
+
+  @override
+  String get stickerNotYet => 'Not earned yet';
+
+  @override
+  String get blockIfElse => 'If clear, otherwise';
+
+  @override
+  String get otherwiseRowClear => 'When the path is clear';
+
+  @override
+  String get otherwiseRowBlocked => 'Otherwise';
+
+  @override
+  String get conceptOtherwise => 'Otherwise';
+
+  @override
+  String get playGoalOtherwise =>
+      'Use the eye block with two rows: if the path is clear, step. Otherwise, turn!';
+
+  @override
+  String get tutorialOtherwise =>
+      'The eye looks ahead. If the path is clear, step. Otherwise, turn. Then it all repeats until the flag!';
 }

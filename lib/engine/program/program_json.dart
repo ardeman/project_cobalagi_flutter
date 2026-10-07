@@ -9,7 +9,8 @@ import 'program.dart';
 /// `{"body": [...], "procedure": [...]}` when the star row is used too.
 /// An instruction is `"move"`, `"turnLeft"`, `"turnRight"`, `"call"`,
 /// `"moveSteps"`, `{"repeat": 3, "body": [...]}`, `{"setSteps": 2}` or
-/// `{"ifPathClear": [...]}` or `{"untilGoal": [...]}`.
+/// `{"ifPathClear": [...]}`, `{"ifPathClear": [...], "otherwise": [...]}`
+/// or `{"untilGoal": [...]}`.
 Program programFromJson(Object? json) => switch (json) {
   List<Object?> body => Program(_list(body)),
   {'body': final List<Object?> body, 'procedure': final List<Object?> star} =>
@@ -33,6 +34,11 @@ Instruction _instruction(Object? json) => switch (json) {
     _list(body),
   ),
   {'setSteps': final int value} => SetSteps(value),
+  {
+    'ifPathClear': final List<Object?> body,
+    'otherwise': final List<Object?> otherwise,
+  } =>
+    IfElsePathClear(_list(body), _list(otherwise)),
   {'ifPathClear': final List<Object?> body} => IfPathClear(_list(body)),
   {'untilGoal': final List<Object?> body} => RepeatUntilGoal(_list(body)),
   _ => throw LevelFormatException('invalid instruction: $json'),
@@ -61,6 +67,10 @@ List<Object> _listToJson(List<Instruction> list) => [
       },
       SetSteps(:final value) => {'setSteps': value},
       IfPathClear(:final body) => {'ifPathClear': _listToJson(body)},
+      IfElsePathClear(:final body, :final otherwise) => {
+        'ifPathClear': _listToJson(body),
+        'otherwise': _listToJson(otherwise),
+      },
       RepeatUntilGoal(:final body) => {'untilGoal': _listToJson(body)},
     },
 ];

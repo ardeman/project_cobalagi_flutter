@@ -547,6 +547,26 @@ void main() {
           await shoot('${prefix}play-until');
         });
 
+        testWidgets('otherwise', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/replay/otherwise-04');
+          // Follow the walls: step if clear, otherwise turn.
+          final cubit = tester
+              .element(find.byType(BlockEditor))
+              .read<BlocksCubit>();
+          cubit.add(BlockType.untilGoal);
+          final until = cubit.state.main.single.id;
+          cubit.add(BlockType.ifElse, parentId: until);
+          final check = cubit.state.main.single.children.single.id;
+          cubit.add(BlockType.forward, parentId: check);
+          cubit.add(
+            BlockType.turnRight,
+            parentId: BlocksCubit.otherwiseOf(check),
+          );
+          await _settle(tester);
+          await shoot('${prefix}play-otherwise');
+        });
+
         testWidgets('watch me', (tester) async {
           await device(tester);
           await _open(tester, '/child/1/tutorial/loops');
@@ -598,6 +618,12 @@ void main() {
           await device(tester);
           await _openWarmUpPattern(tester);
           await shoot(prefix.isEmpty ? 'warm-up-pattern' : 'phone-warm-up');
+        });
+
+        testWidgets('sticker book', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/stickers');
+          await shoot('${prefix}sticker-book');
         });
 
         testWidgets('warm-up island', (tester) async {

@@ -10,6 +10,7 @@ import '../../../learning/learning_engine.dart';
 import '../../../learning/placement/pretest_generator.dart';
 import '../../../learning/placement/pretest_question.dart';
 import '../../../learning/placement/pretest_session.dart';
+import '../../../learning/stickers.dart';
 import '../../../learning/warm_up/warm_up.dart';
 import '../data/curriculum_repository.dart';
 import '../data/progress_repository.dart';
@@ -191,6 +192,32 @@ class LearningCubit extends Cubit<LearningState> {
     _pending = null;
     final learner = current.copyWith(
       warmUp: {...current.warmUp, round.game.name: round.best},
+    );
+    emit(
+      LearningState(
+        learner: learner,
+        lastDecision: state.lastDecision,
+        islandToCelebrate: state.islandToCelebrate,
+      ),
+    );
+    await _progress.save(profileId, learner);
+  }
+
+  /// The child's sticker book, from their progress.
+  List<Sticker> get stickers => stickerBook(
+    _pending ?? state.learner!,
+    islands: [for (final c in engine.graph.concepts) c.id],
+    lessons: curriculum.lessonIds,
+    games: curriculum.warmUp.games,
+  );
+
+  /// The sticker book has shown [ids]; they no longer count as new.
+  Future<void> markStickersSeen(Set<String> ids) async {
+    final current = _pending ?? state.learner!;
+    if (current.stickersSeen.containsAll(ids)) return;
+    _pending = null;
+    final learner = current.copyWith(
+      stickersSeen: {...current.stickersSeen, ...ids},
     );
     emit(
       LearningState(

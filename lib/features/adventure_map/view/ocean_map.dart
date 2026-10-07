@@ -93,7 +93,7 @@ class _OceanMapState extends State<OceanMap> {
       // Short and wide (phones held sideways): two rows would crush the
       // islands, so they sit in one row and the sea scrolls sideways.
       // Also when the islands would be too narrow side by side.
-      final row = wide && (room < 360 || width / (max(n, 1) * 2.2) < 60);
+      final row = wide && (room < 360 || width / (max(n, 1) * 2.2) < 50);
       // Island size: as big as fits, but not huge on large tablets.
       final size = row
           ? (room / 2.1).clamp(56.0, 150.0).toDouble()

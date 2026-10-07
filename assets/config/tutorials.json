@@ -339,5 +339,54 @@
       },
       "go"
     ]
+  },
+  "otherwise": {
+    "level": {
+      "id": "tutorial-otherwise",
+      "concept": "otherwise",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "rows": [
+        "######",
+        "#S..##",
+        "###.##",
+        "#G..##",
+        "######"
+      ],
+      "maxBlocks": 5
+    },
+    "actions": [
+      {
+        "add": "untilGoal"
+      },
+      {
+        "add": "ifElse",
+        "in": [
+          0
+        ]
+      },
+      {
+        "add": "forward",
+        "in": [
+          0,
+          0
+        ]
+      },
+      {
+        "add": "turnRight",
+        "in": [
+          0,
+          0
+        ],
+        "otherwise": true
+      },
+      "go"
+    ]
   }
 }

@@ -2,11 +2,31 @@ import 'dart:math';
 import 'dart:ui';
 
 /// What blocks the way on an island.
-enum Obstacle { bush, flowerBush, rock, crystal, pine, cactus, crate, asteroid }
+enum Obstacle {
+  bush,
+  flowerBush,
+  rock,
+  crystal,
+  pine,
+  cactus,
+  crate,
+  asteroid,
+  hedge,
+}
 
 /// The island's finish. Every one carries the red flag the voice talks
 /// about ("reach the flag"), so the goal reads the same on every island.
-enum Finish { flag, house, chest, castle, igloo, tent, toolbox, rocket }
+enum Finish {
+  flag,
+  house,
+  chest,
+  castle,
+  igloo,
+  tent,
+  toolbox,
+  rocket,
+  treehouse,
+}
 
 /// How an island's world looks: background, path, obstacles and finish.
 /// Purely visual; the level decides where things are.
@@ -90,6 +110,15 @@ final class WorldTheme {
     finish: Finish.rocket,
   );
 
+  /// A hedge maze, for following the walls on the Otherwise island.
+  static const maze = WorldTheme(
+    background: Color(0xFFE3F1D4),
+    floor: Color(0xFFF6ECD8),
+    floorEdge: Color(0xFFD9C29A),
+    obstacle: Obstacle.hedge,
+    finish: Finish.treehouse,
+  );
+
   /// One world per island, keyed by concept id.
   static WorldTheme forConcept(String concept) => switch (concept) {
     'sequencing' => garden,
@@ -99,6 +128,7 @@ final class WorldTheme {
     'variables' => desert,
     'debugging' => workshop,
     'until' => space,
+    'otherwise' => maze,
     _ => meadow,
   };
 }
@@ -113,6 +143,33 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
   final s = 0.9 + random.nextDouble() * 0.2;
   final shadow = _fill(0x26000000);
   switch (obstacle) {
+    case Obstacle.hedge:
+      // A square-cut hedge, so the walls read as a maze.
+      final hedge = RRect.fromRectAndRadius(
+        Rect.fromCenter(center: c, width: 0.84, height: 0.84),
+        const Radius.circular(0.14),
+      );
+      canvas
+        ..drawRRect(hedge.shift(const Offset(0.03, 0.05)), shadow)
+        ..drawRRect(hedge, _fill(0xFF3F8F4A))
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(c.dx - 0.42, c.dy - 0.42, 0.84, 0.3),
+            const Radius.circular(0.14),
+          ),
+          _fill(0xFF5BAE5F),
+        );
+      for (var i = 0; i < 4; i++) {
+        canvas.drawCircle(
+          c +
+              Offset(
+                (random.nextDouble() - 0.5) * 0.56,
+                (random.nextDouble() - 0.3) * 0.5,
+              ),
+          0.05,
+          _fill(0xFF7CC97A),
+        );
+      }
     case Obstacle.bush:
       canvas
         ..drawCircle(c + const Offset(0.04, 0.06), 0.36 * s, _fill(0xFF4FA457))
@@ -515,6 +572,32 @@ void drawFinish(Canvas canvas, Finish finish) {
           _fill(0xFFFFB300),
         );
       _flag(canvas, const Offset(0.5, 0.2), 0.12, scale: 0.55);
+    case Finish.treehouse:
+      canvas
+        ..drawOval(const Rect.fromLTWH(0.14, 0.78, 0.72, 0.12), base)
+        ..drawRect(
+          const Rect.fromLTWH(0.44, 0.46, 0.12, 0.38),
+          _fill(0xFF8D6E63),
+        )
+        ..drawCircle(const Offset(0.5, 0.32), 0.26, _fill(0xFF4CAF50))
+        ..drawCircle(const Offset(0.36, 0.26), 0.14, _fill(0xFF66BB6A))
+        ..drawRect(
+          const Rect.fromLTWH(0.34, 0.4, 0.32, 0.18),
+          _fill(0xFFFFCC80),
+        )
+        ..drawPath(
+          Path()
+            ..moveTo(0.3, 0.41)
+            ..lineTo(0.5, 0.28)
+            ..lineTo(0.7, 0.41)
+            ..close(),
+          _fill(0xFFE57373),
+        )
+        ..drawRect(
+          const Rect.fromLTWH(0.46, 0.47, 0.08, 0.11),
+          _fill(0xFF6D4C41),
+        );
+      _flag(canvas, const Offset(0.5, 0.3), 0.2, scale: 0.6);
     case Finish.tent:
       canvas
         ..drawOval(const Rect.fromLTWH(0.12, 0.76, 0.76, 0.14), base)

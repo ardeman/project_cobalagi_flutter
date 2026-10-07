@@ -1,0 +1,134 @@
+{
+  "levels": [
+    {
+      "id": "otherwise-01",
+      "concept": "otherwise",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "#######",
+        "#S...##",
+        "####.##",
+        "####.##",
+        "####G##",
+        "#######"
+      ]
+    },
+    {
+      "id": "otherwise-02",
+      "concept": "otherwise",
+      "facing": "north",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "######",
+        "#G...#",
+        "####.#",
+        "####.#",
+        "####S#",
+        "######"
+      ]
+    },
+    {
+      "id": "otherwise-03",
+      "concept": "otherwise",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "#####",
+        "#S..#",
+        "###.#",
+        "###.#",
+        "#G..#",
+        "#####"
+      ]
+    },
+    {
+      "id": "otherwise-04",
+      "concept": "otherwise",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "########",
+        "#S.....#",
+        "######.#",
+        "#G####.#",
+        "#.####.#",
+        "#......#",
+        "########"
+      ]
+    },
+    {
+      "id": "otherwise-05",
+      "concept": "otherwise",
+      "facing": "south",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "########",
+        "#S##G..#",
+        "#.####.#",
+        "#.####.#",
+        "#.####.#",
+        "#......#",
+        "########"
+      ]
+    },
+    {
+      "id": "otherwise-06",
+      "concept": "otherwise",
+      "facing": "north",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "maxBlocks": 5,
+      "rows": [
+        "#########",
+        "#S......#",
+        "#######.#",
+        "#...G##.#",
+        "#.#####.#",
+        "#.#####.#",
+        "#.......#",
+        "#########"
+      ]
+    }
+  ]
+}

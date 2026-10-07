@@ -10,6 +10,16 @@ sealed class TutorialAction {
 
   factory TutorialAction.fromJson(Object? json) => switch (json) {
     'go' => const PressGo(),
+    {
+      'add': final String type,
+      'in': final List<Object?> path,
+      'otherwise': true,
+    } =>
+      AddBlock(
+        BlockType.values.byName(type),
+        into: path.cast<int>(),
+        otherwise: true,
+      ),
     {'add': final String type, 'in': final List<Object?> path} => AddBlock(
       BlockType.values.byName(type),
       into: path.cast<int>(),
@@ -30,13 +40,20 @@ sealed class TutorialAction {
 }
 
 /// Adds a block to the main row, the star row, or into the container at
-/// [into] (indexes into the main row, then its children).
+/// [into] (indexes into the main row, then its children); into an
+/// "otherwise" block's second row when [otherwise].
 final class AddBlock extends TutorialAction {
-  const AddBlock(this.type, {this.into = const [], this.star = false});
+  const AddBlock(
+    this.type, {
+    this.into = const [],
+    this.star = false,
+    this.otherwise = false,
+  });
 
   final BlockType type;
   final List<int> into;
   final bool star;
+  final bool otherwise;
 
   @override
   BlockType get pointsAt => type;
@@ -108,13 +125,15 @@ String _idAt(List<Block> row, List<int> path) {
 /// which runs the program and waits for the world.
 void applyTutorialAction(BlocksCubit blocks, TutorialAction action) {
   switch (action) {
-    case AddBlock(:final type, :final into, :final star):
+    case AddBlock(:final type, :final into, :final star, :final otherwise):
       blocks.add(
         type,
         parentId: star
             ? BlocksCubit.starRow
             : into.isEmpty
             ? null
+            : otherwise
+            ? BlocksCubit.otherwiseOf(_idAt(blocks.state.main, into))
             : _idAt(blocks.state.main, into),
       );
     case SetCount(:final index, :final count):

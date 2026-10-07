@@ -87,6 +87,13 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
         case IfPathClear(:final body):
           if (body.isEmpty) issues.add(EmptyCondition(instruction.blockId));
           visit(body, inProcedure: inProcedure);
+        case IfElsePathClear(:final body, :final otherwise):
+          // Both rows need a block: an empty one does nothing on that side.
+          if (body.isEmpty || otherwise.isEmpty) {
+            issues.add(EmptyCondition(instruction.blockId));
+          }
+          visit(body, inProcedure: inProcedure);
+          visit(otherwise, inProcedure: inProcedure);
         case RepeatUntilGoal(:final body):
           if (body.isEmpty) issues.add(EmptyUntil(instruction.blockId));
           visit(body, inProcedure: inProcedure);
@@ -125,6 +132,11 @@ List<ProgramIssue> validateProgram(Program program, Level level) {
           if (times >= minCount) assigned = after;
         case IfPathClear(:final body):
           checkSteps(body, assigned, inProcedure: inProcedure);
+        case IfElsePathClear(:final body, :final otherwise):
+          // Set after it only if both sides set it.
+          final a = checkSteps(body, assigned, inProcedure: inProcedure);
+          final b = checkSteps(otherwise, assigned, inProcedure: inProcedure);
+          assigned = a && b;
         case RepeatUntilGoal(:final body):
           // Runs at least once.
           assigned = checkSteps(body, assigned, inProcedure: inProcedure);

@@ -261,7 +261,9 @@ void main() {
       expect(straight, isNotNull, reason: 'no route to the goal');
       final max = level.maxBlocks;
       final calls = level.palette.contains(InstructionKind.call);
-      final solution = level.concept == 'variables'
+      final solution = level.palette.contains(InstructionKind.ifElse)
+          ? followWalls(level)
+          : level.concept == 'variables'
           ? withSavedSteps(straight!.body)
           : max == null || straight!.blockCount <= max
           ? straight!
@@ -275,4 +277,18 @@ void main() {
       expect(runProgram(solution, level).succeeded, isTrue);
     });
   }
+}
+
+/// The Otherwise island's answer: repeat until the flag, step when the path
+/// is clear, otherwise turn (whichever way works).
+Program? followWalls(Level level) {
+  for (final turn in const [TurnRight(), TurnLeft()]) {
+    final program = Program([
+      RepeatUntilGoal([
+        IfElsePathClear([const Move()], [turn]),
+      ]),
+    ]);
+    if (runProgram(program, level).succeeded) return program;
+  }
+  return null;
 }

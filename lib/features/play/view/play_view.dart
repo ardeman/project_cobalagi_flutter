@@ -551,6 +551,8 @@ class _PlayViewState extends State<PlayView> {
   static (String Function(AppLocalizations), String) _goal(Level level) =>
       level.starter != null
       ? ((l) => l.playGoalDebugging, VoiceClips.playGoalDebugging)
+      : level.palette.contains(InstructionKind.ifElse)
+      ? ((l) => l.playGoalOtherwise, VoiceClips.playGoalOtherwise)
       : level.palette.contains(InstructionKind.untilGoal)
       ? ((l) => l.playGoalUntil, VoiceClips.playGoalUntil)
       : level.palette.contains(InstructionKind.setSteps)

@@ -10,9 +10,10 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnRight => Icons.turn_right_rounded,
     BlockType.repeat => Icons.repeat_rounded,
     BlockType.setSteps => Icons.inventory_2_rounded,
-    BlockType.moveSteps => Icons.forward_rounded,
+    BlockType.moveSteps => Icons.arrow_upward_rounded,
     BlockType.star => Icons.star_rounded,
     BlockType.ifPathClear => Icons.visibility_rounded,
+    BlockType.ifElse => Icons.alt_route_rounded,
     BlockType.untilGoal => Icons.sports_score_rounded,
   };
 
@@ -22,11 +23,12 @@ extension BlockTypeStyle on BlockType {
     BlockType.turnRight => const Color(0xFFFB8C00),
     BlockType.repeat => const Color(0xFF8E24AA),
     BlockType.setSteps => const Color(0xFFFFB300),
-    // The Step Box's gold, darker than "save steps", and far from the
-    // orange of turning right.
-    BlockType.moveSteps => const Color(0xFFC58A00),
+    // A move like "forward": same colour and arrow, plus the Step Box.
+    BlockType.moveSteps => const Color(0xFF43A047),
     BlockType.star => const Color(0xFFD81B60),
     BlockType.ifPathClear => const Color(0xFF00897B),
+    // The Otherwise island's indigo-violet, apart from the plain eye's teal.
+    BlockType.ifElse => const Color(0xFF6D4AFF),
     BlockType.untilGoal => const Color(0xFF7CB342),
   };
 
@@ -40,6 +42,7 @@ extension BlockTypeStyle on BlockType {
     BlockType.moveSteps => l10n.blockMoveSteps,
     BlockType.star => l10n.blockStar,
     BlockType.ifPathClear => l10n.blockIfPathClear,
+    BlockType.ifElse => l10n.blockIfElse,
     BlockType.untilGoal => l10n.blockUntilGoal,
   };
 }
@@ -65,20 +68,31 @@ class BlockTile extends StatelessWidget {
   /// "?" before one is saved. Shown in a bubble in the Step Box's colour.
   final String? stepValue;
 
-  /// "Use steps" shows the Step Box with an arrow, so it is clearly the
-  /// block that reads the saved number.
+  /// "Use steps" is the forward arrow, in the forward colour, with a small
+  /// Step Box in its corner: a move whose length comes from the box.
   Widget _picture() {
-    if (type != BlockType.moveSteps) {
-      return Icon(type.icon, color: Colors.white, size: size * 0.6);
-    }
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    final arrow = Icon(type.icon, color: Colors.white, size: size * 0.6);
+    if (type != BlockType.moveSteps) return arrow;
+    return Stack(
+      fit: StackFit.expand,
       children: [
-        Icon(Icons.inventory_2_rounded, color: Colors.white, size: size * 0.34),
-        Icon(
-          Icons.arrow_forward_rounded,
-          color: Colors.white,
-          size: size * 0.4,
+        Center(child: arrow),
+        Positioned(
+          left: size * 0.04,
+          bottom: size * 0.04,
+          child: Container(
+            padding: EdgeInsets.all(size * 0.04),
+            decoration: BoxDecoration(
+              color: BlockType.setSteps.color,
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 1.5),
+            ),
+            child: Icon(
+              Icons.inventory_2_rounded,
+              color: Colors.white,
+              size: size * 0.22,
+            ),
+          ),
         ),
       ],
     );

@@ -119,6 +119,12 @@ final class _Run {
           final clear = level.isOpen(ahead);
           events.add(PathChecked(ahead, clear, instruction.blockId));
           if (clear) execute(body);
+        case IfElsePathClear(:final body, :final otherwise):
+          _tick();
+          final ahead = position.step(facing);
+          final clear = level.isOpen(ahead);
+          events.add(PathChecked(ahead, clear, instruction.blockId));
+          execute(clear ? body : otherwise);
       }
     }
   }

@@ -288,6 +288,7 @@ final class PretestGenerator {
         InstructionKind.repeat ||
         InstructionKind.ifPathClear ||
         InstructionKind.untilGoal ||
+        InstructionKind.ifElse ||
         InstructionKind.setSteps ||
         InstructionKind.moveSteps ||
         InstructionKind.call => throw ArgumentError('only moves and turns'),

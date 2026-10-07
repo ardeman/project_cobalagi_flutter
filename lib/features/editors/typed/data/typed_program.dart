@@ -37,6 +37,9 @@ String formatCode(Program program) {
             '${indent}repeat($times) {\n${body(children, depth + 1)}$indent}\n',
           IfPathClear(body: final children) =>
             '${indent}if_path_clear {\n${body(children, depth + 1)}$indent}\n',
+          IfElsePathClear(body: final children, :final otherwise) =>
+            '${indent}if_path_clear {\n${body(children, depth + 1)}'
+                '$indent} otherwise {\n${body(otherwise, depth + 1)}$indent}\n',
           RepeatUntilGoal(body: final children) =>
             '${indent}until_flag {\n${body(children, depth + 1)}$indent}\n',
         };
@@ -144,7 +147,14 @@ final class _Parser {
           _expect('{');
           final children = _body(depth + 1);
           _expect('}');
-          result.add(IfPathClear(children, blockId: id));
+          if (_take('otherwise')) {
+            _expect('{');
+            final otherwise = _body(depth + 1);
+            _expect('}');
+            result.add(IfElsePathClear(children, otherwise, blockId: id));
+          } else {
+            result.add(IfPathClear(children, blockId: id));
+          }
         case 'until_flag':
           _expect('{');
           final children = _body(depth + 1);

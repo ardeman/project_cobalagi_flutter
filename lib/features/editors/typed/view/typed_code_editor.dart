@@ -101,6 +101,10 @@ class _TypedCodeEditorState extends State<TypedCodeEditor> {
         l.blockIfPathClear,
         'if_path_clear {\n  \n}',
       ),
+      InstructionKind.ifElse: (
+        l.blockIfElse,
+        'if_path_clear {\n  \n} otherwise {\n  \n}',
+      ),
       InstructionKind.call: (l.blockStar, 'star();'),
       InstructionKind.untilGoal: (l.blockUntilGoal, 'until_flag {\n  \n}'),
     };
@@ -232,6 +236,10 @@ final _commandColours = <RegExp, BlockType>{
   RegExp(r'\bturn_left\b'): BlockType.turnLeft,
   RegExp(r'\bturn_right\b'): BlockType.turnRight,
   RegExp(r'\brepeat\b'): BlockType.repeat,
+  // An if with an otherwise takes the otherwise block's colour. Its rows
+  // hold only actions, so no braces nest inside them.
+  RegExp(r'\bif_path_clear\b(?=\s*\{[^{}]*\}\s*otherwise\b)'): BlockType.ifElse,
+  RegExp(r'\botherwise\b'): BlockType.ifElse,
   RegExp(r'\bif_path_clear\b'): BlockType.ifPathClear,
   RegExp(r'\buntil_flag\b'): BlockType.untilGoal,
   RegExp(r'\b(star|define)\b'): BlockType.star,

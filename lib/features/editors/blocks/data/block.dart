@@ -11,6 +11,10 @@ enum BlockType {
   moveSteps(InstructionKind.moveSteps),
   ifPathClear(InstructionKind.ifPathClear),
 
+  /// The eye block with an "otherwise" row: one row runs when the path
+  /// ahead is clear, the other when it isn't.
+  ifElse(InstructionKind.ifElse),
+
   /// Repeats its blocks, with no count, until the friend reaches the flag.
   untilGoal(InstructionKind.untilGoal),
 
@@ -23,7 +27,13 @@ enum BlockType {
 
   /// Holds a row of blocks of its own.
   bool get isContainer =>
-      this == repeat || this == ifPathClear || this == untilGoal;
+      this == repeat ||
+      this == ifPathClear ||
+      this == ifElse ||
+      this == untilGoal;
+
+  /// Checks the path ahead.
+  bool get isCondition => this == ifPathClear || this == ifElse;
 }
 
 final class Block {
@@ -32,6 +42,7 @@ final class Block {
     required this.type,
     this.count = 2,
     this.children = const [],
+    this.otherwise = const [],
   });
 
   final String id;
@@ -41,17 +52,22 @@ final class Block {
   final int count;
   final List<Block> children;
 
-  Block copyWith({int? count, List<Block>? children}) => Block(
-    id: id,
-    type: type,
-    count: count ?? this.count,
-    children: children ?? this.children,
-  );
+  /// An [BlockType.ifElse] block's second row, run when the path is blocked.
+  final List<Block> otherwise;
+
+  Block copyWith({int? count, List<Block>? children, List<Block>? otherwise}) =>
+      Block(
+        id: id,
+        type: type,
+        count: count ?? this.count,
+        children: children ?? this.children,
+        otherwise: otherwise ?? this.otherwise,
+      );
 
   /// This block and every block nested inside it.
   Iterable<Block> get selfAndDescendants sync* {
     yield this;
-    for (final child in children) {
+    for (final child in [...children, ...otherwise]) {
       yield* child.selfAndDescendants;
     }
   }
@@ -124,4 +140,9 @@ Instruction _compile(Block block) => switch (block.type) {
   BlockType.ifPathClear => IfPathClear([
     for (final child in block.children) _compile(child),
   ], blockId: block.id),
+  BlockType.ifElse => IfElsePathClear(
+    [for (final child in block.children) _compile(child)],
+    [for (final child in block.otherwise) _compile(child)],
+    blockId: block.id,
+  ),
 };

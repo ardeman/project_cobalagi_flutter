@@ -38,6 +38,7 @@ Program program(List<InstructionKind> kinds) => Program([
       InstructionKind.repeat ||
       InstructionKind.ifPathClear ||
       InstructionKind.untilGoal ||
+      InstructionKind.ifElse ||
       InstructionKind.setSteps ||
       InstructionKind.moveSteps ||
       InstructionKind.call => throw ArgumentError(),

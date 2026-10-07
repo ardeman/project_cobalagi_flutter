@@ -315,6 +315,7 @@ Map<String, String> _stepValues(List<Block> main) {
         values[block.id] = saved?.toString() ?? '?';
       }
       walk(block.children);
+      walk(block.otherwise);
     }
   }
 
@@ -464,7 +465,7 @@ class _PaletteBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final tile = BlockTile(
       type: type,
-      size: type == BlockType.ifPathClear && size < 64 ? 64 : size,
+      size: type.isCondition && size < 64 ? 64 : size,
     );
     if (pointed) {
       return Stack(
@@ -648,7 +649,9 @@ class _ContainerBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.watch<BlocksCubit>();
     final size = style.size;
-    final conditional = block.type == BlockType.ifPathClear;
+    final conditional = block.type.isCondition;
+    // An "otherwise" block holds two rows: clear, and blocked.
+    final twoRows = block.type == BlockType.ifElse;
     // Only a repeat carries a count.
     final counted = block.type == BlockType.repeat;
     final color = block.type.color;
@@ -682,16 +685,18 @@ class _ContainerBlock extends StatelessWidget {
         ],
       ],
     );
-    final body = DragTarget<Object>(
+    // A drop row: the block's own row, or an "otherwise" block's second.
+    Widget dropRow(String parentId, List<Block> blocks) => DragTarget<Object>(
       onWillAcceptWithDetails: (d) =>
           style.enabled &&
           d.data != block &&
           d.data != BlockType.repeat &&
           d.data != BlockType.untilGoal &&
-          (!conditional || d.data != BlockType.ifPathClear) &&
+          (!conditional ||
+              !(d.data is BlockType && (d.data as BlockType).isCondition)) &&
           (d.data is Block || !cubit.isFull),
       onAcceptWithDetails: (d) =>
-          cubit.drop(d.data, parentId: block.id, index: block.children.length),
+          cubit.drop(d.data, parentId: parentId, index: blocks.length),
       builder: (context, candidates, _) => Container(
         constraints: BoxConstraints(
           minWidth: size * 1.4,
@@ -703,17 +708,62 @@ class _ContainerBlock extends StatelessWidget {
               ? Colors.white.withValues(alpha: 0.6)
               : color.withValues(alpha: 0.25),
           borderRadius: BorderRadius.circular(size * 0.2),
+          border: cubit.state.selectedContainer == parentId && twoRows
+              ? Border.all(color: color, width: 3)
+              : null,
         ),
-        child: block.children.isEmpty
+        child: blocks.isEmpty
             ? addSpot
             : _BlockRow(
-                parentId: block.id,
-                blocks: block.children,
+                parentId: parentId,
+                blocks: blocks,
                 style: style,
                 trailing: style.enabled ? addSpot : null,
               ),
       ),
     );
+    final Widget body;
+    if (twoRows) {
+      // Pictures, not words, tell the rows apart: an open path, then a
+      // wall. A tap on a row picks it for tapped palette blocks.
+      Widget labelled(String parentId, List<Block> blocks, bool clear) {
+        final l10n = AppLocalizations.of(context);
+        return GestureDetector(
+          onTap: style.enabled ? () => cubit.pickContainer(parentId) : null,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Tooltip(
+                message: clear
+                    ? l10n.otherwiseRowClear
+                    : l10n.otherwiseRowBlocked,
+                child: Icon(
+                  clear ? Icons.check_circle_rounded : Icons.block_rounded,
+                  size: size * 0.45,
+                  color: clear
+                      ? const Color(0xFF43A047)
+                      : const Color(0xFFE53935),
+                ),
+              ),
+              SizedBox(width: style.gap * 0.5),
+              Flexible(child: dropRow(parentId, blocks)),
+            ],
+          ),
+        );
+      }
+
+      body = Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          labelled(block.id, block.children, true),
+          SizedBox(height: style.gap * 0.5),
+          labelled(BlocksCubit.otherwiseOf(block.id), block.otherwise, false),
+        ],
+      );
+    } else {
+      body = dropRow(block.id, block.children);
+    }
     return GestureDetector(
       onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
       child: AnimatedContainer(
@@ -738,14 +788,13 @@ class _ContainerBlock extends StatelessWidget {
         // (not the screen) is too narrow for them side by side.
         child: LayoutBuilder(
           builder: (context, box) {
-            final nested = block.children.any(
-              (b) => b.type == BlockType.ifPathClear,
-            );
+            final nested = block.children.any((b) => b.type.isCondition);
             // Count buttons, then a condition holding a block.
             final sideBySide =
                 (counted ? 64 * 2 + size * 0.5 : size * 0.8) +
                 style.gap +
-                (nested ? size * 3.4 : size * 1.6);
+                (nested ? size * 3.4 : size * 1.6) +
+                (twoRows ? size * 0.6 : 0);
             final stacked = box.maxWidth < sideBySide;
             return stacked
                 ? Column(

@@ -1471,6 +1471,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Play level {number}'**
   String playLevel(int number);
+
+  /// No description provided for @stickerBook.
+  ///
+  /// In en, this message translates to:
+  /// **'Sticker book'**
+  String get stickerBook;
+
+  /// No description provided for @stickerBookHello.
+  ///
+  /// In en, this message translates to:
+  /// **'Look at all your stickers!'**
+  String get stickerBookHello;
+
+  /// No description provided for @stickersIslands.
+  ///
+  /// In en, this message translates to:
+  /// **'Islands'**
+  String get stickersIslands;
+
+  /// No description provided for @stickerNotYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not earned yet'**
+  String get stickerNotYet;
+
+  /// No description provided for @blockIfElse.
+  ///
+  /// In en, this message translates to:
+  /// **'If clear, otherwise'**
+  String get blockIfElse;
+
+  /// No description provided for @otherwiseRowClear.
+  ///
+  /// In en, this message translates to:
+  /// **'When the path is clear'**
+  String get otherwiseRowClear;
+
+  /// No description provided for @otherwiseRowBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Otherwise'**
+  String get otherwiseRowBlocked;
+
+  /// No description provided for @conceptOtherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'Otherwise'**
+  String get conceptOtherwise;
+
+  /// No description provided for @playGoalOtherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the eye block with two rows: if the path is clear, step. Otherwise, turn!'**
+  String get playGoalOtherwise;
+
+  /// No description provided for @tutorialOtherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'The eye looks ahead. If the path is clear, step. Otherwise, turn. Then it all repeats until the flag!'**
+  String get tutorialOtherwise;
 }
 
 class _AppLocalizationsDelegate

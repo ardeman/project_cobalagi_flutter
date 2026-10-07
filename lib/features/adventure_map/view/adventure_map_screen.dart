@@ -14,6 +14,7 @@ import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/progress_report.dart';
+import '../../../learning/stickers.dart';
 import '../../../learning/warm_up/warm_up.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
@@ -103,6 +104,13 @@ class AdventureMapScreen extends StatelessWidget {
         extendBodyBehindAppBar: true,
         appBar: GlassAppBar(
           leading: BackButton(onPressed: () => context.go('/')),
+          actions: [
+            if (learner.placement != null)
+              _StickerButton(
+                fresh: newStickers(learner, cubit.stickers).length,
+                onPressed: () => context.go('/child/$profileId/stickers'),
+              ),
+          ],
           title: Row(
             children: [
               ProfileAvatar(avatar: profile.avatar, size: 44),
@@ -179,6 +187,27 @@ class AdventureMapScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Opens the sticker book; a badge counts stickers not seen yet.
+class _StickerButton extends StatelessWidget {
+  const _StickerButton({required this.fresh, required this.onPressed});
+
+  final int fresh;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => IconButton.filledTonal(
+    tooltip: AppLocalizations.of(context).stickerBook,
+    style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
+    onPressed: onPressed,
+    icon: Badge(
+      isLabelVisible: fresh > 0,
+      label: Text('$fresh'),
+      backgroundColor: const Color(0xFFFF7A59),
+      child: const Icon(Icons.collections_bookmark_rounded, size: 32),
+    ),
+  );
 }
 
 /// First visit: invite the child to the warm-up game that places them.

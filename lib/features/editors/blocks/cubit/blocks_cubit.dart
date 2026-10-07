@@ -46,6 +46,12 @@ class BlocksCubit extends Cubit<BlockProgram> {
           type: BlockType.ifPathClear,
           children: _blocksOf(body),
         ),
+        IfElsePathClear(:final body, :final otherwise) => Block(
+          id: 'b${_nextId++}',
+          type: BlockType.ifElse,
+          children: _blocksOf(body),
+          otherwise: _blocksOf(otherwise),
+        ),
         RepeatUntilGoal(:final body) => Block(
           id: 'b${_nextId++}',
           type: BlockType.untilGoal,
@@ -56,6 +62,18 @@ class BlocksCubit extends Cubit<BlockProgram> {
 
   /// Parent id for the star row, in [add], [move] and [drop].
   static const starRow = '*';
+
+  /// Added to an "otherwise" block's id, the parent id of its second row.
+  static const otherwiseRow = ':else';
+
+  /// The parent id of [blockId]'s "otherwise" row.
+  static String otherwiseOf(String blockId) => '$blockId$otherwiseRow';
+
+  /// The block a parent id belongs to, and whether it names the otherwise row.
+  static (String, bool) _rowOf(String parentId) =>
+      parentId.endsWith(otherwiseRow)
+      ? (parentId.substring(0, parentId.length - otherwiseRow.length), true)
+      : (parentId, false);
 
   /// The level's block limit, or null for none.
   final int? maxBlocks;
@@ -111,8 +129,12 @@ class BlocksCubit extends Cubit<BlockProgram> {
     }
   }
 
+  /// Picks a container's row (an "otherwise" block has two) to receive
+  /// tapped palette blocks.
   void pickContainer(String id) {
-    final block = _find(id);
+    final (blockId, otherwise) = _rowOf(id);
+    final block = _find(blockId);
+    if (otherwise && block?.type != BlockType.ifElse) return;
     if (block?.type.isContainer ?? false) {
       emit(
         state.copyWith(selectedContainer: () => id, pickedBlock: () => null),
@@ -157,7 +179,8 @@ class BlocksCubit extends Cubit<BlockProgram> {
     final block = _find(id);
     if (block == null || !_fits(block.type, parentId)) return;
     // A container cannot be moved into itself or one of its descendants.
-    if (block.selfAndDescendants.any((b) => b.id == parentId)) return;
+    final target = parentId == null ? null : _rowOf(parentId).$1;
+    if (block.selfAndDescendants.any((b) => b.id == target)) return;
     final (oldParent, oldIndex) = _locate(id)!;
     final adjusted = oldParent == parentId && oldIndex < index
         ? index - 1
@@ -179,7 +202,12 @@ class BlocksCubit extends Cubit<BlockProgram> {
     final gone = {...?_find(id)?.selfAndDescendants.map((b) => b.id)};
     emit(
       _removed(id).copyWith(
-        selectedContainer: gone.contains(state.selectedContainer)
+        selectedContainer:
+            gone.contains(
+              state.selectedContainer == null
+                  ? null
+                  : _rowOf(state.selectedContainer!).$1,
+            )
             ? () => null
             : null,
         pickedBlock: gone.contains(state.pickedBlock) ? () => null : null,
@@ -263,17 +291,18 @@ class BlocksCubit extends Cubit<BlockProgram> {
     // row, never inside another block or the star row.
     if (type == BlockType.untilGoal) return false;
     if (parentId == starRow) return type != BlockType.star;
-    final parent = _find(parentId);
+    final (blockId, otherwise) = _rowOf(parentId);
+    final parent = _find(blockId);
     if (!(parent?.type.isContainer ?? false)) return false;
+    if (otherwise && parent?.type != BlockType.ifElse) return false;
     // Keep container nesting to one loop holding one condition. Children
     // of a condition are actions, so the editor stays usable on phones.
     if (type == BlockType.repeat ||
-        (type == BlockType.ifPathClear &&
-            parent?.type == BlockType.ifPathClear)) {
+        (type.isCondition && (parent?.type.isCondition ?? false))) {
       return false;
     }
     // A repeat inside the star row may not hold a star either.
-    return type != BlockType.star || !_inStar(parentId);
+    return type != BlockType.star || !_inStar(blockId);
   }
 
   bool _inStar(String id) =>
@@ -304,7 +333,9 @@ class BlocksCubit extends Cubit<BlockProgram> {
   ]) {
     for (var i = 0; i < blocks.length; i++) {
       if (blocks[i].id == id) return (parentId, i);
-      final inner = _locateIn(blocks[i].children, id, blocks[i].id);
+      final inner =
+          _locateIn(blocks[i].children, id, blocks[i].id) ??
+          _locateIn(blocks[i].otherwise, id, otherwiseOf(blocks[i].id));
       if (inner != null) return inner;
     }
     return null;
@@ -341,18 +372,27 @@ class BlocksCubit extends Cubit<BlockProgram> {
       final at = (index ?? blocks.length).clamp(0, blocks.length);
       return [...blocks]..insert(at, block);
     }
+    final (blockId, otherwise) = _rowOf(parentId);
     return _update(
       blocks,
-      parentId,
-      (parent) => parent.copyWith(
-        children: _insertIn(parent.children, null, index, block),
-      ),
+      blockId,
+      (parent) => otherwise
+          ? parent.copyWith(
+              otherwise: _insertIn(parent.otherwise, null, index, block),
+            )
+          : parent.copyWith(
+              children: _insertIn(parent.children, null, index, block),
+            ),
     );
   }
 
   static List<Block> _remove(List<Block> blocks, String id) => [
     for (final b in blocks)
-      if (b.id != id) b.copyWith(children: _remove(b.children, id)),
+      if (b.id != id)
+        b.copyWith(
+          children: _remove(b.children, id),
+          otherwise: _remove(b.otherwise, id),
+        ),
   ];
 
   static List<Block> _update(
@@ -363,6 +403,9 @@ class BlocksCubit extends Cubit<BlockProgram> {
     for (final b in blocks)
       b.id == id
           ? change(b)
-          : b.copyWith(children: _update(b.children, id, change)),
+          : b.copyWith(
+              children: _update(b.children, id, change),
+              otherwise: _update(b.otherwise, id, change),
+            ),
   ];
 }

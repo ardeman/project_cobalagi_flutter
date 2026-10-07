@@ -240,6 +240,7 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 | 7. Conditions ✅ | Look Ahead island, six lessons, generated practice and an eye block that runs its contents only when the cell ahead is clear |
 | 8. Typed code ✅ | Switch between blocks and code on every island, command buttons, line feedback and step highlighting, with the same engine and lesson limits |
 | 9. Variables ✅ | Step Box island, six lessons, generated practice, stored-distance blocks and typed assignments |
+| 10. Otherwise ✅ | Otherwise island (if / else): the eye block gets a second row for a blocked path, in a hedge maze; six lessons, generated wall-following practice, typed `if_path_clear { } otherwise { }` |
 
 The eye block checks once before running its contents. Put a forward block
 inside it to move safely; put the eye block inside a repeat to check again
@@ -303,6 +304,12 @@ wrong one. Each game's stars are its best level; the island's stars are their
 average. Warm-up games never change the coding path. To add a game, add a
 `WarmUpGame` value with its question type, prompt text and voice clips, then
 list it in `warm_up.json`.
+
+The sticker book (the book button on the map, with a badge for new
+stickers) holds a sticker for every coding island whose lessons are all
+solved and every Warm-up game at three stars (`lib/learning/stickers.dart`).
+Stickers are worked out from progress; only the ones already seen are saved,
+so new ones pop in once.
 
 Parents can set a break reminder (off, 15, 30 or 45 minutes of puzzle time; `PlayClock` pauses in the background). When it is due, the current puzzle finishes, then a "Time for a break!" screen comes before the next one; only a grown-up (parent gate) continues, which resets the time.
 

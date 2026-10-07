@@ -15,6 +15,7 @@ abstract final class VoiceClips {
   static const pretestDone = 'pretest_done';
   static const pretestAnswerWas = 'pretest_answer_was';
 
+  static const stickerBook = 'sticker_book';
   static const warmUpPick = 'warm_up_pick';
   static const warmUpDone = 'warm_up_done';
 
@@ -36,6 +37,7 @@ abstract final class VoiceClips {
   static const playGoalVariables = 'play_goal_variables';
   static const playGoalDebugging = 'play_goal_debugging';
   static const playGoalUntil = 'play_goal_until';
+  static const playGoalOtherwise = 'play_goal_otherwise';
   static const playHowTo = 'play_how_to';
   static const hintPattern = 'hint_pattern';
   static const breakTime = 'break_time';
@@ -71,6 +73,7 @@ abstract final class VoiceClips {
     'variables',
     'debugging',
     'until',
+    'otherwise',
   ];
 
   /// Clip id → ARB key.
@@ -88,6 +91,7 @@ abstract final class VoiceClips {
     pretestSequencing: 'promptSequencing',
     pretestDone: 'pretestDone',
     pretestAnswerWas: 'answerWas',
+    stickerBook: 'stickerBookHello',
     warmUpPick: 'warmUpPick',
     warmUpDone: 'warmUpDone',
     for (final c in warmUpColors) warmUpColor(c): 'promptColor${_capital(c)}',
@@ -100,6 +104,7 @@ abstract final class VoiceClips {
     playGoalVariables: 'playGoalVariables',
     playGoalDebugging: 'playGoalDebugging',
     playGoalUntil: 'playGoalUntil',
+    playGoalOtherwise: 'playGoalOtherwise',
     playHowTo: 'playHowTo',
     hintPattern: 'hintPattern',
     breakTime: 'breakVoice',

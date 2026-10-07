@@ -773,4 +773,36 @@ class AppLocalizationsId extends AppLocalizations {
   String playLevel(int number) {
     return 'Main level $number';
   }
+
+  @override
+  String get stickerBook => 'Buku stiker';
+
+  @override
+  String get stickerBookHello => 'Lihat semua stikermu!';
+
+  @override
+  String get stickersIslands => 'Pulau';
+
+  @override
+  String get stickerNotYet => 'Belum didapat';
+
+  @override
+  String get blockIfElse => 'Jika kosong, kalau tidak';
+
+  @override
+  String get otherwiseRowClear => 'Kalau jalannya kosong';
+
+  @override
+  String get otherwiseRowBlocked => 'Kalau tidak';
+
+  @override
+  String get conceptOtherwise => 'Kalau tidak';
+
+  @override
+  String get playGoalOtherwise =>
+      'Pakai blok mata dengan dua baris: kalau jalannya kosong, melangkah. Kalau tidak, belok!';
+
+  @override
+  String get tutorialOtherwise =>
+      'Mata melihat ke depan. Kalau jalannya kosong, melangkah. Kalau tidak, belok. Lalu semuanya diulang sampai bendera!';
 }

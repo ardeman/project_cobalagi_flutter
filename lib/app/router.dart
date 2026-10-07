@@ -11,6 +11,7 @@ import '../features/play/view/replay_screen.dart';
 import '../features/pretest/view/pretest_screen.dart';
 import '../features/profiles/view/profiles_screen.dart';
 import '../features/splash/view/splash_screen.dart';
+import '../features/stickers/view/sticker_book_screen.dart';
 import '../features/tutorial/view/tutorial_screen.dart';
 import '../features/warm_up/view/warm_up_game_screen.dart';
 import '../features/warm_up/view/warm_up_island_screen.dart';
@@ -58,6 +59,11 @@ GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
                 profileId: _profileId(state),
                 levelId: state.pathParameters['levelId']!,
               ),
+            ),
+            GoRoute(
+              path: 'stickers',
+              builder: (_, state) =>
+                  StickerBookScreen(profileId: _profileId(state)),
             ),
             GoRoute(
               path: 'warm-up',

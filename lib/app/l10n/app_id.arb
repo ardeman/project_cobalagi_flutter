@@ -252,5 +252,15 @@
   "promptShapeSquare": "Ketuk persegi!",
   "promptShapeTriangle": "Ketuk segitiga!",
   "promptShapeHeart": "Ketuk hati!",
-  "playLevel": "Main level {number}"
+  "playLevel": "Main level {number}",
+  "stickerBook": "Buku stiker",
+  "stickerBookHello": "Lihat semua stikermu!",
+  "stickersIslands": "Pulau",
+  "stickerNotYet": "Belum didapat",
+  "blockIfElse": "Jika kosong, kalau tidak",
+  "otherwiseRowClear": "Kalau jalannya kosong",
+  "otherwiseRowBlocked": "Kalau tidak",
+  "conceptOtherwise": "Kalau tidak",
+  "playGoalOtherwise": "Pakai blok mata dengan dua baris: kalau jalannya kosong, melangkah. Kalau tidak, belok!",
+  "tutorialOtherwise": "Mata melihat ke depan. Kalau jalannya kosong, melangkah. Kalau tidak, belok. Lalu semuanya diulang sampai bendera!"
 }

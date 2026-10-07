@@ -19,6 +19,7 @@ enum PuzzleKind {
   variables,
   debugging,
   until,
+  otherwise,
 }
 
 const minDifficulty = 1;
@@ -55,6 +56,9 @@ GeneratedPuzzle generatePuzzle(
     return _debugging(random, difficulty, seed);
   }
   if (kind == PuzzleKind.until) return _until(random, difficulty, seed);
+  if (kind == PuzzleKind.otherwise) {
+    return _otherwise(random, difficulty, seed);
+  }
   if (kind == PuzzleKind.conditions) {
     return _conditions(random, difficulty, seed);
   }
@@ -70,6 +74,7 @@ GeneratedPuzzle generatePuzzle(
       ),
       PuzzleKind.debugging => throw StateError('debugging plants a bug'),
       PuzzleKind.until => throw StateError('until traces a counted route'),
+      PuzzleKind.otherwise => throw StateError('otherwise follows the walls'),
     };
     final puzzle = _buildPuzzle(
       kind,
@@ -184,6 +189,55 @@ GeneratedPuzzle _until(Random random, int difficulty, int seed) {
     return GeneratedPuzzle(level, solution);
   }
   throw StateError('no valid until puzzle for seed $seed');
+}
+
+const _otherwisePalette = {..._untilPalette, InstructionKind.ifElse};
+
+/// A winding corridor that always turns the same way, with straights of
+/// different lengths, so no counted repeat fits. The answer follows the
+/// walls: repeat until the flag, step if the path is clear, otherwise turn.
+/// Harder ones have more straights.
+GeneratedPuzzle _otherwise(Random random, int difficulty, int seed) {
+  for (var attempt = 0; attempt < 400; attempt++) {
+    final turn = _turn(random);
+    final segments = difficulty + 1;
+    // Growing straights wind outwards instead of into themselves.
+    // Fewer straights get a wider range, so layouts still vary.
+    final spread = difficulty == 1 ? 4 : 2;
+    var length = 1 + random.nextInt(spread);
+    final route = <Instruction>[];
+    for (var s = 0; s < segments; s++) {
+      if (s > 0) {
+        route.add(turn);
+        length = difficulty == 1
+            ? 1 + random.nextInt(spread)
+            : length + random.nextInt(2) + (s.isEven ? 1 : 0);
+      }
+      route.addAll(_moves(length));
+    }
+    final puzzle = _buildPuzzle(
+      PuzzleKind.otherwise,
+      Program(route),
+      Direction.values[random.nextInt(4)],
+      id: 'otherwise-d$difficulty-s$seed',
+      difficulty: difficulty,
+    );
+    if (puzzle == null) continue;
+    final solution = Program([
+      RepeatUntilGoal([
+        IfElsePathClear([const Move()], [turn]),
+      ]),
+    ]);
+    final level = Level.fromJson({
+      ...puzzle.level.toJson(),
+      'maxBlocks': solution.blockCount + 1,
+    });
+    if (!runProgram(solution, level).succeeded) continue;
+    // Writing every step out must not fit.
+    if (solve(level)!.blockCount <= level.maxBlocks!) continue;
+    return GeneratedPuzzle(level, solution);
+  }
+  throw StateError('no valid otherwise puzzle for seed $seed');
 }
 
 /// A working program with one bug planted in it, for the child to find and
@@ -412,7 +466,7 @@ GeneratedPuzzle? _buildPuzzle(
           walk(solution.procedure);
         case SetSteps() || MoveSteps():
           throw StateError('trace the route before adding variables');
-        case IfPathClear():
+        case IfPathClear() || IfElsePathClear():
           throw StateError('trace the route before adding path checks');
         case RepeatUntilGoal():
           throw StateError('trace the route with a counted repeat');
@@ -440,6 +494,7 @@ GeneratedPuzzle? _buildPuzzle(
     PuzzleKind.conditions => _conditionPalette,
     PuzzleKind.variables => _variablePalette,
     PuzzleKind.until => _untilPalette,
+    PuzzleKind.otherwise => _otherwisePalette,
     PuzzleKind.directions ||
     PuzzleKind.sequencing ||
     PuzzleKind.debugging => _sequencePalette,
