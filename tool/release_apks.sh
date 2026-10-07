@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Builds the release APKs (one per Android architecture) and publishes them
+# Builds the release APKs (one per Android architecture, plus a universal
+# one that runs on every device) and publishes them
 # as a GitHub Release, tagged v<name>+<build> from pubspec.yaml, with the
 # build's release notes from store/<locale>/changelogs/<build>.txt.
 #
@@ -61,6 +62,8 @@ if ! $dry_run; then
 fi
 
 flutter build apk --release --split-per-abi
+# The universal APK last: it has its own file name, so both sets remain.
+flutter build apk --release
 
 rm -rf "$out"
 mkdir -p "$out"
@@ -68,14 +71,19 @@ for abi in arm64-v8a armeabi-v7a x86_64; do
   cp "build/app/outputs/flutter-apk/app-$abi-release.apk" \
     "$out/cobalagi-$name-build$build-$abi.apk"
 done
+cp build/app/outputs/flutter-apk/app-release.apk \
+  "$out/cobalagi-$name-build$build-universal.apk"
+
 (cd "$out" && shasum -a 256 ./*.apk | sed 's| \./| |' > SHA256SUMS.txt)
 
 notes="$out/notes.md"
 {
   echo "Coba Lagi $name (build $build) for Android."
   echo
-  echo "**Which file?** Most phones and tablets: \`arm64-v8a\`. Older 32-bit"
-  echo "devices: \`armeabi-v7a\`. Emulators and Chromebooks: \`x86_64\`."
+  echo "**Which file?** Not sure: \`universal\` runs on every device but is"
+  echo "the largest. Smaller downloads: \`arm64-v8a\` for most phones and"
+  echo "tablets, \`armeabi-v7a\` for older 32-bit devices, \`x86_64\` for"
+  echo "emulators and Chromebooks."
   echo
   echo "These APKs are signed with the upload key, not Google Play's key, so"
   echo "they can't update a copy installed from Google Play (or the other way"
