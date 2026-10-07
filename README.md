@@ -337,11 +337,12 @@ Each topic has one home. Update that file instead of copying its content somewhe
 | `README.md` | Everyone | Overview, setup, commands, layout |
 | `AGENTS.md` | AI coding agents (and humans who want the rules) | Conventions, guardrails, definition of done |
 | `CLAUDE.md`, `GEMINI.md` | Claude Code, Gemini CLI | Only an import of `AGENTS.md` |
-| `LICENSE.md` | Everyone | Terms for using the code (PolyForm Noncommercial 1.0.0) |
+| `LICENSE` | Everyone | Terms for using the code (GPL-3.0) |
+| `NOTICE.md` | Everyone | Copyright, and the separate terms for sounds, art and the name |
 | `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots (also used by this README) |
 
 Codex, Cursor, GitHub Copilot, Windsurf, Jules, Aider, Zed and other agents that follow the [AGENTS.md](https://agents.md) convention read `AGENTS.md` directly.
 
 ## License
 
-Coba Lagi is source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE.md): you may read, learn from and modify it for noncommercial purposes. Commercial use needs permission from Ardeman. Third-party packages keep their own licenses.
+The code of Coba Lagi is free software under the [GNU General Public License v3.0 or later](LICENSE): you may use, study, share and change it, and anything you distribute that is built from it must be under the GPL too, with its source. Sounds, art and listing graphics are under CC BY-NC-ND 4.0, and the name and icon are not licensed for other apps; see [NOTICE.md](NOTICE.md). Third-party packages keep their own licenses.
