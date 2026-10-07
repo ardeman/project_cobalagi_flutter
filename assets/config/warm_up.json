@@ -1,0 +1,5 @@
+{
+  "_comment": "The Warm-up island: picture games that need no reading. games lists them in island order (WarmUpGame names); roundLength is the number of questions in one round.",
+  "roundLength": 5,
+  "games": ["counting", "colors", "shapes", "patterns", "sides", "steps"]
+}

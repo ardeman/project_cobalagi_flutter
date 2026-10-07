@@ -15,6 +15,19 @@ abstract final class VoiceClips {
   static const pretestDone = 'pretest_done';
   static const pretestAnswerWas = 'pretest_answer_was';
 
+  static const warmUpPick = 'warm_up_pick';
+  static const warmUpDone = 'warm_up_done';
+
+  /// "Tap the red one!" for a colour id of the vocabulary.
+  static String warmUpColor(String color) => 'warm_up_color_$color';
+
+  /// "Tap the circle!" for a pattern shape id.
+  static String warmUpShape(String shape) => 'warm_up_shape_$shape';
+
+  /// Colours and shapes with a Warm-up prompt clip.
+  static const warmUpColors = ['red', 'blue', 'green', 'yellow'];
+  static const warmUpShapes = ['circle', 'square', 'triangle', 'heart'];
+
   static const playGoal = 'play_goal';
   static const playGoalStars = 'play_goal_stars';
   static const playGoalLoops = 'play_goal_loops';
@@ -75,6 +88,10 @@ abstract final class VoiceClips {
     pretestSequencing: 'promptSequencing',
     pretestDone: 'pretestDone',
     pretestAnswerWas: 'answerWas',
+    warmUpPick: 'warmUpPick',
+    warmUpDone: 'warmUpDone',
+    for (final c in warmUpColors) warmUpColor(c): 'promptColor${_capital(c)}',
+    for (final s in warmUpShapes) warmUpShape(s): 'promptShape${_capital(s)}',
     playGoal: 'playGoal',
     playGoalStars: 'playGoalStars',
     playGoalLoops: 'playGoalLoops',
@@ -100,4 +117,7 @@ abstract final class VoiceClips {
     for (var i = 1; i <= encourageCount; i++)
       cheer('encourage', i): 'cheerEncourage$i',
   };
+
+  static String _capital(String id) =>
+      '${id[0].toUpperCase()}${id.substring(1)}';
 }

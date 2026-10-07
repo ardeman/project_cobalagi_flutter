@@ -86,6 +86,8 @@ void main() {
                     reason: 'only the right option reaches the flag',
                   );
                 }
+              case ColorQuestion() || ShapeQuestion():
+                fail('the warm-up game asks no colour or shape questions');
             }
           }
         });

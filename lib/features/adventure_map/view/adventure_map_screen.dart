@@ -14,6 +14,7 @@ import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/progress_report.dart';
+import '../../../learning/warm_up/warm_up.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
@@ -49,6 +50,15 @@ class AdventureMapScreen extends StatelessWidget {
         child: ProfileAvatar(avatar: profile.avatar, size: 40),
       ),
       islands: [
+        // Picture games before the coding islands, always open.
+        MapIsland(
+          conceptId: warmUpIsland,
+          stars: cubit.curriculum.warmUp.islandStars(learner.warmUp),
+          solvedLessons: cubit.curriculum.warmUp.gamesPlayed(learner.warmUp),
+          totalLessons: cubit.curriculum.warmUp.games.length,
+          current: false,
+          locked: false,
+        ),
         for (var i = 0; i < concepts.length; i++)
           MapIsland(
             conceptId: concepts[i].id,
@@ -67,7 +77,11 @@ class AdventureMapScreen extends StatelessWidget {
                 !learner.progress.containsKey(concepts[i].id),
           ),
       ],
-      onOpen: (id) => context.go('/child/$profileId/island/$id'),
+      onOpen: (id) => context.go(
+        id == warmUpIsland
+            ? '/child/$profileId/warm-up'
+            : '/child/$profileId/island/$id',
+      ),
     );
     final play = Padding(
       padding: const EdgeInsets.all(16),

@@ -1357,6 +1357,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{One more puzzle to {island}!} other{Up to {count} more puzzles to {island}!}}'**
   String nextIslandSoon(int count, String island);
+
+  /// No description provided for @conceptWarmUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm-up'**
+  String get conceptWarmUp;
+
+  /// No description provided for @warmUpCounting.
+  ///
+  /// In en, this message translates to:
+  /// **'Counting'**
+  String get warmUpCounting;
+
+  /// No description provided for @warmUpColors.
+  ///
+  /// In en, this message translates to:
+  /// **'Colours'**
+  String get warmUpColors;
+
+  /// No description provided for @warmUpShapes.
+  ///
+  /// In en, this message translates to:
+  /// **'Shapes'**
+  String get warmUpShapes;
+
+  /// No description provided for @warmUpPatterns.
+  ///
+  /// In en, this message translates to:
+  /// **'Patterns'**
+  String get warmUpPatterns;
+
+  /// No description provided for @warmUpSides.
+  ///
+  /// In en, this message translates to:
+  /// **'Left and right'**
+  String get warmUpSides;
+
+  /// No description provided for @warmUpSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps'**
+  String get warmUpSteps;
+
+  /// No description provided for @warmUpPick.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a game!'**
+  String get warmUpPick;
+
+  /// No description provided for @warmUpDone.
+  ///
+  /// In en, this message translates to:
+  /// **'You played so well! Play again?'**
+  String get warmUpDone;
+
+  /// No description provided for @playAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Play again'**
+  String get playAgain;
+
+  /// No description provided for @promptColorRed.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the red one!'**
+  String get promptColorRed;
+
+  /// No description provided for @promptColorBlue.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the blue one!'**
+  String get promptColorBlue;
+
+  /// No description provided for @promptColorGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the green one!'**
+  String get promptColorGreen;
+
+  /// No description provided for @promptColorYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the yellow one!'**
+  String get promptColorYellow;
+
+  /// No description provided for @promptShapeCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the circle!'**
+  String get promptShapeCircle;
+
+  /// No description provided for @promptShapeSquare.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the square!'**
+  String get promptShapeSquare;
+
+  /// No description provided for @promptShapeTriangle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the triangle!'**
+  String get promptShapeTriangle;
+
+  /// No description provided for @promptShapeHeart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the heart!'**
+  String get promptShapeHeart;
 }
 
 class _AppLocalizationsDelegate

@@ -7,6 +7,7 @@ import '../../../learning/adaptive_config.dart';
 import '../../../learning/learning_engine.dart';
 import '../../../learning/placement/placement.dart';
 import '../../../learning/skill_graph.dart';
+import '../../../learning/warm_up/warm_up.dart';
 import '../../play/data/level_repository.dart';
 import '../../tutorial/data/tutorial.dart';
 
@@ -18,6 +19,7 @@ final class Curriculum {
     required this.placementRules,
     required this.vocabulary,
     required this.pretestSecondChances,
+    required this.warmUp,
     this.tutorials = const {},
   });
 
@@ -29,6 +31,9 @@ final class Curriculum {
 
   /// Extra warm-up questions per skill after a wrong answer.
   final int pretestSecondChances;
+
+  /// The Warm-up island's games and round length.
+  final WarmUpConfig warmUp;
 
   /// Lessons per concept id, in play order.
   final Map<String, List<Level>> lessons;
@@ -79,6 +84,7 @@ class CurriculumRepository {
       placementRules: rules,
       vocabulary: pretest['vocabulary']! as Map<String, Object?>,
       pretestSecondChances: pretest['secondChances']! as int,
+      warmUp: WarmUpConfig.fromJson(await json('warm_up')),
       tutorials: parseTutorials(
         await _bundle.loadString('assets/config/tutorials.json'),
       ),

@@ -98,6 +98,7 @@ store/             Google Play listing text and graphics per language (id, en-US
 website/           Static landing page for cobalagi.ardeman.com, plus screenshots
 assets/config/     skills.json (skill map), adaptive.json (learning thresholds),
                    pretest.json (placement rules and warm-up vocabulary)
+                   warm_up.json (Warm-up island games and round length)
 assets/levels/     Hand-made lesson packs (JSON), one per concept
 assets/audio/      Voice clips per language: <id|en>/<clipId>.mp3 (see Voice-over)
 android/ ios/ web/ macos/ linux/ windows/
@@ -290,6 +291,17 @@ to the map, where the new island grows in as its cloud and lock lift off
 (`LearningState.islandToCelebrate`, cleared by `celebrated`); it holds still
 when the system asks for fewer animations. Dropping a block gives a light
 haptic tick on devices that have one.
+
+The Warm-up island comes first on the map and is always open. It keeps the
+warm-up game's picture questions for the youngest players, plus colours and
+shapes, as separate games (`WarmUpGame` in `lib/learning/warm_up/`): counting,
+colours, shapes, patterns, left and right, and steps. A round
+(`roundLength` questions in `assets/config/warm_up.json`) starts at the
+child's best level, goes up a level after a right answer and down after a
+wrong one. Each game's stars are its best level; the island's stars are their
+average. Warm-up games never change the coding path. To add a game, add a
+`WarmUpGame` value with its question type, prompt text and voice clips, then
+list it in `warm_up.json`.
 
 Parents can set a break reminder (off, 15, 30 or 45 minutes of puzzle time; `PlayClock` pauses in the background). When it is due, the current puzzle finishes, then a "Time for a break!" screen comes before the next one; only a grown-up (parent gate) continues, which resets the time.
 

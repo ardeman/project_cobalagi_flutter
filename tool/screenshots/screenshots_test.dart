@@ -109,6 +109,13 @@ Future<Database> _seed(String language, {bool reader = false}) async {
         at: DateTime(2026, 9, 28),
         byParent: false,
       ),
+      warmUp: const {
+        'counting': 3,
+        'colors': 3,
+        'shapes': 2,
+        'patterns': 2,
+        'sides': 1,
+      },
       progress: {
         for (final (id, n) in [
           ('directions', 6),
@@ -591,6 +598,18 @@ void main() {
           await device(tester);
           await _openWarmUpPattern(tester);
           await shoot(prefix.isEmpty ? 'warm-up-pattern' : 'phone-warm-up');
+        });
+
+        testWidgets('warm-up island', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/warm-up');
+          await shoot('${prefix}warm-up-island');
+        });
+
+        testWidgets('warm-up colours', (tester) async {
+          await device(tester);
+          await _open(tester, '/child/1/warm-up/colors');
+          await shoot('${prefix}warm-up-colors');
         });
 
         testWidgets('parent placement', (tester) async {

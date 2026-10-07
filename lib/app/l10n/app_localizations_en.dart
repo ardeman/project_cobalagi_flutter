@@ -725,4 +725,58 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get conceptWarmUp => 'Warm-up';
+
+  @override
+  String get warmUpCounting => 'Counting';
+
+  @override
+  String get warmUpColors => 'Colours';
+
+  @override
+  String get warmUpShapes => 'Shapes';
+
+  @override
+  String get warmUpPatterns => 'Patterns';
+
+  @override
+  String get warmUpSides => 'Left and right';
+
+  @override
+  String get warmUpSteps => 'Steps';
+
+  @override
+  String get warmUpPick => 'Pick a game!';
+
+  @override
+  String get warmUpDone => 'You played so well! Play again?';
+
+  @override
+  String get playAgain => 'Play again';
+
+  @override
+  String get promptColorRed => 'Tap the red one!';
+
+  @override
+  String get promptColorBlue => 'Tap the blue one!';
+
+  @override
+  String get promptColorGreen => 'Tap the green one!';
+
+  @override
+  String get promptColorYellow => 'Tap the yellow one!';
+
+  @override
+  String get promptShapeCircle => 'Tap the circle!';
+
+  @override
+  String get promptShapeSquare => 'Tap the square!';
+
+  @override
+  String get promptShapeTriangle => 'Tap the triangle!';
+
+  @override
+  String get promptShapeHeart => 'Tap the heart!';
 }

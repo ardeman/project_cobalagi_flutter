@@ -10,6 +10,7 @@ import '../../../learning/learning_engine.dart';
 import '../../../learning/placement/pretest_generator.dart';
 import '../../../learning/placement/pretest_question.dart';
 import '../../../learning/placement/pretest_session.dart';
+import '../../../learning/warm_up/warm_up.dart';
 import '../data/curriculum_repository.dart';
 import '../data/progress_repository.dart';
 
@@ -172,6 +173,34 @@ class LearningCubit extends Cubit<LearningState> {
     PretestGenerator.fromJson(curriculum.vocabulary, Random()),
     secondChances: curriculum.pretestSecondChances,
   );
+
+  /// A round of a Warm-up island game, starting at the child's best level.
+  WarmUpRound startWarmUp(WarmUpGame game) => WarmUpRound(
+    game: game,
+    generator: PretestGenerator.fromJson(curriculum.vocabulary, Random()),
+    length: curriculum.warmUp.roundLength,
+    best: (_pending ?? state.learner!).warmUp[game.name] ?? 0,
+  );
+
+  /// Saves a finished Warm-up round. It never changes the coding path:
+  /// only the game's best level, for its stars.
+  Future<void> recordWarmUp(WarmUpRound round) async {
+    final current = _pending ?? state.learner!;
+    final best = current.warmUp[round.game.name] ?? 0;
+    if (round.best <= best) return;
+    _pending = null;
+    final learner = current.copyWith(
+      warmUp: {...current.warmUp, round.game.name: round.best},
+    );
+    emit(
+      LearningState(
+        learner: learner,
+        lastDecision: state.lastDecision,
+        islandToCelebrate: state.islandToCelebrate,
+      ),
+    );
+    await _progress.save(profileId, learner);
+  }
 
   /// Places the child from the warm-up game result and saves it.
   Future<void> completePretest(Map<PretestSkill, int> levels) async {

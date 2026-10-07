@@ -714,4 +714,58 @@ class AppLocalizationsId extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get conceptWarmUp => 'Pemanasan';
+
+  @override
+  String get warmUpCounting => 'Berhitung';
+
+  @override
+  String get warmUpColors => 'Warna';
+
+  @override
+  String get warmUpShapes => 'Bentuk';
+
+  @override
+  String get warmUpPatterns => 'Pola';
+
+  @override
+  String get warmUpSides => 'Kiri dan kanan';
+
+  @override
+  String get warmUpSteps => 'Langkah';
+
+  @override
+  String get warmUpPick => 'Pilih permainan!';
+
+  @override
+  String get warmUpDone => 'Hebat sekali mainnya! Main lagi?';
+
+  @override
+  String get playAgain => 'Main lagi';
+
+  @override
+  String get promptColorRed => 'Ketuk yang merah!';
+
+  @override
+  String get promptColorBlue => 'Ketuk yang biru!';
+
+  @override
+  String get promptColorGreen => 'Ketuk yang hijau!';
+
+  @override
+  String get promptColorYellow => 'Ketuk yang kuning!';
+
+  @override
+  String get promptShapeCircle => 'Ketuk lingkaran!';
+
+  @override
+  String get promptShapeSquare => 'Ketuk persegi!';
+
+  @override
+  String get promptShapeTriangle => 'Ketuk segitiga!';
+
+  @override
+  String get promptShapeHeart => 'Ketuk hati!';
 }

@@ -12,6 +12,9 @@ import '../features/pretest/view/pretest_screen.dart';
 import '../features/profiles/view/profiles_screen.dart';
 import '../features/splash/view/splash_screen.dart';
 import '../features/tutorial/view/tutorial_screen.dart';
+import '../features/warm_up/view/warm_up_game_screen.dart';
+import '../features/warm_up/view/warm_up_island_screen.dart';
+import '../learning/warm_up/warm_up.dart';
 
 GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
   initialLocation: initialLocation,
@@ -55,6 +58,22 @@ GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
                 profileId: _profileId(state),
                 levelId: state.pathParameters['levelId']!,
               ),
+            ),
+            GoRoute(
+              path: 'warm-up',
+              builder: (_, state) =>
+                  WarmUpIslandScreen(profileId: _profileId(state)),
+              routes: [
+                GoRoute(
+                  path: ':game',
+                  builder: (_, state) => WarmUpGameScreen(
+                    profileId: _profileId(state),
+                    game: WarmUpGame.values.byName(
+                      state.pathParameters['game']!,
+                    ),
+                  ),
+                ),
+              ],
             ),
             GoRoute(
               path: 'pretest',

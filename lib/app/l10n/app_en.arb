@@ -351,5 +351,23 @@
       "count": {"type": "int"},
       "island": {"type": "String"}
     }
-  }
+  },
+  "conceptWarmUp": "Warm-up",
+  "warmUpCounting": "Counting",
+  "warmUpColors": "Colours",
+  "warmUpShapes": "Shapes",
+  "warmUpPatterns": "Patterns",
+  "warmUpSides": "Left and right",
+  "warmUpSteps": "Steps",
+  "warmUpPick": "Pick a game!",
+  "warmUpDone": "You played so well! Play again?",
+  "playAgain": "Play again",
+  "promptColorRed": "Tap the red one!",
+  "promptColorBlue": "Tap the blue one!",
+  "promptColorGreen": "Tap the green one!",
+  "promptColorYellow": "Tap the yellow one!",
+  "promptShapeCircle": "Tap the circle!",
+  "promptShapeSquare": "Tap the square!",
+  "promptShapeTriangle": "Tap the triangle!",
+  "promptShapeHeart": "Tap the heart!"
 }

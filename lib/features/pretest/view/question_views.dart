@@ -37,6 +37,24 @@ import 'pretest_pictures.dart';
   ),
   PatternQuestion() => (l10n.promptPattern, VoiceClips.pretestPattern),
   SequencingQuestion() => (l10n.promptSequencing, VoiceClips.pretestSequencing),
+  ColorQuestion(:final color) => (
+    switch (color) {
+      'red' => l10n.promptColorRed,
+      'blue' => l10n.promptColorBlue,
+      'green' => l10n.promptColorGreen,
+      _ => l10n.promptColorYellow,
+    },
+    VoiceClips.warmUpColor(color),
+  ),
+  ShapeQuestion(:final shape) => (
+    switch (shape) {
+      'circle' => l10n.promptShapeCircle,
+      'square' => l10n.promptShapeSquare,
+      'triangle' => l10n.promptShapeTriangle,
+      _ => l10n.promptShapeHeart,
+    },
+    VoiceClips.warmUpShape(shape),
+  ),
 };
 
 /// Shows [question] and reports the tapped option index.
@@ -151,6 +169,10 @@ class QuestionView extends StatelessWidget {
           ),
         ),
         [for (final p in options) PretestPicture(picture: p, size: size * 0.5)],
+      ),
+      ColorQuestion(:final options) || ShapeQuestion(:final options) => (
+        null,
+        [for (final p in options) PretestPicture(picture: p, size: size * 0.6)],
       ),
       SequencingQuestion(:final map, :final options) => (
         _Board(

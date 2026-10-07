@@ -110,6 +110,7 @@ final class LearnerState {
     this.nextSeed = 0,
     this.placement,
     this.tutorialsSeen = const {},
+    this.warmUp = const {},
   });
 
   factory LearnerState.fromJson(Map<String, Object?> json) => LearnerState(
@@ -133,6 +134,12 @@ final class LearnerState {
     tutorialsSeen: {
       ...((json['tutorials'] as List?) ?? const []).cast<String>(),
     },
+    // Saves from before the Warm-up island have no games played.
+    warmUp: {
+      ...((json['warmUp'] as Map<String, Object?>?) ?? const {}).map(
+        (game, level) => MapEntry(game, level! as int),
+      ),
+    },
   );
 
   /// The concept the child is learning (where reviews return to).
@@ -154,6 +161,9 @@ final class LearnerState {
   /// Islands whose "Watch me!" demo the child has seen, by concept id.
   final Set<String> tutorialsSeen;
 
+  /// Best level reached (1 to 3) per Warm-up island game, by game name.
+  final Map<String, int> warmUp;
+
   /// The concept the next exercise belongs to.
   String get activeConcept => review?.conceptId ?? currentConcept;
 
@@ -165,6 +175,7 @@ final class LearnerState {
     int? nextSeed,
     Placement? Function()? placement,
     Set<String>? tutorialsSeen,
+    Map<String, int>? warmUp,
   }) => LearnerState(
     currentConcept: currentConcept ?? this.currentConcept,
     progress: progress ?? this.progress,
@@ -173,6 +184,7 @@ final class LearnerState {
     nextSeed: nextSeed ?? this.nextSeed,
     placement: placement != null ? placement() : this.placement,
     tutorialsSeen: tutorialsSeen ?? this.tutorialsSeen,
+    warmUp: warmUp ?? this.warmUp,
   );
 
   Map<String, Object?> toJson() => {
@@ -186,5 +198,6 @@ final class LearnerState {
     'nextSeed': nextSeed,
     'placement': placement?.toJson(),
     'tutorials': tutorialsSeen.toList(),
+    'warmUp': warmUp,
   };
 }

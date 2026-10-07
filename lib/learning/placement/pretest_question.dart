@@ -33,7 +33,9 @@ sealed class PretestQuestion {
   final int level;
   final int correct;
 
-  PretestSkill get skill;
+  /// The warm-up skill this question checks; null for questions only the
+  /// Warm-up island asks, such as colours and shapes.
+  PretestSkill? get skill;
 
   int get optionCount;
 }
@@ -152,6 +154,46 @@ final class SequencingQuestion extends PretestQuestion {
 
   @override
   PretestSkill get skill => PretestSkill.sequencing;
+
+  @override
+  int get optionCount => options.length;
+}
+
+/// "Tap the red one!": the same kind of picture in different colours.
+final class ColorQuestion extends PretestQuestion {
+  const ColorQuestion({
+    required super.level,
+    required super.correct,
+    required this.color,
+    required this.options,
+  });
+
+  /// The colour id to find.
+  final String color;
+  final List<Picture> options;
+
+  @override
+  PretestSkill? get skill => null;
+
+  @override
+  int get optionCount => options.length;
+}
+
+/// "Tap the circle!": shapes, where the colours don't give it away.
+final class ShapeQuestion extends PretestQuestion {
+  const ShapeQuestion({
+    required super.level,
+    required super.correct,
+    required this.shape,
+    required this.options,
+  });
+
+  /// The shape id to find, one of `patternShapes`.
+  final String shape;
+  final List<Picture> options;
+
+  @override
+  PretestSkill? get skill => null;
 
   @override
   int get optionCount => options.length;

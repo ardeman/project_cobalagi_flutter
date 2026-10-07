@@ -47,6 +47,57 @@ final class PretestGenerator {
     };
   }
 
+  /// "Tap the [colour] one!" Level 1: two of one object. Level 2: three of
+  /// one object. Level 3: four different objects, each in its own colour.
+  ColorQuestion colorQuestion(int level) {
+    RangeError.checkValueInInterval(level, 1, maxSkillLevel, 'level');
+    final count = min(level + 1, colors.length);
+    final paints = _pickDistinct(colors, count);
+    final things = level < 3
+        ? List.filled(count, _pick(objects))
+        : _pickDistinct(objects, count);
+    final pictures = [
+      for (var i = 0; i < count; i++) Picture(things[i], paints[i]),
+    ];
+    final (options, correct) = _withAnswer(
+      pictures.first,
+      pictures.skip(1).toList(),
+    );
+    return ColorQuestion(
+      level: level,
+      correct: correct,
+      color: paints.first,
+      options: options,
+    );
+  }
+
+  /// "Tap the [shape]!" Level 1: two shapes in one colour. Level 2: three.
+  /// Level 3: four shapes, each in a different colour.
+  ShapeQuestion shapeQuestion(int level) {
+    RangeError.checkValueInInterval(level, 1, maxSkillLevel, 'level');
+    final count = min(level + 1, patternShapes.length);
+    final shapes = _pickDistinct(patternShapes, count);
+    final paint = _pick(colors);
+    final paints =
+        level < 3
+              ? List.filled(count, paint)
+              : [for (var i = 0; i < count; i++) colors[i % colors.length]]
+          ..shuffle(_random);
+    final pictures = [
+      for (var i = 0; i < count; i++) Picture(shapes[i], paints[i]),
+    ];
+    final (options, correct) = _withAnswer(
+      pictures.first,
+      pictures.skip(1).toList(),
+    );
+    return ShapeQuestion(
+      level: level,
+      correct: correct,
+      shape: shapes.first,
+      options: options,
+    );
+  }
+
   T _pick<T>(List<T> from) => from[_random.nextInt(from.length)];
 
   List<T> _pickDistinct<T>(List<T> from, int count) =>
