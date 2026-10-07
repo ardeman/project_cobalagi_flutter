@@ -329,5 +329,20 @@
   "tutorialConditions": "The eye block looks ahead. If the path is clear, your friend steps forward. If not, it waits.",
   "tutorialVariables": "Save a number in the Step Box. Then use steps to walk that many cells!",
   "tutorialDebugging": "These blocks aren't quite right. Press Go and watch. Then tap the block to fix, and tap the right one!",
-  "tutorialUntil": "Repeat until the flag keeps going by itself, so you never have to count!"
+  "tutorialUntil": "Repeat until the flag keeps going by itself, so you never have to count!",
+  "hintPattern": "These blocks come back again and again. Try the loop block!",
+  "breakTitle": "Time for a break!",
+  "breakBody": "You played really well. Rest your eyes, have a stretch, and come back later.",
+  "breakHome": "Back to players",
+  "breakContinue": "A grown-up can continue",
+  "breakVoice": "Time for a break! You played really well. Rest your eyes, have a stretch, and come back later.",
+  "breakReminder": "Break reminder",
+  "breakReminderHint": "After this much puzzle time, your child is invited to take a break. Only a grown-up can continue.",
+  "breakOff": "Off",
+  "breakMinutes": "{minutes} min",
+  "@breakMinutes": {
+    "placeholders": {
+      "minutes": {"type": "int"}
+    }
+  }
 }

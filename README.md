@@ -18,7 +18,7 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 | | |
 | --- | --- |
 | ![Adventure map with six islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: the hint shows the route as small blocks in their colours](website/screenshots/hint-loops-03.png) |
-| **Adventure map:** one island per concept, with stars for mastery. | **Hint:** the route shown as the level's own blocks, in their colours and order. |
+| **Adventure map:** one island per concept, with stars for mastery. | **Hint:** the route as the level's own blocks; asked again on loop islands, the shape that repeats and the loop block that does it. |
 | ![A solved puzzle with a cheer and a Next button](website/screenshots/solved.png) | ![Warm-up game asking what comes next in a pattern of shapes](website/screenshots/warm-up-pattern.png) |
 | **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** picture-based, voice-led placement for children who can't read yet. |
 | ![Parent area dialog for choosing a child's starting island](website/screenshots/parent-placement.png) | ![The adventure map in Bahasa Indonesia](website/screenshots/adventure-map-id.png) |
@@ -279,6 +279,8 @@ adventure map puts the islands in one row that scrolls sideways, starting at the
 picture beside the answers. Tablets held upright use the stacked phone page
 with a large world. A new block scrolls into view; Go and Step scroll back to the world
 so the child watches the run.
+
+Parents can set a break reminder (off, 15, 30 or 45 minutes of puzzle time; `PlayClock` pauses in the background). When it is due, the current puzzle finishes, then a "Time for a break!" screen comes before the next one; only a grown-up (parent gate) continues, which resets the time.
 
 Every island opens with a "Watch me!" demo on a child's first visit: a voice explains the idea while a hand places blocks in the real editor and presses Go in the real world. Children watch, then press "Let's play!" (or Skip); "Watch how" on each island plays it again. Demos are scripts in `assets/config/tutorials.json` (a small level plus actions: add a block, set a count, pick and replace, press Go), with narration clips `tutorial_<concept>`; `test/features/tutorial/tutorial_test.dart` checks every island has one that ends solved. Seen demos are saved per child (`LearnerState.tutorialsSeen`).
 

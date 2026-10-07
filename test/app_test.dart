@@ -220,6 +220,24 @@ void main() {
     expect(audio.effects, isTrue);
   });
 
+  testWidgets('a parent can set a break reminder, even on a small phone', (
+    tester,
+  ) async {
+    await pumpApp(tester, size: const Size(720, 1280));
+    await passParentGate(tester);
+    // Scroll it to the middle, clear of the glass bar over the page.
+    await tester.scrollUntilVisible(find.text('30 min'), 200);
+    await tester.drag(find.byType(ListView), const Offset(0, -150));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('30 min'));
+    await tester.pumpAndSettle();
+    final picked = tester.widget<SegmentedButton<int>>(
+      find.byType(SegmentedButton<int>),
+    );
+    expect(picked.selected, {30});
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('the parent area shows the app version', (tester) async {
     PackageInfo.setMockInitialValues(
       appName: 'Coba Lagi',
@@ -269,6 +287,8 @@ void main() {
       await tester.tap(find.text('Save'));
       await tester.pumpAndSettle();
       await passParentGate(tester);
+      await tester.scrollUntilVisible(find.text('Ayu'), 200);
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Ayu'));
       await tester.pumpAndSettle();
     }

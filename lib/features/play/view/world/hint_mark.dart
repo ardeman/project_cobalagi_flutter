@@ -13,6 +13,8 @@ final class HintMark {
     this.angle = 0,
     this.label,
     this.labelFont,
+    this.faded = false,
+    this.big = false,
   });
 
   /// Where the mark sits, in tiles (0.5 is a tile's centre).
@@ -28,6 +30,13 @@ final class HintMark {
 
   /// The app's text font for [label]; the world has no theme of its own.
   final String? labelFont;
+
+  /// Drawn see-through: a step the pattern hint says comes again.
+  final bool faded;
+
+  /// Drawn larger (1.6 times): the loop block that the pattern hint
+  /// suggests.
+  final bool big;
 }
 
 /// A [HintMark] drawn as a small block: a rounded square in the block's
@@ -77,6 +86,14 @@ class HintMarkComponent extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    if (mark.faded) {
+      canvas.saveLayer(null, Paint()..color = const Color(0x5CFFFFFF));
+    }
+    _draw(canvas);
+    if (mark.faded) canvas.restore();
+  }
+
+  void _draw(Canvas canvas) {
     final box = RRect.fromRectAndRadius(
       Rect.fromLTWH(0, 0, _size, _size),
       const Radius.circular(0.12),

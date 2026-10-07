@@ -18,6 +18,7 @@ import '../../../engine/program/instruction.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
 import 'package:cobalagi/features/play/view/hint_marks.dart';
+import 'package:cobalagi/features/play_time/data/play_clock.dart';
 import 'package:cobalagi/features/editors/typed/data/typed_program.dart';
 import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import '../../../engine/world/level.dart';
@@ -103,11 +104,17 @@ class _PlayViewState extends State<PlayView> {
   @override
   void initState() {
     super.initState();
+    // Puzzle time counts toward the parent's break reminder.
+    _playClock?.start();
     WidgetsBinding.instance.addPostFrameCallback((_) => _sayGoal());
   }
 
+  /// Missing where a play view stands alone, as in some tests.
+  late final PlayClock? _playClock = context.read<PlayClock?>();
+
   @override
   void dispose() {
+    _playClock?.stop();
     _blocks.close();
     _typed.close();
     _page.dispose();
@@ -165,14 +172,16 @@ class _PlayViewState extends State<PlayView> {
     final solution = solve(_level);
     if (solution == null) return;
     setState(() => _hints++);
-    // The route as the level's own blocks, in their colours.
-    _game.showHint(
-      hintMarks(
-        _level,
-        solution,
-        labelFont: Theme.of(context).textTheme.titleLarge?.fontFamily,
-      ),
-    );
+    final font = Theme.of(context).textTheme.titleLarge?.fontFamily;
+    // First the route as the level's own blocks, in their colours. Asked
+    // again on islands with a loop block: the shape that repeats, and the
+    // loop block that does it. Then the two take turns.
+    final pattern = _hints.isEven
+        ? patternHintMarks(_level, solution, labelFont: font)
+        : null;
+    _game.showHint(pattern ?? hintMarks(_level, solution, labelFont: font));
+    // Pre-readers hear what the pattern means.
+    if (pattern != null) _say(VoiceClips.hintPattern);
   }
 
   void _onPlayChanged(BuildContext context, PlayState state) {
@@ -309,6 +318,7 @@ class _PlayViewState extends State<PlayView> {
                     _feedbackCard(context) ??
                     _RunControls(
                       onHint: _finished ? null : _showHint,
+                      hintsUsed: _hints,
                       howTo: widget.showHowTo,
                       compact: tight,
                       codeMode: _codeMode,
@@ -843,12 +853,16 @@ class _FeedbackCard extends StatelessWidget {
 class _RunControls extends StatelessWidget {
   const _RunControls({
     required this.onHint,
+    this.hintsUsed = 0,
     this.howTo = false,
     this.compact = false,
     this.codeMode = false,
   });
 
   final VoidCallback? onHint;
+
+  /// Hints asked for so far; the bulb pulses until the first one.
+  final int hintsUsed;
 
   /// Narrow screens (phones): tighter spacing so all four buttons fit.
   final bool compact;
@@ -927,10 +941,20 @@ class _RunControls extends StatelessWidget {
               icon: const Icon(Icons.replay_rounded),
             ),
             SizedBox(width: gap),
-            IconButton.filledTonal(
-              tooltip: l10n.hint,
-              onPressed: running ? null : onHint,
-              icon: const Icon(Icons.lightbulb_rounded),
+            // After two runs that didn't reach the flag, the bulb pulses so
+            // a child who is stuck notices it, until they ask for a hint.
+            _Pulse(
+              active:
+                  !running &&
+                  onHint != null &&
+                  hintsUsed == 0 &&
+                  play.runs >= 2 &&
+                  play.phase != PlayPhase.succeeded,
+              child: IconButton.filledTonal(
+                tooltip: l10n.hint,
+                onPressed: running ? null : onHint,
+                icon: const Icon(Icons.lightbulb_rounded),
+              ),
             ),
           ],
         );

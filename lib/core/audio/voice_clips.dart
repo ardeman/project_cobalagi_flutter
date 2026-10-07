@@ -24,6 +24,8 @@ abstract final class VoiceClips {
   static const playGoalDebugging = 'play_goal_debugging';
   static const playGoalUntil = 'play_goal_until';
   static const playHowTo = 'play_how_to';
+  static const hintPattern = 'hint_pattern';
+  static const breakTime = 'break_time';
 
   static const feedbackBumped = 'feedback_bumped';
   static const feedbackStoppedShort = 'feedback_stopped_short';
@@ -82,6 +84,8 @@ abstract final class VoiceClips {
     playGoalDebugging: 'playGoalDebugging',
     playGoalUntil: 'playGoalUntil',
     playHowTo: 'playHowTo',
+    hintPattern: 'hintPattern',
+    breakTime: 'breakVoice',
     feedbackBumped: 'feedbackBumped',
     feedbackStoppedShort: 'feedbackStoppedShort',
     feedbackMissedStars: 'feedbackMissedStars',

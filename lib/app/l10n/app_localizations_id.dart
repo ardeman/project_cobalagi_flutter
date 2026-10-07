@@ -667,4 +667,40 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get tutorialUntil =>
       'Ulangi sampai bendera terus jalan sendiri, jadi kamu tidak perlu menghitung!';
+
+  @override
+  String get hintPattern =>
+      'Blok-blok ini muncul lagi dan lagi. Coba pakai blok pengulang!';
+
+  @override
+  String get breakTitle => 'Waktunya istirahat!';
+
+  @override
+  String get breakBody =>
+      'Kamu sudah bermain dengan hebat. Istirahatkan matamu, coba peregangan, lalu main lagi nanti.';
+
+  @override
+  String get breakHome => 'Kembali ke pemain';
+
+  @override
+  String get breakContinue => 'Orang dewasa bisa melanjutkan';
+
+  @override
+  String get breakVoice =>
+      'Waktunya istirahat! Kamu sudah bermain dengan hebat. Istirahatkan matamu, coba peregangan, lalu main lagi nanti.';
+
+  @override
+  String get breakReminder => 'Pengingat istirahat';
+
+  @override
+  String get breakReminderHint =>
+      'Setelah bermain teka-teki selama ini, anak diajak istirahat. Hanya orang dewasa yang bisa melanjutkan.';
+
+  @override
+  String get breakOff => 'Mati';
+
+  @override
+  String breakMinutes(int minutes) {
+    return '$minutes mnt';
+  }
 }

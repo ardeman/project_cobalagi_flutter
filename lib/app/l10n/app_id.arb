@@ -222,5 +222,15 @@
   "tutorialConditions": "Blok mata melihat ke depan. Kalau jalannya kosong, temanmu maju. Kalau tidak, ia menunggu.",
   "tutorialVariables": "Simpan angka di Kotak Langkah. Lalu pakai langkah untuk berjalan sebanyak itu!",
   "tutorialDebugging": "Blok ini belum pas. Tekan Jalan dan perhatikan. Lalu ketuk blok yang perlu dibetulkan, dan ketuk blok yang tepat!",
-  "tutorialUntil": "Ulangi sampai bendera terus jalan sendiri, jadi kamu tidak perlu menghitung!"
+  "tutorialUntil": "Ulangi sampai bendera terus jalan sendiri, jadi kamu tidak perlu menghitung!",
+  "hintPattern": "Blok-blok ini muncul lagi dan lagi. Coba pakai blok pengulang!",
+  "breakTitle": "Waktunya istirahat!",
+  "breakBody": "Kamu sudah bermain dengan hebat. Istirahatkan matamu, coba peregangan, lalu main lagi nanti.",
+  "breakHome": "Kembali ke pemain",
+  "breakContinue": "Orang dewasa bisa melanjutkan",
+  "breakVoice": "Waktunya istirahat! Kamu sudah bermain dengan hebat. Istirahatkan matamu, coba peregangan, lalu main lagi nanti.",
+  "breakReminder": "Pengingat istirahat",
+  "breakReminderHint": "Setelah bermain teka-teki selama ini, anak diajak istirahat. Hanya orang dewasa yang bisa melanjutkan.",
+  "breakOff": "Mati",
+  "breakMinutes": "{minutes} mnt"
 }

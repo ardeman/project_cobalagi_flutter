@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_background.dart';
 import 'package:cobalagi/features/splash/data/app_update_service.dart';
 
+import '../features/play_time/cubit/break_reminder_cubit.dart';
+import '../features/play_time/data/play_clock.dart';
 import '../core/audio/audio_service.dart';
 import '../core/audio/music_cubit.dart';
 import '../core/audio/sound_effects_cubit.dart';
@@ -46,6 +48,9 @@ class CobaLagiApp extends StatefulWidget {
 class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
   late final GoRouter _router = createRouter();
 
+  /// Puzzle time since the last break, for the parent's break reminder.
+  final _playClock = PlayClock()..attach();
+
   @override
   void initState() {
     super.initState();
@@ -61,6 +66,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _playClock.detach();
     _router.dispose();
     widget.entitlement.dispose();
     widget.audio.dispose();
@@ -74,6 +80,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
       RepositoryProvider.value(value: widget.curriculum),
       RepositoryProvider.value(value: widget.progress),
       RepositoryProvider.value(value: widget.updates),
+      RepositoryProvider.value(value: _playClock),
     ],
     child: MultiBlocProvider(
       providers: [
@@ -88,6 +95,10 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
         BlocProvider(
           lazy: false,
           create: (_) => MusicCubit(widget.settings, widget.audio)..load(),
+        ),
+        BlocProvider(
+          lazy: false,
+          create: (_) => BreakReminderCubit(widget.settings)..load(),
         ),
         BlocProvider(
           create: (_) => EntitlementCubit(widget.entitlement)..load(),

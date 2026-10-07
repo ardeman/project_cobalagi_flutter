@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:cobalagi/features/play_time/cubit/break_reminder_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -106,21 +107,57 @@ class ParentScreen extends StatelessWidget {
                   value: context.watch<MusicCubit>().state,
                   onChanged: (on) => context.read<MusicCubit>().set(on: on),
                 ),
-                const SizedBox(height: 32),
-                Text(l10n.plan, style: headerStyle),
+                const SizedBox(height: 8),
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: Text(
-                    plan == Plan.free
-                        ? l10n.planFree
-                        : l10n.planFull(Plan.full.maxProfiles),
+                  leading: const Icon(Icons.bedtime_rounded),
+                  title: Text(l10n.breakReminder),
+                  subtitle: Text(l10n.breakReminderHint),
+                ),
+                SegmentedButton<int>(
+                  segments: [
+                    for (final minutes in BreakReminderCubit.choices)
+                      ButtonSegment(
+                        value: minutes,
+                        label: Text(
+                          minutes == 0
+                              ? l10n.breakOff
+                              : l10n.breakMinutes(minutes),
+                        ),
+                      ),
+                  ],
+                  selected: {context.watch<BreakReminderCubit>().state},
+                  onSelectionChanged: (s) =>
+                      context.read<BreakReminderCubit>().set(s.first),
+                ),
+                const SizedBox(height: 32),
+                Text(l10n.plan, style: headerStyle),
+                // The button wraps under the plan name on narrow phones.
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
+                    children: [
+                      Text(
+                        plan == Plan.free
+                            ? l10n.planFree
+                            : l10n.planFull(Plan.full.maxProfiles),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      plan == Plan.free
+                          ? FilledButton(
+                              onPressed: () => showDonationSheet(context),
+                              child: Text(l10n.supportCobaLagi),
+                            )
+                          : const Icon(
+                              Icons.favorite_rounded,
+                              color: Colors.pink,
+                            ),
+                    ],
                   ),
-                  trailing: plan == Plan.free
-                      ? FilledButton(
-                          onPressed: () => showDonationSheet(context),
-                          child: Text(l10n.supportCobaLagi),
-                        )
-                      : const Icon(Icons.favorite_rounded, color: Colors.pink),
                 ),
                 if (kDebugMode)
                   SwitchListTile(

@@ -1,6 +1,7 @@
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/world/direction.dart';
+import 'package:cobalagi/engine/world/grid_point.dart';
 import 'package:cobalagi/engine/world/level.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
@@ -67,5 +68,96 @@ void main() {
     expect(marks.first.labelFont, 'Roboto');
     // In the middle of the two-step stretch, off the character's tile.
     expect(marks.first.at, Vector2(1.5, 1.5));
+  });
+
+  group('findPattern', () {
+    const m = InstructionKind.move;
+    const l = InstructionKind.turnLeft;
+    const r = InstructionKind.turnRight;
+
+    test('a corridor repeats one step', () {
+      expect(findPattern([m, m, m, m, m]), (start: 0, unit: 1, times: 5));
+    });
+
+    test('stairs repeat their shape, a last part-round counts', () {
+      expect(findPattern([m, l, m, r, m, l, m, r, m, l, m]), (
+        start: 0,
+        unit: 4,
+        times: 3,
+      ));
+    });
+
+    test('a lead-in comes before the repeating part', () {
+      expect(findPattern([m, m, r, m, l, m, l, m, l, m, l]), (
+        start: 3,
+        unit: 2,
+        times: 4,
+      ));
+    });
+
+    test('nothing repeats', () {
+      expect(findPattern([m, l, r]), isNull);
+      expect(findPattern([]), isNull);
+    });
+  });
+
+  test('the pattern hint shows one bright round and the repeat block', () {
+    final level = Level.fromRows(
+      id: 'p',
+      concept: 'loops',
+      rows: ['########', '#S....G#', '########'],
+      startFacing: Direction.east,
+      palette: const {InstructionKind.move, InstructionKind.repeat},
+    );
+    final marks = patternHintMarks(level, solve(level)!)!;
+    // Five steps plus the repeat block, which comes after the first round.
+    expect(marks, hasLength(6));
+    expect(marks[1].icon, BlockType.repeat.icon);
+    expect(marks[1].big, isTrue);
+    expect(marks[1].label, '5');
+    // On a wall tile beside the path, not over another mark.
+    final at = marks[1].at;
+    expect(level.isOpen(GridPoint(at.x.floor(), at.y.floor())), isFalse);
+    expect(
+      [for (final m in marks) m.faded],
+      [
+        false, false, true, true, true, true, //
+      ],
+    );
+  });
+
+  test('until the flag shows its block without a count', () {
+    final level = Level.fromRows(
+      id: 'u',
+      concept: 'until',
+      rows: ['######', '#S..G#', '######'],
+      startFacing: Direction.east,
+      palette: const {InstructionKind.move, InstructionKind.untilGoal},
+    );
+    final loop = patternHintMarks(
+      level,
+      solve(level)!,
+    )!.firstWhere((m) => m.big);
+    expect(loop.icon, BlockType.untilGoal.icon);
+    expect(loop.label, isNull);
+  });
+
+  test('no pattern hint without a loop block or a repeating shape', () {
+    final plain = Level.fromRows(
+      id: 'n',
+      concept: 'sequencing',
+      rows: ['#####', '#S.G#', '#####'],
+      startFacing: Direction.east,
+      palette: const {InstructionKind.move},
+    );
+    expect(patternHintMarks(plain, solve(plain)!), isNull);
+    final noShape = Level.fromRows(
+      id: 'n2',
+      concept: 'loops',
+      rows: ['####', '#SG#', '####'],
+      startFacing: Direction.east,
+      palette: const {InstructionKind.move, InstructionKind.repeat},
+    );
+    expect(patternHintMarks(noShape, solve(noShape)!), isNull);
   });
 }

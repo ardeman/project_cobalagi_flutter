@@ -157,7 +157,11 @@ class LearningCubit extends Cubit<LearningState> {
   Future<Decision> record(ExerciseResult result) async {
     final current = _pending ?? state.learner!;
     _pending = null;
-    final (learner, decision) = engine.record(current, result);
+    final (learner, decision) = engine.record(
+      current,
+      result,
+      lessons: curriculum.lessonIds,
+    );
     emit(LearningState(learner: learner, lastDecision: decision));
     await _progress.logAttempt(profileId, result);
     await _progress.save(profileId, learner);

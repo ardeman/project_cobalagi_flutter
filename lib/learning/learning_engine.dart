@@ -146,8 +146,14 @@ final class LearningEngine {
     );
   }
 
-  /// Updates progress with [result] and decides what comes next.
-  (LearnerState, Decision) record(LearnerState state, ExerciseResult result) {
+  /// Updates progress with [result] and decides what comes next. [lessons]
+  /// (lesson ids per concept) lets a child who solved every lesson on an
+  /// island move on (see [AdaptiveConfig.practiceLimit]).
+  (LearnerState, Decision) record(
+    LearnerState state,
+    ExerciseResult result, {
+    Map<String, List<String>> lessons = const {},
+  }) {
     final updated = _withResult(state, result);
     final review = updated.review;
 
@@ -173,6 +179,24 @@ final class LearningEngine {
     final conceptId = updated.currentConcept;
     final progress = progressOf(updated, conceptId);
     final enoughData = progress.exercises >= config.minExercises;
+
+    // Every lesson solved: a solved puzzle moves the child on once they
+    // practise well enough, or after enough puzzles, whatever the scores.
+    // Without this, hints and extra tries could keep a child on one island
+    // for ever.
+    final islandLessons = lessons[conceptId] ?? const <String>[];
+    final lessonsDone =
+        islandLessons.isNotEmpty &&
+        islandLessons.every(progress.solvedLessons.contains);
+    if (lessonsDone &&
+        result.succeeded &&
+        result.conceptId == conceptId &&
+        ((enoughData && progress.mastery >= config.practiceAt) ||
+            progress.exercises >= config.practiceLimit)) {
+      final next = graph.nextAfter(conceptId);
+      if (next == null) return (updated, MapComplete(conceptId));
+      return (updated.copyWith(currentConcept: next), Advance(conceptId, next));
+    }
 
     final struggling =
         progress.failStreak >= config.reviewAfterFailures ||

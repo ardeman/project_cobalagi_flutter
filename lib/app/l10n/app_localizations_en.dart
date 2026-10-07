@@ -678,4 +678,40 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tutorialUntil =>
       'Repeat until the flag keeps going by itself, so you never have to count!';
+
+  @override
+  String get hintPattern =>
+      'These blocks come back again and again. Try the loop block!';
+
+  @override
+  String get breakTitle => 'Time for a break!';
+
+  @override
+  String get breakBody =>
+      'You played really well. Rest your eyes, have a stretch, and come back later.';
+
+  @override
+  String get breakHome => 'Back to players';
+
+  @override
+  String get breakContinue => 'A grown-up can continue';
+
+  @override
+  String get breakVoice =>
+      'Time for a break! You played really well. Rest your eyes, have a stretch, and come back later.';
+
+  @override
+  String get breakReminder => 'Break reminder';
+
+  @override
+  String get breakReminderHint =>
+      'After this much puzzle time, your child is invited to take a break. Only a grown-up can continue.';
+
+  @override
+  String get breakOff => 'Off';
+
+  @override
+  String breakMinutes(int minutes) {
+    return '$minutes min';
+  }
 }

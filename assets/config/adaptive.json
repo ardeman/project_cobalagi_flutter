@@ -6,6 +6,7 @@
   "reviewAfterFailures": 2,
   "reviewLength": 2,
   "offerSkipAfterRuns": 4,
+  "practiceLimit": 10,
   "score": {
     "extraRunPenalty": 0.15,
     "hintPenalty": 0.2,

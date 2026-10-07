@@ -37,11 +37,12 @@ ExerciseResult result(
 /// Records [results] in order and returns the final state and decision.
 (LearnerState, Decision) play(
   LearnerState state,
-  List<ExerciseResult> results,
-) {
+  List<ExerciseResult> results, {
+  Map<String, List<String>> lessons = const {},
+}) {
   late Decision decision;
   for (final r in results) {
-    (state, decision) = engine.record(state, r);
+    (state, decision) = engine.record(state, r, lessons: lessons);
   }
   return (state, decision);
 }
@@ -297,6 +298,67 @@ void main() {
       final json = const ConceptProgress(difficulty: 2).toJson()
         ..remove('solved');
       expect(ConceptProgress.fromJson(json).solvedLessons, isEmpty);
+    });
+  });
+
+  group('finishing an island', () {
+    final lessons = {
+      'directions': [for (var i = 1; i <= 6; i++) 'directions-0$i'],
+      'sequencing': [for (var i = 1; i <= 6; i++) 'sequencing-0$i'],
+    };
+    // Solved, but with three hints and extra tries: a low score.
+    ExerciseResult struggled(String concept, {String level = 'generated'}) =>
+        result(
+          concept,
+          hints: 3,
+          runs: 3,
+          mode: level == 'generated'
+              ? ExerciseMode.practice
+              : ExerciseMode.lesson,
+          level: level,
+        );
+
+    test(
+      'every lesson solved with hints still leads on to the next island',
+      () {
+        var (state, decision) = play(engine.initialState(), [
+          for (final id in lessons['directions']!)
+            struggled('directions', level: id),
+        ], lessons: lessons);
+        expect(state.currentConcept, 'directions', reason: 'scores are low');
+        var practice = 0;
+        while (decision is! Advance && practice < 20) {
+          (state, decision) = play(state, [
+            struggled('directions'),
+          ], lessons: lessons);
+          practice++;
+        }
+        expect(decision, isA<Advance>());
+        expect(state.currentConcept, 'sequencing');
+        // Lessons count too: at most practiceLimit puzzles on the island.
+        expect(6 + practice, lessThanOrEqualTo(config.practiceLimit));
+        expect(practice, greaterThan(0), reason: 'some practice first');
+      },
+    );
+
+    test('without the lessons done, low scores do not move a child on', () {
+      final (state, decision) = play(engine.initialState(), [
+        for (var i = 0; i < 10; i++) struggled('directions'),
+      ], lessons: lessons);
+      expect(decision, isNot(isA<Advance>()));
+      expect(state.currentConcept, 'directions');
+    });
+
+    test('a given-up puzzle never moves a child on', () {
+      var (state, _) = play(engine.initialState(), [
+        for (final id in lessons['directions']!)
+          struggled('directions', level: id),
+      ], lessons: lessons);
+      final (after, decision) = play(state, [
+        for (var i = 0; i < 4; i++) result('directions', succeeded: false),
+      ], lessons: lessons);
+      expect(decision, isNot(isA<Advance>()));
+      expect(after.currentConcept, 'directions');
     });
   });
 }

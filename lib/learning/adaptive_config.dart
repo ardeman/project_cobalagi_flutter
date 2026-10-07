@@ -9,6 +9,7 @@ final class AdaptiveConfig {
     required this.reviewAfterFailures,
     required this.reviewLength,
     required this.offerSkipAfterRuns,
+    required this.practiceLimit,
     required this.extraRunPenalty,
     required this.hintPenalty,
     required this.slowAfter,
@@ -31,6 +32,7 @@ final class AdaptiveConfig {
       reviewAfterFailures: i(json, 'reviewAfterFailures'),
       reviewLength: i(json, 'reviewLength'),
       offerSkipAfterRuns: i(json, 'offerSkipAfterRuns'),
+      practiceLimit: i(json, 'practiceLimit'),
       extraRunPenalty: d(score, 'extraRunPenalty'),
       hintPenalty: d(score, 'hintPenalty'),
       slowAfter: Duration(seconds: i(score, 'slowAfterSeconds')),
@@ -61,6 +63,12 @@ final class AdaptiveConfig {
 
   /// Failed runs after which the child may skip the puzzle.
   final int offerSkipAfterRuns;
+
+  /// With every lesson on an island solved, a child moves on after a solved
+  /// puzzle once mastery reaches [practiceAt], or once it has played this many
+  /// puzzles there in all, lessons included (counted again after a review),
+  /// so nobody stays stuck.
+  final int practiceLimit;
 
   final double extraRunPenalty;
   final double hintPenalty;

@@ -134,7 +134,7 @@ class WorldGame extends FlameGame {
           ..scale = Vector2.zero()
           ..addAll([
             ScaleEffect.to(
-              Vector2.all(1),
+              Vector2.all(marks[i].big ? 1.6 : 1),
               EffectController(
                 duration: 0.25,
                 startDelay: i * step,

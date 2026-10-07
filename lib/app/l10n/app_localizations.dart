@@ -1291,6 +1291,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Repeat until the flag keeps going by itself, so you never have to count!'**
   String get tutorialUntil;
+
+  /// No description provided for @hintPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'These blocks come back again and again. Try the loop block!'**
+  String get hintPattern;
+
+  /// No description provided for @breakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Time for a break!'**
+  String get breakTitle;
+
+  /// No description provided for @breakBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You played really well. Rest your eyes, have a stretch, and come back later.'**
+  String get breakBody;
+
+  /// No description provided for @breakHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to players'**
+  String get breakHome;
+
+  /// No description provided for @breakContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'A grown-up can continue'**
+  String get breakContinue;
+
+  /// No description provided for @breakVoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Time for a break! You played really well. Rest your eyes, have a stretch, and come back later.'**
+  String get breakVoice;
+
+  /// No description provided for @breakReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Break reminder'**
+  String get breakReminder;
+
+  /// No description provided for @breakReminderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'After this much puzzle time, your child is invited to take a break. Only a grown-up can continue.'**
+  String get breakReminderHint;
+
+  /// No description provided for @breakOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get breakOff;
+
+  /// No description provided for @breakMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String breakMinutes(int minutes);
 }
 
 class _AppLocalizationsDelegate
