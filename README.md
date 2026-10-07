@@ -275,7 +275,7 @@ glass top bar, which holds the Blocks/Code switch for readers, and glass control
 its buttons) at the bottom; the bars frost only while content is under them.
 Phones held sideways (under 500 dp tall) keep the world and Go on the left and
 scroll the editor on its own on the right, with the same small blocks; the
-warm-up game shrinks its pictures to fit the height and puts the question's
+adventure map puts the islands in one row that scrolls sideways, starting at the current island; the warm-up game shrinks its pictures to fit the height and puts the question's
 picture beside the answers. Tablets held upright use the stacked phone page
 with a large world. A new block scrolls into view; Go and Step scroll back to the world
 so the child watches the run.

@@ -57,9 +57,16 @@ class _OceanMapState extends State<OceanMap> {
   /// Made on the first narrow layout, scrolled to the current island.
   ScrollController? _scroll;
 
+  /// Made on the first short wide layout, scrolled to the current island.
+  ScrollController? _sideScroll;
+
+  /// The row's last (map width, view width), to recentre when it changes.
+  (double, double)? _sideLayout;
+
   @override
   void dispose() {
     _scroll?.dispose();
+    _sideScroll?.dispose();
     super.dispose();
   }
 
@@ -79,13 +86,22 @@ class _OceanMapState extends State<OceanMap> {
       final room = max(0.0, constraints.maxHeight - pad.vertical);
       final wide = width > room * 1.1;
       final n = widget.islands.length;
+      // Short and wide (phones held sideways): two rows would crush the
+      // islands, so they sit in one row and the sea scrolls sideways.
+      // Also when the islands would be too narrow side by side.
+      final row = wide && (room < 360 || width / (max(n, 1) * 2.2) < 72);
       // Island size: as big as fits, but not huge on large tablets.
-      final size = wide
+      final size = row
+          ? (room / 2.1).clamp(56.0, 150.0).toDouble()
+          : wide
           ? min(
               room * 0.24,
               width / (max(n, 1) * 2.2),
             ).clamp(72.0, 170.0).toDouble()
           : min(width * 0.3, 150.0).clamp(72.0, 150.0).toDouble();
+      final mapWidth = row
+          ? max(width, size * 2.6 + max(n - 1, 0) * size * 2.2)
+          : width;
       final height = wide
           ? constraints.maxHeight
           : max(
@@ -94,7 +110,13 @@ class _OceanMapState extends State<OceanMap> {
             );
       final centres = [
         for (var i = 0; i < n; i++)
-          wide
+          row
+              ? Offset(
+                  mapWidth / 2 + (i - (n - 1) / 2) * size * 2.2,
+                  // Centred between the bars: island and label, ~1.9 sizes.
+                  pad.top + max(0.0, (room - size * 1.9) / 2) + size * 0.95,
+                )
+              : wide
               ? Offset(
                   width * (n == 1 ? 0.5 : 0.13 + 0.74 * i / (n - 1)),
                   pad.top + room * (i.isEven ? 0.36 : 0.64),
@@ -108,7 +130,7 @@ class _OceanMapState extends State<OceanMap> {
       final reached = widget.islands.lastIndexWhere((i) => !i.locked);
 
       final map = SizedBox(
-        width: width,
+        width: mapWidth,
         height: height,
         child: Stack(
           clipBehavior: Clip.none,
@@ -165,9 +187,32 @@ class _OceanMapState extends State<OceanMap> {
           ],
         ),
       );
+      final current = widget.islands.indexWhere((i) => i.current);
+      if (row) {
+        // Start with the current island in the middle, and again whenever
+        // the layout changes (rotating, or the first real size).
+        final double offset = current < 0
+            ? 0
+            : (centres[current].dx - width / 2)
+                  .clamp(0.0, max(0.0, mapWidth - width))
+                  .toDouble();
+        final controller = _sideScroll ??= ScrollController(
+          initialScrollOffset: offset,
+        );
+        if (_sideLayout != (mapWidth, width)) {
+          _sideLayout = (mapWidth, width);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (controller.hasClients) controller.jumpTo(offset);
+          });
+        }
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          controller: controller,
+          child: map,
+        );
+      }
       if (wide) return map;
       // Narrow screens scroll; start with the current island in view.
-      final current = widget.islands.indexWhere((i) => i.current);
       final double offset = current < 0
           ? 0
           : (centres[current].dy - pad.top - room / 2)

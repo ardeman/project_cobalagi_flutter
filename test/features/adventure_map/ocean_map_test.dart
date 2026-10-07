@@ -117,4 +117,52 @@ void main() {
       expect(opened, ['sequencing', 'directions']);
     });
   }
+
+  testWidgets('a phone held sideways shows one big row it can scroll', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(840, 380);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final ids = [
+      'directions', 'sequencing', 'loops', 'functions', //
+      'conditions', 'variables', 'debugging', 'until',
+    ];
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: OceanMap(
+            marker: const Icon(Icons.face, key: Key('marker')),
+            islands: [
+              for (final id in ids)
+                island(id, current: id == 'variables', locked: id == 'until'),
+            ],
+            onOpen: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    // One row, big enough to read, scrolling sideways.
+    final scroll = tester.widget<SingleChildScrollView>(
+      find.byType(SingleChildScrollView),
+    );
+    expect(scroll.scrollDirection, Axis.horizontal);
+    final names = [
+      for (final n in ['Loops', 'Step Box']) find.text(n),
+    ];
+    final tops = {
+      for (final n in names)
+        if (n.evaluate().isNotEmpty) tester.getTopLeft(n).dy.round(),
+    };
+    expect(tops, hasLength(1), reason: 'all labels on one line');
+    final marker = tester.getCenter(find.byKey(const Key('marker')));
+    // The current island starts in the middle of the screen.
+    expect(marker.dx, closeTo(420, 60));
+    expect(tester.getSize(find.text('Step Box')).height, greaterThan(14));
+    expect(tester.takeException(), isNull);
+  });
 }

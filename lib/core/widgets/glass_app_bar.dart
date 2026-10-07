@@ -12,8 +12,12 @@ class GlassAppBar extends StatefulWidget implements PreferredSizeWidget {
   final Widget? title;
   final List<Widget>? actions;
 
+  /// Same room as the game screen's top bar: 64 dp buttons with a 16 dp
+  /// margin around them.
+  static const height = 96.0;
+
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(height);
 
   @override
   State<GlassAppBar> createState() => _GlassAppBarState();
@@ -52,9 +56,17 @@ class _GlassAppBarState extends State<GlassAppBar> {
     under: _under,
     edge: GlassEdge.top,
     child: AppBar(
-      leading: widget.leading,
+      toolbarHeight: GlassAppBar.height,
+      leadingWidth: 64 + 16 + 8,
+      leading: widget.leading == null
+          ? null
+          : Padding(
+              padding: const EdgeInsets.only(left: 16, right: 8),
+              child: Center(child: widget.leading),
+            ),
+      titleSpacing: widget.leading == null ? 16 : 8,
       title: widget.title,
-      actions: widget.actions,
+      actions: [...?widget.actions, const SizedBox(width: 8)],
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,

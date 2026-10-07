@@ -113,7 +113,9 @@ class AdventureMapScreen extends StatelessWidget {
               ),
             );
           }
-          if (windowClass != WindowClass.compact) {
+          // Phones held sideways use the full-screen sea too.
+          final short = MediaQuery.sizeOf(context).height < 500;
+          if (windowClass != WindowClass.compact && !short) {
             return SafeArea(
               child: Column(
                 children: [
