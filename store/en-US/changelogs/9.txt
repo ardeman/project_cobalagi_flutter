@@ -1,5 +1,5 @@
-- No more getting stuck on a finished island. A dotted trail shows how many puzzles are left until the next island, and the new island opens with a small celebration.
-- Press the light bulb a second time to see the part that repeats. The bulb glows when a hint might help.
-- Parents can set a break reminder in the parent area.
-- Code now has the same colours as its blocks.
-- A gentle buzz when a block is placed.
+- New Warm-up island with picture games for little ones: counting, colours, shapes, patterns, left and right, and steps.
+- Finished islands now lead on: dots show the puzzles left, and the next island opens with a celebration.
+- Press the light bulb twice to see the part that repeats. It glows when a hint might help.
+- Parents can set a break reminder.
+- Code has the same colours as its blocks, and placing a block gives a gentle buzz.

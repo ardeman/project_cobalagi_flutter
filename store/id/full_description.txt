@@ -1,9 +1,9 @@
 Coba Lagi mengajak anak belajar dasar-dasar coding sambil bermain. Anak menyusun blok bergambar untuk menuntun teman kecilnya melewati jalan setapak sampai ke bendera. Tidak perlu bisa membaca: setiap petunjuk dibacakan dengan suara, dalam Bahasa Indonesia dan English.
 
 DIMULAI DENGAN PERMAINAN PEMANASAN
-Permainan singkat bergambar menemukan titik awal yang pas untuk anakmu: membaca, berhitung, kiri dan kanan, pola, dan urutan. Rasanya seperti bermain, bukan ujian.
+Permainan singkat bergambar menemukan titik awal yang pas untuk anakmu: membaca, berhitung, kiri dan kanan, pola, dan urutan. Rasanya seperti bermain, bukan ujian. Setelah itu, permainan ini tetap ada di pulau Pemanasan, ditambah warna dan bentuk, untuk dimainkan si kecil kapan saja.
 
-DELAPAN PULAU UNTUK DIJELAJAHI
+DELAPAN PULAU CODING
 • Arah: maju, belok kiri, belok kanan
 • Langkah demi langkah: menyusun urutan langkah yang tepat
 • Perulangan: memakai blok ulangi agar langkah lebih sedikit

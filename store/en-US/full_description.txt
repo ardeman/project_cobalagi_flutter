@@ -1,9 +1,9 @@
 Coba Lagi helps children learn the basics of coding through play. Kids put picture blocks in order to guide their little friend along a path to the flag. No reading needed: every instruction is spoken aloud, in Bahasa Indonesia and English.
 
 IT STARTS WITH A WARM-UP GAME
-A short, picture-based game finds the right starting point for your child: reading, counting, left and right, patterns and order. It feels like play, not a test.
+A short, picture-based game finds the right starting point for your child: reading, counting, left and right, patterns and order. It feels like play, not a test. Afterwards, these games stay on the Warm-up island, together with colours and shapes, for little ones to play any time.
 
-EIGHT ISLANDS TO EXPLORE
+EIGHT CODING ISLANDS
 • Directions: forward, turn left, turn right
 • Step by step: putting steps in the right order
 • Loops: using the repeat block to do more with fewer blocks
