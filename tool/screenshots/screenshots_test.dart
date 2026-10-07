@@ -552,6 +552,35 @@ void main() {
           await _settle(tester);
         });
 
+        // Frames of "Watch me!" demos, 10 per second, for the promo videos
+        // (tool/marketing/). Only on request:
+        //   VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens \
+        //     --plain-name 'video frames'
+        for (final (concept, frames) in [
+          ('loops', 130),
+          ('debugging', 130),
+          ('until', 170),
+        ]) {
+          testWidgets(
+            'video frames $concept',
+            skip: !Platform.environment.containsKey('VIDEO_FRAMES'),
+            (tester) async {
+              await device(tester);
+              await _open(tester, '/child/1/tutorial/$concept');
+              for (var frame = 0; frame < frames; frame++) {
+                await expectLater(
+                  find.byType(CobaLagiApp),
+                  matchesGoldenFile(
+                    'out/video/$prefix$concept$suffix-'
+                    '${frame.toString().padLeft(3, '0')}.png',
+                  ),
+                );
+                await tester.pump(const Duration(milliseconds: 100));
+              }
+            },
+          );
+        }
+
         testWidgets('solved', (tester) async {
           await device(tester);
           await _showSolved(tester, language);
