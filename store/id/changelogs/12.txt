@@ -1,0 +1,5 @@
+- Setiap teka-teki kini memberi sampai tiga bintang: tiga jika selesai pada percobaan pertama tanpa petunjuk. Pulau dapat tiga bintang jika semua levelnya bintang tiga.
+- Setelah teka-teki, anak kembali ke pulaunya, dan ke peta jika pulau sudah tuntas.
+- Petunjuk bisa dipakai setelah beberapa kali mencoba.
+- Tombol "Coba yang lain" dihapus.
+- Gambar pemanasan tidak lagi bergeser setelah menjawab.

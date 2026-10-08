@@ -1,0 +1,5 @@
+- Every puzzle now earns up to three stars: three for solving it on the first try without a hint. An island shows three stars when all its levels have three.
+- After a puzzle, your child goes back to its island, and to the map when the island is finished.
+- The hint can be used after a few tries, so children try first.
+- The "Try a different one" button is gone.
+- The warm-up pictures no longer jump after an answer.
