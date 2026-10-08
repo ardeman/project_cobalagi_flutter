@@ -6,6 +6,7 @@ import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/entitlement_service.dart';
 import '../../../core/entitlement/plan.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
+import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
 /// Donation choices from the store. Shown only in the parent area, behind the
 /// parent gate, as Google Play Families requires.
@@ -140,7 +141,7 @@ class _UnlockCodeDialogState extends State<_UnlockCodeDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AlertDialog(
+    return TypingDialog(
       title: Text(l10n.haveUnlockCode),
       content: TextField(
         controller: _code,

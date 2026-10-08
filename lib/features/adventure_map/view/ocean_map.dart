@@ -92,19 +92,27 @@ class _OceanMapState extends State<OceanMap> {
       final n = widget.islands.length;
       // Short and wide (phones held sideways): two rows would crush the
       // islands, so they sit in one row and the sea scrolls sideways.
-      // Also when the islands would be too narrow side by side.
-      final row = wide && (room < 360 || width / (max(n, 1) * 2.2) < 50);
-      // Island size: as big as fits, but not huge on large tablets.
+      final row = wide && room < 420;
+      // Island size: as big as fits, but not huge on large tablets, and
+      // never squeezed below a comfortable size to fit them all: the sea
+      // scrolls sideways instead.
       final size = row
           ? (room / 2.1).clamp(56.0, 150.0).toDouble()
           : wide
           ? min(
               room * 0.24,
-              width / (max(n, 1) * 2.2),
+              max(width / (max(n, 1) * 2.2), 104.0),
             ).clamp(72.0, 170.0).toDouble()
           : min(width * 0.3, 150.0).clamp(72.0, 150.0).toDouble();
+      // Wide zigzag: islands spread over the screen, at least 1.8 sizes
+      // apart, with 13% of the screen as a margin at each end.
+      final step = n < 2
+          ? 0.0
+          : max(width * 0.74 / (n - 1), size * 1.8).toDouble();
       final mapWidth = row
           ? max(width, size * 2.6 + max(n - 1, 0) * size * 2.2)
+          : wide
+          ? max(width, step * (n - 1) + width * 0.26)
           : width;
       final height = wide
           ? constraints.maxHeight
@@ -122,7 +130,9 @@ class _OceanMapState extends State<OceanMap> {
                 )
               : wide
               ? Offset(
-                  width * (n == 1 ? 0.5 : 0.13 + 0.74 * i / (n - 1)),
+                  n == 1
+                      ? width / 2
+                      : (mapWidth - step * (n - 1)) / 2 + i * step,
                   pad.top + room * (i.isEven ? 0.36 : 0.64),
                 )
               : Offset(
@@ -196,7 +206,7 @@ class _OceanMapState extends State<OceanMap> {
         ),
       );
       final current = widget.islands.indexWhere((i) => i.current);
-      if (row) {
+      if (row || mapWidth > width) {
         // Start with the current island in the middle, and again whenever
         // the layout changes (rotating, or the first real size).
         final double offset = current < 0

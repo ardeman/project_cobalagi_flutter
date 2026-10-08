@@ -216,4 +216,46 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('a tablet held sideways keeps islands apart and scrolls', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    final ids = [
+      'warmup', 'directions', 'sequencing', 'loops', 'functions', //
+      'conditions', 'variables', 'debugging', 'until', 'otherwise',
+    ];
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: OceanMap(
+            marker: const Icon(Icons.face, key: Key('marker')),
+            padding: const EdgeInsets.only(top: 96, bottom: 96),
+            islands: [
+              for (final id in ids)
+                island(id, current: id == 'functions', locked: false),
+            ],
+            onOpen: (_) {},
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await tester.pump();
+    final scroll = tester.widget<SingleChildScrollView>(
+      find.byType(SingleChildScrollView),
+    );
+    expect(scroll.scrollDirection, Axis.horizontal);
+    // Neighbours sit on alternate rows, far enough apart to read.
+    final loops = tester.getCenter(find.text('Loops'));
+    final magic = tester.getCenter(find.text('Magic Block'));
+    expect(loops.dy, isNot(moreOrLessEquals(magic.dy, epsilon: 4)));
+    expect((magic.dx - loops.dx).abs(), greaterThanOrEqualTo(180));
+    // It opens on the current island.
+    expect(magic.dx, inInclusiveRange(400, 880));
+  });
 }

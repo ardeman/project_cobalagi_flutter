@@ -20,7 +20,7 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 | ![Adventure map with six islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: the hint shows the route as small blocks in their colours](website/screenshots/hint-loops-03.png) |
 | **Adventure map:** one island per concept, with stars for mastery. | **Hint:** the route as the level's own blocks; asked again on loop islands, the shape that repeats and the loop block that does it. |
 | ![A solved puzzle with a cheer and a Next button](website/screenshots/solved.png) | ![Warm-up game asking what comes next in a pattern of shapes](website/screenshots/warm-up-pattern.png) |
-| **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** picture-based, voice-led placement for children who can't read yet. |
+| **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** a few picture-based, voice-led questions that place children who can't read yet. |
 | ![Parent area dialog for choosing a child's starting island](website/screenshots/parent-placement.png) | ![The adventure map in Bahasa Indonesia](website/screenshots/adventure-map-id.png) |
 | **Parent area:** behind a grown-up check; set the starting island or replay the warm-up. | **Bahasa Indonesia:** every screen in Indonesian and English. |
 | ![A Magic Block puzzle: the star row holds a stair step, called four times](website/screenshots/play-functions.png) | ![A child's progress report with puzzles, play time and islands](website/screenshots/parent-progress.png) |

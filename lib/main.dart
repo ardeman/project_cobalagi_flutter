@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 import 'app/app.dart';
 import 'core/audio/audio_service.dart';
@@ -16,6 +17,11 @@ import 'package:cobalagi/features/splash/data/app_update_factory.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Compile the liquid glass shaders up front, so the first glass bar is
+  // glass at once. If they can't load, the bars fall back to frosted glass.
+  try {
+    await LiquidGlassShaders.ensureLoaded();
+  } on Object catch (_) {}
   final db = await openAppDatabase();
   final settings = SettingsRepository(db);
   final donations =

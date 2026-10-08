@@ -1,12 +1,11 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
+import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 /// Which side of the screen a [GlassBar] sits on; its hairline faces the
 /// content.
 enum GlassEdge { top, bottom }
 
-/// A full-width bar that turns to frosted glass while content scrolls under
+/// A full-width bar that turns to liquid glass while content scrolls under
 /// it ([under]) and stays clear otherwise. High-contrast mode uses an opaque
 /// surface instead of blur.
 class GlassBar extends StatelessWidget {
@@ -42,6 +41,14 @@ class GlassBar extends StatelessWidget {
             : Border(top: hairline),
       ),
     );
+    // Inside the lens, which brings its own tint: just the hairline.
+    final edgeLine = DecoratedBox(
+      decoration: BoxDecoration(
+        border: edge == GlassEdge.top
+            ? Border(bottom: hairline)
+            : Border(top: hairline),
+      ),
+    );
     return Stack(
       // The content gets the bar's own width, so it lines up like it would
       // without the glass behind it.
@@ -52,14 +59,28 @@ class GlassBar extends StatelessWidget {
           child: AnimatedOpacity(
             opacity: under ? 1 : 0,
             duration: const Duration(milliseconds: 200),
-            child: ClipRect(
-              child: highContrast
-                  ? tint
-                  : BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                      child: tint,
+            child: highContrast
+                ? tint
+                // Liquid glass: what scrolls under the bar bends a little at
+                // its edge, frosted and tinted like before.
+                : LiquidGlassLens(
+                    style: LiquidGlassStyle(
+                      shape: const LiquidGlassShape.roundedRectangle(
+                        cornerRadius: 0,
+                        borderWidth: 0,
+                      ),
+                      appearance: LiquidGlassAppearance(
+                        color: surface.withValues(alpha: dark ? 0.42 : 0.28),
+                        blur: const LiquidGlassBlur(sigmaX: 5, sigmaY: 5),
+                      ),
+                      refraction: const LiquidGlassRefraction(
+                        distortion: 0.2,
+                        distortionWidth: 34,
+                        chromaticAberration: 0.004,
+                      ),
                     ),
-            ),
+                    child: edgeLine,
+                  ),
           ),
         ),
         child,

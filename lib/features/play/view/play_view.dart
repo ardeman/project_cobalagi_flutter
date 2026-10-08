@@ -740,12 +740,13 @@ class _EditorSwitch extends StatelessWidget {
     if (iconOnly) {
       return Row(
         mainAxisSize: MainAxisSize.min,
-        children: [button(false), const SizedBox(width: 4), button(true)],
+        children: [button(false), const SizedBox(width: 8), button(true)],
       );
     }
     return Row(
       children: [
         Expanded(child: button(false)),
+        const SizedBox(width: 12),
         Expanded(child: button(true)),
       ],
     );

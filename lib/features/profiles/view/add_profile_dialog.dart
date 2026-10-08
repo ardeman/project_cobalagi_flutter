@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../app/l10n/app_localizations.dart';
 import 'profile_avatar.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
+import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
 /// Returns `(nickname, avatar)`, or null if cancelled.
 Future<(String, int)?> showAddProfileDialog(BuildContext context) =>
@@ -36,52 +37,50 @@ class _AddProfileDialogState extends State<_AddProfileDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AlertDialog(
+    return TypingDialog(
       title: Text(l10n.addPlayer),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _nickname,
-              autofocus: true,
-              maxLength: 16,
-              decoration: InputDecoration(labelText: l10n.nickname),
-              // Enter only closes the keyboard: the avatar comes next, and
-              // Save stays the one way to add the player.
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => FocusScope.of(context).unfocus(),
-            ),
-            const SizedBox(height: 16),
-            Text(l10n.chooseAvatar),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                for (var i = 0; i < avatarStyles.length; i++)
-                  GestureDetector(
-                    onTap: () => setState(() => _avatar = i),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 150),
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          width: 4,
-                          color: i == _avatar
-                              ? Theme.of(context).colorScheme.primary
-                              : Colors.transparent,
-                        ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _nickname,
+            autofocus: true,
+            maxLength: 16,
+            decoration: InputDecoration(labelText: l10n.nickname),
+            // Enter only closes the keyboard: the avatar comes next, and
+            // Save stays the one way to add the player.
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => FocusScope.of(context).unfocus(),
+          ),
+          const SizedBox(height: 16),
+          Text(l10n.chooseAvatar),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: [
+              for (var i = 0; i < avatarStyles.length; i++)
+                GestureDetector(
+                  onTap: () => setState(() => _avatar = i),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 150),
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        width: 4,
+                        color: i == _avatar
+                            ? Theme.of(context).colorScheme.primary
+                            : Colors.transparent,
                       ),
-                      child: ProfileAvatar(avatar: i, size: 64),
                     ),
+                    child: ProfileAvatar(avatar: i, size: 64),
                   ),
-              ],
-            ),
-          ],
-        ),
+                ),
+            ],
+          ),
+        ],
       ),
       actions: [
         TextButton(

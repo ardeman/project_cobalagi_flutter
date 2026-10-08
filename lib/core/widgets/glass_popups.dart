@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 /// Shows a dialog over a softly blurred screen; the dialog's translucent
 /// panel (see `dialogTheme` in `app_theme.dart`) lets that blur through.
@@ -28,8 +29,15 @@ Future<T?> showGlassSheet<T>({
   backgroundColor: Colors.transparent,
   clipBehavior: Clip.antiAlias,
   // The panel draws the handle itself, so it sits on the glass too.
-  builder: (context) =>
-      _GlassPanel(handle: showDragHandle, child: builder(context)),
+  // The sheet is at most 640 dp wide and centred, so it never reaches a side
+  // of the screen held sideways: a camera cutout's side padding would only
+  // push its content off centre.
+  builder: (context) => MediaQuery.removePadding(
+    context: context,
+    removeLeft: MediaQuery.sizeOf(context).width > 640,
+    removeRight: MediaQuery.sizeOf(context).width > 640,
+    child: _GlassPanel(handle: showDragHandle, child: builder(context)),
+  ),
 );
 
 class _GlassBackdrop extends StatelessWidget {
@@ -57,7 +65,7 @@ class _GlassBackdrop extends StatelessWidget {
   }
 }
 
-/// Fills the sheet: blur clipped to the sheet's shape, under a light tint.
+/// Fills the sheet with liquid glass under a light tint.
 class _GlassPanel extends StatelessWidget {
   const _GlassPanel({required this.handle, required this.child});
 
@@ -93,31 +101,41 @@ class _GlassPanel extends StatelessWidget {
     if (MediaQuery.highContrastOf(context)) {
       return ColoredBox(color: surface, child: content);
     }
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color.lerp(
-                surface,
-                Colors.white,
-                dark ? 0.06 : 0.4,
-              )!.withValues(alpha: dark ? 0.84 : 0.78),
-              surface.withValues(alpha: dark ? 0.78 : 0.7),
-            ],
-          ),
-          border: Border(
-            top: BorderSide(
-              color: Colors.white.withValues(alpha: dark ? 0.22 : 0.8),
-              width: 1.2,
+    // Liquid glass behind the sheet. It reaches below the screen, so only
+    // its top corners show, rounded like the sheet's own clip.
+    return Stack(
+      // The sheet's own clip trims the overhang, not this stack.
+      clipBehavior: Clip.none,
+      children: [
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: -48,
+          child: LiquidGlassLens(
+            style: LiquidGlassStyle(
+              shape: const LiquidGlassShape.continuousRoundedRectangle(
+                cornerRadius: 28,
+                borderWidth: 1.2,
+              ),
+              appearance: LiquidGlassAppearance(
+                color: Color.lerp(
+                  surface,
+                  Colors.white,
+                  dark ? 0.06 : 0.4,
+                )!.withValues(alpha: dark ? 0.72 : 0.6),
+                blur: const LiquidGlassBlur(sigmaX: 8, sigmaY: 8),
+              ),
+              refraction: const LiquidGlassRefraction(
+                distortion: 0.2,
+                distortionWidth: 36,
+                chromaticAberration: 0.002,
+              ),
             ),
           ),
         ),
-        child: content,
-      ),
+        content,
+      ],
     );
   }
 }

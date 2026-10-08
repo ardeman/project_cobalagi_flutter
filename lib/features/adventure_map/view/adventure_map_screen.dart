@@ -140,25 +140,10 @@ class AdventureMapScreen extends StatelessWidget {
                 ),
               );
             }
-            // Phones held sideways use the full-screen sea too.
-            final short = MediaQuery.sizeOf(context).height < 500;
-            if (windowClass != WindowClass.compact && !short) {
-              return SafeArea(
-                child: Column(
-                  children: [
-                    if (banner != null)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                        child: banner,
-                      ),
-                    Expanded(child: map(EdgeInsets.zero)),
-                    play,
-                  ],
-                ),
-              );
-            }
-            // Phones: the sea fills the screen and scrolls under the glass app
-            // bar and the Play bar; the bonus banner floats on top.
+            // The sea fills the screen on every device, under the app bar and
+            // the Play bar. They stay clear while nothing is beneath them and
+            // turn to glass when islands scroll under; the bonus banner
+            // floats on top.
             final top = MediaQuery.paddingOf(context).top;
             return GlassFrame(
               bottom: SafeArea(top: false, child: Center(child: play)),

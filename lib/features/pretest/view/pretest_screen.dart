@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/voice_clips.dart';
-import '../../../learning/placement/pretest_question.dart';
 import '../../../learning/placement/pretest_session.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import 'question_game.dart';
@@ -31,7 +30,7 @@ class _PretestScreenState extends State<PretestScreen> {
     void toMap() => context.go('/child/${widget.profileId}');
     return QuestionGame(
       round: _session,
-      steps: PretestSkill.values.length,
+      steps: _session.skills.length,
       onClose: toMap,
       onFinished: () =>
           context.read<LearningCubit>().completePretest(_session.levels),

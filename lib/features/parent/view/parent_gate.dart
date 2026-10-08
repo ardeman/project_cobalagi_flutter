@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
+import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
 /// Asks a multiplication question that young children can't answer, as Google
 /// Play Families requires before settings and purchases. Returns true on success.
@@ -50,7 +51,7 @@ class _ParentGateDialogState extends State<_ParentGateDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return AlertDialog(
+    return TypingDialog(
       title: Text(l10n.askAGrownUp),
       content: TextField(
         key: const Key('parentGateAnswer'),

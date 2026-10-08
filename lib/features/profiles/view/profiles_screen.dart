@@ -43,6 +43,13 @@ class ProfilesScreen extends StatelessWidget {
           Tooltip(
             message: l10n.parentArea,
             child: TextButton.icon(
+              // Smaller than dialog buttons: it shares the bar with the
+              // title on small phones.
+              style: TextButton.styleFrom(
+                textStyle: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              ),
               icon: const Icon(Icons.family_restroom_rounded),
               label: Text(l10n.parentArea),
               onPressed: () async {

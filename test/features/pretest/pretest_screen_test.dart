@@ -161,8 +161,8 @@ void main() {
 
     var answered = 0;
     while (find.text("Let's go!").evaluate().isEmpty) {
-      // 3 levels per skill plus one second chance each.
-      expect(answered, lessThan(20), reason: 'at most 20 questions');
+      // Only the placement checkpoints, with one second chance each.
+      expect(answered, lessThanOrEqualTo(10), reason: 'at most 10 questions');
       await tester.tap(find.byType(Card).first);
       // Feedback stays up to 2.6 s after a wrong answer.
       await tester.pump(const Duration(milliseconds: 2800));

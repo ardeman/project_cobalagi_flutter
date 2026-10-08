@@ -75,6 +75,19 @@ abstract final class AppTheme {
           shape: shape,
         ).copyWith(backgroundBuilder: _buttonGlass),
       ),
+      // Text buttons (Cancel beside Save, links in sheets) match the other
+      // buttons' height and text, and keep the 64 dp tap target.
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          minimumSize: buttonSize,
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          // Same corners, no outline: still plainer than the main button.
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(24)),
+          ),
+          textStyle: buttonText,
+        ),
+      ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           minimumSize: buttonSize,

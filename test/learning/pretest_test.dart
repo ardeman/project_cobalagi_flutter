@@ -104,48 +104,70 @@ void main() {
   });
 
   group('session', () {
-    test('all wrong asks two questions per skill (one second chance)', () {
-      final session = PretestSession(generator(1), secondChances: 1);
-      playTo(session, {});
-      expect(session.questionsAsked, 2 * PretestSkill.values.length);
-      expect(session.levels.values.every((l) => l == 0), isTrue);
+    final checkpoints = rules.checkpoints;
+    PretestSession session(int seed, {int secondChances = 1}) => PretestSession(
+      generator(seed),
+      secondChances: secondChances,
+      checkpoints: checkpoints,
+    );
+
+    test('asks only the levels placement looks at', () {
+      expect(checkpoints, {
+        PretestSkill.reading: [2],
+        PretestSkill.direction: [2],
+        PretestSkill.pattern: [2],
+        PretestSkill.sequencing: [3, 1],
+      });
+      // Counting is left to the Warm-up island.
+      expect(session(1).skills, isNot(contains(PretestSkill.counting)));
     });
 
-    test('all right asks three per skill and scores the top level', () {
-      final session = PretestSession(generator(2), secondChances: 1);
-      playTo(session, {for (final s in PretestSkill.values) s: 3});
-      expect(session.questionsAsked, 15);
-      expect(session.levels.values.every((l) => l == 3), isTrue);
-      expect(session.progress, 1);
+    test('all right is one question per skill and places furthest', () {
+      final s = session(2);
+      playTo(s, {for (final skill in PretestSkill.values) skill: 3});
+      expect(s.questionsAsked, 4);
+      expect(s.progress, 1);
+      expect(rules.place(s.levels, at: DateTime(2026)).startConcept, 'loops');
+      expect(rules.place(s.levels, at: DateTime(2026)).readsWords, isTrue);
     });
 
-    test('stops a skill at the second wrong answer', () {
-      final session = PretestSession(generator(3), secondChances: 1);
-      playTo(session, {PretestSkill.counting: 1, PretestSkill.pattern: 2});
-      expect(session.levels[PretestSkill.counting], 1);
-      expect(session.levels[PretestSkill.pattern], 2);
-      // Two misses per skill, plus the right answers.
-      expect(session.questionsAsked, 5 * 2 + 1 + 2);
+    test('all wrong stays short: a second chance, then the next level', () {
+      final s = session(3);
+      playTo(s, {});
+      // Two each for reading, directions and patterns; steps tries 3, then 1.
+      expect(s.questionsAsked, 2 + 2 + 2 + 4);
+      expect(s.levels.values.every((l) => l == 0), isTrue);
+      expect(
+        rules.place(s.levels, at: DateTime(2026)).startConcept,
+        'directions',
+      );
     });
 
-    test('a second chance at the same level can still move up', () {
-      final session = PretestSession(generator(4), secondChances: 1);
-      final first = session.current!;
-      // Miss once at level 1, then answer right three times.
-      session.answer((first.correct + 1) % first.optionCount);
-      expect(session.current!.skill, first.skill);
-      expect(session.current!.level, 1);
-      for (var i = 0; i < 3; i++) {
-        session.answer(session.current!.correct);
-      }
-      expect(session.levels[first.skill], 3);
-      expect(session.current!.skill, isNot(first.skill));
+    test('missing the top step level still counts the lower one', () {
+      final s = session(4);
+      playTo(s, {PretestSkill.direction: 2, PretestSkill.sequencing: 2});
+      expect(s.levels[PretestSkill.sequencing], 1);
+      expect(
+        rules.place(s.levels, at: DateTime(2026)).startConcept,
+        'sequencing',
+      );
     });
 
-    test('without second chances one wrong answer ends a skill', () {
-      final session = PretestSession(generator(5), secondChances: 0);
-      playTo(session, {});
-      expect(session.questionsAsked, PretestSkill.values.length);
+    test('a second chance at the same level can still count', () {
+      final s = session(5);
+      final first = s.current!;
+      s.answer((first.correct + 1) % first.optionCount);
+      expect(s.current!.skill, first.skill);
+      expect(s.current!.level, first.level);
+      s.answer(s.current!.correct);
+      expect(s.levels[first.skill], first.level);
+      expect(s.current!.skill, isNot(first.skill));
+    });
+
+    test('without second chances one wrong answer moves on', () {
+      final s = session(6, secondChances: 0);
+      playTo(s, {});
+      expect(s.questionsAsked, 1 + 1 + 1 + 2);
     });
   });
 

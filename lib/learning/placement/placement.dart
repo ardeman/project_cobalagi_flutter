@@ -81,6 +81,26 @@ final class PlacementRules {
     }
   }
 
+  /// The only levels placement looks at, per skill, highest first: every
+  /// rule's minimums, and [readsWordsAt] for reading. The first warm-up
+  /// asks just these, so it stays short; skills no rule needs (counting)
+  /// are left to the Warm-up island.
+  Map<PretestSkill, List<int>> get checkpoints {
+    final levels = <PretestSkill, Set<int>>{
+      PretestSkill.reading: {readsWordsAt},
+    };
+    for (final rule in rules) {
+      for (final MapEntry(:key, :value) in rule.minimum.entries) {
+        (levels[key] ??= {}).add(value);
+      }
+    }
+    return {
+      for (final skill in PretestSkill.values)
+        if (levels[skill] case final set? when set.isNotEmpty)
+          skill: set.toList()..sort((a, b) => b - a),
+    };
+  }
+
   Placement place(Map<PretestSkill, int> levels, {required DateTime at}) {
     var start = fallback;
     for (final rule in rules) {

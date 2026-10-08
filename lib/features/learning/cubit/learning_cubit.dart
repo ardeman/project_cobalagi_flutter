@@ -173,6 +173,7 @@ class LearningCubit extends Cubit<LearningState> {
   PretestSession startPretest() => PretestSession(
     PretestGenerator.fromJson(curriculum.vocabulary, Random()),
     secondChances: curriculum.pretestSecondChances,
+    checkpoints: curriculum.placementRules.checkpoints,
   );
 
   /// A round of a Warm-up island game, starting at the child's best level.
