@@ -7,28 +7,78 @@ A coding-learning app for children of all ages, in Bahasa Indonesia and English.
 
 Blocks and code drive the same game world. A short, voice-led placement game picks each child's starting point, and the app then chooses to advance, practise or review after every lesson.
 
-Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Google Play releases are planned for now.
+Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Android is released for now: on Google Play, and as APKs on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
-> **Status:** the MVP code is complete (phases 0–5, see the roadmap). Voice-over is recorded (ElevenLabs, Indonesian and English) and the app icon is done. The store listing is drafted in `store/`. Still needed before launch: character artwork and Play Console setup.
+> **Status:** in Google Play's closed test (version 1.3.0, build 10): the Warm-up island and nine coding islands, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: character artwork and the public release after the closed test; see the roadmap.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
 ## Screenshots
 
-| | |
-| --- | --- |
-| ![Adventure map with six islands and mastery stars](website/screenshots/adventure-map.png) | ![A Loops puzzle: the hint shows the route as small blocks in their colours](website/screenshots/hint-loops-03.png) |
-| **Adventure map:** one island per concept, with stars for mastery. | **Hint:** the route as the level's own blocks; asked again on loop islands, the shape that repeats and the loop block that does it. |
-| ![A solved puzzle with a cheer and a Next button](website/screenshots/solved.png) | ![Warm-up game asking what comes next in a pattern of shapes](website/screenshots/warm-up-pattern.png) |
-| **Solved:** varied cheers, then the next puzzle chosen by the learning rules. | **Warm-up game:** a few picture-based, voice-led questions that place children who can't read yet. |
-| ![Parent area dialog for choosing a child's starting island](website/screenshots/parent-placement.png) | ![The adventure map in Bahasa Indonesia](website/screenshots/adventure-map-id.png) |
-| **Parent area:** behind a grown-up check; set the starting island or replay the warm-up. | **Bahasa Indonesia:** every screen in Indonesian and English. |
-| ![A Magic Block puzzle: the star row holds a stair step, called four times](website/screenshots/play-functions.png) | ![A child's progress report with puzzles, play time and islands](website/screenshots/parent-progress.png) |
-| **Magic Block:** build your own block once, then use it again and again. | **Progress report** (sponsor feature): puzzles, play time and every island. |
-| ![Look Ahead: an eye block inside a repeat checks before moving](website/screenshots/play-conditions.png) | ![Look Ahead on a phone](website/screenshots/phone-play-conditions.png) |
-| **Look Ahead:** check the path before taking a step. | **Phone editor:** nested conditions and repeats also work in portrait. |
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/adventure-map.png" alt="The adventure map with ten islands, the Warm-up island first"><br>
+      <b>Adventure map:</b> one island per idea, with stars and a sticker book.
+    </td>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/warm-up-island.png" alt="The Warm-up island with six picture games and their stars"><br>
+      <b>Warm-up island:</b> counting, colours, shapes, patterns, left and right, and steps.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/hint-loops-03.png" alt="A Loops puzzle: the hint shows the blocks along a dotted trail"><br>
+      <b>Hint:</b> the level's own blocks along the route; asked again, the shape that repeats.
+    </td>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/play-code.png" alt="The same puzzle as typed code, coloured like the blocks"><br>
+      <b>Typed code:</b> readers type the program; commands share their blocks' colours.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/play-functions.png" alt="A Magic Block puzzle: the star row holds a stair step"><br>
+      <b>Magic Block:</b> build your own block once, then use it again and again.
+    </td>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/play-otherwise.png" alt="An Otherwise puzzle: the two-row eye block in a hedge maze"><br>
+      <b>Otherwise:</b> if the path is clear, step; otherwise, turn.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/play-variables.png" alt="A Step Box puzzle: the box holds 3, used by two moves"><br>
+      <b>Step Box:</b> save a number once and move by it.
+    </td>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/sticker-book.png" alt="The sticker book with earned and empty stickers"><br>
+      <b>Sticker book:</b> a sticker for every finished island and Warm-up game.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/solved.png" alt="A solved puzzle with a cheer and a Next button"><br>
+      <b>Solved:</b> varied cheers, then the next puzzle chosen by the learning rules.
+    </td>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/parent-placement.png" alt="Parent area dialog for choosing a child's starting island"><br>
+      <b>Parent area:</b> behind a grown-up check; set the starting island or replay the warm-up.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/parent-progress.png" alt="A child's progress report with puzzles, play time and islands"><br>
+      <b>Progress report:</b> (sponsor feature) puzzles, play time and every island.
+    </td>
+    <td width="50%" valign="top">
+      <img src="website/screenshots/adventure-map-id.png" alt="The adventure map in Bahasa Indonesia"><br>
+      <b>Bahasa Indonesia:</b> every screen in Indonesian and English.
+    </td>
+  </tr>
+</table>
 
-| | |
+| Item | Value |
 | --- | --- |
 | Package name | `cobalagi` |
 | App / bundle ID | `com.ardeman.cobalagi` |
