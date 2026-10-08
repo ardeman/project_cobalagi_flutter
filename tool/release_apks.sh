@@ -89,6 +89,9 @@ notes="$out/notes.md"
   echo "they can't update a copy installed from Google Play (or the other way"
   echo "round): uninstall first, which removes the players' progress."
   echo
+  echo "This copy doesn't update itself. For automatic updates, install"
+  echo "Coba Lagi from Google Play instead."
+  echo
   echo "## What's new"
   echo
   cat "store/en-US/changelogs/$build.txt"
