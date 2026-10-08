@@ -1,0 +1,6 @@
+- Pulau baru Kalau tidak: blok mata punya baris kedua, untuk melangkah saat jalannya kosong dan belok saat tidak.
+- Buku stiker baru: tuntaskan pulau, atau raih tiga bintang di permainan Pemanasan, untuk dapat stiker.
+- Pemanasan pertama lebih singkat; latihan berlanjut di pulau Pemanasan.
+- Pulau yang sudah dilewati membuka semua levelnya.
+- Bilah kaca cair, dan di tablet laut memenuhi peta.
+- Perbaikan untuk ponsel miring, dan blok maju Kotak Langkah yang lebih jelas.

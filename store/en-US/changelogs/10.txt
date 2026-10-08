@@ -1,0 +1,6 @@
+- New Otherwise island: the eye block gets a second row, to step when the path is clear and turn when it isn't.
+- New sticker book: finish an island, or get three stars in a Warm-up game, to earn a sticker.
+- A shorter first warm-up; practice continues on the Warm-up island.
+- Islands your child has moved past open all their levels.
+- Liquid glass bars, and on tablets the sea fills the map.
+- Fixes for phones held sideways, and a clearer Step Box move block.
