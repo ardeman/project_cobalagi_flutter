@@ -1,0 +1,6 @@
+- Hints now show the same blocks your child uses, never turned, with a dotted trail that shows the way.
+- Step Box hints show the box and point the right way.
+- The top and bottom bars softly blur what passes under them, with no dark flash.
+- On tablets, screens like the parent area scroll from anywhere, also beside the content.
+- The puzzle world no longer changes size when a message appears.
+- Tidier spacing in the top bar.

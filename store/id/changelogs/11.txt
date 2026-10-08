@@ -1,0 +1,6 @@
+- Petunjuk kini menampilkan blok yang sama dengan yang dipakai anak, tanpa diputar, dengan jejak titik yang menunjukkan arah.
+- Petunjuk Kotak Langkah menampilkan kotaknya dan menunjuk ke arah yang benar.
+- Bilah atas dan bawah memburamkan dengan lembut apa yang lewat di bawahnya, tanpa kilatan gelap.
+- Di tablet, layar seperti area orang tua bisa digulir dari mana saja, juga di samping isinya.
+- Dunia teka-teki tidak lagi berubah ukuran saat pesan muncul.
+- Jarak di bilah atas lebih rapi.
