@@ -6,7 +6,8 @@ import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/learning/view/concepts.dart';
 import 'package:cobalagi/features/adventure_map/view/map_connections.dart';
 
-/// One island on the [OceanMap].
+/// One planet on the [SpaceMap]. (The code calls a concept's world an
+/// island, as it began; children see planets.)
 final class MapIsland {
   const MapIsland({
     required this.conceptId,
@@ -31,11 +32,11 @@ final class MapIsland {
   final bool unlocking;
 }
 
-/// The adventure map: islands on the sea, joined by a dotted path that winds
-/// left to right on wide screens and top to bottom (scrolling) on narrow ones.
-/// [marker] (the child's avatar) bobs above the current island.
-class OceanMap extends StatefulWidget {
-  const OceanMap({
+/// The adventure map: planets in a starry sky, joined by a dotted flight path
+/// that winds left to right on wide screens and top to bottom (scrolling) on
+/// narrow ones. [marker] (the child's avatar) bobs above the current planet.
+class SpaceMap extends StatefulWidget {
+  const SpaceMap({
     super.key,
     required this.islands,
     required this.marker,
@@ -45,8 +46,8 @@ class OceanMap extends StatefulWidget {
 
   final List<MapIsland> islands;
 
-  /// Space at the top and bottom kept clear of islands, for bars that float
-  /// over the map; the sea still fills it.
+  /// Room at the top and bottom kept clear of planets, for bars that float
+  /// over the map; the sky still fills it.
   final EdgeInsets padding;
   final Widget marker;
 
@@ -54,10 +55,10 @@ class OceanMap extends StatefulWidget {
   final ValueChanged<String> onOpen;
 
   @override
-  State<OceanMap> createState() => _OceanMapState();
+  State<SpaceMap> createState() => _SpaceMapState();
 }
 
-class _OceanMapState extends State<OceanMap> {
+class _SpaceMapState extends State<SpaceMap> {
   /// Made on the first narrow layout, scrolled to the current island.
   ScrollController? _scroll;
 
@@ -151,7 +152,7 @@ class _OceanMapState extends State<OceanMap> {
           children: [
             Positioned.fill(
               child: CustomPaint(
-                painter: _SeaPainter(
+                painter: _SkyPainter(
                   reached: reached,
                   paths: mapConnections(
                     centres: centres,
@@ -244,9 +245,10 @@ class _OceanMapState extends State<OceanMap> {
   );
 }
 
-/// The sea, its little waves and the dotted path between islands.
-class _SeaPainter extends CustomPainter {
-  _SeaPainter({required this.paths, required this.reached});
+/// The night sky, its stars and glowing clouds, and the dotted flight path
+/// between planets.
+class _SkyPainter extends CustomPainter {
+  _SkyPainter({required this.paths, required this.reached});
 
   /// Where the path leaves one island and reaches the next.
   final List<Path> paths;
@@ -261,38 +263,67 @@ class _SeaPainter extends CustomPainter {
         ..shader = const LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFF8FE3F0), Color(0xFF4FC3DC)],
+          colors: [Color(0xFF1A1F4E), Color(0xFF2B2468), Color(0xFF3B2A78)],
         ).createShader(rect),
     );
 
-    // Waves: small arcs scattered at fixed places.
     final random = Random(7);
-    final wave = Paint()
-      ..color = Colors.white.withValues(alpha: 0.45)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3
-      ..strokeCap = StrokeCap.round;
-    final waves = (size.width * size.height / 26000).round().clamp(12, 80);
-    for (var i = 0; i < waves; i++) {
+    // Soft glowing clouds of colour (nebulas), far away.
+    final clouds = (size.width * size.height / 260000).round().clamp(2, 8);
+    for (var i = 0; i < clouds; i++) {
       final at = Offset(
         random.nextDouble() * size.width,
         random.nextDouble() * size.height,
       );
-      final w = 14.0 + random.nextDouble() * 12;
-      final path = Path()
-        ..moveTo(at.dx - w, at.dy)
-        ..quadraticBezierTo(at.dx - w / 2, at.dy - 6, at.dx, at.dy)
-        ..quadraticBezierTo(at.dx + w / 2, at.dy - 6, at.dx + w, at.dy);
-      canvas.drawPath(path, wave);
+      final radius = 120.0 + random.nextDouble() * 160;
+      final tint = const [
+        Color(0xFF8E6CFF),
+        Color(0xFF3FC5E8),
+        Color(0xFFFF7AB6),
+      ][i % 3];
+      canvas.drawCircle(
+        at,
+        radius,
+        Paint()
+          ..shader = RadialGradient(
+            colors: [tint.withValues(alpha: 0.22), tint.withValues(alpha: 0)],
+          ).createShader(Rect.fromCircle(center: at, radius: radius)),
+      );
     }
 
-    // The path: dots along a gentle curve from island to island.
+    // Stars: dots scattered at fixed places, a few bigger ones sparkling.
+    final stars = (size.width * size.height / 5000).round().clamp(40, 400);
+    for (var i = 0; i < stars; i++) {
+      final at = Offset(
+        random.nextDouble() * size.width,
+        random.nextDouble() * size.height,
+      );
+      final bright = random.nextDouble();
+      if (i % 23 == 0) {
+        final r = 5.0 + bright * 4;
+        final sparkle = Path()
+          ..moveTo(at.dx, at.dy - r)
+          ..quadraticBezierTo(at.dx, at.dy, at.dx + r, at.dy)
+          ..quadraticBezierTo(at.dx, at.dy, at.dx, at.dy + r)
+          ..quadraticBezierTo(at.dx, at.dy, at.dx - r, at.dy)
+          ..quadraticBezierTo(at.dx, at.dy, at.dx, at.dy - r);
+        canvas.drawPath(sparkle, Paint()..color = const Color(0xFFFFF3C4));
+      } else {
+        canvas.drawCircle(
+          at,
+          0.8 + bright * 1.4,
+          Paint()..color = Colors.white.withValues(alpha: 0.35 + bright * 0.55),
+        );
+      }
+    }
+
+    // The flight path: dots along a gentle curve from planet to planet.
     for (var i = 0; i < paths.length; i++) {
       final path = paths[i];
       final unlocked = i + 1 <= reached;
       final color = unlocked
-          ? const Color(0xFFFFF1BB)
-          : const Color(0xFFECFBFF).withValues(alpha: 0.45);
+          ? const Color(0xFFFFE07A)
+          : const Color(0xFFE6E9FF).withValues(alpha: 0.35);
       canvas.drawPath(
         path,
         Paint()
@@ -310,7 +341,7 @@ class _SeaPainter extends CustomPainter {
             canvas.drawCircle(
               at + const Offset(0, 1.5),
               5,
-              Paint()..color = const Color(0xFF317A85).withValues(alpha: 0.18),
+              Paint()..color = const Color(0xFFFFC83D).withValues(alpha: 0.25),
             );
           }
           canvas.drawCircle(at, unlocked ? 4.5 : 3.2, Paint()..color = color);
@@ -327,11 +358,11 @@ class _SeaPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_SeaPainter old) =>
+  bool shouldRepaint(_SkyPainter old) =>
       old.reached != reached || old.paths != paths;
 }
 
-/// A sand island with the concept's emblem, its stars, name and levels.
+/// A planet with the concept's emblem, its stars, name and levels.
 class _Island extends StatelessWidget {
   const _Island({
     required this.island,
@@ -355,9 +386,9 @@ class _Island extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final locked = island.locked;
     final color = locked
-        ? Colors.blueGrey.shade300
+        ? const Color(0xFF8A90B4)
         : conceptColor(island.conceptId);
-    final emblem = size * 0.62;
+    final emblem = size * 0.8;
     return Semantics(
       button: !locked,
       label: conceptName(l10n, island.conceptId),
@@ -377,73 +408,74 @@ class _Island extends StatelessWidget {
                   alignment: Alignment.bottomCenter,
                   clipBehavior: Clip.none,
                   children: [
-                    // Shallow water, sand and grass.
-                    _Ellipse(
-                      width: size * 1.6,
-                      height: size * 0.62,
-                      color: Colors.white.withValues(alpha: 0.35),
-                    ),
-                    Positioned(
-                      bottom: size * 0.06,
-                      child: _Ellipse(
-                        width: size * 1.36,
-                        height: size * 0.5,
-                        color: const Color(0xFFF6D88E),
+                    // Every other planet wears a ring, its back half
+                    // behind the planet and its front half across it.
+                    if (_ringed(island.conceptId))
+                      Positioned(
+                        bottom: size * 0.22 + emblem / 2 - size * 0.2,
+                        child: CustomPaint(
+                          size: Size(size * 1.5, size * 0.4),
+                          painter: _Ring(color: color, front: false),
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      bottom: size * 0.14,
-                      child: _Ellipse(
-                        width: size * 1.0,
-                        height: size * 0.32,
-                        color: locked
-                            ? const Color(0xFFB7C4B0)
-                            : const Color(0xFF7DCB6E),
-                      ),
-                    ),
-                    // The emblem standing on the island.
+                    // The planet, with the concept's emblem on it.
                     Positioned(
                       bottom: size * 0.22,
                       child: Container(
                         width: emblem,
                         height: emblem,
                         decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                          gradient: RadialGradient(
+                            center: const Alignment(-0.4, -0.45),
+                            radius: 1.1,
                             colors: [
-                              Color.lerp(color, Colors.white, 0.28)!,
+                              Color.lerp(color, Colors.white, 0.35)!,
                               color,
-                              Color.lerp(color, Colors.black, 0.12)!,
+                              Color.lerp(color, Colors.black, 0.35)!,
                             ],
+                            stops: const [0, 0.55, 1],
                           ),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            width: emblem * 0.08,
+                            width: emblem * 0.05,
                             color: island.current
                                 ? const Color(0xFFFFD54F)
-                                : Colors.white,
+                                : Colors.white.withValues(alpha: 0.55),
                           ),
                           boxShadow: [
                             BoxShadow(
                               color: island.current
                                   ? const Color(0xAAFFD54F)
-                                  : Colors.black26,
-                              blurRadius: island.current ? 18 : 6,
-                              offset: const Offset(0, 3),
+                                  : color.withValues(alpha: 0.35),
+                              blurRadius: island.current ? 22 : 14,
                             ),
                           ],
                         ),
-                        child: Icon(
-                          locked
-                              ? Icons.lock_rounded
-                              : conceptIcon(island.conceptId),
-                          size: emblem * 0.55,
-                          color: Colors.white,
+                        child: CustomPaint(
+                          painter: _Craters(
+                            Color.lerp(color, Colors.black, 0.25)!,
+                          ),
+                          child: Icon(
+                            locked
+                                ? Icons.lock_rounded
+                                : conceptIcon(island.conceptId),
+                            size: emblem * 0.5,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                    // Fog over islands the child can't reach yet.
+                    if (_ringed(island.conceptId))
+                      Positioned(
+                        bottom: size * 0.22 + emblem / 2 - size * 0.2,
+                        child: IgnorePointer(
+                          child: CustomPaint(
+                            size: Size(size * 1.5, size * 0.4),
+                            painter: _Ring(color: color, front: true),
+                          ),
+                        ),
+                      ),
+                    // Space dust over planets the child can't reach yet.
                     if (locked)
                       Positioned(
                         bottom: size * 0.5,
@@ -489,7 +521,8 @@ class _IslandLabel extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final textStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
       fontWeight: FontWeight.w800,
-      color: const Color(0xFF0B3C49),
+      color: Colors.white,
+      shadows: const [Shadow(color: Color(0xAA0B0D2A), blurRadius: 6)],
     );
     final column = Column(
       mainAxisSize: MainAxisSize.min,
@@ -534,26 +567,65 @@ class _IslandLabel extends StatelessWidget {
   }
 }
 
-class _Ellipse extends StatelessWidget {
-  const _Ellipse({
-    required this.width,
-    required this.height,
-    required this.color,
-  });
+/// Whether a planet wears a ring: about every other one, always the same.
+bool _ringed(String conceptId) =>
+    conceptId.codeUnits.fold(0, (a, b) => a + b).isOdd;
 
-  final double width;
-  final double height;
+/// A planet's ring, seen at a tilt: [front] draws the half that crosses
+/// in front of the planet, otherwise the half behind it.
+class _Ring extends CustomPainter {
+  const _Ring({required this.color, required this.front});
+
+  final Color color;
+  final bool front;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = (Offset.zero & size).deflate(size.height * 0.1);
+    canvas
+      ..save()
+      ..translate(size.width / 2, size.height / 2)
+      ..rotate(-0.18)
+      ..translate(-size.width / 2, -size.height / 2)
+      ..drawArc(
+        rect,
+        front ? 0 : pi,
+        pi,
+        false,
+        Paint()
+          ..color = Color.lerp(color, Colors.white, 0.55)!
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = size.height * 0.16
+          ..strokeCap = StrokeCap.round,
+      )
+      ..restore();
+  }
+
+  @override
+  bool shouldRepaint(_Ring old) => old.color != color || old.front != front;
+}
+
+/// A few round dents on a planet's face.
+class _Craters extends CustomPainter {
+  const _Craters(this.color);
+
   final Color color;
 
   @override
-  Widget build(BuildContext context) => Container(
-    width: width,
-    height: height,
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.all(Radius.elliptical(width, height)),
-    ),
-  );
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color.withValues(alpha: 0.45);
+    final d = size.shortestSide;
+    for (final (x, y, r) in const [
+      (0.72, 0.28, 0.08),
+      (0.24, 0.7, 0.07),
+      (0.68, 0.78, 0.05),
+    ]) {
+      canvas.drawCircle(Offset(x * d, y * d), r * d, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_Craters old) => old.color != color;
 }
 
 /// Gently moves [child] up and down: "you are here".

@@ -1,5 +1,5 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
-import 'package:cobalagi/features/adventure_map/view/ocean_map.dart';
+import 'package:cobalagi/features/adventure_map/view/space_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,7 +35,7 @@ Future<List<String>> pumpMap(
         child: child!,
       ),
       home: Scaffold(
-        body: OceanMap(
+        body: SpaceMap(
           marker: const Icon(Icons.face, key: Key('marker')),
           islands: [
             island('directions'),
@@ -133,7 +133,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: OceanMap(
+          body: SpaceMap(
             marker: const Icon(Icons.face, key: Key('marker')),
             islands: [
               for (final id in ids)
@@ -182,7 +182,7 @@ void main() {
             child: child!,
           ),
           home: Scaffold(
-            body: OceanMap(
+            body: SpaceMap(
               marker: const Icon(Icons.face),
               islands: [
                 island('directions'),
@@ -232,7 +232,7 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
-          body: OceanMap(
+          body: SpaceMap(
             marker: const Icon(Icons.face, key: Key('marker')),
             padding: const EdgeInsets.only(top: 96, bottom: 96),
             islands: [

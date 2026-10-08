@@ -164,6 +164,23 @@ void main() {
       expect(s.current!.skill, isNot(first.skill));
     });
 
+    test('never asks more than 10 questions, whatever the answers', () {
+      for (var seed = 0; seed < 2000; seed++) {
+        final s = session(seed);
+        final random = Random(seed);
+        var asked = 0;
+        while (!s.isFinished) {
+          final q = s.current!;
+          s.answer(
+            random.nextBool() ? q.correct : (q.correct + 1) % q.optionCount,
+          );
+          asked++;
+        }
+        expect(asked, lessThanOrEqualTo(10), reason: 'seed $seed');
+        expect(asked, greaterThanOrEqualTo(4), reason: 'seed $seed');
+      }
+    });
+
     test('without second chances one wrong answer moves on', () {
       final s = session(6, secondChances: 0);
       playTo(s, {});

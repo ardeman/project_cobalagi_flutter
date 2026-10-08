@@ -5,23 +5,32 @@ import 'profile_avatar.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
 import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
-/// Returns `(nickname, avatar)`, or null if cancelled.
-Future<(String, int)?> showAddProfileDialog(BuildContext context) =>
-    showGlassDialog<(String, int)>(
-      context: context,
-      builder: (_) => const _AddProfileDialog(),
-    );
+/// Asks for a new player's nickname and avatar, or, with [nickname] and
+/// [avatar], lets a parent change them. Returns `(nickname, avatar)`, or
+/// null if cancelled.
+Future<(String, int)?> showProfileDialog(
+  BuildContext context, {
+  String? nickname,
+  int? avatar,
+}) => showGlassDialog<(String, int)>(
+  context: context,
+  builder: (_) => _AddProfileDialog(nickname: nickname, avatar: avatar),
+);
 
 class _AddProfileDialog extends StatefulWidget {
-  const _AddProfileDialog();
+  const _AddProfileDialog({this.nickname, this.avatar});
+
+  /// Set when editing a player.
+  final String? nickname;
+  final int? avatar;
 
   @override
   State<_AddProfileDialog> createState() => _AddProfileDialogState();
 }
 
 class _AddProfileDialogState extends State<_AddProfileDialog> {
-  final _nickname = TextEditingController();
-  var _avatar = 0;
+  late final _nickname = TextEditingController(text: widget.nickname);
+  late var _avatar = widget.avatar ?? 0;
 
   @override
   void dispose() {
@@ -38,7 +47,7 @@ class _AddProfileDialogState extends State<_AddProfileDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return TypingDialog(
-      title: Text(l10n.addPlayer),
+      title: Text(widget.nickname == null ? l10n.addPlayer : l10n.editPlayer),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -110,6 +110,12 @@ abstract class AppLocalizations {
   /// **'Who\'s playing?'**
   String get whoIsPlaying;
 
+  /// No description provided for @editPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit player'**
+  String get editPlayer;
+
   /// No description provided for @addPlayer.
   ///
   /// In en, this message translates to:
@@ -125,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @chooseAvatar.
   ///
   /// In en, this message translates to:
-  /// **'Choose a friend'**
+  /// **'Choose a picture'**
   String get chooseAvatar;
 
   /// No description provided for @save.
@@ -245,7 +251,7 @@ abstract class AppLocalizations {
   /// No description provided for @changeStartingIsland.
   ///
   /// In en, this message translates to:
-  /// **'Change starting island'**
+  /// **'Change starting planet'**
   String get changeStartingIsland;
 
   /// No description provided for @progressThisWeek.
@@ -287,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @progressIslands.
   ///
   /// In en, this message translates to:
-  /// **'Islands'**
+  /// **'Planets'**
   String get progressIslands;
 
   /// No description provided for @statusNotStarted.
@@ -317,7 +323,7 @@ abstract class AppLocalizations {
   /// No description provided for @progressSponsorOnly.
   ///
   /// In en, this message translates to:
-  /// **'Sponsors see the full progress report: puzzles solved, time played and progress on each island.'**
+  /// **'Sponsors see the full progress report: puzzles solved, time played and progress on each planet.'**
   String get progressSponsorOnly;
 
   /// No description provided for @music.
@@ -509,7 +515,7 @@ abstract class AppLocalizations {
   /// No description provided for @decisionAdvance.
   ///
   /// In en, this message translates to:
-  /// **'New island unlocked!'**
+  /// **'New planet unlocked!'**
   String get decisionAdvance;
 
   /// No description provided for @decisionPractice.
@@ -527,7 +533,7 @@ abstract class AppLocalizations {
   /// No description provided for @decisionReview.
   ///
   /// In en, this message translates to:
-  /// **'Let\'s hunt for treasure on an earlier island.'**
+  /// **'Let\'s hunt for treasure on an earlier planet.'**
   String get decisionReview;
 
   /// No description provided for @decisionReturn.
@@ -539,7 +545,7 @@ abstract class AppLocalizations {
   /// No description provided for @decisionMapComplete.
   ///
   /// In en, this message translates to:
-  /// **'You explored every island!'**
+  /// **'You explored every planet!'**
   String get decisionMapComplete;
 
   /// No description provided for @hint.
@@ -737,7 +743,7 @@ abstract class AppLocalizations {
   /// No description provided for @startingIsland.
   ///
   /// In en, this message translates to:
-  /// **'Starting island'**
+  /// **'Starting planet'**
   String get startingIsland;
 
   /// No description provided for @retakePretest.
@@ -911,7 +917,7 @@ abstract class AppLocalizations {
   /// No description provided for @backToIsland.
   ///
   /// In en, this message translates to:
-  /// **'Back to the island'**
+  /// **'Back to the planet'**
   String get backToIsland;
 
   /// No description provided for @continueAdventure.
@@ -1037,7 +1043,7 @@ abstract class AppLocalizations {
   /// No description provided for @codeGuide.
   ///
   /// In en, this message translates to:
-  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until your friend reaches the flag, with no count.'**
+  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until the robot reaches the flag, with no count.'**
   String get codeGuide;
 
   /// No description provided for @codeSyntax.
@@ -1241,7 +1247,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialDirections.
   ///
   /// In en, this message translates to:
-  /// **'Tap the arrow blocks to tell your friend where to go: forward, turn left, turn right. Then press Go!'**
+  /// **'Tap the arrow blocks to tell the robot where to go: forward, turn left, turn right. Then press Go!'**
   String get tutorialDirections;
 
   /// No description provided for @tutorialSequencing.
@@ -1265,7 +1271,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialConditions.
   ///
   /// In en, this message translates to:
-  /// **'The eye block looks ahead. If the path is clear, your friend steps forward. If not, it waits.'**
+  /// **'The eye block looks ahead. If the path is clear, the robot steps forward. If not, it waits.'**
   String get tutorialConditions;
 
   /// No description provided for @tutorialVariables.
@@ -1481,7 +1487,7 @@ abstract class AppLocalizations {
   /// No description provided for @stickersIslands.
   ///
   /// In en, this message translates to:
-  /// **'Islands'**
+  /// **'Planets'**
   String get stickersIslands;
 
   /// No description provided for @stickerNotYet.

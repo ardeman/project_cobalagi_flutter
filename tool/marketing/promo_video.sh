@@ -26,7 +26,7 @@ tablet_card() {
 render() { # lang suffix tagline map blocks fix until code parents chips
   local lang="$1" s="$2"
   local title="<div style=\"display:flex;align-items:center;justify-content:center;gap:70px;height:${H}px\">
-      <svg viewBox=\"200 200 640 560\" width=\"420\" height=\"368\">$CHARACTER</svg>
+      <svg viewBox=\"180 190 660 670\" width=\"335\" height=\"340\">$CHARACTER</svg>
       <div><h1 style=\"font-size:140px\">Coba Lagi</h1><h1 style=\"font-size:64px;font-weight:800;opacity:.95;margin-top:18px\">$3</h1>
       <div style=\"display:flex;gap:16px;margin-top:40px;flex-wrap:wrap\">${10}</div></div></div>"
   card "$title" ".chip{font-size:36px;padding:10px 28px}" "$TMP/title.png"
@@ -50,7 +50,7 @@ render() { # lang suffix tagline map blocks fix until code parents chips
 }
 
 render id "-id" "Belajar coding sambil bermain" \
-  "Jelajahi delapan pulau coding" \
+  "Jelajahi sembilan planet coding" \
   "Blok bergambar, tanpa perlu membaca" \
   "Belum pas? Temukan lalu betulkan" \
   "Ulangi sampai bendera, tanpa menghitung" \
@@ -59,7 +59,7 @@ render id "-id" "Belajar coding sambil bermain" \
   "<span class=\"chip\">Gratis</span><span class=\"chip\">Tanpa iklan</span><span class=\"chip\">Bahasa Indonesia &amp; English</span>"
 
 render en "" "Learn to code through play" \
-  "Explore eight coding islands" \
+  "Explore nine coding planets" \
   "Picture blocks, no reading needed" \
   "Not quite right? Find it and fix it" \
   "Repeat until the flag, no counting needed" \

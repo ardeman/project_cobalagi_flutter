@@ -105,7 +105,7 @@ ${_bilingual(_notes(notes('id')), _notes(notes('en-US')))}    </article>
   <title data-en="What's new · Coba Lagi">Yang baru · Coba Lagi</title>
   <meta name="description" content="Catatan rilis Coba Lagi: apa yang berubah di setiap versi.">
   <meta name="theme-color" content="#00a6a6">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='34' r='24' fill='%23ff7a59'/%3E%3Cpath d='M32 4l8 10H24z' fill='%23ff7a59'/%3E%3Ccircle cx='24' cy='26' r='6' fill='%23fff'/%3E%3Ccircle cx='40' cy='26' r='6' fill='%23fff'/%3E%3Ccircle cx='24' cy='24' r='3' fill='%23263238'/%3E%3Ccircle cx='40' cy='24' r='3' fill='%23263238'/%3E%3C/svg%3E">
+  <link rel="icon" href="icon.png">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>

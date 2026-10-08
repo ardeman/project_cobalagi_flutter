@@ -56,6 +56,35 @@ void main() {
     }
   });
 
+  testWidgets('step cards and their map fit a tablet held sideways', (
+    tester,
+  ) async {
+    // A 1280 x 800 tablet: the game's picture size there (expanded), and
+    // the room QuestionGame keeps around the question (the bar, padding,
+    // the prompt row and the space under the cards).
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    const size = 190.0;
+    const room = 800 - 88 - 48 - 96 - size * 0.8;
+    for (var seed = 0; seed < 12; seed++) {
+      for (var level = 1; level <= maxSkillLevel; level++) {
+        final steps = PretestGenerator(
+          objects: const ['sun', 'star', 'house', 'car'],
+          colors: const ['red', 'blue', 'green'],
+          random: Random(seed),
+        ).question(PretestSkill.sequencing, level);
+        await pumpQuestion(tester, steps, size: size);
+        expect(tester.takeException(), isNull);
+        expect(
+          tester.getSize(find.byType(QuestionView)).height,
+          lessThanOrEqualTo(room),
+          reason: 'level $level, seed $seed',
+        );
+      }
+    }
+  });
+
   final question = PretestGenerator(
     objects: const ['sun', 'star', 'house', 'car'],
     colors: const ['red', 'blue', 'green'],

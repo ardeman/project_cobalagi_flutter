@@ -346,7 +346,7 @@ void main() {
   testWidgets('a solved puzzle leads back to its island, or the map when '
       'the island is complete', (tester) async {
     for (final (decision, label) in [
-      (const Practice('sequencing'), 'Back to the island'),
+      (const Practice('sequencing'), 'Back to the planet'),
       (const Advance('sequencing', 'loops'), 'To the map'),
     ]) {
       await _pumpPhone(tester, size: const Size(1280, 800), decision: decision);

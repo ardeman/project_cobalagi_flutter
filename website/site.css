@@ -64,7 +64,7 @@ header {
 }
 .bar { display: flex; align-items: center; gap: 16px; height: 68px; }
 .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.25rem; color: var(--text); text-decoration: none; }
-.brand svg { width: 38px; height: 38px; }
+.brand img { width: 38px; height: 38px; }
 nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
 nav .links { display: flex; gap: 22px; align-items: center; }
 nav .links a { color: var(--muted); text-decoration: none; font-weight: 600; }

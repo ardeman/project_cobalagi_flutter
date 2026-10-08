@@ -42,4 +42,14 @@ void main() {
     await cubit.load();
     expect(cubit.state.profiles, isEmpty);
   });
+
+  test('a player can be renamed and given another avatar later', () async {
+    final p = await cubit.add(nickname: 'Ayu', avatar: 0, maxProfiles: 1);
+    await cubit.edit(p!.id, nickname: 'Ayu Rocket', avatar: 4);
+    expect(cubit.state.profiles.single.nickname, 'Ayu Rocket');
+    await cubit.load();
+    final saved = cubit.state.profiles.single;
+    expect((saved.id, saved.nickname, saved.avatar), (p.id, 'Ayu Rocket', 4));
+    expect(saved.createdAt, p.createdAt);
+  });
 }

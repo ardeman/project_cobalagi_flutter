@@ -26,5 +26,12 @@ class ProfileRepository {
     return Profile.fromMap(id, map);
   }
 
+  /// Changes a player's nickname and avatar; progress stays with the id.
+  Future<void> update(
+    int id, {
+    required String nickname,
+    required int avatar,
+  }) => _store.record(id).update(_db, {'nickname': nickname, 'avatar': avatar});
+
   Future<void> delete(int id) => _store.record(id).delete(_db);
 }

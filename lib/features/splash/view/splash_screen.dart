@@ -7,12 +7,13 @@ import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/data/app_update_service.dart';
 import 'package:cobalagi/features/parent/view/parent_gate.dart';
 import 'package:cobalagi/features/splash/view/app_update_notice.dart';
+import 'package:cobalagi/features/splash/view/rolling_robot.dart';
 
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/version/app_version_text.dart';
 import 'package:cobalagi/features/profiles/cubit/profiles_cubit.dart';
 
-/// The first screen: the character, the name and the installed version,
+/// The first screen: the robot rolling along, the name and the installed version,
 /// until the players are loaded and [minimum] has passed.
 class SplashScreen extends StatefulWidget {
   const SplashScreen({
@@ -77,65 +78,74 @@ class _SplashScreenState extends State<SplashScreen> {
                 if (_waited) _maybeLeave();
               },
               child: Scaffold(
-                backgroundColor: theme.colorScheme.primaryContainer,
-                body: SafeArea(
-                  child: SingleChildScrollView(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        minHeight:
-                            MediaQuery.sizeOf(context).height -
-                            MediaQuery.paddingOf(context).vertical,
-                      ),
-                      child: IntrinsicHeight(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const Spacer(),
-                            Image.asset(
-                              'assets/images/logo.png',
-                              width: 200,
-                              height: 200,
-                              semanticLabel: l10n.appTitle,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              l10n.appTitle,
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.displaySmall?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                color: theme.colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                            const Spacer(),
-                            if (updateState.update != null)
-                              Padding(
-                                padding: const EdgeInsets.all(24),
-                                child: AppUpdateNotice(
-                                  state: updateState,
-                                  onUpdate: () async {
-                                    if (await showParentGate(context) &&
-                                        context.mounted) {
-                                      await context
-                                          .read<AppUpdateCubit>()
-                                          .openUpdate();
-                                    }
-                                  },
-                                  onContinue:
-                                      context
-                                          .watch<ProfilesCubit>()
-                                          .state
-                                          .loaded
-                                      ? () => context.go('/')
-                                      : null,
+                // The icon's warm coral, so the teal robot stands out.
+                body: DecoratedBox(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFFFF9A6B), Color(0xFFF0623F)],
+                    ),
+                  ),
+                  child: SafeArea(
+                    child: SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight:
+                              MediaQuery.sizeOf(context).height -
+                              MediaQuery.paddingOf(context).vertical,
+                        ),
+                        child: IntrinsicHeight(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Spacer(),
+                              Center(
+                                child: RollingRobot(
+                                  size: 220,
+                                  semanticLabel: l10n.appTitle,
                                 ),
                               ),
-                            AppVersionText(
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onPrimaryContainer,
+                              const SizedBox(height: 16),
+                              Text(
+                                l10n.appTitle,
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.displaySmall?.copyWith(
+                                  fontWeight: FontWeight.w800,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 24),
-                          ],
+                              const Spacer(),
+                              if (updateState.update != null)
+                                Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: AppUpdateNotice(
+                                    state: updateState,
+                                    onUpdate: () async {
+                                      if (await showParentGate(context) &&
+                                          context.mounted) {
+                                        await context
+                                            .read<AppUpdateCubit>()
+                                            .openUpdate();
+                                      }
+                                    },
+                                    onContinue:
+                                        context
+                                            .watch<ProfilesCubit>()
+                                            .state
+                                            .loaded
+                                        ? () => context.go('/')
+                                        : null,
+                                  ),
+                                ),
+                              AppVersionText(
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                            ],
+                          ),
                         ),
                       ),
                     ),

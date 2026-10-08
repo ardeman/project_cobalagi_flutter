@@ -15,13 +15,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get whoIsPlaying => 'Siapa yang main?';
 
   @override
+  String get editPlayer => 'Ubah pemain';
+
+  @override
   String get addPlayer => 'Pemain baru';
 
   @override
   String get nickname => 'Nama panggilan';
 
   @override
-  String get chooseAvatar => 'Pilih teman';
+  String get chooseAvatar => 'Pilih gambar';
 
   @override
   String get save => 'Simpan';
@@ -91,7 +94,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get changeStartingIsland => 'Ubah pulau awal';
+  String get changeStartingIsland => 'Ubah planet awal';
 
   @override
   String get progressThisWeek => '7 hari terakhir';
@@ -118,7 +121,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get progressNotPlayed => 'Belum menyelesaikan teka-teki';
 
   @override
-  String get progressIslands => 'Pulau';
+  String get progressIslands => 'Planet';
 
   @override
   String get statusNotStarted => 'Belum mulai';
@@ -136,7 +139,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get progressSponsorOnly =>
-      'Sponsor bisa melihat laporan perkembangan lengkap: teka-teki yang selesai, waktu bermain, dan kemajuan di setiap pulau.';
+      'Sponsor bisa melihat laporan perkembangan lengkap: teka-teki yang selesai, waktu bermain, dan kemajuan di setiap planet.';
 
   @override
   String get music => 'Musik latar';
@@ -236,7 +239,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get conceptFunctions => 'Blok Ajaib';
 
   @override
-  String get decisionAdvance => 'Pulau baru terbuka!';
+  String get decisionAdvance => 'Planet baru terbuka!';
 
   @override
   String get decisionPractice => 'Ayo coba yang lain!';
@@ -245,13 +248,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get bonusAdventure => 'Petualangan bonus!';
 
   @override
-  String get decisionReview => 'Ayo cari harta karun di pulau sebelumnya.';
+  String get decisionReview => 'Ayo cari harta karun di planet sebelumnya.';
 
   @override
   String get decisionReturn => 'Kembali ke petualanganmu!';
 
   @override
-  String get decisionMapComplete => 'Kamu sudah menjelajahi semua pulau!';
+  String get decisionMapComplete => 'Kamu sudah menjelajahi semua planet!';
 
   @override
   String get hint => 'Tunjukkan jalannya';
@@ -352,7 +355,7 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
-  String get startingIsland => 'Pulau awal';
+  String get startingIsland => 'Planet awal';
 
   @override
   String get retakePretest => 'Main pemanasan lagi';
@@ -444,7 +447,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get playHowTo => 'Seret blok ke kotak putih, lalu tekan Jalan!';
 
   @override
-  String get backToIsland => 'Kembali ke pulau';
+  String get backToIsland => 'Kembali ke planet';
 
   @override
   String get continueAdventure => 'Lanjutkan petualangan';
@@ -515,7 +518,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal. Simpan angka dengan steps = 3; dan pakai move(steps); untuk maju sebanyak itu. Angka tetap sama sampai kamu menyimpan yang baru. Simpan sebelum memakainya. until_flag mengulang isi kurung kurawalnya sampai temanmu tiba di bendera, tanpa hitungan.';
+      'Ketuk perintah untuk menambahkannya, atau ketik sendiri. Nama perintah tetap sama dalam kedua bahasa. Akhiri aksi dengan (); dan letakkan isi pengulangan serta pemeriksaan di antara kurung kurawal buka dan tutup. Jumlah pengulangan adalah 1–9. Buat Blok Ajaib dengan define star, lalu jalankan dengan star();. // memulai komentar. Setiap perintah dihitung sebagai satu blok, termasuk perintah di dalam kurung kurawal. Simpan angka dengan steps = 3; dan pakai move(steps); untuk maju sebanyak itu. Angka tetap sama sampai kamu menyimpan yang baru. Simpan sebelum memakainya. until_flag mengulang isi kurung kurawalnya sampai robot tiba di bendera, tanpa hitungan.';
 
   @override
   String get codeSyntax =>
@@ -635,7 +638,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tutorialDirections =>
-      'Ketuk blok panah untuk memberi tahu temanmu ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!';
+      'Ketuk blok panah untuk memberi tahu robot ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!';
 
   @override
   String get tutorialSequencing =>
@@ -651,7 +654,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'Blok mata melihat ke depan. Kalau jalannya kosong, temanmu maju. Kalau tidak, ia menunggu.';
+      'Blok mata melihat ke depan. Kalau jalannya kosong, robot maju. Kalau tidak, ia menunggu.';
 
   @override
   String get tutorialVariables =>
@@ -778,7 +781,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get stickerBookHello => 'Lihat semua stikermu!';
 
   @override
-  String get stickersIslands => 'Pulau';
+  String get stickersIslands => 'Planet';
 
   @override
   String get stickerNotYet => 'Belum didapat';

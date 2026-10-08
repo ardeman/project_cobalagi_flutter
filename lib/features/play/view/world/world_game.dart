@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 import 'dart:math';
 
 import 'package:flame/components.dart';
@@ -32,6 +35,9 @@ class WorldGame extends FlameGame {
   static void _silent(SoundEffect _) {}
 
   late ActorComponent _actor;
+  Sprite? _robot;
+  Sprite? _robotBack;
+  Sprite? _robotFront;
   final _stars = <GridPoint, StarComponent>{};
   PlayState? _pending;
 
@@ -52,6 +58,29 @@ class WorldGame extends FlameGame {
 
   @override
   Future<void> onLoad() async {
+    // The robot's picture loads alongside, without holding up the world;
+    // until then (or in a test without the app's bindings and assets) the
+    // plain character shows.
+    if (_canLoadAssets) {
+      unawaited(
+        Sprite.load('robot.png').then((robot) {
+          _robot = robot;
+          _actor.sprite = robot;
+        }, onError: (Object _) {}),
+      );
+      unawaited(
+        Sprite.load('robot_back.png').then((back) {
+          _robotBack = back;
+          _actor.backSprite = back;
+        }, onError: (Object _) {}),
+      );
+      unawaited(
+        Sprite.load('robot_front.png').then((front) {
+          _robotFront = front;
+          _actor.frontSprite = front;
+        }, onError: (Object _) {}),
+      );
+    }
     camera.viewfinder
       ..visibleGameSize = Vector2(level.width + 0.4, level.height + 0.4)
       ..position = Vector2(level.width / 2, level.height / 2)
@@ -69,7 +98,15 @@ class WorldGame extends FlameGame {
     for (final star in level.stars) {
       world.add(_stars[star] = StarComponent(star));
     }
-    world.add(_actor = ActorComponent(level.start, level.startFacing));
+    world.add(
+      _actor = ActorComponent(
+        level.start,
+        level.startFacing,
+        sprite: _robot,
+        backSprite: _robotBack,
+        frontSprite: _robotFront,
+      ),
+    );
     _dirty = false;
   }
 
@@ -101,6 +138,7 @@ class WorldGame extends FlameGame {
           _celebrated = state.runs;
           onSound(SoundEffect.goal);
           world.add(CelebrationComponent(level.goal));
+          _actor.face = RobotFace.cheer;
           _actor.add(
             SequenceEffect([
               ScaleEffect.to(
@@ -191,11 +229,15 @@ class WorldGame extends FlameGame {
         );
       case Moved(:final to):
         onSound(SoundEffect.step);
+        _actor.rolling = true;
         _actor.add(
           MoveToEffect(
             tileCenter(to),
             EffectController(duration: _moveTime, curve: Curves.easeInOut),
-            onComplete: done,
+            onComplete: () {
+              _actor.rolling = false;
+              done();
+            },
           ),
         );
       case Turned(:final from, :final to):
@@ -209,6 +251,14 @@ class WorldGame extends FlameGame {
         );
       case Bumped(:final facing):
         onSound(SoundEffect.bump);
+        _actor.face = RobotFace.dizzy;
+        _actor.add(
+          TimerComponent(
+            period: 0.9,
+            removeOnFinish: true,
+            onTick: () => _actor.face = RobotFace.normal,
+          ),
+        );
         final nudge = Vector2(facing.dx * 0.28, facing.dy * 0.28);
         _actor.add(
           SequenceEffect([
@@ -256,5 +306,15 @@ class WorldGame extends FlameGame {
           ),
         );
     }
+  }
+}
+
+/// Whether assets can load: false in plain tests without Flutter's bindings.
+bool get _canLoadAssets {
+  try {
+    ServicesBinding.instance;
+    return true;
+  } on Object catch (_) {
+    return false;
   }
 }

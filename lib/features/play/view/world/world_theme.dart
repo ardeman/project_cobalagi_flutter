@@ -1,35 +1,27 @@
 import 'dart:math';
 import 'dart:ui';
 
-/// What blocks the way on an island.
+/// What blocks the way on a planet.
 enum Obstacle {
-  bush,
-  flowerBush,
+  moonRock,
+  alienPlant,
   rock,
   crystal,
-  pine,
+  iceSpike,
   cactus,
   crate,
   asteroid,
   hedge,
 }
 
-/// The island's finish. Every one carries the red flag the voice talks
-/// about ("reach the flag"), so the goal reads the same on every island.
-enum Finish {
-  flag,
-  house,
-  chest,
-  castle,
-  igloo,
-  tent,
-  toolbox,
-  rocket,
-  treehouse,
-}
+/// The planet's finish. Every one carries the red flag the voice talks
+/// about ("reach the flag"), so the goal reads the same on every planet.
+enum Finish { flag, dome, chest, castle, igloo, tent, toolbox, rocket, ufo }
 
-/// How an island's world looks: background, path, obstacles and finish.
-/// Purely visual; the level decides where things are.
+/// How a planet's world looks: its sky, ground, obstacles and finish. Every
+/// planet floats in space, so the sky is dark and starry; the ground tiles
+/// stay light so the path reads clearly. Purely visual; the level decides
+/// where things are.
 final class WorldTheme {
   const WorldTheme({
     required this.background,
@@ -39,70 +31,72 @@ final class WorldTheme {
     required this.finish,
   });
 
+  /// The sky around the board, sprinkled with stars.
   final Color background;
   final Color floor;
   final Color floorEdge;
   final Obstacle obstacle;
   final Finish finish;
 
-  /// Directions, and anything without an island of its own.
-  static const meadow = WorldTheme(
-    background: Color(0xFFBFE6FF),
-    floor: Color(0xFFFFF1C9),
-    floorEdge: Color(0xFFF2D99A),
-    obstacle: Obstacle.bush,
+  /// Directions, and anything without a planet of its own: the Moon, with
+  /// a flag to plant.
+  static const moon = WorldTheme(
+    background: Color(0xFF1B2150),
+    floor: Color(0xFFE8EAF2),
+    floorEdge: Color(0xFFB9BED3),
+    obstacle: Obstacle.moonRock,
     finish: Finish.flag,
   );
 
-  static const garden = WorldTheme(
-    background: Color(0xFFD5F2C4),
-    floor: Color(0xFFEFE8DD),
-    floorEdge: Color(0xFFCDBFA9),
-    obstacle: Obstacle.flowerBush,
-    finish: Finish.house,
+  static const jungle = WorldTheme(
+    background: Color(0xFF14303F),
+    floor: Color(0xFFE3F4D2),
+    floorEdge: Color(0xFFA9D48D),
+    obstacle: Obstacle.alienPlant,
+    finish: Finish.dome,
   );
 
-  static const beach = WorldTheme(
-    background: Color(0xFF9FE2F0),
-    floor: Color(0xFFFFE8B5),
-    floorEdge: Color(0xFFF0CC82),
+  static const water = WorldTheme(
+    background: Color(0xFF102E52),
+    floor: Color(0xFFD8F1FA),
+    floorEdge: Color(0xFF8ACFE6),
     obstacle: Obstacle.rock,
     finish: Finish.chest,
   );
 
   static const crystals = WorldTheme(
-    background: Color(0xFFE2D6FF),
-    floor: Color(0xFFFFF3FA),
-    floorEdge: Color(0xFFE6C3DD),
+    background: Color(0xFF2A1E55),
+    floor: Color(0xFFF8EAFB),
+    floorEdge: Color(0xFFD5B3E6),
     obstacle: Obstacle.crystal,
     finish: Finish.castle,
   );
 
-  static const snow = WorldTheme(
-    background: Color(0xFFDDEFFC),
-    floor: Color(0xFFF7FBFF),
-    floorEdge: Color(0xFFB9D6EC),
-    obstacle: Obstacle.pine,
+  static const ice = WorldTheme(
+    background: Color(0xFF17304F),
+    floor: Color(0xFFF1F8FF),
+    floorEdge: Color(0xFFAFD0EA),
+    obstacle: Obstacle.iceSpike,
     finish: Finish.igloo,
   );
 
-  static const desert = WorldTheme(
-    background: Color(0xFFFFE6C2),
-    floor: Color(0xFFFFF7E6),
-    floorEdge: Color(0xFFEBC384),
+  static const mars = WorldTheme(
+    background: Color(0xFF35183A),
+    floor: Color(0xFFFFE1CC),
+    floorEdge: Color(0xFFE6A47F),
     obstacle: Obstacle.cactus,
     finish: Finish.tent,
   );
 
-  static const workshop = WorldTheme(
-    background: Color(0xFFDDE2F7),
-    floor: Color(0xFFF7F8FC),
-    floorEdge: Color(0xFFC3C9E6),
+  static const station = WorldTheme(
+    background: Color(0xFF1E2438),
+    floor: Color(0xFFEEF1F8),
+    floorEdge: Color(0xFFAAB3CC),
     obstacle: Obstacle.crate,
     finish: Finish.toolbox,
   );
 
-  static const space = WorldTheme(
+  static const asteroids = WorldTheme(
     background: Color(0xFF233056),
     floor: Color(0xFFFFF4D6),
     floorEdge: Color(0xFFB9C2E8),
@@ -110,27 +104,46 @@ final class WorldTheme {
     finish: Finish.rocket,
   );
 
-  /// A hedge maze, for following the walls on the Otherwise island.
+  /// An alien hedge maze, for following the walls on the Otherwise planet.
   static const maze = WorldTheme(
-    background: Color(0xFFE3F1D4),
-    floor: Color(0xFFF6ECD8),
-    floorEdge: Color(0xFFD9C29A),
+    background: Color(0xFF221C45),
+    floor: Color(0xFFF2ECDB),
+    floorEdge: Color(0xFFCDBB92),
     obstacle: Obstacle.hedge,
-    finish: Finish.treehouse,
+    finish: Finish.ufo,
   );
 
-  /// One world per island, keyed by concept id.
+  /// One world per planet, keyed by concept id.
   static WorldTheme forConcept(String concept) => switch (concept) {
-    'sequencing' => garden,
-    'loops' => beach,
+    'sequencing' => jungle,
+    'loops' => water,
     'functions' => crystals,
-    'conditions' => snow,
-    'variables' => desert,
-    'debugging' => workshop,
-    'until' => space,
+    'conditions' => ice,
+    'variables' => mars,
+    'debugging' => station,
+    'until' => asteroids,
     'otherwise' => maze,
-    _ => meadow,
+    _ => moon,
   };
+}
+
+/// Stars scattered over [area] of the sky, the same every time.
+void drawSky(Canvas canvas, Rect area) {
+  final random = Random(11);
+  final count = (area.width * area.height * 1.6).round().clamp(20, 600);
+  for (var i = 0; i < count; i++) {
+    final at = Offset(
+      area.left + random.nextDouble() * area.width,
+      area.top + random.nextDouble() * area.height,
+    );
+    final bright = random.nextDouble();
+    canvas.drawCircle(
+      at,
+      0.015 + bright * 0.025,
+      _fill(0xFFFFFFFF)
+        ..color = Color.fromRGBO(255, 255, 255, 0.3 + bright * 0.6),
+    );
+  }
 }
 
 Paint _fill(int color) => Paint()..color = Color(color);
@@ -144,20 +157,20 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
   final shadow = _fill(0x26000000);
   switch (obstacle) {
     case Obstacle.hedge:
-      // A square-cut hedge, so the walls read as a maze.
+      // A square-cut alien hedge, so the walls read as a maze.
       final hedge = RRect.fromRectAndRadius(
         Rect.fromCenter(center: c, width: 0.84, height: 0.84),
         const Radius.circular(0.14),
       );
       canvas
         ..drawRRect(hedge.shift(const Offset(0.03, 0.05)), shadow)
-        ..drawRRect(hedge, _fill(0xFF3F8F4A))
+        ..drawRRect(hedge, _fill(0xFF5B4BA8))
         ..drawRRect(
           RRect.fromRectAndRadius(
             Rect.fromLTWH(c.dx - 0.42, c.dy - 0.42, 0.84, 0.3),
             const Radius.circular(0.14),
           ),
-          _fill(0xFF5BAE5F),
+          _fill(0xFF7E6CD0),
         );
       for (var i = 0; i < 4; i++) {
         canvas.drawCircle(
@@ -167,28 +180,59 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
                 (random.nextDouble() - 0.3) * 0.5,
               ),
           0.05,
-          _fill(0xFF7CC97A),
+          _fill(0xFFB9ACFF),
         );
       }
-    case Obstacle.bush:
+    case Obstacle.moonRock:
+      // A round grey boulder with craters.
       canvas
-        ..drawCircle(c + const Offset(0.04, 0.06), 0.36 * s, _fill(0xFF4FA457))
-        ..drawCircle(c, 0.34 * s, _fill(0xFF6CC071))
-        ..drawCircle(c + const Offset(-0.12, -0.1), 0.12, _fill(0xFF4FA457));
-    case Obstacle.flowerBush:
-      canvas
-        ..drawCircle(c + const Offset(0.04, 0.06), 0.36 * s, _fill(0xFF4E9F4A))
-        ..drawCircle(c, 0.34 * s, _fill(0xFF74C66A));
-      const petals = [0xFFF48FB1, 0xFFFFD54F, 0xFFFFFFFF];
-      final petal = _fill(petals[random.nextInt(petals.length)]);
-      for (final (dx, dy) in [(-0.13, -0.08), (0.12, 0.06), (-0.02, 0.15)]) {
-        final f = c + Offset(dx * s, dy * s);
-        for (var i = 0; i < 5; i++) {
-          final a = i * 2 * pi / 5;
-          canvas.drawCircle(f + Offset(cos(a), sin(a)) * 0.05, 0.04, petal);
-        }
-        canvas.drawCircle(f, 0.03, _fill(0xFFFFA000));
+        ..drawCircle(c + const Offset(0.03, 0.05), 0.32 * s, shadow)
+        ..drawCircle(c, 0.32 * s, _fill(0xFF9196AE))
+        ..drawCircle(c + Offset(-0.04, -0.05) * s, 0.26 * s, _fill(0xFFB8BCCF))
+        ..drawCircle(c + Offset(-0.1, -0.08) * s, 0.07 * s, _fill(0xFF9196AE))
+        ..drawCircle(c + Offset(0.1, 0.06) * s, 0.05 * s, _fill(0xFF9196AE));
+      if (random.nextBool()) {
+        canvas.drawCircle(
+          c + Offset(-0.02, 0.14) * s,
+          0.035 * s,
+          _fill(0xFF9196AE),
+        );
       }
+    case Obstacle.alienPlant:
+      // A mound with three stalks, each ending in a glowing bulb.
+      final stalk = Paint()
+        ..color = const Color(0xFF39B39A)
+        ..strokeWidth = 0.05
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke;
+      const bulbs = [0xFFFF7AB6, 0xFFFFD54F, 0xFFB388FF];
+      final bulb = _fill(bulbs[random.nextInt(bulbs.length)]);
+      final ground = c + const Offset(0, 0.26);
+      for (final dx in [-0.18, 0.0, 0.18]) {
+        final tip = c + Offset(dx * s, (-0.2 + dx.abs() * 0.5) * s);
+        canvas
+          ..drawPath(
+            Path()
+              ..moveTo(ground.dx + dx * 0.4, ground.dy)
+              ..quadraticBezierTo(
+                ground.dx + dx * 1.4,
+                (ground.dy + tip.dy) / 2,
+                tip.dx,
+                tip.dy,
+              ),
+            stalk,
+          )
+          ..drawCircle(tip, 0.08, bulb)
+          ..drawCircle(
+            tip + const Offset(-0.025, -0.025),
+            0.025,
+            _fill(0xCCFFFFFF),
+          );
+      }
+      canvas.drawOval(
+        Rect.fromCenter(center: ground, width: 0.62 * s, height: 0.2),
+        _fill(0xFF2E8C7A),
+      );
     case Obstacle.rock:
       final rock = Path()
         ..moveTo(c.dx - 0.34 * s, c.dy + 0.2)
@@ -214,62 +258,17 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
       }
     case Obstacle.crystal:
       const tints = [0xFFB388FF, 0xFF80DEEA, 0xFFF48FB1];
-      final tint = tints[random.nextInt(tints.length)];
-      for (final (dx, h, w) in [(-0.14, 0.5, 0.16), (0.1, 0.62, 0.18)]) {
-        final base = c + Offset(dx, 0.28);
-        final crystal = Path()
-          ..moveTo(base.dx - w, base.dy)
-          ..lineTo(base.dx - w, base.dy - h * s * 0.6)
-          ..lineTo(base.dx, base.dy - h * s)
-          ..lineTo(base.dx + w, base.dy - h * s * 0.6)
-          ..lineTo(base.dx + w, base.dy)
-          ..close();
-        canvas
-          ..drawPath(crystal, _fill(tint))
-          ..drawPath(
-            Path()
-              ..moveTo(base.dx - w, base.dy)
-              ..lineTo(base.dx - w, base.dy - h * s * 0.6)
-              ..lineTo(base.dx, base.dy - h * s)
-              ..lineTo(base.dx, base.dy)
-              ..close(),
-            _fill(0x66FFFFFF),
-          );
-      }
-    case Obstacle.pine:
-      canvas.drawOval(
-        Rect.fromCenter(
-          center: c + const Offset(0, 0.34),
-          width: 0.5,
-          height: 0.12,
-        ),
-        shadow,
-      );
-      canvas.drawRect(
-        Rect.fromCenter(
-          center: c + const Offset(0, 0.3),
-          width: 0.1,
-          height: 0.14,
-        ),
-        _fill(0xFF795548),
-      );
-      for (final (y, w) in [(0.22, 0.36), (0.02, 0.28), (-0.17, 0.2)]) {
-        final tier = Path()
-          ..moveTo(c.dx - w * s, c.dy + y)
-          ..lineTo(c.dx, c.dy + y - 0.3 * s)
-          ..lineTo(c.dx + w * s, c.dy + y)
-          ..close();
-        canvas.drawPath(tier, _fill(0xFF2E7D5B));
-        // Snow on each tier.
-        canvas.drawPath(
-          Path()
-            ..moveTo(c.dx - w * s * 0.45, c.dy + y - 0.165 * s)
-            ..lineTo(c.dx, c.dy + y - 0.3 * s)
-            ..lineTo(c.dx + w * s * 0.45, c.dy + y - 0.165 * s)
-            ..close(),
-          _fill(0xFFFFFFFF),
-        );
-      }
+      _crystals(canvas, c, s, tints[random.nextInt(tints.length)], const [
+        (-0.14, 0.5, 0.16),
+        (0.1, 0.62, 0.18),
+      ]);
+    case Obstacle.iceSpike:
+      // Icicles poking up, pale blue.
+      _crystals(canvas, c, s, 0xFFB3E5FC, const [
+        (-0.2, 0.42, 0.09),
+        (0.0, 0.66, 0.11),
+        (0.2, 0.5, 0.09),
+      ]);
     case Obstacle.cactus:
       final green = Paint()
         ..color = const Color(0xFF5DA65A)
@@ -374,6 +373,40 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
   }
 }
 
+/// Crystal spikes standing on the bottom of the cell around [c]: each is
+/// (offset, height, half width), lit on its left face.
+void _crystals(
+  Canvas canvas,
+  Offset c,
+  double s,
+  int tint,
+  List<(double, double, double)> spikes,
+) {
+  for (final (dx, h, w) in spikes) {
+    final base = c + Offset(dx, 0.28);
+    canvas
+      ..drawPath(
+        Path()
+          ..moveTo(base.dx - w, base.dy)
+          ..lineTo(base.dx - w, base.dy - h * s * 0.6)
+          ..lineTo(base.dx, base.dy - h * s)
+          ..lineTo(base.dx + w, base.dy - h * s * 0.6)
+          ..lineTo(base.dx + w, base.dy)
+          ..close(),
+        _fill(tint),
+      )
+      ..drawPath(
+        Path()
+          ..moveTo(base.dx - w, base.dy)
+          ..lineTo(base.dx - w, base.dy - h * s * 0.6)
+          ..lineTo(base.dx, base.dy - h * s)
+          ..lineTo(base.dx, base.dy)
+          ..close(),
+        _fill(0x66FFFFFF),
+      );
+  }
+}
+
 final _pole = Paint()
   ..color = const Color(0xFF8D6E63)
   ..strokeWidth = 0.06
@@ -397,31 +430,37 @@ void _flag(Canvas canvas, Offset base, double height, {double scale = 1}) {
 
 /// Draws [finish] in the unit square at the origin.
 void drawFinish(Canvas canvas, Finish finish) {
-  final base = _fill(0x5581C784);
+  final base = _fill(0x33223355);
   switch (finish) {
     case Finish.flag:
       canvas.drawOval(const Rect.fromLTWH(0.2, 0.72, 0.6, 0.16), base);
       _flag(canvas, const Offset(0.38, 0.8), 0.66);
-    case Finish.house:
+    case Finish.dome:
+      // A glass dome with a little garden inside.
+      final glass = Path()
+        ..moveTo(0.16, 0.78)
+        ..arcToPoint(
+          const Offset(0.84, 0.78),
+          radius: const Radius.circular(0.34),
+        )
+        ..close();
       canvas
-        ..drawOval(const Rect.fromLTWH(0.14, 0.76, 0.72, 0.14), base)
-        ..drawRect(
-          const Rect.fromLTWH(0.24, 0.48, 0.52, 0.34),
-          _fill(0xFFFFF3E0),
-        )
+        ..drawOval(const Rect.fromLTWH(0.12, 0.74, 0.76, 0.14), base)
+        ..drawCircle(const Offset(0.38, 0.7), 0.08, _fill(0xFF66BB6A))
+        ..drawCircle(const Offset(0.58, 0.68), 0.1, _fill(0xFF4CAF50))
+        ..drawPath(glass, _fill(0x6681D4FA))
         ..drawPath(
-          Path()
-            ..moveTo(0.16, 0.5)
-            ..lineTo(0.5, 0.22)
-            ..lineTo(0.84, 0.5)
-            ..close(),
-          _fill(0xFFE57373),
+          glass,
+          Paint()
+            ..color = const Color(0xFFFFFFFF)
+            ..strokeWidth = 0.03
+            ..style = PaintingStyle.stroke,
         )
         ..drawRect(
-          const Rect.fromLTWH(0.43, 0.62, 0.14, 0.2),
-          _fill(0xFF8D6E63),
+          const Rect.fromLTWH(0.14, 0.76, 0.72, 0.07),
+          _fill(0xFF90A4AE),
         );
-      _flag(canvas, const Offset(0.5, 0.24), 0.2, scale: 0.65);
+      _flag(canvas, const Offset(0.5, 0.45), 0.26, scale: 0.65);
     case Finish.chest:
       canvas
         ..drawOval(const Rect.fromLTWH(0.16, 0.74, 0.68, 0.14), base)
@@ -572,32 +611,24 @@ void drawFinish(Canvas canvas, Finish finish) {
           _fill(0xFFFFB300),
         );
       _flag(canvas, const Offset(0.5, 0.2), 0.12, scale: 0.55);
-    case Finish.treehouse:
+    case Finish.ufo:
+      // A flying saucer, landed, its lights on.
       canvas
-        ..drawOval(const Rect.fromLTWH(0.14, 0.78, 0.72, 0.12), base)
-        ..drawRect(
-          const Rect.fromLTWH(0.44, 0.46, 0.12, 0.38),
-          _fill(0xFF8D6E63),
+        ..drawOval(const Rect.fromLTWH(0.16, 0.76, 0.68, 0.12), base)
+        ..drawCircle(const Offset(0.5, 0.56), 0.16, _fill(0xFF80DEEA))
+        ..drawCircle(const Offset(0.45, 0.51), 0.05, _fill(0xAAFFFFFF))
+        ..drawOval(
+          const Rect.fromLTWH(0.12, 0.56, 0.76, 0.2),
+          _fill(0xFFB0BEC5),
         )
-        ..drawCircle(const Offset(0.5, 0.32), 0.26, _fill(0xFF4CAF50))
-        ..drawCircle(const Offset(0.36, 0.26), 0.14, _fill(0xFF66BB6A))
-        ..drawRect(
-          const Rect.fromLTWH(0.34, 0.4, 0.32, 0.18),
-          _fill(0xFFFFCC80),
-        )
-        ..drawPath(
-          Path()
-            ..moveTo(0.3, 0.41)
-            ..lineTo(0.5, 0.28)
-            ..lineTo(0.7, 0.41)
-            ..close(),
-          _fill(0xFFE57373),
-        )
-        ..drawRect(
-          const Rect.fromLTWH(0.46, 0.47, 0.08, 0.11),
-          _fill(0xFF6D4C41),
+        ..drawOval(
+          const Rect.fromLTWH(0.12, 0.56, 0.76, 0.1),
+          _fill(0xFFCFD8DC),
         );
-      _flag(canvas, const Offset(0.5, 0.3), 0.2, scale: 0.6);
+      for (final x in [0.26, 0.5, 0.74]) {
+        canvas.drawCircle(Offset(x, 0.68), 0.035, _fill(0xFFFFD54F));
+      }
+      _flag(canvas, const Offset(0.5, 0.41), 0.22, scale: 0.6);
     case Finish.tent:
       canvas
         ..drawOval(const Rect.fromLTWH(0.12, 0.76, 0.76, 0.14), base)

@@ -9,7 +9,7 @@ Blocks and code drive the same game world. A short, voice-led placement game pic
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Android is released for now: on Google Play, and as APKs on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
-> **Status:** in Google Play's closed test (version 1.3.0, build 10): the Warm-up island and nine coding islands, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: character artwork and the public release after the closed test; see the roadmap.
+> **Status:** in Google Play's closed test (version 1.3.0, build 10): the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: character artwork and the public release after the closed test; see the roadmap.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -18,12 +18,12 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 <table>
   <tr>
     <td width="50%" valign="top">
-      <img src="website/screenshots/adventure-map.png" alt="The adventure map with ten islands, the Warm-up island first"><br>
-      <b>Adventure map:</b> one island per idea, with stars and a sticker book.
+      <img src="website/screenshots/adventure-map.png" alt="The adventure map in space with ten planets, the Warm-up planet first"><br>
+      <b>Adventure map:</b> one planet per idea, with stars and a sticker book.
     </td>
     <td width="50%" valign="top">
-      <img src="website/screenshots/warm-up-island.png" alt="The Warm-up island with six picture games and their stars"><br>
-      <b>Warm-up island:</b> counting, colours, shapes, patterns, left and right, and steps.
+      <img src="website/screenshots/warm-up-island.png" alt="The Warm-up planet with six picture games and their stars"><br>
+      <b>Warm-up planet:</b> counting, colours, shapes, patterns, left and right, and steps.
     </td>
   </tr>
   <tr>
@@ -53,23 +53,23 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
     </td>
     <td width="50%" valign="top">
       <img src="website/screenshots/sticker-book.png" alt="The sticker book with earned and empty stickers"><br>
-      <b>Sticker book:</b> a sticker for every finished island and Warm-up game.
+      <b>Sticker book:</b> a sticker for every finished planet and Warm-up game.
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
       <img src="website/screenshots/solved.png" alt="A solved puzzle with a cheer and a Next button"><br>
-      <b>Solved:</b> varied cheers, then back to the island (or the map once the island is complete).
+      <b>Solved:</b> varied cheers, then back to the planet (or the map once the planet is complete).
     </td>
     <td width="50%" valign="top">
-      <img src="website/screenshots/parent-placement.png" alt="Parent area dialog for choosing a child's starting island"><br>
-      <b>Parent area:</b> behind a grown-up check; set the starting island or replay the warm-up.
+      <img src="website/screenshots/parent-placement.png" alt="Parent area dialog for choosing a child's starting planet"><br>
+      <b>Parent area:</b> behind a grown-up check; rename a player or change their picture, set the starting planet or replay the warm-up.
     </td>
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <img src="website/screenshots/parent-progress.png" alt="A child's progress report with puzzles, play time and islands"><br>
-      <b>Progress report:</b> (sponsor feature) puzzles, play time and every island.
+      <img src="website/screenshots/parent-progress.png" alt="A child's progress report with puzzles, play time and planets"><br>
+      <b>Progress report:</b> (sponsor feature) puzzles, play time and every planet.
     </td>
     <td width="50%" valign="top">
       <img src="website/screenshots/adventure-map-id.png" alt="The adventure map in Bahasa Indonesia"><br>
@@ -268,6 +268,17 @@ flutter build macos --release   # → build/macos/Build/Products/Release/Coba La
 - **Not distributed for now:** developers build and run it themselves (`open "build/macos/Build/Products/Release/Coba Lagi.app"`). The build is ad-hoc signed, so it runs only on the Mac that built it. Distributing it later needs an Apple Developer account (Developer ID signing and notarization, or the Mac App Store).
 - Donations are off on macOS (free plan only); the store is wired up for Android and iOS.
 
+## Character
+
+The friend children program is a small teal robot, exploring planets in space. Its picture is `branding/robot.svg`; `branding/robot.sh` renders it to `assets/images/robot.png` for the game and, split at the neck, to `robot_head.png` and `robot_body.png` for the splash screen. The same script makes `robot_front.png` (facing the child) and `robot_back.png` (from behind: a back panel and neck band, a battery hatch) from the reference picture `branding/robot_front_source.png` with `tool/robot/front.html`, which clears its background, erases its face, matches the side view's colours and ground strokes, and adds its details. All are in the same 512-pixel square. The game draws it upright on its tile and shows its facing itself: a soft headlight beam lights the tile it faces (and sweeps round as it turns), facing up the board it shows its back (`robot_back.png`), facing left or right it shows that side, facing down it faces the child (`robot_front.png`), and its eyes look the way it faces. Its faces are drawn over the screen in code (`paintRobotFace` in `lib/core/character/robot_face.dart`: normal with blinks, dizzy after a bump, star eyes at the flag), so every expression is the same robot. The splash (`RollingRobot`) rolls it on the spot: spokes turn on its wheel hubs, it bounces, its head nods a beat behind, and road marks slide past; it holds still when the system asks for less motion.
+
+Each planet's puzzle world (`WorldTheme` in `lib/features/play/view/world/world_theme.dart`) has its own starry sky, ground, obstacles and finish, and every finish carries the red flag the voice talks about.
+
+The robot was designed with AI on fal.ai, paid per use from a `FAL_KEY` in `.env`:
+
+- `dart run tool/generate_design.dart <ideas.json>` makes vector character ideas with Recraft V3 (about $0.08 each) into `build/character/designs/`; with `"image"` and `"strength"` in the file it edits an image instead, but edits don't keep a character's identity.
+- `dart run tool/generate_character.dart` animates an image as Lottie with Omnilottie (prompts in `tool/character.json`, about $0.10 each), and `tool/character_preview.sh` shows the results as frame strips. It only handled very simple shapes, so the game animates the robot in code instead.
+
 ## Website
 
 `website/` is published to [cobalagi.ardeman.com](https://cobalagi.ardeman.com) by GitHub Pages. `.github/workflows/pages.yml` deploys it on every push to `master` that changes `website/`, and can also be run by hand from the Actions tab. Preview locally with `open website/index.html`; add `?lang=en` or `?lang=id` to pick a language.
@@ -276,7 +287,7 @@ One-time setup (already done for this repo): Pages source **GitHub Actions**, cu
 
 ## App icon
 
-The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-colour version for Android 13 themed icons in `branding/icon_monochrome.svg`. After editing either, run `branding/render.sh`: it renders the PNGs with headless Chrome and generates every platform's icons with `flutter_launcher_icons` (config: `flutter_launcher_icons.yaml`). `branding/play_store_icon.png` is the 512 × 512 icon for the Play Console.
+The icon (the robot's head on plain coral) is drawn in `branding/icon.svg`, with a one-colour version for Android 13 themed icons in `branding/icon_monochrome.svg`. After editing either, run `branding/render.sh`: it renders the PNGs with headless Chrome and generates every platform's icons with `flutter_launcher_icons` (config: `flutter_launcher_icons.yaml`). `branding/play_store_icon.png` is the 512 × 512 icon for the Play Console.
 
 ## Store listing
 

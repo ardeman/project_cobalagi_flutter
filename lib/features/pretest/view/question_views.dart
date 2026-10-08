@@ -85,6 +85,11 @@ class QuestionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final screen = MediaQuery.sizeOf(context);
+    // Held sideways (phones and tablets alike), the picture goes beside the
+    // answers, so a tall map and its step cards fit without scrolling.
+    final sideways = screen.width > screen.height * 1.3;
+    final short = screen.height < 600;
     final (Widget? stimulus, List<Widget> options) = switch (question) {
       ReadingQuestion(:final words, :final options) => (
         _Board(
@@ -176,7 +181,12 @@ class QuestionView extends StatelessWidget {
       ),
       SequencingQuestion(:final map, :final options) => (
         _Board(
-          child: _MiniMap(level: map, cell: size * 0.32),
+          // Beside the answers on a tablet, a six-row map must still fit
+          // the height, so its cells are a little smaller.
+          child: _MiniMap(
+            level: map,
+            cell: size * (sideways && !short ? 0.27 : 0.32),
+          ),
         ),
         [
           for (final steps in options)
@@ -196,14 +206,13 @@ class QuestionView extends StatelessWidget {
       ),
     };
 
-    final screen = MediaQuery.sizeOf(context);
-    final sideways = screen.height < 600 && screen.width > screen.height * 1.3;
     final cards = [
       for (var i = 0; i < options.length; i++)
         _OptionCard(
-          // Sideways, step cards share the row with the map, so they shrink.
+          // On a short screen held sideways, step cards share the row with
+          // the map, so they shrink.
           size: question is SequencingQuestion
-              ? size * (sideways ? 1.3 : 1.6)
+              ? size * (sideways && short ? 1.3 : 1.6)
               : size,
           onTap: onAnswer == null ? null : () => onAnswer!(i),
           mark: switch (chosen) {
@@ -254,8 +263,8 @@ class QuestionView extends StatelessWidget {
       runSpacing: labelled ? math.max(size * 0.2, _labelRoom) : size * 0.2,
       children: cards,
     );
-    // Phones held sideways: the picture goes beside the answers, so both
-    // fit the short screen without scrolling.
+    // Held sideways: the picture goes beside the answers, so both fit the
+    // screen's height without scrolling.
     if (stimulus != null && sideways) {
       return Row(
         mainAxisSize: MainAxisSize.min,

@@ -16,7 +16,7 @@ class ProfilesScreen extends StatelessWidget {
   const ProfilesScreen({super.key});
 
   Future<void> _addProfile(BuildContext context, int maxProfiles) async {
-    final result = await showAddProfileDialog(context);
+    final result = await showProfileDialog(context);
     if (result == null || !context.mounted) return;
     final (nickname, avatar) = result;
     await context.read<ProfilesCubit>().add(

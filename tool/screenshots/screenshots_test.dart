@@ -328,7 +328,7 @@ Future<void> _openPlacement(WidgetTester tester, String language) async {
   GoRouter.of(context).push('/parent/progress/1');
   await _settle(tester);
   await tester.tap(
-    find.text(language == 'id' ? 'Ubah pulau awal' : 'Change starting island'),
+    find.text(language == 'id' ? 'Ubah planet awal' : 'Change starting planet'),
   );
   await _settle(tester);
 }
@@ -347,7 +347,7 @@ Future<void> _showSolved(WidgetTester tester, String language) async {
       () => Future<void>.delayed(const Duration(milliseconds: 5)),
     );
     if (find
-        .text(language == 'id' ? 'Kembali ke pulau' : 'Back to the island')
+        .text(language == 'id' ? 'Kembali ke planet' : 'Back to the planet')
         .evaluate()
         .isNotEmpty) {
       return;
@@ -418,10 +418,15 @@ void main() {
           progress: ProgressRepository(db),
         ),
       );
-      // Decode the logo, but stay on the splash.
+      // Decode the robot, but stay on the splash.
       await tester.runAsync(() async {
-        final logo = tester.element(find.byType(Image));
-        await precacheImage(const AssetImage('assets/images/logo.png'), logo);
+        final robot = tester.element(find.byType(Image).first);
+        for (final part in ['head', 'body']) {
+          await precacheImage(
+            AssetImage('assets/images/robot_$part.png'),
+            robot,
+          );
+        }
       });
       await tester.pump(const Duration(milliseconds: 100));
       await shoot('splash');

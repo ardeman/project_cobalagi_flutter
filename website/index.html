@@ -11,28 +11,21 @@
   <meta property="og:image" content="https://cobalagi.ardeman.com/screenshots/play-loops.png">
   <meta property="og:url" content="https://cobalagi.ardeman.com/">
   <meta property="og:type" content="website">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='34' r='24' fill='%23ff7a59'/%3E%3Cpath d='M32 4l8 10H24z' fill='%23ff7a59'/%3E%3Ccircle cx='24' cy='26' r='6' fill='%23fff'/%3E%3Ccircle cx='40' cy='26' r='6' fill='%23fff'/%3E%3Ccircle cx='24' cy='24' r='3' fill='%23263238'/%3E%3Ccircle cx='40' cy='24' r='3' fill='%23263238'/%3E%3C/svg%3E">
+  <link rel="icon" href="icon.png">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
   <header>
     <div class="wrap bar">
       <a class="brand" href="#top" aria-label="Coba Lagi">
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <circle cx="33" cy="37" r="23" fill="#000" opacity=".12"/>
-          <circle cx="32" cy="34" r="23" fill="#ff7a59"/>
-          <circle cx="32" cy="41" r="11" fill="#ffb199"/>
-          <path d="M32 5l8 10H24z" fill="#ff7a59"/>
-          <circle cx="24" cy="26" r="6" fill="#fff"/><circle cx="40" cy="26" r="6" fill="#fff"/>
-          <circle cx="24" cy="24" r="3" fill="#263238"/><circle cx="40" cy="24" r="3" fill="#263238"/>
-        </svg>
+        <img src="robot.png" width="38" height="38" alt="">
         Coba Lagi
       </a>
       <nav aria-label="Menu" id="nav">
         <div class="links" id="menu">
           <a href="#features" data-en="Features">Fitur</a>
           <a href="#how" data-en="How it works">Cara kerja</a>
-          <a href="#islands" data-en="Islands">Pulau</a>
+          <a href="#planets" data-en="Planets">Planet</a>
           <a href="#parents" data-en="Parents">Orang tua</a>
           <a href="changelog.html" data-keep-lang data-en="What's new">Yang baru</a>
           <a href="privacy.html" data-keep-lang data-en="Privacy">Privasi</a>
@@ -54,7 +47,7 @@
         <div>
           <span class="kicker" data-en="A coding adventure for kids">Petualangan coding untuk anak</span>
           <h1 data-en="Learn to code <span class=&quot;accent&quot;>through play.</span>">Belajar coding <span class="accent">sambil bermain.</span></h1>
-          <p class="lead" data-en="Children put picture blocks in order to guide their little friend to the flag. Free, in Bahasa Indonesia and English.">Anak menyusun blok bergambar untuk menuntun teman kecilnya sampai ke bendera. Gratis, dalam Bahasa Indonesia dan English.</p>
+          <p class="lead" data-en="Children put picture blocks in order to guide their little robot to the flag. Free, in Bahasa Indonesia and English.">Anak menyusun blok bergambar untuk menuntun robot kecilnya sampai ke bendera. Gratis, dalam Bahasa Indonesia dan English.</p>
           <div class="cta">
             <span class="btn btn-primary" data-en="Coming soon <small>to Google Play</small>">Segera hadir <small>di Google Play</small></span>
             <a class="btn btn-ghost" href="#how" data-en="See how it works">Lihat cara kerjanya</a>
@@ -74,8 +67,8 @@
               <figure class="slide">
                 <img src="screenshots/adventure-map-id.png" width="1280" height="740"
                      data-en-src="screenshots/adventure-map.png"
-                     alt="Peta petualangan dengan pulau-pulau di laut"
-                     data-en-alt="The adventure map with islands on the sea">
+                     alt="Peta petualangan dengan planet-planet di luar angkasa"
+                     data-en-alt="The adventure map with planets in space">
               </figure>
               <figure class="slide">
                 <img src="screenshots/play-loops-id.png" width="1280" height="740" loading="lazy"
@@ -154,7 +147,7 @@
             <div class="step-text">
               <span class="num">1</span>
               <h3 data-en="Play the warm-up">Main pemanasan</h3>
-              <p data-en="A few picture questions with voice find the right starting point: reading, left and right, patterns and order. It feels like play, not a test. Afterwards the Warm-up island has these games and more, with counting, colours and shapes, to play and master.">Beberapa pertanyaan bergambar dengan suara menemukan titik awal yang pas: membaca, kiri dan kanan, pola, dan urutan. Rasanya seperti bermain, bukan ujian. Setelah itu, pulau Pemanasan punya permainan ini dan lainnya, ditambah berhitung, warna, dan bentuk, untuk dimainkan dan dikuasai.</p>
+              <p data-en="A few picture questions with voice find the right starting point: reading, left and right, patterns and order. It feels like play, not a test. Afterwards the Warm-up planet has these games and more, with counting, colours and shapes, to play and master.">Beberapa pertanyaan bergambar dengan suara menemukan titik awal yang pas: membaca, kiri dan kanan, pola, dan urutan. Rasanya seperti bermain, bukan ujian. Setelah itu, planet Pemanasan punya permainan ini dan lainnya, ditambah berhitung, warna, dan bentuk, untuk dimainkan dan dikuasai.</p>
             </div>
             <div class="shot">
               <img src="screenshots/warm-up-pattern-id.png" width="1280" height="740" loading="lazy"
@@ -166,21 +159,21 @@
           <div class="step">
             <div class="step-text">
               <span class="num">2</span>
-              <h3 data-en="Explore the islands">Jelajahi pulau-pulau</h3>
-              <p data-en="Nine coding islands, from first steps to loops, your own blocks, looking ahead, the Step Box, fixing bugs, repeating until the flag and choosing what to do otherwise. Each starts with a short demo; stars show how far your child has come, and finished islands earn stickers.">Sembilan pulau coding, dari langkah pertama sampai perulangan, blok buatan sendiri, melihat ke depan, Kotak Langkah, membetulkan blok, mengulang sampai bendera, dan memilih apa yang dilakukan kalau tidak. Setiap pulau dimulai dengan contoh singkat; bintang menunjukkan sejauh mana anakmu melangkah, dan pulau yang tuntas memberi stiker.</p>
+              <h3 data-en="Explore the planets">Jelajahi planet-planet</h3>
+              <p data-en="Nine coding planets, from first steps to loops, your own blocks, looking ahead, the Step Box, fixing bugs, repeating until the flag and choosing what to do otherwise. Each starts with a short demo; stars show how far your child has come, and finished planets earn stickers.">Sembilan planet coding, dari langkah pertama sampai perulangan, blok buatan sendiri, melihat ke depan, Kotak Langkah, membetulkan blok, mengulang sampai bendera, dan memilih apa yang dilakukan kalau tidak. Setiap planet dimulai dengan contoh singkat; bintang menunjukkan sejauh mana anakmu melangkah, dan planet yang tuntas memberi stiker.</p>
             </div>
             <div class="shot">
               <img src="screenshots/adventure-map-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/adventure-map.png"
-                   alt="Peta petualangan dengan pulau-pulau dan bintang kemajuan"
-                   data-en-alt="The adventure map with islands and progress stars">
+                   alt="Peta petualangan dengan planet-planet dan bintang kemajuan"
+                   data-en-alt="The adventure map with planets and progress stars">
             </div>
           </div>
           <div class="step">
             <div class="step-text">
               <span class="num">3</span>
               <h3 data-en="Build, run, try again">Susun, jalankan, coba lagi</h3>
-              <p data-en="Drag or tap blocks, press Go!, and watch your friend move. Stuck? The light bulb shows the way.">Seret atau ketuk blok, tekan Jalan!, dan lihat temanmu bergerak. Bingung? Lampu petunjuk menunjukkan jalannya.</p>
+              <p data-en="Drag or tap blocks, press Go!, and watch the robot move. Stuck? The light bulb shows the way.">Seret atau ketuk blok, tekan Jalan!, dan lihat robotnya bergerak. Bingung? Lampu petunjuk menunjukkan jalannya.</p>
             </div>
             <div class="shot">
               <img src="screenshots/solved-id.png" width="1280" height="740" loading="lazy"
@@ -193,15 +186,15 @@
       </div>
     </section>
 
-    <section id="islands">
+    <section id="planets">
       <div class="wrap">
         <div class="section-head">
-          <h2 data-en="Ten islands to explore">Sepuluh pulau untuk dijelajahi</h2>
-          <p data-en="Picture games on the Warm-up island, then one idea of coding per island, one small puzzle at a time.">Permainan bergambar di pulau Pemanasan, lalu satu konsep coding di setiap pulau, satu teka-teki kecil setiap kali.</p>
+          <h2 data-en="Ten planets to explore">Sepuluh planet untuk dijelajahi</h2>
+          <p data-en="Picture games on the Warm-up planet, then one idea of coding per planet, one small puzzle at a time.">Permainan bergambar di planet Pemanasan, lalu satu konsep coding di setiap planet, satu teka-teki kecil setiap kali.</p>
         </div>
         <div class="carousel island-show" data-carousel
-             aria-roledescription="carousel" aria-label="Sepuluh pulau"
-             data-en-label="Ten islands">
+             aria-roledescription="carousel" aria-label="Sepuluh planet"
+             data-en-label="Ten planets">
           <div class="tabs" role="group">
             <button type="button" data-slide="0" style="--c: #FF7A59" data-en="Warm-up">Pemanasan</button>
             <button type="button" data-slide="1" style="--c: #29B6F6" data-en="Directions">Arah</button>
@@ -219,8 +212,8 @@
             <figure class="slide" style="--c: #FF7A59">
               <img src="screenshots/warm-up-island-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/warm-up-island.png"
-                   alt="Pulau Pemanasan: enam permainan bergambar dengan bintangnya"
-                   data-en-alt="The Warm-up island: six picture games with their stars">
+                   alt="Planet Pemanasan: enam permainan bergambar dengan bintangnya"
+                   data-en-alt="The Warm-up planet: six picture games with their stars">
               <figcaption>
                 <strong data-en="Warm-up">Pemanasan</strong>
                 <span data-en="Counting, colours, shapes, patterns, left and right, and steps, for the youngest players.">Berhitung, warna, bentuk, pola, kiri dan kanan, serta langkah, untuk pemain termuda.</span>
@@ -229,91 +222,91 @@
             <figure class="slide" style="--c: #29B6F6">
               <img src="screenshots/island-directions-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/island-directions.png"
-                   alt="Pulau Arah: jalan pendek menuju bendera"
-                   data-en-alt="The Directions island: a short path to the flag">
+                   alt="Planet Arah: jalan pendek menuju bendera"
+                   data-en-alt="The Directions planet: a short path to the flag">
               <figcaption>
                 <strong data-en="Directions">Arah</strong>
-                <span data-en="Forward, turn left, turn right, in a meadow full of bushes.">Maju, belok kiri, belok kanan, di padang penuh semak.</span>
+                <span data-en="Forward, turn left, turn right, on the Moon among its rocks.">Maju, belok kiri, belok kanan, di Bulan di antara batu-batunya.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #66BB6A">
               <img src="screenshots/island-sequencing-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/island-sequencing.png"
-                   alt="Pulau Langkah demi langkah: jalan setapak di taman menuju rumah"
-                   data-en-alt="The Step by step island: a garden path to a little house">
+                   alt="Planet Langkah demi langkah: jalan di antara tanaman alien menuju kubah kaca"
+                   data-en-alt="The Step by step planet: a path through alien plants to a glass dome">
               <figcaption>
                 <strong data-en="Step by step">Langkah demi langkah</strong>
-                <span data-en="Putting steps in the right order, through a flower garden to a little house.">Menyusun urutan langkah yang tepat, melewati taman bunga menuju rumah kecil.</span>
+                <span data-en="Putting steps in the right order, past glowing alien plants to a glass dome.">Menyusun urutan langkah yang tepat, melewati tanaman alien yang bercahaya menuju kubah kaca.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #AB47BC">
               <img src="screenshots/play-loops-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/play-loops.png"
-                   alt="Pulau Perulangan: blok ulangi di pantai berbatu"
-                   data-en-alt="The Loops island: a repeat block on a rocky beach">
+                   alt="Planet Perulangan: blok ulangi di planet air berbatu"
+                   data-en-alt="The Loops planet: a repeat block on a rocky water planet">
               <figcaption>
                 <strong data-en="Loops">Perulangan</strong>
-                <span data-en="The repeat block does more with fewer blocks, on a beach with hidden treasure.">Blok ulangi membuat langkah lebih sedikit, di pantai dengan harta karun.</span>
+                <span data-en="The repeat block does more with fewer blocks, on a water planet with hidden treasure.">Blok ulangi membuat langkah lebih sedikit, di planet air dengan harta karun.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #EC407A">
               <img src="screenshots/play-functions-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/play-functions.png"
-                   alt="Pulau Blok Ajaib: blok bintang buatan sendiri di lembah kristal"
-                   data-en-alt="The Magic Block island: the child’s own star block in the crystal valley">
+                   alt="Planet Blok Ajaib: blok bintang buatan sendiri di planet kristal"
+                   data-en-alt="The Magic Block planet: the child’s own star block on the crystal planet">
               <figcaption>
                 <strong data-en="Magic Block">Blok Ajaib</strong>
-                <span data-en="Build your own block, then use it again and again, in the crystal valley.">Buat blok sendiri, lalu pakai berkali-kali, di lembah kristal.</span>
+                <span data-en="Build your own block, then use it again and again, on the crystal planet.">Buat blok sendiri, lalu pakai berkali-kali, di planet kristal.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #00897B">
               <img src="screenshots/play-conditions-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/play-conditions.png"
-                   alt="Pulau Lihat depan: blok mata di dalam blok ulangi, di hutan bersalju"
-                   data-en-alt="The Look ahead island: an eye block inside a repeat, in a snowy forest">
+                   alt="Planet Lihat depan: blok mata di dalam blok ulangi, di planet es"
+                   data-en-alt="The Look ahead planet: an eye block inside a repeat, on an ice planet">
               <figcaption>
                 <strong data-en="Look ahead">Lihat depan</strong>
-                <span data-en="Check that the path is clear before stepping, in a snowy forest.">Periksa jalan di depan kosong sebelum melangkah, di hutan bersalju.</span>
+                <span data-en="Check that the path is clear before stepping, among ice spikes.">Periksa jalan di depan kosong sebelum melangkah, di antara duri-duri es.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #EF6C00">
               <img src="screenshots/play-variables-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/play-variables.png"
-                   alt="Pulau Kotak Langkah: menyimpan angka 3 lalu memakainya di gurun"
-                   data-en-alt="The Step Box island: saving 3 and using it in the desert">
+                   alt="Planet Kotak Langkah: menyimpan angka 3 lalu memakainya di Mars"
+                   data-en-alt="The Step Box planet: saving 3 and using it on Mars">
               <figcaption>
                 <strong data-en="Step Box">Kotak Langkah</strong>
-                <span data-en="Save a number of steps and use it again, across the desert.">Simpan jumlah langkah lalu pakai lagi, melintasi gurun.</span>
+                <span data-en="Save a number of steps and use it again, across red Mars.">Simpan jumlah langkah lalu pakai lagi, melintasi Mars yang merah.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #5C6BC0">
               <img src="screenshots/play-debugging-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/play-debugging.png"
-                   alt="Pulau Perbaiki!: blok belok yang belum pas sudah diketuk untuk dibetulkan"
-                   data-en-alt="The Fix it! island: a turn that isn't quite right, picked to be fixed">
+                   alt="Planet Perbaiki!: blok belok yang belum pas sudah diketuk untuk dibetulkan"
+                   data-en-alt="The Fix it! planet: a turn that isn't quite right, picked to be fixed">
               <figcaption>
                 <strong data-en="Fix it!">Perbaiki!</strong>
-                <span data-en="Find the block that isn't quite right and fix it, in a busy workshop.">Temukan blok yang belum pas lalu betulkan, di bengkel yang ramai.</span>
+                <span data-en="Find the block that isn't quite right and fix it, on a busy space station.">Temukan blok yang belum pas lalu betulkan, di stasiun luar angkasa yang ramai.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #7CB342">
               <img src="screenshots/play-until-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/play-until.png"
-                   alt="Pulau Sampai bendera: blok ulangi sampai bendera menaiki tangga menuju roket"
-                   data-en-alt="The Until the flag island: a repeat-until block climbing stairs to a rocket">
+                   alt="Planet Sampai bendera: blok ulangi sampai bendera menaiki tangga menuju roket"
+                   data-en-alt="The Until the flag planet: a repeat-until block climbing stairs to a rocket">
               <figcaption>
                 <strong data-en="Until the flag">Sampai bendera</strong>
-                <span data-en="A repeat that keeps going by itself, all the way to the rocket in space.">Blok ulangi yang terus jalan sendiri, sampai ke roket di luar angkasa.</span>
+                <span data-en="A repeat that keeps going by itself, past the asteroids all the way to the rocket.">Blok ulangi yang terus jalan sendiri, melewati asteroid sampai ke roket.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #6D4AFF">
               <img src="screenshots/play-otherwise-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/play-otherwise.png"
-                   alt="Pulau Kalau tidak: blok mata dengan dua baris menyusuri pagar tanaman"
-                   data-en-alt="The Otherwise island: the two-row eye block following a hedge maze">
+                   alt="Planet Kalau tidak: blok mata dengan dua baris menyusuri labirin alien"
+                   data-en-alt="The Otherwise planet: the two-row eye block following an alien maze">
               <figcaption>
                 <strong data-en="Otherwise">Kalau tidak</strong>
-                <span data-en="If the path is clear, step; otherwise, turn, all the way through a hedge maze to the treehouse.">Kalau jalannya kosong, melangkah; kalau tidak, belok, menyusuri labirin pagar tanaman sampai ke rumah pohon.</span>
+                <span data-en="If the path is clear, step; otherwise, turn, all the way through an alien maze to the flying saucer.">Kalau jalannya kosong, melangkah; kalau tidak, belok, menyusuri labirin alien sampai ke piring terbang.</span>
               </figcaption>
             </figure>
             </div>
@@ -361,8 +354,8 @@
           <div>
             <ul class="checks">
               <li data-en="The parent area sits behind a grown-up question that young children can't answer.">Area orang tua dilindungi pertanyaan untuk orang dewasa yang belum bisa dijawab anak kecil.</li>
-              <li data-en="Choose a child's starting island, or let them replay the warm-up game.">Pilih pulau awal anak, atau biarkan mereka mengulang permainan pemanasan.</li>
-              <li data-en="Sponsors see a progress report for each child: puzzles solved, time played and every island.">Sponsor bisa melihat laporan perkembangan tiap anak: teka-teki yang selesai, waktu bermain, dan setiap pulau.</li>
+              <li data-en="Choose a child's starting planet, or let them replay the warm-up game.">Pilih planet awal anak, atau biarkan mereka mengulang permainan pemanasan.</li>
+              <li data-en="Sponsors see a progress report for each child: puzzles solved, time played and every planet.">Sponsor bisa melihat laporan perkembangan tiap anak: teka-teki yang selesai, waktu bermain, dan setiap planet.</li>
               <li data-en="Free for one player. A donation of any size unlocks sponsor features, such as up to six players.">Gratis untuk satu pemain. Donasi berapa pun membuka fitur sponsor, misalnya hingga enam pemain.</li>
               <li data-en="Donations go through Google Play and can only be made from the parent area.">Donasi diproses lewat Google Play dan hanya bisa dilakukan dari area orang tua.</li>
             </ul>

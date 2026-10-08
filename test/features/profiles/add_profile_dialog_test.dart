@@ -17,7 +17,7 @@ void main() {
         home: Builder(
           builder: (context) => TextButton(
             onPressed: () async {
-              result = await showAddProfileDialog(context);
+              result = await showProfileDialog(context);
               closed = true;
             },
             child: const Text('open'),
@@ -40,5 +40,36 @@ void main() {
     await tester.pumpAndSettle();
     expect(closed, isTrue);
     expect(result, ('Eclo', 2));
+  });
+
+  testWidgets('editing opens with the player\'s name and avatar', (
+    tester,
+  ) async {
+    (String, int)? result;
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () async => result = await showProfileDialog(
+              context,
+              nickname: 'Eclo',
+              avatar: 3,
+            ),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+    expect(find.text('Edit player'), findsOneWidget);
+    expect(find.widgetWithText(TextField, 'Eclo'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'Gito');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    expect(result, ('Gito', 3));
   });
 }

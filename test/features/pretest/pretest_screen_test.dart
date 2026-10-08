@@ -159,18 +159,25 @@ void main() {
     );
     await tester.pump();
 
-    var answered = 0;
-    while (find.text("Let's go!").evaluate().isEmpty) {
-      // Only the placement checkpoints, with one second chance each.
-      expect(answered, lessThanOrEqualTo(10), reason: 'at most 10 questions');
-      await tester.tap(find.byType(Card).first);
-      // Feedback stays up to 2.6 s after a wrong answer.
-      await tester.pump(const Duration(milliseconds: 2800));
-      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
-      await tester.pump(const Duration(milliseconds: 400));
-      answered++;
+    // Answer whatever shows until the end. How many questions the warm-up
+    // asks is checked against the session in pretest_test.dart; here the
+    // count only stops a loop that never ends.
+    for (var steps = 0; find.text("Let's go!").evaluate().isEmpty; steps++) {
+      expect(steps, lessThan(400), reason: 'the warm-up ends');
+      final asking =
+          find.byTooltip('Listen again').evaluate().isNotEmpty &&
+          find.byIcon(Icons.check_rounded).evaluate().isEmpty;
+      if (asking) {
+        // A tall path picture can push the answers below the fold.
+        await tester.ensureVisible(find.byType(Card).first);
+        await tester.pump();
+        await tester.tap(find.byType(Card).first);
+      }
+      await tester.runAsync(
+        () => Future<void>.delayed(const Duration(milliseconds: 10)),
+      );
+      await tester.pump(const Duration(milliseconds: 300));
     }
-    expect(answered, greaterThanOrEqualTo(5));
     expect(cubit.state.learner!.placement, isNotNull);
   });
 

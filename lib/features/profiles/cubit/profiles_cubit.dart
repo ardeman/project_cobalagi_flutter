@@ -41,6 +41,31 @@ class ProfilesCubit extends Cubit<ProfilesState> {
     return profile;
   }
 
+  /// Renames a player or gives them another avatar.
+  Future<void> edit(
+    int id, {
+    required String nickname,
+    required int avatar,
+  }) async {
+    await _repository.update(id, nickname: nickname, avatar: avatar);
+    emit(
+      ProfilesState(
+        profiles: [
+          for (final p in state.profiles)
+            p.id == id
+                ? Profile(
+                    id: p.id,
+                    nickname: nickname,
+                    avatar: avatar,
+                    createdAt: p.createdAt,
+                  )
+                : p,
+        ],
+        loaded: true,
+      ),
+    );
+  }
+
   Future<void> delete(int id) async {
     await _repository.delete(id);
     await _progress?.deleteFor(id);

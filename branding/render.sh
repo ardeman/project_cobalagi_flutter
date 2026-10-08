@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Renders the icon PNGs from the SVGs in branding/ with headless Chrome, then
-# generates every platform's app icons and the splash screen's
-# assets/images/logo.png. Run from the project root:
+# generates every platform's app icons. (The splash screen shows the whole
+# robot from branding/robot.sh instead.) Run from the project root:
 #   branding/render.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -23,9 +23,6 @@ render branding/icon.svg "#background{display:none}" branding/icon_foreground.pn
 render branding/icon.svg "#foreground{display:none}" branding/icon_background.png
 render branding/icon_monochrome.svg "" branding/icon_monochrome.png
 sips -Z 512 branding/icon.png --out branding/play_store_icon.png >/dev/null
-# The character for the in-app splash screen.
-mkdir -p assets/images
-sips -Z 512 branding/icon_foreground.png --out assets/images/logo.png >/dev/null
 
 dart run flutter_launcher_icons
 # flutter_launcher_icons 0.14.4 also rewrites an unrelated Xcode build setting

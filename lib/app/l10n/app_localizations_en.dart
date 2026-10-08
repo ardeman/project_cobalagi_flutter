@@ -15,13 +15,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whoIsPlaying => 'Who\'s playing?';
 
   @override
+  String get editPlayer => 'Edit player';
+
+  @override
   String get addPlayer => 'New player';
 
   @override
   String get nickname => 'Nickname';
 
   @override
-  String get chooseAvatar => 'Choose a friend';
+  String get chooseAvatar => 'Choose a picture';
 
   @override
   String get save => 'Save';
@@ -91,7 +94,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get changeStartingIsland => 'Change starting island';
+  String get changeStartingIsland => 'Change starting planet';
 
   @override
   String get progressThisWeek => 'Last 7 days';
@@ -130,7 +133,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get progressNotPlayed => 'Hasn\'t finished a puzzle yet';
 
   @override
-  String get progressIslands => 'Islands';
+  String get progressIslands => 'Planets';
 
   @override
   String get statusNotStarted => 'Not started';
@@ -148,7 +151,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get progressSponsorOnly =>
-      'Sponsors see the full progress report: puzzles solved, time played and progress on each island.';
+      'Sponsors see the full progress report: puzzles solved, time played and progress on each planet.';
 
   @override
   String get music => 'Background music';
@@ -247,7 +250,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get conceptFunctions => 'Magic Block';
 
   @override
-  String get decisionAdvance => 'New island unlocked!';
+  String get decisionAdvance => 'New planet unlocked!';
 
   @override
   String get decisionPractice => 'Let\'s try another one!';
@@ -256,13 +259,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bonusAdventure => 'Bonus adventure!';
 
   @override
-  String get decisionReview => 'Let\'s hunt for treasure on an earlier island.';
+  String get decisionReview => 'Let\'s hunt for treasure on an earlier planet.';
 
   @override
   String get decisionReturn => 'Back to your adventure!';
 
   @override
-  String get decisionMapComplete => 'You explored every island!';
+  String get decisionMapComplete => 'You explored every planet!';
 
   @override
   String get hint => 'Show me the way';
@@ -365,7 +368,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get startingIsland => 'Starting island';
+  String get startingIsland => 'Starting planet';
 
   @override
   String get retakePretest => 'Play the warm-up game again';
@@ -457,7 +460,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playHowTo => 'Drag a block into the white box, then press Go!';
 
   @override
-  String get backToIsland => 'Back to the island';
+  String get backToIsland => 'Back to the planet';
 
   @override
   String get continueAdventure => 'Continue the adventure';
@@ -528,7 +531,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until your friend reaches the flag, with no count.';
+      'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until the robot reaches the flag, with no count.';
 
   @override
   String get codeSyntax =>
@@ -646,7 +649,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialDirections =>
-      'Tap the arrow blocks to tell your friend where to go: forward, turn left, turn right. Then press Go!';
+      'Tap the arrow blocks to tell the robot where to go: forward, turn left, turn right. Then press Go!';
 
   @override
   String get tutorialSequencing =>
@@ -662,7 +665,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'The eye block looks ahead. If the path is clear, your friend steps forward. If not, it waits.';
+      'The eye block looks ahead. If the path is clear, the robot steps forward. If not, it waits.';
 
   @override
   String get tutorialVariables =>
@@ -789,7 +792,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stickerBookHello => 'Look at all your stickers!';
 
   @override
-  String get stickersIslands => 'Islands';
+  String get stickersIslands => 'Planets';
 
   @override
   String get stickerNotYet => 'Not earned yet';

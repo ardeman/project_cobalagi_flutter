@@ -14,14 +14,14 @@ TMP="$(mktemp -d)"
 trap 'rm -rf -- "${TMP:?}"' EXIT
 
 # The character from the app icon, without its background.
-CHARACTER="$(sed -n '/<g id="foreground">/,/<\/g>/p' branding/icon.svg)"
+CHARACTER="$(sed -n '/<g id="foreground">/,/^  <\/g>$/p' branding/icon.svg)"
 
 STYLE='
   html,body{margin:0}
   body{font-family:ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif;color:#fff;
-       background:radial-gradient(circle at 85% 15%,#2fd0d0 0,transparent 45%),
+       background:radial-gradient(circle at 85% 15%,#ffb38a 0,transparent 45%),
                   radial-gradient(circle at 10% 95%,#ffc83d55 0,transparent 40%),
-                  linear-gradient(180deg,#14b8b8,#008c8c);overflow:hidden}
+                  linear-gradient(180deg,#ff9a6b,#e85a37);overflow:hidden}
   .tablet{background:#1d2b2b;padding:18px;border-radius:44px;box-shadow:0 30px 60px -20px #00303088}
   .tablet img{display:block;border-radius:28px}
   h1{margin:0;font-weight:800;letter-spacing:0}
@@ -95,7 +95,7 @@ slide() {
 feature() {
   shot 1024 500 "<div style=\"display:flex;align-items:center;height:500px;padding-left:56px;gap:8px\">
       <div style=\"width:400px;flex:none\">
-        <svg viewBox=\"200 200 640 560\" width=\"150\" height=\"131\">$CHARACTER</svg>
+        <svg viewBox=\"180 190 660 670\" width=\"138\" height=\"140\">$CHARACTER</svg>
         <h1 style=\"font-size:68px;margin-top:6px\">Coba Lagi</h1>
         <p style=\"font-size:30px;font-weight:700;margin:6px 0 0;opacity:.95\">$1</p>
       </div>
@@ -121,7 +121,7 @@ render_locale() { # locale suffix tagline captions...
 }
 
 render_locale id "-id" "Belajar coding sambil bermain" \
-  "Jelajahi pulau-pulau coding" \
+  "Jelajahi planet-planet coding" \
   "Blok bergambar, tanpa perlu membaca" \
   "Sudah bisa membaca? Ketik kode sungguhan" \
   "Buat blok sendiri, pakai berkali-kali" \
@@ -131,7 +131,7 @@ render_locale id "-id" "Belajar coding sambil bermain" \
   "Orang tua memilih titik awal; sponsor melihat laporan"
 
 render_locale en-US "" "Learn to code through play" \
-  "Explore the coding islands" \
+  "Explore the coding planets" \
   "Picture blocks, no reading needed" \
   "Reading already? Type real code" \
   "Build your own block, use it again and again" \
@@ -141,7 +141,7 @@ render_locale en-US "" "Learn to code through play" \
   "Parents set the start; sponsors see progress"
 
 render_phone id "-id" \
-  "Jelajahi pulau-pulau coding" \
+  "Jelajahi planet-planet coding" \
   "Blok bergambar, tanpa perlu membaca" \
   "Sudah bisa membaca? Ketik kode sungguhan" \
   "Buat blok sendiri, pakai berkali-kali" \
@@ -151,7 +151,7 @@ render_phone id "-id" \
   "Orang tua memilih titik awal; sponsor melihat laporan"
 
 render_phone en-US "" \
-  "Explore the coding islands" \
+  "Explore the coding planets" \
   "Picture blocks, no reading needed" \
   "Reading already? Type real code" \
   "Build your own block, use it again and again" \

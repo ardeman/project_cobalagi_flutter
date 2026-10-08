@@ -14,7 +14,7 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 TMP="$(mktemp -d)"
 trap 'rm -rf -- "${TMP:?}"' EXIT
 mkdir -p "$OUT"
-CHARACTER="$(sed -n '/<g id="foreground">/,/<\/g>/p' branding/icon.svg)"
+CHARACTER="$(sed -n '/<g id="foreground">/,/^  <\/g>$/p' branding/icon.svg)"
 FADE=0.4
 FPS=30
 
@@ -26,9 +26,9 @@ fi
 BASE_STYLE='
   html,body{margin:0;overflow:hidden}
   body{font-family:ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif;color:#fff;
-       background:radial-gradient(circle at 85% 12%,#2fd0d0 0,transparent 45%),
+       background:radial-gradient(circle at 85% 12%,#ffb38a 0,transparent 45%),
                   radial-gradient(circle at 10% 92%,#ffc83d66 0,transparent 42%),
-                  linear-gradient(180deg,#14b8b8,#007a7a)}
+                  linear-gradient(180deg,#ff9a6b,#e0532f)}
   h1{margin:0;font-weight:900;letter-spacing:-1px;line-height:1.05}
   .device{position:absolute;background:#1d2b2b;box-shadow:0 40px 80px -30px #003030}
   .device img{display:block;width:100%;height:100%}

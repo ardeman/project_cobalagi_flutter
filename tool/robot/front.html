@@ -1,0 +1,189 @@
+<!doctype html>
+<!-- Turns branding/robot_front_source.png (the robot facing the child, with a
+     white background) into assets/images/robot_front.png: background and
+     floor shadow removed, the drawn-in face erased (the app draws its own),
+     fitted into the same 512 frame as assets/images/robot.png, recoloured
+     and detailed to match it. With ?back it makes assets/images/robot_back.png
+     from the same picture instead: the robot from behind, the screen turned
+     into shell with a back panel and neck band, no chest buttons but a
+     battery hatch. Run by branding/robot.sh, which screenshots this page;
+     the measurements it prints go in paintRobotFace (front). -->
+<html><head><style>html,body{margin:0;background:transparent}canvas{display:block}</style></head>
+<body><canvas id="out" width="512" height="512"></canvas><pre id="info" style="display:none"></pre><script>
+const back = location.search.includes("back");
+const img = new Image();
+img.src = "source.png";
+img.onload = () => {
+  const W = img.width, H = img.height;
+  const c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  const g = c.getContext("2d");
+  g.drawImage(img, 0, 0);
+  const im = g.getImageData(0, 0, W, H), d = im.data;
+  const at = (x, y) => (y * W + x) * 4;
+  const light = (i) => {
+    const mn = Math.min(d[i], d[i + 1], d[i + 2]), mx = Math.max(d[i], d[i + 1], d[i + 2]);
+    return mn > 165 && mx - mn < 45;
+  };
+  // Background and floor shadow: light, greyish pixels reached from the edges.
+  const seen = new Uint8Array(W * H), stack = [];
+  for (let x = 0; x < W; x++) stack.push([x, 0], [x, H - 1]);
+  for (let y = 0; y < H; y++) stack.push([0, y], [W - 1, y]);
+  while (stack.length) {
+    const [x, y] = stack.pop();
+    if (x < 0 || y < 0 || x >= W || y >= H || seen[y * W + x]) continue;
+    const i = at(x, y);
+    if (!light(i)) continue;
+    seen[y * W + x] = 1;
+    d[i + 3] = 0;
+    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+  // Soften the light fringe left along the outline.
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const i = at(x, y);
+    if (!d[i + 3]) continue;
+    const edge = seen[y * W + x - 1] || seen[y * W + x + 1] || seen[(y - 1) * W + x] || seen[(y + 1) * W + x];
+    const mn = Math.min(d[i], d[i + 1], d[i + 2]);
+    if (edge && mn > 120) d[i + 3] = Math.max(0, 255 - (mn - 120) * 2);
+  }
+  // The screen: its colour, flooded from a point below the smile.
+  const sx = 470, sy = 580, si = at(sx, sy);
+  const screen = [d[si], d[si + 1], d[si + 2]];
+  const near = (i) => Math.hypot(d[i] - screen[0], d[i + 1] - screen[1], d[i + 2] - screen[2]) < 25;
+  const mask = new Uint8Array(W * H);
+  stack.push([sx, sy]);
+  let top = H, bottom = 0;
+  while (stack.length) {
+    const [x, y] = stack.pop();
+    if (x < 0 || y < 0 || x >= W || y >= H || mask[y * W + x]) continue;
+    if (!near(at(x, y))) continue;
+    mask[y * W + x] = 1;
+    top = Math.min(top, y); bottom = Math.max(bottom, y);
+    stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+  }
+  // Erase the face: on each row, fill between the screen's edges. From
+  // behind, the screen and its rim become shell.
+  let left = W, right = 0;
+  const filled = new Uint8Array(W * H);
+  for (let y = top; y <= bottom; y++) {
+    let a = -1, b = -1;
+    for (let x = 0; x < W; x++) if (mask[y * W + x]) { if (a < 0) a = x; b = x; }
+    if (a < 0) continue;
+    left = Math.min(left, a); right = Math.max(right, b);
+    for (let x = a; x <= b; x++) {
+      const i = at(x, y);
+      filled[y * W + x] = 1;
+      d[i] = screen[0]; d[i + 1] = screen[1]; d[i + 2] = screen[2]; d[i + 3] = 255;
+    }
+  }
+  if (back) {
+    // The rim all round, and further below, where the screen has a second
+    // lip line under it.
+    const rim = 12, lip = 30;
+    const inScreen = (xx, yy) => yy >= 0 && xx >= 0 && yy < H && xx < W && filled[yy * W + xx];
+    for (let y = top - rim; y <= bottom + lip; y++) for (let x = left - rim; x <= right + rim; x++) {
+      let near = false;
+      for (let dy = -rim; dy <= rim && !near; dy += 3) for (let dx = -rim; dx <= rim && !near; dx += 3) {
+        if (inScreen(x + dx, y + dy)) near = true;
+      }
+      for (let k = 0; k <= lip && !near; k += 2) if (inScreen(x, y - k)) near = true;
+      if (!near) continue;
+      const i = at(x, y);
+      d[i] = 136; d[i + 1] = 213; d[i + 2] = 197; d[i + 3] = 255;
+    }
+  }
+  g.putImageData(im, 0, 0);
+  // Fit: as tall as the side-view robot (487 of 512), feet at 497, centred.
+  let x0 = W, y0 = H, x1 = 0, y1 = 0;
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (d[at(x, y) + 3] > 128) {
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  const s = 487 / (y1 - y0), ox = 256 - (x0 + x1) / 2 * s, oy = 497 - y1 * s;
+  const o = document.getElementById("out").getContext("2d");
+  o.imageSmoothingQuality = "high";
+  o.drawImage(c, ox, oy, W * s, H * s);
+  // Match the side view (assets/images/robot.png): its teal everywhere,
+  // teal chest buttons and teal wheels instead of yellow and dark green.
+  const od = o.getImageData(0, 0, 512, 512), p = od.data;
+  const dist = (i, r, g2, b) => Math.hypot(p[i] - r, p[i + 1] - g2, p[i + 2] - b);
+  for (let y = 0; y < 512; y++) for (let x = 0; x < 512; x++) {
+    const i = (y * 512 + x) * 4;
+    if (!p[i + 3]) continue;
+    const teal = dist(i, 136, 213, 197) < 30;
+    const wheel = y > 425 && dist(i, 100, 158, 145) < 40;
+    const buttons = x > 252 && x < 300 && y > 346 && y < 418;
+    // From behind, the whole patch where the buttons were is plain teal.
+    const button = buttons && (dist(i, 243, 223, 136) < 60 ||
+      (back && x > 258 && x < 294 && y > 346 && y < 412));
+    if (teal || wheel || button) { p[i] = 146; p[i + 1] = 220; p[i + 2] = 207; }
+  }
+  o.putImageData(od, 0, 0);
+  // The ground strokes under the wheels, the same tapered shapes and places
+  // as in the side view, so every facing stands on the same marks.
+  o.fillStyle = "#222244";
+  for (const [x0, x1, y, t] of [[186, 281, 496, 7], [284, 363, 483, 5.5]]) {
+    const mid = (x0 + x1) / 2 - (x1 - x0) * 0.1;
+    o.beginPath();
+    o.moveTo(x0, y);
+    o.quadraticCurveTo(mid, y - t, x1, y + 2);
+    o.quadraticCurveTo(mid, y + t, x0, y);
+    o.fill();
+  }
+  // The side view's small details: the seam from the antenna to the front
+  // (seen head-on, straight down the middle), the two screws beside it (one
+  // behind the other, so stacked), and a little ring on each side.
+  o.strokeStyle = "#222244";
+  o.lineCap = "round";
+  o.lineJoin = "round";
+  if (back) {
+    // The back of the head: a big panel from the top down, and a neck band
+    // under it; lines only where the robot is (source-atop).
+    o.save();
+    o.globalCompositeOperation = "source-atop";
+    o.lineWidth = 2.8;
+    o.beginPath();
+    o.moveTo(188, 90);
+    o.bezierCurveTo(180, 170, 186, 250, 200, 268);
+    o.quadraticCurveTo(206, 279, 222, 279);
+    o.lineTo(308, 279);
+    o.quadraticCurveTo(324, 279, 330, 268);
+    o.bezierCurveTo(344, 250, 350, 170, 342, 90);
+    o.moveTo(234, 279);
+    o.lineTo(228, 322);
+    o.moveTo(296, 279);
+    o.lineTo(302, 322);
+    o.moveTo(234, 288);
+    o.lineTo(296, 288);
+    o.stroke();
+    // A battery hatch on the chest.
+    o.globalCompositeOperation = "source-over";
+    o.fillStyle = "#78c8ba";
+    o.lineWidth = 2.6;
+    o.beginPath();
+    o.roundRect(258, 372, 34, 26, 7);
+    o.fill();
+    o.stroke();
+    o.restore();
+  } else {
+    o.lineWidth = 2.6;
+    o.beginPath();
+    o.moveTo(265, 96);
+    o.lineTo(265, 117);
+    o.stroke();
+  }
+  o.lineWidth = 1.6;
+  for (const [x, y, r, fill] of [
+    ...(back ? [] : [[276, 104, 3.2, "#fae790"], [276, 113, 3.2, "#fae790"]]),
+    [134, 172, 3.2, null], [384, 172, 3.2, null],
+  ]) {
+    o.beginPath();
+    o.arc(x, y, r, 0, Math.PI * 2);
+    if (fill) { o.fillStyle = fill; o.fill(); }
+    o.stroke();
+  }
+  const f = (v) => v.toFixed(1);
+  document.getElementById("info").textContent =
+    `screen colour ${screen}; centre ${f(ox + (left + right) / 2 * s)},${f(oy + (top + bottom) / 2 * s)}; ` +
+    `half size ${f((right - left) / 2 * s)}x${f((bottom - top) / 2 * s)}`;
+};
+</script></body></html>

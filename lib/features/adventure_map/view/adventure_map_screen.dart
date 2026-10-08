@@ -11,6 +11,7 @@ import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import '../../../app/theme/app_theme.dart';
 import '../../../core/audio/audio_service.dart';
 import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
@@ -22,7 +23,7 @@ import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
 import '../../profiles/view/profile_avatar.dart';
-import 'ocean_map.dart';
+import 'space_map.dart';
 
 /// A child's home: one island per concept, with stars for mastery.
 class AdventureMapScreen extends StatelessWidget {
@@ -44,7 +45,7 @@ class AdventureMapScreen extends StatelessWidget {
     final currentIndex = engine.graph.indexOf(learner.currentConcept);
 
     final lessons = cubit.curriculum.lessons;
-    OceanMap map(EdgeInsets padding) => OceanMap(
+    SpaceMap map(EdgeInsets padding) => SpaceMap(
       padding: padding,
       marker: GlassSurface(
         padding: const EdgeInsets.all(3),
@@ -100,76 +101,80 @@ class AdventureMapScreen extends StatelessWidget {
 
     return _CelebrationTrigger(
       island: cubit.state.islandToCelebrate,
-      child: Scaffold(
-        // Phones scroll the sea under the glass bars.
-        extendBodyBehindAppBar: true,
-        appBar: GlassAppBar(
-          leading: BackButton(onPressed: () => context.go('/')),
-          actions: [
-            if (learner.placement != null)
-              _StickerButton(
-                fresh: newStickers(learner, cubit.stickers).length,
-                onPressed: () => context.go('/child/$profileId/stickers'),
-              ),
-          ],
-          title: Row(
-            children: [
-              ProfileAvatar(avatar: profile.avatar, size: 44),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  l10n.greeting(profile.nickname),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+      // Space is dark: the bars, their glass and words are made for night.
+      child: Theme(
+        data: AppTheme.dark(),
+        child: Scaffold(
+          // Phones scroll the sky under the glass bars.
+          extendBodyBehindAppBar: true,
+          appBar: GlassAppBar(
+            leading: BackButton(onPressed: () => context.go('/')),
+            actions: [
+              if (learner.placement != null)
+                _StickerButton(
+                  fresh: newStickers(learner, cubit.stickers).length,
+                  onPressed: () => context.go('/child/$profileId/stickers'),
                 ),
-              ),
             ],
-          ),
-        ),
-        body: WindowClassBuilder(
-          builder: (context, windowClass) {
-            final islandSize = switch (windowClass) {
-              WindowClass.compact => 104.0,
-              WindowClass.medium => 140.0,
-              WindowClass.expanded => 180.0,
-            };
-            if (learner.placement == null) {
-              return SafeArea(
-                child: _Welcome(
-                  size: islandSize,
-                  onStart: () => context.go('/child/$profileId/pretest'),
+            title: Row(
+              children: [
+                ProfileAvatar(avatar: profile.avatar, size: 44),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    l10n.greeting(profile.nickname),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-              );
-            }
-            // The sea fills the screen on every device, under the app bar and
-            // the Play bar. They stay clear while nothing is beneath them and
-            // turn to glass when islands scroll under; the bonus banner
-            // floats on top.
-            final top = MediaQuery.paddingOf(context).top;
-            return GlassFrame(
-              bottom: SafeArea(top: false, child: Center(child: play)),
-              builder: (context, insets) => Stack(
-                children: [
-                  Positioned.fill(
-                    child: map(
-                      EdgeInsets.only(
-                        top: top + (banner == null ? 0 : 88),
-                        bottom: insets.bottom,
+              ],
+            ),
+          ),
+          body: WindowClassBuilder(
+            builder: (context, windowClass) {
+              final islandSize = switch (windowClass) {
+                WindowClass.compact => 104.0,
+                WindowClass.medium => 140.0,
+                WindowClass.expanded => 180.0,
+              };
+              if (learner.placement == null) {
+                return SafeArea(
+                  child: _Welcome(
+                    size: islandSize,
+                    onStart: () => context.go('/child/$profileId/pretest'),
+                  ),
+                );
+              }
+              // The sky fills the screen on every device, under the app bar and
+              // the Play bar. They stay clear while nothing is beneath them and
+              // turn to glass when planets scroll under; the bonus banner
+              // floats on top.
+              final top = MediaQuery.paddingOf(context).top;
+              return GlassFrame(
+                bottom: SafeArea(top: false, child: Center(child: play)),
+                builder: (context, insets) => Stack(
+                  children: [
+                    Positioned.fill(
+                      child: map(
+                        EdgeInsets.only(
+                          top: top + (banner == null ? 0 : 88),
+                          bottom: insets.bottom,
+                        ),
                       ),
                     ),
-                  ),
-                  if (banner != null)
-                    Positioned(
-                      top: top + 8,
-                      left: 16,
-                      right: 16,
-                      // Floating glass, as wide as its words.
-                      child: Center(child: banner),
-                    ),
-                ],
-              ),
-            );
-          },
+                    if (banner != null)
+                      Positioned(
+                        top: top + 8,
+                        left: 16,
+                        right: 16,
+                        // Floating glass, as wide as its words.
+                        child: Center(child: banner),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

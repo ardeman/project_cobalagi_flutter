@@ -296,7 +296,7 @@ void main() {
     testWidgets('is a sponsor feature on the regular plan', (tester) async {
       await openProgress(tester, Plan.free);
       expect(find.text("Ayu's progress"), findsOneWidget);
-      expect(find.text('Change starting island'), findsOneWidget);
+      expect(find.text('Change starting planet'), findsOneWidget);
       expect(find.textContaining('Sponsors see the full'), findsOneWidget);
       expect(find.text('Last 7 days'), findsNothing);
     });

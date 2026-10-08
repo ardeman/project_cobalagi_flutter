@@ -1,9 +1,9 @@
-Coba Lagi helps children learn the basics of coding through play. Kids put picture blocks in order to guide their little friend along a path to the flag. No reading needed: every instruction is spoken aloud, in Bahasa Indonesia and English.
+Coba Lagi helps children learn the basics of coding through play. Kids put picture blocks in order to guide their little robot along a path to the flag. No reading needed: every instruction is spoken aloud, in Bahasa Indonesia and English.
 
 IT STARTS WITH A WARM-UP GAME
-A few picture questions find the right starting point for your child: reading, left and right, patterns and order. It feels like play, not a test. Afterwards the Warm-up island has these games and more, with counting, colours and shapes, for little ones to play and master any time.
+A few picture questions find the right starting point for your child: reading, left and right, patterns and order. It feels like play, not a test. Afterwards the Warm-up planet has these games and more, with counting, colours and shapes, for little ones to play and master any time.
 
-NINE CODING ISLANDS
+NINE CODING PLANETS
 • Directions: forward, turn left, turn right
 • Step by step: putting steps in the right order
 • Loops: using the repeat block to do more with fewer blocks
@@ -13,20 +13,21 @@ NINE CODING ISLANDS
 • Fix it!: finding and fixing the block that isn't quite right
 • Until the flag: a repeat that keeps going until the flag
 • Otherwise: if the path is clear, take a step; otherwise, turn
-Every island starts with a short demo that shows the idea. Stars on the map show how far your child has come on each island. Completed lessons can be replayed from their island, and every finished island and Warm-up game adds a sticker to the child's sticker book.
+Every planet starts with a short demo that shows the idea. Stars on the map show how far your child has come on each planet. Completed lessons can be replayed from their planet, and every finished planet and Warm-up game adds a sticker to the child's sticker book.
 
 PICTURE BLOCKS AND CODE
 Children who are still learning to read use picture blocks. Readers can switch to the Code tab and type the same program as text. Blocks can be dragged or tapped to add them, on tablets and phones.
 
 LEARNING AT YOUR CHILD'S PACE
-After every puzzle, Coba Lagi picks what comes next: the next island, a fresh practice puzzle, or a bonus adventure to review an earlier skill. Practice puzzles are generated and always checked to be solvable, so a child never gets the same puzzle twice.
+After every puzzle, Coba Lagi picks what comes next: the next planet, a fresh practice puzzle, or a bonus adventure to review an earlier skill. Practice puzzles are generated and always checked to be solvable, so a child never gets the same puzzle twice.
 
 MISTAKES ARE PART OF LEARNING
 The name means "try again". Every attempt is met with encouragement, never with "wrong". When your child is stuck, the light bulb shows the way.
 
 FOR PARENTS
 • The parent area sits behind a question meant for grown-ups
-• Choose a child's starting island or replay the warm-up game
+• Choose a child's starting planet or replay the warm-up game
+• Change a player's nickname and picture at any time
 • Set a break reminder: after 15, 30 or 45 minutes of puzzles, your child is invited to rest, and only a grown-up can continue
 • Sponsors can see a progress report for each child
 • Works without an internet connection
