@@ -163,4 +163,60 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('replay directions-02'), findsOneWidget);
   });
+
+  testWidgets('the trail has a circle for every puzzle left', (tester) async {
+    tester.view.physicalSize = const Size(2560, 1600);
+    tester.view.devicePixelRatio = 2;
+    addTearDown(tester.view.reset);
+    final (curriculum, progress) = (await tester.runAsync(() async {
+      final db = await newDatabaseFactoryMemory().openDatabase('t.db');
+      return (await CurriculumRepository().load(), ProgressRepository(db));
+    }))!;
+    final lessons = curriculum.lessonIds['loops']!;
+    // Every lesson solved, back from a bonus adventure: the count restarted.
+    await tester.runAsync(
+      () => progress.save(
+        1,
+        LearnerState(
+          currentConcept: 'loops',
+          progress: {
+            'loops': ConceptProgress(
+              difficulty: 1,
+              exercises: 1,
+              attemptedLessons: {...lessons},
+              solvedLessons: {...lessons},
+            ),
+          },
+        ),
+      ),
+    );
+    final cubit = LearningCubit(
+      profileId: 1,
+      curriculum: curriculum,
+      progress: progress,
+    );
+    addTearDown(cubit.close);
+    await tester.runAsync(cubit.load);
+    await tester.pumpWidget(
+      BlocProvider.value(
+        value: cubit,
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: const IslandScreen(profileId: 1, conceptId: 'loops'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final left = curriculum.engine.config.practiceLimit - 1;
+    expect(find.textContaining('Up to $left more puzzles'), findsOneWidget);
+    final circles = find.byWidgetPredicate(
+      (w) =>
+          w is AnimatedContainer &&
+          w.constraints == BoxConstraints.tight(const Size(22, 22)) &&
+          (w.decoration as BoxDecoration?)?.shape == BoxShape.circle,
+    );
+    expect(circles, findsNWidgets(left));
+  });
 }

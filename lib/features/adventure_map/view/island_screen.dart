@@ -99,8 +99,11 @@ class IslandScreen extends StatelessWidget {
                     const SizedBox(height: 32),
                     _NextIslandTrail(
                       left: left,
+                      // Never fewer circles than puzzles left: after a
+                      // bonus adventure the count starts again, so the trail
+                      // can be longer than right after the lessons.
                       slots: max(
-                        1,
+                        left,
                         cubit.engine.config.practiceLimit - lessons.length,
                       ),
                       next: cubit.engine.graph.nextAfter(conceptId)!,
