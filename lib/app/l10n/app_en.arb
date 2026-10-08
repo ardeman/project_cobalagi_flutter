@@ -137,7 +137,7 @@
   "blockTurnRight": "Turn right",
   "blockRepeat": "Repeat",
   "blockStar": "My block",
-  "nextLevel": "Next",
+  "toMap": "To the map",
   "tryAgain": "Try again!",
   "feedbackBumped": "Oops, something is in the way.",
   "feedbackStoppedShort": "Almost! Keep going to the flag.",
@@ -154,7 +154,6 @@
   "decisionReview": "Let's hunt for treasure on an earlier island.",
   "decisionReturn": "Back to your adventure!",
   "decisionMapComplete": "You explored every island!",
-  "skipPuzzle": "Try a different one",
   "hint": "Show me the way",
   "repeatMore": "One more time",
   "repeatFewer": "One time fewer",
@@ -385,5 +384,11 @@
   "otherwiseRowBlocked": "Otherwise",
   "conceptOtherwise": "Otherwise",
   "playGoalOtherwise": "Use the eye block with two rows: if the path is clear, step. Otherwise, turn!",
-  "tutorialOtherwise": "The eye looks ahead. If the path is clear, step. Otherwise, turn. Then it all repeats until the flag!"
+  "tutorialOtherwise": "The eye looks ahead. If the path is clear, step. Otherwise, turn. Then it all repeats until the flag!",
+  "starsEarned": "{count, plural, =1{1 star of 3} other{{count} stars of 3}}",
+  "@starsEarned": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  }
 }

@@ -50,7 +50,9 @@ class _ReplayScreenState extends State<ReplayScreen> {
     return PlayView(
       key: ValueKey(exercise.key),
       exercise: exercise,
-      skipAfterRuns: learning.engine.config.offerSkipAfterRuns,
+      hintAfterRuns: learning.engine.config.hintAfterRuns,
+      hintPulseAfterTries: learning.engine.config.hintPulseAfterTries,
+      starsFor: (result) => result.stars(learning.engine.config),
       homePath: islandPath,
       onFinished: learning.recordReplay,
       onNext: () => context.go(islandPath),

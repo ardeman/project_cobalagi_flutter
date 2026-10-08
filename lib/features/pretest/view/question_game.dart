@@ -120,6 +120,9 @@ class _QuestionGameState extends State<QuestionGame> {
     _speak();
   }
 
+  /// The prompt or the cheer above the pictures: one height for both.
+  static const _topRow = 96.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -151,11 +154,19 @@ class _QuestionGameState extends State<QuestionGame> {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 250),
                 child: feedback != null
+                    // The question and its answer share one layout: the
+                    // same top row height, the same room under the cards,
+                    // so the pictures stay put when the child answers.
                     ? Column(
                         key: ValueKey('feedback-${_round.questionsAsked}'),
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _FeedbackBanner(cheer: feedback.cheer),
+                          SizedBox(
+                            height: _topRow,
+                            child: Center(
+                              child: _FeedbackBanner(cheer: feedback.cheer),
+                            ),
+                          ),
                           SizedBox(height: size * 0.2),
                           QuestionView(
                             question: feedback.question,
@@ -177,16 +188,23 @@ class _QuestionGameState extends State<QuestionGame> {
                         key: ValueKey(_round.questionsAsked),
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _Prompt(
-                            text: promptFor(l10n, question).$1,
-                            onListen: _speak,
+                          SizedBox(
+                            height: _topRow,
+                            child: Center(
+                              child: _Prompt(
+                                text: promptFor(l10n, question).$1,
+                                onListen: _speak,
+                              ),
+                            ),
                           ),
                           SizedBox(height: size * 0.2),
                           QuestionView(
                             question: question,
                             size: size,
                             onAnswer: _answer,
+                            answerLabel: l10n.answerWas,
                           ),
+                          SizedBox(height: size * 0.6),
                         ],
                       ),
               ),

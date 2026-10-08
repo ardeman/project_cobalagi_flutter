@@ -137,4 +137,48 @@ void main() {
     await tester.pump();
     expect(find.textContaining('Tap the'), findsOneWidget);
   });
+
+  for (final size in const [Size(2560, 1600), Size(1080, 2400)]) {
+    testWidgets('the pictures stay put when the child answers ($size)', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const WarmUpGameScreen(profileId: 1, game: WarmUpGame.counting),
+      );
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = size.width > 2000 ? 2 : 2.625;
+      await tester.pumpAndSettle();
+      final cards = find.byType(Card);
+      final before = [
+        for (final c in cards.evaluate())
+          tester.getRect(find.byWidget(c.widget)),
+      ];
+      // A wrong answer shows the most: the label under the right card.
+      await tester.tap(cards.first);
+      // Past the cross-fade (250 ms), well within the feedback time.
+      for (var i = 0; i < 6; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      final after = [
+        for (final c in cards.evaluate())
+          tester.getRect(find.byWidget(c.widget)),
+      ];
+      expect(after.length, before.length);
+      for (var i = 0; i < before.length; i++) {
+        expect(
+          after[i].center.dy,
+          moreOrLessEquals(before[i].center.dy, epsilon: 1),
+        );
+        expect(
+          after[i].center.dx,
+          moreOrLessEquals(before[i].center.dx, epsilon: 1),
+        );
+      }
+      // Let the feedback finish.
+      await tester.pump(const Duration(seconds: 3));
+      await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+      await tester.pump(const Duration(milliseconds: 400));
+    });
+  }
 }

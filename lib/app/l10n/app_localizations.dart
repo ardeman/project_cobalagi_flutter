@@ -440,11 +440,11 @@ abstract class AppLocalizations {
   /// **'My block'**
   String get blockStar;
 
-  /// No description provided for @nextLevel.
+  /// No description provided for @toMap.
   ///
   /// In en, this message translates to:
-  /// **'Next'**
-  String get nextLevel;
+  /// **'To the map'**
+  String get toMap;
 
   /// No description provided for @tryAgain.
   ///
@@ -541,12 +541,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You explored every island!'**
   String get decisionMapComplete;
-
-  /// No description provided for @skipPuzzle.
-  ///
-  /// In en, this message translates to:
-  /// **'Try a different one'**
-  String get skipPuzzle;
 
   /// No description provided for @hint.
   ///
@@ -1531,6 +1525,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The eye looks ahead. If the path is clear, step. Otherwise, turn. Then it all repeats until the flag!'**
   String get tutorialOtherwise;
+
+  /// No description provided for @starsEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 star of 3} other{{count} stars of 3}}'**
+  String starsEarned(int count);
 }
 
 class _AppLocalizationsDelegate

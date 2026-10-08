@@ -57,7 +57,7 @@
   "blockTurnRight": "Belok kanan",
   "blockRepeat": "Ulangi",
   "blockStar": "Blok buatanku",
-  "nextLevel": "Lanjut",
+  "toMap": "Ke peta",
   "tryAgain": "Coba lagi!",
   "feedbackBumped": "Ups, ada yang menghalangi.",
   "feedbackStoppedShort": "Hampir! Terus jalan sampai bendera.",
@@ -74,7 +74,6 @@
   "decisionReview": "Ayo cari harta karun di pulau sebelumnya.",
   "decisionReturn": "Kembali ke petualanganmu!",
   "decisionMapComplete": "Kamu sudah menjelajahi semua pulau!",
-  "skipPuzzle": "Coba yang lain",
   "hint": "Tunjukkan jalannya",
   "repeatMore": "Tambah satu kali",
   "repeatFewer": "Kurangi satu kali",
@@ -262,5 +261,6 @@
   "otherwiseRowBlocked": "Kalau tidak",
   "conceptOtherwise": "Kalau tidak",
   "playGoalOtherwise": "Pakai blok mata dengan dua baris: kalau jalannya kosong, melangkah. Kalau tidak, belok!",
-  "tutorialOtherwise": "Mata melihat ke depan. Kalau jalannya kosong, melangkah. Kalau tidak, belok. Lalu semuanya diulang sampai bendera!"
+  "tutorialOtherwise": "Mata melihat ke depan. Kalau jalannya kosong, melangkah. Kalau tidak, belok. Lalu semuanya diulang sampai bendera!",
+  "starsEarned": "{count} dari 3 bintang"
 }

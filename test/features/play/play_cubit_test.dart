@@ -83,4 +83,22 @@ void main() {
       ..eventShown();
     expect(cubit.state.phase, PlayPhase.editing);
   });
+
+  test('a try counts even when blocks need fixing first; a run does not', () {
+    final cubit = PlayCubit(level);
+    // Nothing placed: not a try.
+    cubit.run(const Program([]));
+    expect(cubit.state.tries, 0);
+    // A block the level doesn't allow: stopped before running, but tried.
+    cubit.run(const Program([TurnRight()]));
+    expect(cubit.state.issues, isNotEmpty);
+    expect(cubit.state.tries, 1);
+    expect(cubit.state.runs, 0);
+    cubit.run(solved);
+    playOut(cubit);
+    expect(cubit.state.tries, 2);
+    expect(cubit.state.runs, 1);
+    cubit.reset();
+    expect(cubit.state.tries, 2, reason: 'kept across reset');
+  });
 }

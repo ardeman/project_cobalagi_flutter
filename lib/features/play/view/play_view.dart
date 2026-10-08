@@ -31,6 +31,7 @@ import '../../editors/blocks/view/block_editor.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../cubit/play_cubit.dart';
+import 'puzzle_stars.dart';
 import 'world/world_game.dart';
 
 /// One puzzle: the world, the editor and run controls. [onFinished] records
@@ -40,7 +41,9 @@ class PlayView extends StatefulWidget {
   const PlayView({
     super.key,
     required this.exercise,
-    required this.skipAfterRuns,
+    required this.hintAfterRuns,
+    required this.hintPulseAfterTries,
+    required this.starsFor,
     required this.homePath,
     required this.onFinished,
     required this.onNext,
@@ -57,7 +60,15 @@ class PlayView extends StatefulWidget {
   /// For a child who hasn't solved a puzzle yet: a hand shows how to add a
   /// block, then the Go button pulses, until the first run.
   final bool showHowTo;
-  final int skipAfterRuns;
+
+  /// Runs before the hint bulb works: a child tries first.
+  final int hintAfterRuns;
+
+  /// More tries, with the bulb on and unused, before it pulses.
+  final int hintPulseAfterTries;
+
+  /// The stars (0 to 3) a finished puzzle earns, shown on its card.
+  final int Function(ExerciseResult result) starsFor;
   final String homePath;
   final Future<Decision?> Function(ExerciseResult result) onFinished;
 
@@ -142,23 +153,26 @@ class _PlayViewState extends State<PlayView> {
     if (widget.showHowTo) _say(VoiceClips.playHowTo, queue: true);
   }
 
+  /// Stars the finished puzzle earned.
+  var _stars = 0;
+
   Future<void> _finish({required bool succeeded}) async {
     if (_finishing) return;
     _finishing = true;
     _clock.stop();
     final plan = widget.exercise.plan;
-    final decision = await widget.onFinished(
-      ExerciseResult(
-        conceptId: plan.conceptId,
-        levelId: _level.id,
-        mode: plan.mode,
-        difficulty: plan.difficulty,
-        succeeded: succeeded,
-        runs: _play.state.runs,
-        hintsUsed: _hints,
-        duration: _clock.elapsed,
-      ),
+    final result = ExerciseResult(
+      conceptId: plan.conceptId,
+      levelId: _level.id,
+      mode: plan.mode,
+      difficulty: plan.difficulty,
+      succeeded: succeeded,
+      runs: _play.state.runs,
+      hintsUsed: _hints,
+      duration: _clock.elapsed,
     );
+    _stars = widget.starsFor(result);
+    final decision = await widget.onFinished(result);
     if (mounted) {
       if (decision != null) _say(_decisionClip(decision), queue: true);
       setState(() {
@@ -332,6 +346,8 @@ class _PlayViewState extends State<PlayView> {
                     feedback ??
                     _RunControls(
                       onHint: _finished ? null : _showHint,
+                      hintAfterRuns: widget.hintAfterRuns,
+                      hintPulseAfterTries: widget.hintPulseAfterTries,
                       hintsUsed: _hints,
                       howTo: widget.showHowTo,
                       compact: tight,
@@ -533,6 +549,9 @@ class _PlayViewState extends State<PlayView> {
       final cheer = _cheer!;
       final decision = _decision;
       final replay = decision == null;
+      // Back to the puzzle's island, or to the map once the island is
+      // complete (a new island opened, or every island is explored).
+      final toMap = decision is Advance || decision is MapComplete;
       return _FeedbackCard(
         badge: decision is Review && !_solved
             ? const Icon(
@@ -542,14 +561,13 @@ class _PlayViewState extends State<PlayView> {
               )
             : CheerBadge(cheer: cheer, size: 44),
         title: cheer.text,
+        stars: _solved ? _stars : null,
         message: replay ? null : _decisionMessage(l10n, decision),
         actions: [
           FilledButton.icon(
             onPressed: widget.onNext,
-            icon: Icon(
-              replay ? Icons.grid_view_rounded : Icons.arrow_forward_rounded,
-            ),
-            label: Text(replay ? l10n.backToIsland : l10n.nextLevel),
+            icon: Icon(toMap ? Icons.map_rounded : Icons.grid_view_rounded),
+            label: Text(toMap ? l10n.toMap : l10n.backToIsland),
           ),
         ],
       );
@@ -561,12 +579,6 @@ class _PlayViewState extends State<PlayView> {
         title: cheer.text,
         message: _failureMessage(l10n, play.result!.outcome),
         actions: [
-          if (play.runs >= widget.skipAfterRuns)
-            OutlinedButton.icon(
-              onPressed: () => _finish(succeeded: false),
-              icon: const Icon(Icons.shuffle_rounded),
-              label: Text(l10n.skipPuzzle),
-            ),
           FilledButton.icon(
             onPressed: _play.reset,
             icon: const Icon(Icons.replay_rounded),
@@ -836,10 +848,14 @@ class _FeedbackCard extends StatelessWidget {
     required this.title,
     required this.message,
     required this.actions,
+    this.stars,
   });
 
   final Widget badge;
   final String title;
+
+  /// Stars earned (of 3), beside the title after a solved puzzle.
+  final int? stars;
   final String? message;
   final List<Widget> actions;
 
@@ -867,9 +883,20 @@ class _FeedbackCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        title,
-                        style: Theme.of(context).textTheme.headlineMedium,
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              title,
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                          ),
+                          if (stars case final earned?) ...[
+                            const SizedBox(width: 12),
+                            PuzzleStars(stars: earned, size: 30),
+                          ],
+                        ],
                       ),
                       if (message != null)
                         Text(
@@ -892,6 +919,8 @@ class _FeedbackCard extends StatelessWidget {
 class _RunControls extends StatelessWidget {
   const _RunControls({
     required this.onHint,
+    required this.hintAfterRuns,
+    required this.hintPulseAfterTries,
     this.hintsUsed = 0,
     this.howTo = false,
     this.compact = false,
@@ -899,6 +928,13 @@ class _RunControls extends StatelessWidget {
   });
 
   final VoidCallback? onHint;
+
+  /// The bulb stays off until the child has tried this many times (Go or
+  /// Step with blocks placed, even if the blocks still need fixing).
+  final int hintAfterRuns;
+
+  /// More tries, with the bulb on and unused, before it pulses.
+  final int hintPulseAfterTries;
 
   /// Hints asked for so far; the bulb pulses until the first one.
   final int hintsUsed;
@@ -980,18 +1016,20 @@ class _RunControls extends StatelessWidget {
               icon: const Icon(Icons.replay_rounded),
             ),
             SizedBox(width: gap),
-            // After two runs that didn't reach the flag, the bulb pulses so
-            // a child who is stuck notices it, until they ask for a hint.
+            // A few tries after the bulb turns on, if still unused, it
+            // pulses so a child who is stuck notices it, until they ask.
             _Pulse(
               active:
                   !running &&
                   onHint != null &&
                   hintsUsed == 0 &&
-                  play.runs >= 2 &&
+                  play.tries >= hintAfterRuns + hintPulseAfterTries &&
                   play.phase != PlayPhase.succeeded,
               child: IconButton.filledTonal(
                 tooltip: l10n.hint,
-                onPressed: running ? null : onHint,
+                onPressed: running || play.tries < hintAfterRuns
+                    ? null
+                    : onHint,
                 icon: const Icon(Icons.lightbulb_rounded),
               ),
             ),

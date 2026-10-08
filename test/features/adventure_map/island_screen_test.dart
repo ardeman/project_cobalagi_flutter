@@ -80,7 +80,8 @@ void main() {
     // Every lesson after the first hasn't been played yet.
     final lessons = cubit.curriculum.lessons['directions']!.length;
     expect(find.byIcon(Icons.lock_rounded), findsNWidgets(lessons - 1));
-    expect(find.byIcon(Icons.star_rounded), findsOneWidget);
+    // Solved on the first run without a hint: all three stars.
+    expect(find.byIcon(Icons.star_rounded), findsNWidgets(3));
 
     await tester.tap(find.byIcon(Icons.lock_rounded).first);
     await tester.pumpAndSettle();

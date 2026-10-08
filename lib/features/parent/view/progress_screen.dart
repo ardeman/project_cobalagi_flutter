@@ -55,10 +55,7 @@ class _ProgressScreenState extends State<ProgressScreen> {
       conceptIds: [for (final c in engine.graph.concepts) c.id],
       learner: learner,
       config: engine.config,
-      lessonCounts: {
-        for (final MapEntry(:key, :value) in curriculum.lessons.entries)
-          key: value.length,
-      },
+      lessons: curriculum.lessonIds,
       attempts: await progress.attemptLog(widget.profileId),
       now: DateTime.now(),
     );

@@ -67,8 +67,7 @@ class AdventureMapScreen extends StatelessWidget {
             conceptId: concepts[i].id,
             stars: ProgressReport.starsFor(
               learner.progress[concepts[i].id],
-              engine.config,
-              totalLessons: lessons[concepts[i].id]?.length ?? 0,
+              cubit.curriculum.lessonIds[concepts[i].id] ?? const [],
             ),
             solvedLessons:
                 learner.progress[concepts[i].id]?.solvedLessons.length ?? 0,

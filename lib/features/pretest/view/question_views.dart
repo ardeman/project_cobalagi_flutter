@@ -245,9 +245,9 @@ class QuestionView extends StatelessWidget {
       );
     }
     // The label under the right answer needs room before the next row of
-    // cards, e.g. when step cards stack on a phone.
-    final labelled =
-        answerLabel != null && chosen != null && chosen != question.correct;
+    // cards, e.g. when step cards stack on a phone. Kept before the answer
+    // too, so the cards don't move when it appears.
+    final labelled = answerLabel != null;
     final answers = Wrap(
       alignment: WrapAlignment.center,
       spacing: size * 0.2,

@@ -214,7 +214,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get blockStar => 'My block';
 
   @override
-  String get nextLevel => 'Next';
+  String get toMap => 'To the map';
 
   @override
   String get tryAgain => 'Try again!';
@@ -263,9 +263,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get decisionMapComplete => 'You explored every island!';
-
-  @override
-  String get skipPuzzle => 'Try a different one';
 
   @override
   String get hint => 'Show me the way';
@@ -816,4 +813,15 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tutorialOtherwise =>
       'The eye looks ahead. If the path is clear, step. Otherwise, turn. Then it all repeats until the flag!';
+
+  @override
+  String starsEarned(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count stars of 3',
+      one: '1 star of 3',
+    );
+    return '$_temp0';
+  }
 }

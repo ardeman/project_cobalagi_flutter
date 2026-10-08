@@ -400,4 +400,44 @@ void main() {
       reason: 'not the island the child is on',
     );
   });
+
+  group('puzzle stars', () {
+    test('three for the first try without a hint, fewer otherwise', () {
+      expect(result('loops').stars(config), 3);
+      expect(result('loops', hints: 1).stars(config), 2);
+      expect(result('loops', runs: config.twoStarRuns).stars(config), 2);
+      expect(result('loops', runs: config.twoStarRuns + 1).stars(config), 1);
+      expect(result('loops', succeeded: false).stars(config), 0);
+    });
+
+    test('a lesson keeps its best stars; replays can raise them', () {
+      var state = engine.initialState(startConcept: 'loops');
+      (state, _) = engine.record(
+        state,
+        result('loops', runs: 5, mode: ExerciseMode.lesson, level: 'loops-01'),
+      );
+      expect(state.progress['loops']!.starsOf('loops-01'), 1);
+      state = engine.recordReplay(
+        state,
+        result('loops', mode: ExerciseMode.replay, level: 'loops-01'),
+      );
+      expect(state.progress['loops']!.starsOf('loops-01'), 3);
+      // A weaker replay never lowers them.
+      state = engine.recordReplay(
+        state,
+        result('loops', runs: 6, mode: ExerciseMode.replay, level: 'loops-01'),
+      );
+      expect(state.progress['loops']!.starsOf('loops-01'), 3);
+      final saved = LearnerState.fromJson(
+        jsonDecode(jsonEncode(state.toJson())) as Map<String, Object?>,
+      );
+      expect(saved.progress['loops']!.starsOf('loops-01'), 3);
+    });
+
+    test('lessons solved before stars were kept count as one star', () {
+      const old = ConceptProgress(difficulty: 1, solvedLessons: {'loops-02'});
+      expect(old.starsOf('loops-02'), 1);
+      expect(old.starsOf('loops-03'), 0);
+    });
+  });
 }

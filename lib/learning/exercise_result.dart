@@ -65,6 +65,17 @@ final class ExerciseResult {
     return max(config.minSuccessScore, 1 - penalty);
   }
 
+  /// A puzzle's stars, 0 to 3: 3 for solving it on the first try without
+  /// the hint, 2 within a few tries, 1 for any other solve (thresholds in
+  /// `assets/config/adaptive.json`).
+  int stars(AdaptiveConfig config) => !succeeded
+      ? 0
+      : runs <= config.threeStarRuns && hintsUsed == 0
+      ? 3
+      : runs <= config.twoStarRuns
+      ? 2
+      : 1;
+
   Map<String, Object?> toJson() => {
     'concept': conceptId,
     'level': levelId,

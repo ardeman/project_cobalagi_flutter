@@ -34,7 +34,11 @@ void main() {
     conceptIds: const ['directions', 'sequencing', 'loops'],
     learner: LearnerState(currentConcept: 'directions', progress: progress),
     config: config,
-    lessonCounts: const {'directions': 4, 'sequencing': 5, 'loops': 6},
+    lessons: const {
+      'directions': ['d1', 'd2', 'd3', 'd4'],
+      'sequencing': ['s1', 's2', 's3', 's4', 's5'],
+      'loops': ['l1', 'l2', 'l3', 'l4', 'l5', 'l6'],
+    },
     attempts: attempts,
     now: now,
   );
@@ -59,11 +63,13 @@ void main() {
           scores: [1, 1, 0.9],
           difficulty: 2,
           solvedLessons: {'d1', 'd2', 'd3', 'd4'},
+          lessonStars: {'d1': 3, 'd2': 3, 'd3': 3, 'd4': 3},
         ),
         'sequencing': const ConceptProgress(
           scores: [0.6],
           difficulty: 1,
-          solvedLessons: {'s1'},
+          solvedLessons: {'s1', 's2', 's3', 's4', 's5'},
+          lessonStars: {'s1': 3, 's2': 2, 's3': 2, 's4': 2, 's5': 1},
         ),
         // Played a lesson but skipped it: started, no score yet.
         'loops': const ConceptProgress(difficulty: 1, attemptedLessons: {'l1'}),
@@ -74,6 +80,7 @@ void main() {
     expect(directions.stars, 3);
     expect(directions.solvedLessons, 4);
     expect(sequencing.status, ConceptStatus.practising);
+    // (3 + 2 + 2 + 2 + 1) / 5, rounded down.
     expect(sequencing.stars, 2);
     expect(loops.status, ConceptStatus.practising);
     expect(loops.stars, 0);
@@ -98,54 +105,27 @@ void main() {
     expect(report.lastPlayed, now.subtract(const Duration(hours: 1)));
   });
 
-  test('stars match the adventure map rule', () {
-    int stars(ConceptProgress? p) =>
-        ProgressReport.starsFor(p, config, totalLessons: 6);
-    Set<String> solved(int n) => {for (var i = 1; i <= n; i++) 'l-0$i'};
+  test('island stars are the average of its levels\' stars', () {
+    const lessons = ['l1', 'l2', 'l3'];
+    int stars(ConceptProgress? p) => ProgressReport.starsFor(p, lessons);
+    ConceptProgress withStars(Map<String, int> stars) => ConceptProgress(
+      difficulty: 1,
+      solvedLessons: stars.keys.toSet(),
+      lessonStars: stars,
+    );
     expect(stars(null), 0);
-    expect(stars(const ConceptProgress(scores: [0.2], difficulty: 1)), 1);
-    // Every lesson solved shows three stars, even with low recent scores
-    // (hints, a bonus review): the child can see the island is done.
+    // Three stars only when every level has three.
+    expect(stars(withStars({'l1': 3, 'l2': 3, 'l3': 3})), 3);
+    expect(stars(withStars({'l1': 3, 'l2': 3, 'l3': 2})), 2);
+    // An unplayed level counts 0.
+    expect(stars(withStars({'l1': 3, 'l2': 3})), 2);
+    expect(stars(withStars({'l1': 1})), 0);
+    // Levels solved before stars were kept count 1.
     expect(
       stars(
-        ConceptProgress(
-          scores: const [0.3, 0.4],
-          difficulty: 2,
-          solvedLessons: solved(6),
-        ),
-      ),
-      3,
-    );
-    expect(
-      stars(
-        ConceptProgress(
-          scores: const [0.3],
-          difficulty: 2,
-          solvedLessons: solved(4),
-        ),
-      ),
-      2,
-    );
-    expect(
-      stars(
-        ConceptProgress(
-          scores: const [0.3],
-          difficulty: 2,
-          solvedLessons: solved(1),
-        ),
+        const ConceptProgress(difficulty: 1, solvedLessons: {'l1', 'l2', 'l3'}),
       ),
       1,
-    );
-    // Strong scores still count before the lessons are done.
-    expect(
-      stars(
-        ConceptProgress(
-          scores: const [1, 1, 1],
-          difficulty: 2,
-          solvedLessons: solved(1),
-        ),
-      ),
-      3,
     );
   });
 }

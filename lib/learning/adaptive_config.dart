@@ -8,7 +8,8 @@ final class AdaptiveConfig {
     required this.minExercises,
     required this.reviewAfterFailures,
     required this.reviewLength,
-    required this.offerSkipAfterRuns,
+    required this.hintAfterRuns,
+    required this.hintPulseAfterTries,
     required this.practiceLimit,
     required this.extraRunPenalty,
     required this.hintPenalty,
@@ -17,11 +18,14 @@ final class AdaptiveConfig {
     required this.minSuccessScore,
     required this.startDifficulty,
     required this.maxDifficulty,
+    required this.threeStarRuns,
+    required this.twoStarRuns,
   });
 
   factory AdaptiveConfig.fromJson(Map<String, Object?> json) {
     final score = json['score']! as Map<String, Object?>;
     final difficulty = json['difficulty']! as Map<String, Object?>;
+    final stars = json['stars']! as Map<String, Object?>;
     double d(Map<String, Object?> m, String key) => (m[key]! as num).toDouble();
     int i(Map<String, Object?> m, String key) => m[key]! as int;
     return AdaptiveConfig(
@@ -31,7 +35,8 @@ final class AdaptiveConfig {
       minExercises: i(json, 'minExercises'),
       reviewAfterFailures: i(json, 'reviewAfterFailures'),
       reviewLength: i(json, 'reviewLength'),
-      offerSkipAfterRuns: i(json, 'offerSkipAfterRuns'),
+      hintAfterRuns: i(json, 'hintAfterRuns'),
+      hintPulseAfterTries: i(json, 'hintPulseAfterTries'),
       practiceLimit: i(json, 'practiceLimit'),
       extraRunPenalty: d(score, 'extraRunPenalty'),
       hintPenalty: d(score, 'hintPenalty'),
@@ -40,6 +45,8 @@ final class AdaptiveConfig {
       minSuccessScore: d(score, 'minSuccessScore'),
       startDifficulty: i(difficulty, 'start'),
       maxDifficulty: i(difficulty, 'max'),
+      threeStarRuns: i(stars, 'threeAtRuns'),
+      twoStarRuns: i(stars, 'twoAtRuns'),
     );
   }
 
@@ -61,8 +68,13 @@ final class AdaptiveConfig {
   /// Exercises in one review ("bonus adventure").
   final int reviewLength;
 
-  /// Failed runs after which the child may skip the puzzle.
-  final int offerSkipAfterRuns;
+  /// Tries (Go or Step with blocks placed, even ones that still need
+  /// fixing) before the hint bulb works, so a child tries first.
+  final int hintAfterRuns;
+
+  /// More tries, once the bulb is on and unused, before it starts pulsing
+  /// to point itself out.
+  final int hintPulseAfterTries;
 
   /// With every lesson on an island solved, a child moves on after a solved
   /// puzzle once mastery reaches [practiceAt], or once it has played this many
@@ -77,4 +89,11 @@ final class AdaptiveConfig {
   final double minSuccessScore;
   final int startDifficulty;
   final int maxDifficulty;
+
+  /// A solved puzzle earns 3 stars within this many runs and no hint.
+  final int threeStarRuns;
+
+  /// Otherwise 2 stars within this many runs (with or without the hint),
+  /// else 1.
+  final int twoStarRuns;
 }

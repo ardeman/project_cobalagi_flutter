@@ -157,6 +157,7 @@ final class LearningEngine {
         ...state.progress,
         result.conceptId: old.copyWith(
           solvedLessons: {...old.solvedLessons, result.levelId},
+          lessonStars: old.withStars(result.levelId, result.stars(config)),
         ),
       },
     );
@@ -270,6 +271,9 @@ final class LearningEngine {
       solvedLessons: result.mode == ExerciseMode.lesson && result.succeeded
           ? {...old.solvedLessons, result.levelId}
           : old.solvedLessons,
+      lessonStars: result.mode == ExerciseMode.lesson && result.succeeded
+          ? old.withStars(result.levelId, result.stars(config))
+          : old.lessonStars,
     );
     return state.copyWith(
       progress: {...state.progress, result.conceptId: progress},

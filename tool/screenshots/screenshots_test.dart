@@ -127,6 +127,10 @@ Future<Database> _seed(String language, {bool reader = false}) async {
             difficulty: 3,
             attemptedLessons: lessons(id, n),
             solvedLessons: lessons(id, n),
+            // Mostly first tries; one level could still earn a star.
+            lessonStars: {
+              for (final l in lessons(id, n)) l: l.endsWith('5') ? 2 : 3,
+            },
           ),
         'functions': ConceptProgress(
           scores: const [0.6],
@@ -490,6 +494,25 @@ void main() {
           testWidgets('hint $level', (tester) async {
             await device(tester);
             await _open(tester, '/child/1/replay/$level');
+            // The bulb works after a few tries: one step, three times.
+            final blocks = tester
+                .element(find.byType(BlockEditor))
+                .read<BlocksCubit>();
+            blocks.add(
+              level.startsWith('variables')
+                  ? BlockType.moveSteps
+                  : BlockType.forward,
+            );
+            await _settle(tester);
+            for (var i = 0; i < 3; i++) {
+              await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+              await _settle(tester);
+              final again = find.byIcon(Icons.replay_rounded);
+              if (again.evaluate().isNotEmpty) await tester.tap(again.first);
+              await _settle(tester);
+            }
+            blocks.clear();
+            await _settle(tester);
             await tester.tap(find.byIcon(Icons.lightbulb_rounded));
             // Every block of the hint has appeared.
             for (var i = 0; i < 40; i++) {

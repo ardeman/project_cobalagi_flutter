@@ -18,6 +18,7 @@ class PlayState {
     this.stepping = false,
     this.issues = const [],
     this.runs = 0,
+    this.tries = 0,
   });
 
   final Level level;
@@ -38,6 +39,11 @@ class PlayState {
 
   /// Number of runs started on this level so far.
   final int runs;
+
+  /// Presses of Go or Step with blocks placed, including ones stopped by
+  /// [issues] before running: how often the child has tried. Unlike [runs],
+  /// these don't lower the score.
+  final int tries;
 
   RunEvent? get currentEvent {
     final events = result?.events;
@@ -76,6 +82,7 @@ class PlayState {
     stepping: stepping ?? this.stepping,
     issues: issues,
     runs: runs,
+    tries: tries,
   );
 }
 
@@ -105,8 +112,11 @@ class PlayCubit extends Cubit<PlayState> {
   void _start(Program program, {required bool stepping}) {
     final level = state.level;
     final issues = validateProgram(program, level);
+    final tries = state.tries + (program.body.isEmpty ? 0 : 1);
     if (issues.isNotEmpty || program.body.isEmpty) {
-      emit(PlayState(level: level, issues: issues, runs: state.runs));
+      emit(
+        PlayState(level: level, issues: issues, runs: state.runs, tries: tries),
+      );
       return;
     }
     final result = runProgram(program, level);
@@ -118,6 +128,7 @@ class PlayCubit extends Cubit<PlayState> {
         playing: true,
         stepping: stepping,
         runs: state.runs + 1,
+        tries: tries,
       ),
     );
     if (result.events.isEmpty) _finish();
@@ -141,5 +152,6 @@ class PlayCubit extends Cubit<PlayState> {
   );
 
   /// Back to editing, with the world at its starting position.
-  void reset() => emit(PlayState(level: state.level, runs: state.runs));
+  void reset() =>
+      emit(PlayState(level: state.level, runs: state.runs, tries: state.tries));
 }

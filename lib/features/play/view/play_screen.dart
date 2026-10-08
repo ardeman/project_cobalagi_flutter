@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../learning/learning_engine.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../play_time/cubit/break_reminder_cubit.dart';
 import '../../play_time/data/play_clock.dart';
@@ -60,19 +61,23 @@ class _PlayScreenState extends State<PlayScreen> {
     return PlayView(
       key: ValueKey(exercise.key),
       exercise: exercise,
-      skipAfterRuns: learning.engine.config.offerSkipAfterRuns,
+      hintAfterRuns: learning.engine.config.hintAfterRuns,
+      hintPulseAfterTries: learning.engine.config.hintPulseAfterTries,
+      starsFor: (result) => result.stars(learning.engine.config),
       homePath: '/child/${widget.profileId}',
       onFinished: learning.record,
       onNext: () {
-        // A new island opened: the map celebrates it before the next puzzle.
-        if (learning.state.islandToCelebrate != null) {
-          context.go('/child/${widget.profileId}');
-          return;
-        }
-        setState(() {
-          _exercise = null;
-          _onBreak = _breakDue();
-        });
+        // The island is complete: the map (which celebrates a new island).
+        // Otherwise back to the puzzle's island, where "Continue the
+        // adventure" serves the next one.
+        final decision = learning.state.lastDecision;
+        context.go(
+          learning.state.islandToCelebrate != null ||
+                  decision is Advance ||
+                  decision is MapComplete
+              ? '/child/${widget.profileId}'
+              : '/child/${widget.profileId}/island/$concept',
+        );
       },
       // Readers (from the warm-up game, or a parent's choice) can type code.
       allowCode: learning.state.learner!.placement?.readsWords ?? false,

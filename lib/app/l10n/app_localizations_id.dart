@@ -202,7 +202,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get blockStar => 'Blok buatanku';
 
   @override
-  String get nextLevel => 'Lanjut';
+  String get toMap => 'Ke peta';
 
   @override
   String get tryAgain => 'Coba lagi!';
@@ -252,9 +252,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get decisionMapComplete => 'Kamu sudah menjelajahi semua pulau!';
-
-  @override
-  String get skipPuzzle => 'Coba yang lain';
 
   @override
   String get hint => 'Tunjukkan jalannya';
@@ -805,4 +802,9 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get tutorialOtherwise =>
       'Mata melihat ke depan. Kalau jalannya kosong, melangkah. Kalau tidak, belok. Lalu semuanya diulang sampai bendera!';
+
+  @override
+  String starsEarned(int count) {
+    return '$count dari 3 bintang';
+  }
 }

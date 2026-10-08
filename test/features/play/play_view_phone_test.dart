@@ -31,6 +31,8 @@ Future<void> _pumpPhone(
   Size size = const Size(400, 760),
   Level? level,
   bool allowCode = true,
+  int hintAfterRuns = 1,
+  Decision? decision,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -43,6 +45,8 @@ Future<void> _pumpPhone(
       home: RepositoryProvider<AudioService>.value(
         value: const SilentAudioService(),
         child: PlayView(
+          // A fresh puzzle for each decision a test tries.
+          key: ValueKey(decision),
           exercise: Exercise(
             plan: const ExercisePlan(
               conceptId: 'sequencing',
@@ -52,9 +56,11 @@ Future<void> _pumpPhone(
             level: level ?? _level,
             key: 'phone',
           ),
-          skipAfterRuns: 3,
+          hintAfterRuns: hintAfterRuns,
+          hintPulseAfterTries: 2,
+          starsFor: (_) => 3,
           homePath: '/',
-          onFinished: (_) async => null,
+          onFinished: (_) async => decision,
           onNext: () {},
           allowCode: allowCode,
         ),
@@ -294,4 +300,68 @@ void main() {
       }
     },
   );
+
+  testWidgets('the hint bulb turns on, then pulses, after a few tries', (
+    tester,
+  ) async {
+    await _pumpPhone(tester, size: const Size(1280, 800), hintAfterRuns: 3);
+    IconButton bulb() => tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.lightbulb_rounded),
+    );
+    expect(bulb().onPressed, isNull, reason: 'a child tries first');
+    tester
+        .element(find.byType(BlockEditor))
+        .read<BlocksCubit>()
+        .add(BlockType.forward);
+    await tester.pump();
+    bool pulsing() => tester
+        .widget<ScaleTransition>(
+          find
+              .ancestor(
+                of: find.widgetWithIcon(IconButton, Icons.lightbulb_rounded),
+                matching: find.byType(ScaleTransition),
+              )
+              .first,
+        )
+        .scale
+        .isAnimating;
+    for (var run = 1; run <= 5; run++) {
+      await tester.tap(find.widgetWithText(FilledButton, 'Go!'));
+      for (
+        var i = 0;
+        i < 60 && find.text('Try again!').evaluate().isEmpty;
+        i++
+      ) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      // The card replaces the controls; trying again brings them back.
+      await tester.tap(find.text('Try again!'));
+      await tester.pump(const Duration(milliseconds: 300));
+      expect(bulb().onPressed, run < 3 ? isNull : isNotNull, reason: '$run');
+      // On after three tries; pulsing two tries later, while unused.
+      expect(pulsing(), run >= 5, reason: '$run');
+    }
+  });
+
+  testWidgets('a solved puzzle leads back to its island, or the map when '
+      'the island is complete', (tester) async {
+    for (final (decision, label) in [
+      (const Practice('sequencing'), 'Back to the island'),
+      (const Advance('sequencing', 'loops'), 'To the map'),
+    ]) {
+      await _pumpPhone(tester, size: const Size(1280, 800), decision: decision);
+      final cubit = tester
+          .element(find.byType(BlockEditor))
+          .read<BlocksCubit>();
+      for (var i = 0; i < 8; i++) {
+        cubit.add(BlockType.forward);
+      }
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Go!'));
+      for (var i = 0; i < 80 && find.text(label).evaluate().isEmpty; i++) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      expect(find.text(label), findsOneWidget, reason: '$decision');
+    }
+  });
 }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'placement/placement.dart';
 
 /// One child's progress on one concept.
@@ -9,6 +11,7 @@ final class ConceptProgress {
     required this.difficulty,
     this.attemptedLessons = const {},
     this.solvedLessons = const {},
+    this.lessonStars = const {},
   });
 
   factory ConceptProgress.fromJson(Map<String, Object?> json) =>
@@ -23,6 +26,12 @@ final class ConceptProgress {
         // Older saves have no 'solved' list.
         solvedLessons: {
           ...((json['solved'] as List?) ?? const []).cast<String>(),
+        },
+        // Older saves have no stars per lesson.
+        lessonStars: {
+          ...((json['lessonStars'] as Map<String, Object?>?) ?? const {}).map(
+            (id, stars) => MapEntry(id, stars! as int),
+          ),
         },
       );
 
@@ -42,8 +51,22 @@ final class ConceptProgress {
   /// replayed from the island.
   final Set<String> attemptedLessons;
 
-  /// Hand-made lessons solved at least once (a star on the island).
+  /// Hand-made lessons solved at least once.
   final Set<String> solvedLessons;
+
+  /// The best stars (1 to 3) earned on each solved lesson.
+  final Map<String, int> lessonStars;
+
+  /// A lesson's best stars: 0 if unsolved, and 1 for one solved before
+  /// stars were kept.
+  int starsOf(String lessonId) =>
+      lessonStars[lessonId] ?? (solvedLessons.contains(lessonId) ? 1 : 0);
+
+  /// [lessonId] with [stars] more, keeping its best.
+  Map<String, int> withStars(String lessonId, int stars) => {
+    ...lessonStars,
+    lessonId: max(stars, lessonStars[lessonId] ?? 0),
+  };
 
   /// Average of recent scores, 0 to 1.
   double get mastery =>
@@ -56,6 +79,7 @@ final class ConceptProgress {
     int? difficulty,
     Set<String>? attemptedLessons,
     Set<String>? solvedLessons,
+    Map<String, int>? lessonStars,
   }) => ConceptProgress(
     scores: scores ?? this.scores,
     exercises: exercises ?? this.exercises,
@@ -63,6 +87,7 @@ final class ConceptProgress {
     difficulty: difficulty ?? this.difficulty,
     attemptedLessons: attemptedLessons ?? this.attemptedLessons,
     solvedLessons: solvedLessons ?? this.solvedLessons,
+    lessonStars: lessonStars ?? this.lessonStars,
   );
 
   Map<String, Object?> toJson() => {
@@ -72,6 +97,7 @@ final class ConceptProgress {
     'difficulty': difficulty,
     'lessons': attemptedLessons.toList(),
     'solved': solvedLessons.toList(),
+    'lessonStars': lessonStars,
   };
 }
 

@@ -38,14 +38,14 @@ final class ProgressReport {
     required this.lastPlayed,
   });
 
-  /// Builds the report. [conceptIds] are in skill-map order, [lessonCounts]
-  /// maps each concept to its number of hand-made levels, and [attempts] are
+  /// Builds the report. [conceptIds] are in skill-map order, [lessons] maps
+  /// each concept to its hand-made levels' ids, and [attempts] are
   /// the finished exercises with the time they were recorded.
   factory ProgressReport.build({
     required List<String> conceptIds,
     required LearnerState learner,
     required AdaptiveConfig config,
-    required Map<String, int> lessonCounts,
+    required Map<String, List<String>> lessons,
     required List<(DateTime, ExerciseResult)> attempts,
     required DateTime now,
   }) {
@@ -68,7 +68,7 @@ final class ProgressReport {
     return ProgressReport(
       concepts: [
         for (final id in conceptIds)
-          _concept(id, learner.progress[id], config, lessonCounts[id] ?? 0),
+          _concept(id, learner.progress[id], lessons[id] ?? const []),
       ],
       puzzlesSolved: solved,
       playTime: time,
@@ -93,42 +93,22 @@ final class ProgressReport {
   /// Null until the first puzzle is finished.
   final DateTime? lastPlayed;
 
-  /// The adventure map's stars: the better of two measures, so they never
-  /// fall behind the lessons a child can see they finished.
-  ///
-  /// Lessons: 3 with every lesson solved, 2 with at least half, 1 with one.
-  /// Scores: 3 at mastery, 2 while practising well, 1 once started.
-  static int starsFor(
-    ConceptProgress? progress,
-    AdaptiveConfig config, {
-    required int totalLessons,
-  }) {
-    if (progress == null) return 0;
-    final solved = progress.solvedLessons.length;
-    final fromLessons = totalLessons > 0 && solved >= totalLessons
-        ? 3
-        : totalLessons > 0 && solved * 2 >= totalLessons && solved > 0
-        ? 2
-        : solved > 0
-        ? 1
-        : 0;
-    final fromScores = progress.scores.isEmpty
-        ? 0
-        : progress.mastery >= config.advanceAt
-        ? 3
-        : progress.mastery >= config.practiceAt
-        ? 2
-        : 1;
-    return fromLessons > fromScores ? fromLessons : fromScores;
+  /// An island's stars on the map and in the report: the average of its
+  /// levels' stars (an unplayed level counts 0), rounded down, so three
+  /// stars means every level earned three.
+  static int starsFor(ConceptProgress? progress, List<String> lessons) {
+    if (progress == null || lessons.isEmpty) return 0;
+    final total = lessons.fold(0, (sum, id) => sum + progress.starsOf(id));
+    return total ~/ lessons.length;
   }
 
   static ConceptReport _concept(
     String id,
     ConceptProgress? progress,
-    AdaptiveConfig config,
-    int totalLessons,
+    List<String> lessons,
   ) {
-    final stars = starsFor(progress, config, totalLessons: totalLessons);
+    final stars = starsFor(progress, lessons);
+    final totalLessons = lessons.length;
     return ConceptReport(
       conceptId: id,
       status: switch (stars) {

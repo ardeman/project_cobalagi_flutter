@@ -5,7 +5,8 @@
   "minExercises": 3,
   "reviewAfterFailures": 2,
   "reviewLength": 2,
-  "offerSkipAfterRuns": 4,
+  "hintAfterRuns": 3,
+  "hintPulseAfterTries": 2,
   "practiceLimit": 10,
   "score": {
     "extraRunPenalty": 0.15,
@@ -14,5 +15,6 @@
     "slowPenalty": 0.1,
     "minSuccessScore": 0.2
   },
-  "difficulty": { "start": 1, "max": 5 }
+  "difficulty": { "start": 1, "max": 5 },
+  "stars": { "threeAtRuns": 1, "twoAtRuns": 3 }
 }

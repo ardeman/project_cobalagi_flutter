@@ -11,6 +11,7 @@ import '../../../core/responsive/window_class.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
+import 'package:cobalagi/features/play/view/puzzle_stars.dart';
 
 /// One island's levels. Levels already played can be replayed for fun; the
 /// rest open as the adventure reaches them.
@@ -84,9 +85,7 @@ class IslandScreen extends StatelessWidget {
                           played:
                               !current ||
                               progress.attemptedLessons.contains(lessons[i].id),
-                          solved: progress.solvedLessons.contains(
-                            lessons[i].id,
-                          ),
+                          stars: progress.starsOf(lessons[i].id),
                           onTap: () => play(i),
                         ),
                     ],
@@ -156,7 +155,7 @@ class _LevelTile extends StatelessWidget {
     required this.size,
     required this.color,
     required this.played,
-    required this.solved,
+    required this.stars,
     required this.onTap,
   });
 
@@ -164,7 +163,9 @@ class _LevelTile extends StatelessWidget {
   final double size;
   final Color color;
   final bool played;
-  final bool solved;
+
+  /// Best stars earned here, 0 to 3.
+  final int stars;
   final VoidCallback onTap;
 
   @override
@@ -202,13 +203,13 @@ class _LevelTile extends StatelessWidget {
                     size: size * 0.36,
                     color: scheme.outline,
                   ),
-                Icon(
-                  solved ? Icons.star_rounded : Icons.star_outline_rounded,
-                  size: size * 0.22,
-                  color: solved
-                      ? const Color(0xFFFFC83D)
-                      : (played ? Colors.white70 : Colors.transparent),
-                ),
+                // The best stars earned on this level, of three.
+                if (played)
+                  PuzzleStars(
+                    stars: stars,
+                    size: size * 0.18,
+                    emptyColor: Colors.white70,
+                  ),
               ],
             ),
           ),

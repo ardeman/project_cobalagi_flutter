@@ -59,7 +59,7 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
   <tr>
     <td width="50%" valign="top">
       <img src="website/screenshots/solved.png" alt="A solved puzzle with a cheer and a Next button"><br>
-      <b>Solved:</b> varied cheers, then the next puzzle chosen by the learning rules.
+      <b>Solved:</b> varied cheers, then back to the island (or the map once the island is complete).
     </td>
     <td width="50%" valign="top">
       <img src="website/screenshots/parent-placement.png" alt="Parent area dialog for choosing a child's starting island"><br>
