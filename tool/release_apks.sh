@@ -77,21 +77,8 @@ cp build/app/outputs/flutter-apk/app-release.apk \
 (cd "$out" && shasum -a 256 ./*.apk | sed 's| \./| |' > SHA256SUMS.txt)
 
 notes="$out/notes.md"
+# One line per paragraph: GitHub keeps every line break in release notes.
 {
-  echo "Coba Lagi $name (build $build) for Android."
-  echo
-  echo "**Which file?** Not sure: \`universal\` runs on every device but is"
-  echo "the largest. Smaller downloads: \`arm64-v8a\` for most phones and"
-  echo "tablets, \`armeabi-v7a\` for older 32-bit devices, \`x86_64\` for"
-  echo "emulators and Chromebooks."
-  echo
-  echo "These APKs are signed with the upload key, not Google Play's key, so"
-  echo "they can't update a copy installed from Google Play (or the other way"
-  echo "round): uninstall first, which removes the players' progress."
-  echo
-  echo "This copy doesn't update itself. For automatic updates, install"
-  echo "Coba Lagi from Google Play instead."
-  echo
   echo "## What's new"
   echo
   cat "store/en-US/changelogs/$build.txt"
@@ -99,6 +86,21 @@ notes="$out/notes.md"
   echo "## Yang baru"
   echo
   cat "store/id/changelogs/$build.txt"
+  echo
+  echo "## Which file?"
+  echo
+  echo "| File | For |"
+  echo "|---|---|"
+  echo "| \`cobalagi-$name-build$build-universal.apk\` | Any Android device. Pick this if you're not sure (largest download). |"
+  echo "| \`cobalagi-$name-build$build-arm64-v8a.apk\` | Most phones and tablets |"
+  echo "| \`cobalagi-$name-build$build-armeabi-v7a.apk\` | Older 32-bit devices |"
+  echo "| \`cobalagi-$name-build$build-x86_64.apk\` | Emulators and Chromebooks |"
+  echo
+  echo "## Before you install"
+  echo
+  echo "- **No automatic updates:** this copy doesn't update itself. For automatic updates, install Coba Lagi from Google Play instead."
+  echo "- **Google Play copies:** these APKs are signed with the upload key, not Google Play's key, so they can't update a copy installed from Google Play (or the other way round). Uninstall first, which removes the players' progress."
+  echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"
 
 echo
