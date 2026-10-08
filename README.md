@@ -221,15 +221,23 @@ After adding or replacing clips, Android builds may keep using an old asset list
 
    Without this file, release builds are debug-signed: fine for testing, rejected by Google Play.
 
-3. Increase the build number (after `+` in `version:` in `pubspec.yaml`) for
-   every new Google Play upload, even if the visible app version stays the same.
-   Previously uploaded version codes cannot be reused; see
-   [Android versioning](https://developer.android.com/studio/publish/versioning).
-   Write release notes for the new build, then build the bundle to upload:
+3. For each new build ("bump and build"), follow the checklist below.
 
-   ```sh
-   flutter build appbundle --release
-   ```
+### Bump and build checklist
+
+1. **Version.** Raise the build number after `+` in `pubspec.yaml` by one. Pick the name from the rules in `AGENTS.md` → Version: ask whether the previous build is already live in a Google Play track. If it isn't, keep its name (`1.4.0+11` → `1.4.0+12`); if it is, raise MINOR for new features or PATCH for fixes only.
+2. **Release notes.** Write `store/en-US/changelogs/<build>.txt` and `store/id/changelogs/<build>.txt` (one `- ` line per change, plain words for parents, at most 500 characters each, both saying the same), add `{ "build", "version", "date" }` to `store/releases.json`, then run `dart run tool/website_changelog.dart`.
+3. **Listing text.** If a feature changes what `store/<locale>/full_description.txt` or `website/index.html` claim, update both languages.
+4. **Screenshots.** Run `flutter test tool/screenshots --update-goldens`, `tool/screenshots/export.sh` and `store/render.sh`. Headless Chrome is sometimes killed mid-render (exit 137, slides deleted): run `store/render.sh` again until it exits 0 and `ls store/*/phone_screenshots/*.png store/*/screenshots/*.png | wc -l` gives 32.
+5. **Drop render noise.** The solved and warm-up screens pick a random cheer and confetti, so they change on every render. If their screen didn't change, restore them: `git checkout -- 'store/*/6-solved.png' website/screenshots/solved*.png website/screenshots/phone-solved*.png website/screenshots/warm-up-pattern*.png website/screenshots/phone-warm-up*.png website/screenshots/warm-up-colors*.png website/screenshots/phone-warm-up-colors*.png`. Look at every other changed slide before keeping it.
+6. **Checks and builds.** Run the Checks, then `flutter build appbundle --release` (for Play) and `flutter build apk --release --split-per-abi`.
+7. **Tell the user what to upload:** the bundle path, the release notes, and which store slides and texts changed since the last upload (`git diff --stat <last build commit> -- store/`), marking slides that only changed slightly as optional.
+8. **Commit and push only when asked**, as two commits: the feature work (`feat:`/`fix:`), then `build: bump version to <name>+<build>` with `pubspec.yaml`, `store/` and `website/`. Pushing the version change publishes the APKs to GitHub Releases; watch it with `gh run watch $(gh run list --workflow release-apks.yml --limit 1 --json databaseId --jq '.[0].databaseId') --exit-status`.
+
+### Checking UI changes
+
+- **Renders:** `flutter test tool/screenshots --update-goldens --plain-name '<test>'` (for example `'tablet en map'`) draws a screen into `tool/screenshots/out/`. For a screen without a test, add a temporary `testWidgets` there, look at the image, then remove the test and its `out/*tmp-*` images. Renders draw plain blurs, not liquid-glass shaders.
+- **Emulators** (AVDs `Pixel_9a`, `Redmi_Pad_2`): start one with `~/Library/Android/sdk/emulator/emulator -avd <name> &`, drive the app from a temporary test in `integration_test/` with `flutter test integration_test/<file> -d emulator-5554`, print a marker at each step, and grab `adb exec-out screencap -p` when it appears. The emulator's own rotation is unreliable: set orientation inside the test with `SystemChrome.setPreferredOrientations`. Delete the temporary test afterwards.
 
 **Play Console:**
 
@@ -274,7 +282,7 @@ The icon (coral character on teal) is drawn in `branding/icon.svg`, with a one-c
 
 `store/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80), `full_description.txt` (max 4,000) and `changelogs/<versionCode>.txt` with each build's release notes (max 500), plus `feature_graphic.png` (1024 × 500), `screenshots/` (1920 × 1080, 16:9) for the 7-inch and 10-inch tablet sections and `phone_screenshots/` (1080 × 1920, 9:16) for the phone section. The app icon for the listing is `branding/play_store_icon.png`.
 
-`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders every screenshot from the real app with sample data into `website/screenshots/`, in Indonesian and English. Tablet and phone store sets each contain eight slides: the map, Loops, typed code, Magic Block, Look Ahead, a solved puzzle, the warm-up game, and the parent controls with the progress report. `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Promo videos show real gameplay from the "Watch me!" demos. Record its frames once (about 15 minutes) with `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, then `tool/marketing/invite_video.sh` renders the vertical closed-test invites (1080 × 1920) and `tool/marketing/promo_video.sh` the landscape YouTube and store-listing promo (1920 × 1080), in Indonesian and English, into `build/marketing/`. `dart run tool/website_changelog.dart` rebuilds the website's release notes page (`website/changelog.html`) from `store/releases.json` and the store changelogs. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
+`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders every screenshot from the real app with sample data into `website/screenshots/`, in Indonesian and English. Tablet and phone store sets each contain eight slides: the map, Loops, typed code, Magic Block, Fix it!, a solved puzzle, Until the flag, and the parent controls with the progress report. `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Promo videos show real gameplay from the "Watch me!" demos. Record its frames once (about 15 minutes) with `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, then `tool/marketing/invite_video.sh` renders the vertical closed-test invites (1080 × 1920) and `tool/marketing/promo_video.sh` the landscape YouTube and store-listing promo (1920 × 1080), in Indonesian and English, into `build/marketing/`. `dart run tool/website_changelog.dart` rebuilds the website's release notes page (`website/changelog.html`) from `store/releases.json` and the store changelogs. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
 
 ## Roadmap (MVP)
 
@@ -383,7 +391,10 @@ The number shown in the world follows playback, including Step, and resets
 when the program is edited. Both editors compile to shared `SetSteps` and
 `MoveSteps` instructions; the world only displays interpreter events.
 
-Later: Rive characters.
+### Later
+
+- **Rive character** (waiting on the user): the user will pick a CC BY character from the Rive community and send the `.riv` file with its link (the creator is credited in the Parent area and on the website). Criteria: top-down or four-direction views (the world turns the character, so its facing must stay visible), a state machine with at least idle (walk, happy and oops are welcome), roughly square, a simple friendly style. Build it only once the file arrives: `rive`/`flame_rive`, a mapping in `assets/config/character.json` (artboard, state machine, inputs for walk, turn, bump and celebrate), the drawn character kept as a fallback, no runtime network calls, the release manifest still without INTERNET, and the dependency recorded in `AGENTS.md`.
+- **Cloud sync for sponsors** (after the closed test and the production launch, not before): it breaks the "no network, data stays on the device" promise, so it needs a new Families review. Options discussed, none picked yet: A) the parent's own Google Drive app data folder behind the parent gate (preferred), B) an own server such as Firebase, C) Android Auto Backup only. Merge plan: union lesson and seen-puzzle sets, an append-only attempt log with unique ids (replayed to recompute mastery), last writer wins only for the parent's starting-island choice. Update `privacy.html`, Play's Data safety form and the store text in the same change.
 
 ## Documentation map
 

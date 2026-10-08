@@ -4,7 +4,7 @@ Instructions for AI coding agents working in this repo. Read `README.md` for the
 
 ## Definition of done
 
-A change is done only when the **Checks** command in `README.md` passes. If you can't run it, say so; don't claim it passed. Add or update tests in `test/` for any behavior you change.
+A change is done only when the **Checks** command in `README.md` passes. If you can't run it, say so; don't claim it passed. Add or update tests in `test/` for any behavior you change. For UI changes, also look at the result (README → Checking UI changes); tests don't show layout jumps, overlaps or glass glitches.
 
 ## Conventions
 
@@ -45,6 +45,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - **Platform folders** (`android/`, `ios/`, etc.) are mostly generated. Edit them only for platform config such as permissions, the app ID or signing. Never edit `ios/Flutter/Generated.xcconfig`, `**/GeneratedPluginRegistrant.*` or anything under `build/` or `.dart_tool/`.
 - **Secrets:** never commit keystores, `key.properties`, `google-services.json`/`GoogleService-Info.plist` with real keys, `.env` files or API tokens.
 - **App identity:** don't change the package name `cobalagi` or the ID `com.ardeman.cobalagi` without being asked.
+- **Releases:** "bump and build" means the checklist in README → Release (Google Play) → Bump and build checklist, in full. Setting repository secrets (`gh secret set`) and starting workflows by hand (`gh workflow run`) need the user's explicit approval; ask, don't work around a refusal.
 - **Version:** bump `version:` in `pubspec.yaml` only when asked. It is `NAME+BUILD`:
   - The name follows semantic versioning for people: PATCH (1.1.0 → 1.1.1) for fixes only, MINOR (1.1.x → 1.2.0) for new features such as an island or a tool, MAJOR for big changes such as a redesign or a new age group.
   - The build (Android versionCode) is one counter that only goes up, by one per upload, and never resets: Google Play rejects a build number it has seen before.
@@ -68,7 +69,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - Every page shares one header (menu, GitHub icon, language button, ☰ on phones) and one footer, copied from `privacy.html`; the home page differs only in linking to its own sections. `tool/website_changelog.dart` copies them into the changelog, and `test/store/website_changelog_test.dart` fails if any page drifts.
 - Every text has Indonesian in the HTML and English in `data-en` (`data-en-alt`, `data-en-src` for images). Screenshots come in pairs: `<name>-id.png` and `<name>.png`.
 - Pushing a change under `website/` to `master` publishes it live (`.github/workflows/pages.yml`).
-- Claims on the pages must stay true for the released app. When the app starts storing or sending different data, update `privacy.html` and its date in the same change.
+- Claims on the pages must stay true for the released app. During the closed test the user allows pushing website changes for a build that hasn't reached Google Play yet, together with the feature. When the app starts storing or sending different data, update `privacy.html` and its date in the same change.
 
 ## Keeping docs current
 
