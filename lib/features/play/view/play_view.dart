@@ -72,6 +72,11 @@ int _count(BlockProgram program) =>
     compileBlocks(program.main, star: program.star).blockCount;
 
 class _PlayViewState extends State<PlayView> {
+  /// The controls' slot beside the editor: a 64 dp row of buttons, or a
+  /// one-line feedback card (64 dp button plus 12 dp padding top and
+  /// bottom).
+  static const _controlSlotHeight = 88.0;
+
   late final _level = widget.exercise.level;
   late final _blocks = BlocksCubit(
     maxBlocks: _level.maxBlocks,
@@ -322,8 +327,9 @@ class _PlayViewState extends State<PlayView> {
                 );
                 // Feedback replaces the controls, so it never hides the
                 // world, and the controls aren't usable meanwhile anyway.
+                final feedback = _feedbackCard(context);
                 final controls =
-                    _feedbackCard(context) ??
+                    feedback ??
                     _RunControls(
                       onHint: _finished ? null : _showHint,
                       hintsUsed: _hints,
@@ -331,6 +337,28 @@ class _PlayViewState extends State<PlayView> {
                       compact: tight,
                       codeMode: _codeMode,
                     );
+                // Beside the editor, the world takes what the controls
+                // leave. Their slot keeps one height, with room for a
+                // one-line card, so the world never resizes when the card
+                // comes and goes; a taller card grows up over the gap.
+                final controlSlot = SizedBox(
+                  height: _controlSlotHeight,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      if (feedback == null)
+                        controls
+                      else
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Center(child: feedback),
+                        ),
+                    ],
+                  ),
+                );
                 Widget editorFor({required bool fit}) =>
                     BlocBuilder<PlayCubit, PlayState>(
                       builder: (context, play) {
@@ -421,7 +449,7 @@ class _PlayViewState extends State<PlayView> {
                               const SizedBox(height: 12),
                               Expanded(child: panel),
                               const SizedBox(height: 12),
-                              controls,
+                              controlSlot,
                             ],
                           ),
                         ),
@@ -448,7 +476,7 @@ class _PlayViewState extends State<PlayView> {
                             const SizedBox(height: 12),
                             Expanded(child: panel),
                             const SizedBox(height: 12),
-                            controls,
+                            controlSlot,
                           ],
                         ),
                       ),

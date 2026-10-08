@@ -264,4 +264,34 @@ void main() {
     );
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets(
+    'beside the editor, the world keeps its size when feedback shows',
+    (tester) async {
+      for (final size in const [Size(1280, 800), Size(800, 400)]) {
+        await _pumpPhone(tester, size: size);
+        final world = find.byWidgetPredicate((widget) => widget is GameWidget);
+        final before = tester.getRect(world);
+        // Three steps on an eight-step road: the run stops short.
+        final cubit = tester
+            .element(find.byType(BlockEditor))
+            .read<BlocksCubit>();
+        for (var i = 0; i < 3; i++) {
+          cubit.add(BlockType.forward);
+        }
+        await tester.pump();
+        await tester.tap(find.widgetWithText(FilledButton, 'Go!'));
+        for (
+          var i = 0;
+          i < 60 && find.text('Try again!').evaluate().isEmpty;
+          i++
+        ) {
+          await tester.pump(const Duration(milliseconds: 100));
+        }
+        expect(find.text('Try again!'), findsOneWidget, reason: '$size');
+        expect(tester.getRect(world), before, reason: '$size');
+        expect(tester.takeException(), isNull);
+      }
+    },
+  );
 }

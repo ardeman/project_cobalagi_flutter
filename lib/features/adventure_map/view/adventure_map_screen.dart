@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
@@ -163,7 +164,8 @@ class AdventureMapScreen extends StatelessWidget {
                       top: top + 8,
                       left: 16,
                       right: 16,
-                      child: banner,
+                      // Floating glass, as wide as its words.
+                      child: Center(child: banner),
                     ),
                 ],
               ),
@@ -262,35 +264,51 @@ class _BonusBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return GlassSurface(
-      tint: const Color(0xFFFFF3C4),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.diamond_rounded,
-              size: 48,
-              color: Color(0xFF26C6DA),
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.diamond_rounded, size: 48, color: Color(0xFF26C6DA)),
+          const SizedBox(width: 16),
+          Flexible(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  l10n.bonusAdventure,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                Text(conceptName(l10n, conceptId)),
+              ],
             ),
-            const SizedBox(width: 16),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    l10n.bonusAdventure,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  Text(conceptName(l10n, conceptId)),
-                ],
-              ),
-            ),
-          ],
+          ),
+        ],
+      ),
+    );
+    if (MediaQuery.highContrastOf(context)) {
+      return GlassSurface(tint: const Color(0xFFFFF3C4), child: content);
+    }
+    // Liquid glass floating over the sea, sized to its words, with a
+    // warm gold tint for the bonus.
+    return LiquidGlassLens(
+      style: const LiquidGlassStyle(
+        shape: LiquidGlassShape.continuousRoundedRectangle(
+          cornerRadius: 28,
+          borderWidth: 1.2,
+        ),
+        appearance: LiquidGlassAppearance(
+          color: Color(0x66FFF3C4),
+          blur: LiquidGlassBlur(sigmaX: 6, sigmaY: 6),
+        ),
+        refraction: LiquidGlassRefraction(
+          distortion: 0.18,
+          distortionWidth: 28,
+          chromaticAberration: 0.004,
         ),
       ),
+      child: content,
     );
   }
 }
