@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -66,93 +67,80 @@ class IslandScreen extends StatelessWidget {
         child: WindowClassBuilder(
           builder: (context, windowClass) {
             final tile = windowClass == WindowClass.compact ? 104.0 : 140.0;
-            return Center(
-              child: SingleChildScrollView(
-                padding: belowBars(context, const EdgeInsets.all(24)),
-                child: Column(
-                  children: [
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 20,
-                      runSpacing: 20,
-                      children: [
-                        for (var i = 0; i < lessons.length; i++)
-                          _LevelTile(
-                            number: i + 1,
-                            size: tile,
-                            color: color,
-                            played:
-                                !current ||
-                                progress.attemptedLessons.contains(
-                                  lessons[i].id,
-                                ),
-                            solved: progress.solvedLessons.contains(
-                              lessons[i].id,
-                            ),
-                            onTap: () => play(i),
+            return CenteredScrollView(
+              padding: belowBars(context, const EdgeInsets.all(24)),
+              child: Column(
+                children: [
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 20,
+                    runSpacing: 20,
+                    children: [
+                      for (var i = 0; i < lessons.length; i++)
+                        _LevelTile(
+                          number: i + 1,
+                          size: tile,
+                          color: color,
+                          played:
+                              !current ||
+                              progress.attemptedLessons.contains(lessons[i].id),
+                          solved: progress.solvedLessons.contains(
+                            lessons[i].id,
                           ),
-                      ],
-                    ),
-                    if (cubit.engine.puzzlesToMoveOn(
-                          learner,
-                          conceptId,
-                          lessons: [for (final l in lessons) l.id],
-                        )
-                        case final left?) ...[
-                      const SizedBox(height: 32),
-                      _NextIslandTrail(
-                        left: left,
-                        slots: max(
-                          1,
-                          cubit.engine.config.practiceLimit - lessons.length,
+                          onTap: () => play(i),
                         ),
-                        next: cubit.engine.graph.nextAfter(conceptId)!,
-                      ),
                     ],
-                    const SizedBox(height: 40),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 16,
-                      runSpacing: 16,
-                      children: [
-                        OutlinedButton.icon(
-                          icon: const Icon(Icons.ondemand_video_rounded),
-                          label: Text(l10n.watchHow),
-                          onPressed: () => context.go(
-                            '/child/$profileId/tutorial/$conceptId',
-                          ),
-                        ),
-                        // Lessons left here: playing them comes first, the
-                        // adventure (on another island) second.
-                        if (next != null) ...[
-                          OutlinedButton.icon(
-                            icon: const Icon(Icons.explore_rounded),
-                            label: Text(l10n.continueAdventure),
-                            onPressed: () =>
-                                context.go('/child/$profileId/play'),
-                          ),
-                          FilledButton.icon(
-                            icon: const Icon(
-                              Icons.play_arrow_rounded,
-                              size: 40,
-                            ),
-                            label: Text(l10n.playLevel(next + 1)),
-                            onPressed: () => play(next),
-                          ),
-                        ] else
-                          FilledButton.icon(
-                            icon: const Icon(
-                              Icons.play_arrow_rounded,
-                              size: 40,
-                            ),
-                            label: Text(l10n.continueAdventure),
-                            onPressed: () =>
-                                context.go('/child/$profileId/play'),
-                          ),
-                      ],
+                  ),
+                  if (cubit.engine.puzzlesToMoveOn(
+                        learner,
+                        conceptId,
+                        lessons: [for (final l in lessons) l.id],
+                      )
+                      case final left?) ...[
+                    const SizedBox(height: 32),
+                    _NextIslandTrail(
+                      left: left,
+                      slots: max(
+                        1,
+                        cubit.engine.config.practiceLimit - lessons.length,
+                      ),
+                      next: cubit.engine.graph.nextAfter(conceptId)!,
                     ),
                   ],
-                ),
+                  const SizedBox(height: 40),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 16,
+                    runSpacing: 16,
+                    children: [
+                      OutlinedButton.icon(
+                        icon: const Icon(Icons.ondemand_video_rounded),
+                        label: Text(l10n.watchHow),
+                        onPressed: () =>
+                            context.go('/child/$profileId/tutorial/$conceptId'),
+                      ),
+                      // Lessons left here: playing them comes first, the
+                      // adventure (on another island) second.
+                      if (next != null) ...[
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.explore_rounded),
+                          label: Text(l10n.continueAdventure),
+                          onPressed: () => context.go('/child/$profileId/play'),
+                        ),
+                        FilledButton.icon(
+                          icon: const Icon(Icons.play_arrow_rounded, size: 40),
+                          label: Text(l10n.playLevel(next + 1)),
+                          onPressed: () => play(next),
+                        ),
+                      ] else
+                        FilledButton.icon(
+                          icon: const Icon(Icons.play_arrow_rounded, size: 40),
+                          label: Text(l10n.continueAdventure),
+                          onPressed: () => context.go('/child/$profileId/play'),
+                        ),
+                    ],
+                  ),
+                ],
               ),
             );
           },

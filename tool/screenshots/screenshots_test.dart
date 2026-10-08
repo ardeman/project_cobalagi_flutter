@@ -650,7 +650,10 @@ void main() {
           final context = tester.element(find.byType(Scaffold).first);
           GoRouter.of(context).push('/parent/progress/1');
           await _settle(tester);
-          await tester.drag(find.byType(ListView), const Offset(0, -280));
+          await tester.drag(
+            find.byType(Scrollable).first,
+            const Offset(0, -280),
+          );
           await _settle(tester);
           await shoot('${prefix}parent-progress');
         });

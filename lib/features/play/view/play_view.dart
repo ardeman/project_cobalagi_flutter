@@ -180,7 +180,10 @@ class _PlayViewState extends State<PlayView> {
     final pattern = _hints.isEven
         ? patternHintMarks(_level, solution, labelFont: font)
         : null;
-    _game.showHint(pattern ?? hintMarks(_level, solution, labelFont: font));
+    _game.showHint(
+      pattern ?? hintMarks(_level, solution, labelFont: font),
+      trail: hintTrail(_level, solution),
+    );
     // Pre-readers hear what the pattern means.
     if (pattern != null) _say(VoiceClips.hintPattern);
   }

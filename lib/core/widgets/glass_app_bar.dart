@@ -66,7 +66,8 @@ class _GlassAppBarState extends State<GlassAppBar> {
             ),
       titleSpacing: widget.leading == null ? 16 : 8,
       title: widget.title,
-      actions: [...?widget.actions, const SizedBox(width: 8)],
+      // The same 16 dp from the edge as the leading button.
+      actions: [...?widget.actions, const SizedBox(width: 16)],
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
       scrolledUnderElevation: 0,

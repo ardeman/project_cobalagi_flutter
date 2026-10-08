@@ -4,18 +4,21 @@ import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 /// Whether the [GlassBar] on [edge] currently shows its glass.
-bool frosted(WidgetTester tester, GlassEdge edge) =>
-    tester
-        .widget<AnimatedOpacity>(
-          find.descendant(
-            of: find.byWidgetPredicate((w) => w is GlassBar && w.edge == edge),
-            matching: find.byType(AnimatedOpacity),
-          ),
-        )
-        .opacity ==
-    1;
+bool frosted(WidgetTester tester, GlassEdge edge) {
+  final blur = find.descendant(
+    of: find.byWidgetPredicate((w) => w is GlassBar && w.edge == edge),
+    matching: find.byType(LiquidGlassScrollEdge),
+  );
+  // Never inside an opacity layer: it fades by its own blur and tint.
+  expect(
+    find.ancestor(of: blur, matching: find.byType(AnimatedOpacity)),
+    findsNothing,
+  );
+  return blur.evaluate().isNotEmpty;
+}
 
 void main() {
   testWidgets('frame bars frost only while content is under them', (

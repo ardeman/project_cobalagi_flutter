@@ -121,13 +121,25 @@ class WorldGame extends FlameGame {
 
   /// Shows a solution as small blocks on the map, one by one in the order
   /// they run, then shrinks them away.
-  void showHint(List<HintMark> marks) {
+  ///
+  /// The [trail] (tile centres along the route) is drawn out underneath as
+  /// the blocks appear, showing which way they go.
+  void showHint(List<HintMark> marks, {List<Vector2> trail = const []}) {
     if (!isLoaded) return;
     world.children.whereType<HintMarkComponent>().forEach(
       (old) => old.removeFromParent(),
     );
+    world.children.whereType<HintTrailComponent>().forEach(
+      (old) => old.removeFromParent(),
+    );
     const step = 0.35;
     final fadeAt = marks.length * step + _hintVisible;
+    if (trail.length > 1) {
+      world.add(
+        HintTrailComponent(trail, drawIn: marks.length * step)
+          ..add(RemoveEffect(delay: fadeAt + 0.3)),
+      );
+    }
     for (var i = 0; i < marks.length; i++) {
       world.add(
         HintMarkComponent(marks[i])

@@ -41,6 +41,13 @@ void main() {
     expect(marks.first.at, Vector2(1, 1.5));
     expect(marks[2].at, Vector2(2.5, 1.5));
     expect(marks.every((m) => m.label == null), isTrue);
+    // The trail shows the way: the start tile, then each tile walked into.
+    expect(hintTrail(level, solve(level)!), [
+      Vector2(0.5, 1.5),
+      Vector2(1.5, 1.5),
+      Vector2(2.5, 1.5),
+      Vector2(2.5, 0.5),
+    ]);
   });
 
   test('Step Box levels show each straight stretch once, with its length', () {
@@ -66,6 +73,9 @@ void main() {
     );
     expect([for (final m in marks) m.label], ['2', null, '1']);
     expect(marks.first.labelFont, 'Roboto');
+    // The Step Box badge sits on each "use steps" mark, as on its block.
+    expect(marks.first.badge?.color, BlockType.setSteps.color);
+    expect(marks[1].badge, isNull);
     // In the middle of the two-step stretch, off the character's tile.
     expect(marks.first.at, Vector2(1.5, 1.5));
   });

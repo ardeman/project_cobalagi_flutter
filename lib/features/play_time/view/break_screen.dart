@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -40,60 +41,58 @@ class _BreakScreenState extends State<BreakScreen> {
     final text = Theme.of(context).textTheme;
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: GlassSurface(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.bedtime_rounded,
-                      size: 120,
-                      color: Color(0xFF7E57C2),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.breakTitle,
-                      textAlign: TextAlign.center,
-                      style: text.headlineMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      l10n.breakBody,
-                      textAlign: TextAlign.center,
-                      style: text.titleMedium,
-                    ),
-                    const SizedBox(height: 32),
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      spacing: 12,
-                      runSpacing: 12,
-                      children: [
-                        FilledButton.icon(
-                          onPressed: () => context.go('/'),
-                          icon: const Icon(Icons.home_rounded),
-                          label: Text(l10n.breakHome),
-                        ),
-                        OutlinedButton.icon(
-                          onPressed: () async {
-                            if (!await showParentGate(context) ||
-                                !context.mounted) {
-                              return;
-                            }
-                            context.read<PlayClock>().reset();
-                            widget.onContinue();
-                          },
-                          icon: const Icon(Icons.lock_open_rounded),
-                          label: Text(l10n.breakContinue),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+        child: CenteredScrollView(
+          padding: const EdgeInsets.all(24),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 560),
+            child: GlassSurface(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.bedtime_rounded,
+                    size: 120,
+                    color: Color(0xFF7E57C2),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.breakTitle,
+                    textAlign: TextAlign.center,
+                    style: text.headlineMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n.breakBody,
+                    textAlign: TextAlign.center,
+                    style: text.titleMedium,
+                  ),
+                  const SizedBox(height: 32),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      FilledButton.icon(
+                        onPressed: () => context.go('/'),
+                        icon: const Icon(Icons.home_rounded),
+                        label: Text(l10n.breakHome),
+                      ),
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          if (!await showParentGate(context) ||
+                              !context.mounted) {
+                            return;
+                          }
+                          context.read<PlayClock>().reset();
+                          widget.onContinue();
+                        },
+                        icon: const Icon(Icons.lock_open_rounded),
+                        label: Text(l10n.breakContinue),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),

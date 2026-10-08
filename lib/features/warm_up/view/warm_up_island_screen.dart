@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -69,25 +70,22 @@ class _WarmUpIslandScreenState extends State<WarmUpIslandScreen> {
         child: WindowClassBuilder(
           builder: (context, windowClass) {
             final tile = windowClass == WindowClass.compact ? 132.0 : 168.0;
-            return Center(
-              child: SingleChildScrollView(
-                padding: belowBars(context, const EdgeInsets.all(24)),
-                child: Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 20,
-                  runSpacing: 20,
-                  children: [
-                    for (final game in cubit.curriculum.warmUp.games)
-                      _GameTile(
-                        game: game,
-                        size: tile,
-                        stars: learner.warmUp[game.name] ?? 0,
-                        onTap: () => context.go(
-                          '/child/$profileId/warm-up/${game.name}',
-                        ),
-                      ),
-                  ],
-                ),
+            return CenteredScrollView(
+              padding: belowBars(context, const EdgeInsets.all(24)),
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 20,
+                runSpacing: 20,
+                children: [
+                  for (final game in cubit.curriculum.warmUp.games)
+                    _GameTile(
+                      game: game,
+                      size: tile,
+                      stars: learner.warmUp[game.name] ?? 0,
+                      onTap: () =>
+                          context.go('/child/$profileId/warm-up/${game.name}'),
+                    ),
+                ],
               ),
             );
           },

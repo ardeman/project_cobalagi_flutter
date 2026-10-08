@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flame/components.dart';
 
 import '../../../engine/interpreter/interpreter.dart';
@@ -13,9 +11,10 @@ import '../../editors/blocks/data/block.dart';
 import '../../editors/blocks/view/block_tile.dart';
 import 'world/hint_mark.dart';
 
-/// Turns [solution] into hint marks that look like the level's own blocks:
-/// a step arrow between tiles in the moving block's colour, pointing the way
-/// the character walks, and a turn badge on the tile where it turns.
+/// Turns [solution] into hint marks that look like the level's own blocks,
+/// exactly as in the palette and never turned: a step block between tiles
+/// and a turn block on the tile where it turns. Which way the route goes is
+/// shown by [hintTrail], so a mark always means "this block".
 ///
 /// Levels without a single-step block move with the Step Box: each straight
 /// stretch becomes one "use steps" mark carrying its length.
@@ -39,7 +38,11 @@ List<HintMark> hintMarks(Level level, Program solution, {String? labelFont}) {
           at: _between(from, _walk(from, facing, length)),
           icon: walk.icon,
           color: walk.color,
-          angle: _arrowAngle(facing, walk),
+          // The Step Box badge, as on the "use steps" block.
+          badge: (
+            icon: BlockType.setSteps.icon,
+            color: BlockType.setSteps.color,
+          ),
           label: '$length',
           labelFont: labelFont,
         ),
@@ -65,7 +68,6 @@ List<HintMark> hintMarks(Level level, Program solution, {String? labelFont}) {
               at: _between(from, to),
               icon: walk.icon,
               color: walk.color,
-              angle: _arrowAngle(facing, walk),
             ),
           );
         }
@@ -103,10 +105,13 @@ GridPoint _walk(GridPoint from, Direction facing, int steps) {
 Direction _direction(GridPoint from, GridPoint to) =>
     Direction.values.firstWhere((d) => from.step(d) == to);
 
-/// The forward block's arrow points up, the Step Box's to the right; both
-/// turn to point the way the character walks.
-double _arrowAngle(Direction facing, BlockType walk) =>
-    facing.index * pi / 2 - (walk == BlockType.moveSteps ? pi / 2 : 0);
+/// The route [solution] walks, as tile centres from the start to where it
+/// ends: the dotted trail that shows which way the hint's blocks go.
+List<Vector2> hintTrail(Level level, Program solution) => [
+  Vector2(level.start.x + 0.5, level.start.y + 0.5),
+  for (final event in runProgram(solution, level).events)
+    if (event case Moved(:final to)) Vector2(to.x + 0.5, to.y + 0.5),
+];
 
 /// A run of steps that comes back again and again in a route.
 typedef RoutePattern = ({int start, int unit, int times});
@@ -168,7 +173,7 @@ List<HintMark>? patternHintMarks(
         at: route[i].at,
         icon: route[i].icon,
         color: route[i].color,
-        angle: route[i].angle,
+        badge: route[i].badge,
         label: route[i].label,
         labelFont: labelFont,
         // Later rounds of the shape fade: the loop does them.

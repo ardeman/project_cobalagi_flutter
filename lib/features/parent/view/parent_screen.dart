@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:cobalagi/features/play_time/cubit/break_reminder_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -61,125 +62,119 @@ class ParentScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(title: Text(l10n.parentArea)),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 720),
-          // Below the Scaffold, so the padding includes the app bar.
-          child: Builder(
-            builder: (context) => ListView(
-              padding: belowBars(context, const EdgeInsets.all(24)),
-              children: [
-                Text(l10n.language, style: headerStyle),
-                const SizedBox(height: 8),
-                SegmentedButton<String?>(
-                  segments: [
+      // Below the Scaffold, so the padding includes the app bar.
+      body: Builder(
+        builder: (context) => CenteredScrollView(
+          padding: belowBars(context, const EdgeInsets.all(24)),
+          maxWidth: 720,
+          centerVertically: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(l10n.language, style: headerStyle),
+              const SizedBox(height: 8),
+              SegmentedButton<String?>(
+                segments: [
+                  ButtonSegment(value: null, label: Text(l10n.languageSystem)),
+                  ButtonSegment(
+                    value: 'id',
+                    label: Text(l10n.languageIndonesian),
+                  ),
+                  ButtonSegment(value: 'en', label: Text(l10n.languageEnglish)),
+                ],
+                selected: {languageCode},
+                onSelectionChanged: (s) =>
+                    context.read<SettingsCubit>().setLanguageCode(s.first),
+              ),
+              const SizedBox(height: 8),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.music_note_rounded),
+                title: Text(l10n.soundEffects),
+                subtitle: Text(l10n.soundEffectsHint),
+                value: context.watch<SoundEffectsCubit>().state,
+                onChanged: (on) =>
+                    context.read<SoundEffectsCubit>().set(on: on),
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.queue_music_rounded),
+                title: Text(l10n.music),
+                value: context.watch<MusicCubit>().state,
+                onChanged: (on) => context.read<MusicCubit>().set(on: on),
+              ),
+              const SizedBox(height: 8),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.bedtime_rounded),
+                title: Text(l10n.breakReminder),
+                subtitle: Text(l10n.breakReminderHint),
+              ),
+              SegmentedButton<int>(
+                segments: [
+                  for (final minutes in BreakReminderCubit.choices)
                     ButtonSegment(
-                      value: null,
-                      label: Text(l10n.languageSystem),
-                    ),
-                    ButtonSegment(
-                      value: 'id',
-                      label: Text(l10n.languageIndonesian),
-                    ),
-                    ButtonSegment(
-                      value: 'en',
-                      label: Text(l10n.languageEnglish),
-                    ),
-                  ],
-                  selected: {languageCode},
-                  onSelectionChanged: (s) =>
-                      context.read<SettingsCubit>().setLanguageCode(s.first),
-                ),
-                const SizedBox(height: 8),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  secondary: const Icon(Icons.music_note_rounded),
-                  title: Text(l10n.soundEffects),
-                  subtitle: Text(l10n.soundEffectsHint),
-                  value: context.watch<SoundEffectsCubit>().state,
-                  onChanged: (on) =>
-                      context.read<SoundEffectsCubit>().set(on: on),
-                ),
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  secondary: const Icon(Icons.queue_music_rounded),
-                  title: Text(l10n.music),
-                  value: context.watch<MusicCubit>().state,
-                  onChanged: (on) => context.read<MusicCubit>().set(on: on),
-                ),
-                const SizedBox(height: 8),
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.bedtime_rounded),
-                  title: Text(l10n.breakReminder),
-                  subtitle: Text(l10n.breakReminderHint),
-                ),
-                SegmentedButton<int>(
-                  segments: [
-                    for (final minutes in BreakReminderCubit.choices)
-                      ButtonSegment(
-                        value: minutes,
-                        label: Text(
-                          minutes == 0
-                              ? l10n.breakOff
-                              : l10n.breakMinutes(minutes),
-                        ),
+                      value: minutes,
+                      label: Text(
+                        minutes == 0
+                            ? l10n.breakOff
+                            : l10n.breakMinutes(minutes),
                       ),
-                  ],
-                  selected: {context.watch<BreakReminderCubit>().state},
-                  onSelectionChanged: (s) =>
-                      context.read<BreakReminderCubit>().set(s.first),
-                ),
-                const SizedBox(height: 32),
-                Text(l10n.plan, style: headerStyle),
-                // The button wraps under the plan name on narrow phones.
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Wrap(
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: 16,
-                    runSpacing: 8,
-                    children: [
-                      Text(
-                        plan == Plan.free
-                            ? l10n.planFree
-                            : l10n.planFull(Plan.full.maxProfiles),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                    ),
+                ],
+                selected: {context.watch<BreakReminderCubit>().state},
+                onSelectionChanged: (s) =>
+                    context.read<BreakReminderCubit>().set(s.first),
+              ),
+              const SizedBox(height: 32),
+              Text(l10n.plan, style: headerStyle),
+              // The button wraps under the plan name on narrow phones.
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 16,
+                  runSpacing: 8,
+                  children: [
+                    Text(
                       plan == Plan.free
-                          ? FilledButton(
-                              onPressed: () => showDonationSheet(context),
-                              child: Text(l10n.supportCobaLagi),
-                            )
-                          : const Icon(
-                              Icons.favorite_rounded,
-                              color: Colors.pink,
-                            ),
-                    ],
-                  ),
+                          ? l10n.planFree
+                          : l10n.planFull(Plan.full.maxProfiles),
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    plan == Plan.free
+                        ? FilledButton(
+                            onPressed: () => showDonationSheet(context),
+                            child: Text(l10n.supportCobaLagi),
+                          )
+                        : const Icon(
+                            Icons.favorite_rounded,
+                            color: Colors.pink,
+                          ),
+                  ],
                 ),
-                if (kDebugMode)
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(l10n.debugPlanOverride),
-                    value: plan == Plan.full,
-                    onChanged: (full) => context
-                        .read<EntitlementCubit>()
-                        .debugOverride(full ? Plan.full : Plan.free),
-                  ),
-                const SizedBox(height: 32),
-                Text(l10n.players, style: headerStyle),
-                for (final profile in profiles)
-                  _PlayerTile(
-                    key: ValueKey(profile.id),
-                    profile: profile,
-                    onDelete: () => _confirmDelete(context, profile),
-                  ),
-                const SizedBox(height: 32),
-                const AppVersionText(),
-              ],
-            ),
+              ),
+              if (kDebugMode)
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(l10n.debugPlanOverride),
+                  value: plan == Plan.full,
+                  onChanged: (full) => context
+                      .read<EntitlementCubit>()
+                      .debugOverride(full ? Plan.full : Plan.free),
+                ),
+              const SizedBox(height: 32),
+              Text(l10n.players, style: headerStyle),
+              for (final profile in profiles)
+                _PlayerTile(
+                  key: ValueKey(profile.id),
+                  profile: profile,
+                  onDelete: () => _confirmDelete(context, profile),
+                ),
+              const SizedBox(height: 32),
+              const AppVersionText(),
+            ],
           ),
         ),
       ),

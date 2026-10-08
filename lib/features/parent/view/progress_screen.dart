@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
@@ -81,61 +82,61 @@ class _ProgressScreenState extends State<ProgressScreen> {
           if (profile == null || data == null) {
             return const Center(child: CircularProgressIndicator());
           }
-          return Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 720),
-              child: ListView(
-                padding: belowBars(context, const EdgeInsets.all(24)),
-                children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: ProfileAvatar(avatar: profile.avatar, size: 56),
-                    title: Text(
-                      profile.nickname,
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    subtitle: Text(
-                      placementSummary(
-                        l10n,
-                        data.placement.curriculum,
-                        data.learner,
-                      ),
+          return CenteredScrollView(
+            padding: belowBars(context, const EdgeInsets.all(24)),
+            maxWidth: 720,
+            centerVertically: false,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: ProfileAvatar(avatar: profile.avatar, size: 56),
+                  title: Text(
+                    profile.nickname,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  subtitle: Text(
+                    placementSummary(
+                      l10n,
+                      data.placement.curriculum,
+                      data.learner,
                     ),
                   ),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.flag_rounded),
-                      label: Text(l10n.changeStartingIsland),
-                      onPressed: () async {
-                        await showPlacementDialog(
-                          context,
-                          profile: profile,
-                          placement: data.placement,
-                        );
-                        setState(() => _data = _load());
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    secondary: const Icon(Icons.code_rounded),
-                    title: Text(l10n.codeTab),
-                    subtitle: Text(l10n.codeTabHint),
-                    value: _code ?? data.learner.placement?.readsWords ?? false,
-                    onChanged: (on) {
-                      setState(() => _code = on);
-                      data.placement.setCodeTab(widget.profileId, on: on);
+                ),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.flag_rounded),
+                    label: Text(l10n.changeStartingIsland),
+                    onPressed: () async {
+                      await showPlacementDialog(
+                        context,
+                        profile: profile,
+                        placement: data.placement,
+                      );
+                      setState(() => _data = _load());
                     },
                   ),
-                  const SizedBox(height: 24),
-                  if (plan == Plan.full)
-                    _Report(report: data.report)
-                  else
-                    const _SponsorOnly(),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  secondary: const Icon(Icons.code_rounded),
+                  title: Text(l10n.codeTab),
+                  subtitle: Text(l10n.codeTabHint),
+                  value: _code ?? data.learner.placement?.readsWords ?? false,
+                  onChanged: (on) {
+                    setState(() => _code = on);
+                    data.placement.setCodeTab(widget.profileId, on: on);
+                  },
+                ),
+                const SizedBox(height: 24),
+                if (plan == Plan.full)
+                  _Report(report: data.report)
+                else
+                  const _SponsorOnly(),
+              ],
             ),
           );
         },

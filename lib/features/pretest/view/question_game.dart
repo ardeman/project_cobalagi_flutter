@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../app/l10n/app_localizations.dart';
@@ -145,51 +146,49 @@ class _QuestionGameState extends State<QuestionGame> {
               WindowClass.medium => 150.0,
               WindowClass.expanded => 190.0,
             }, max(80.0, height / 3.4));
-            return Center(
-              child: SingleChildScrollView(
-                padding: belowBars(context, const EdgeInsets.all(24)),
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: feedback != null
-                      ? Column(
-                          key: ValueKey('feedback-${_round.questionsAsked}'),
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _FeedbackBanner(cheer: feedback.cheer),
-                            SizedBox(height: size * 0.2),
-                            QuestionView(
-                              question: feedback.question,
-                              size: size,
-                              onAnswer: null,
-                              chosen: feedback.chosen,
-                              answerLabel: l10n.answerWas,
-                            ),
-                            // Room for the label under the right answer.
-                            SizedBox(height: size * 0.6),
-                          ],
-                        )
-                      : question == null
-                      ? KeyedSubtree(
-                          key: const ValueKey('done'),
-                          child: widget.done(context),
-                        )
-                      : Column(
-                          key: ValueKey(_round.questionsAsked),
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _Prompt(
-                              text: promptFor(l10n, question).$1,
-                              onListen: _speak,
-                            ),
-                            SizedBox(height: size * 0.2),
-                            QuestionView(
-                              question: question,
-                              size: size,
-                              onAnswer: _answer,
-                            ),
-                          ],
-                        ),
-                ),
+            return CenteredScrollView(
+              padding: belowBars(context, const EdgeInsets.all(24)),
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: feedback != null
+                    ? Column(
+                        key: ValueKey('feedback-${_round.questionsAsked}'),
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _FeedbackBanner(cheer: feedback.cheer),
+                          SizedBox(height: size * 0.2),
+                          QuestionView(
+                            question: feedback.question,
+                            size: size,
+                            onAnswer: null,
+                            chosen: feedback.chosen,
+                            answerLabel: l10n.answerWas,
+                          ),
+                          // Room for the label under the right answer.
+                          SizedBox(height: size * 0.6),
+                        ],
+                      )
+                    : question == null
+                    ? KeyedSubtree(
+                        key: const ValueKey('done'),
+                        child: widget.done(context),
+                      )
+                    : Column(
+                        key: ValueKey(_round.questionsAsked),
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _Prompt(
+                            text: promptFor(l10n, question).$1,
+                            onListen: _speak,
+                          ),
+                          SizedBox(height: size * 0.2),
+                          QuestionView(
+                            question: question,
+                            size: size,
+                            onAnswer: _answer,
+                          ),
+                        ],
+                      ),
               ),
             );
           },

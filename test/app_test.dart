@@ -227,7 +227,7 @@ void main() {
     await passParentGate(tester);
     // Scroll it to the middle, clear of the glass bar over the page.
     await tester.scrollUntilVisible(find.text('30 min'), 200);
-    await tester.drag(find.byType(ListView), const Offset(0, -150));
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -150));
     await tester.pumpAndSettle();
     await tester.tap(find.text('30 min'));
     await tester.pumpAndSettle();

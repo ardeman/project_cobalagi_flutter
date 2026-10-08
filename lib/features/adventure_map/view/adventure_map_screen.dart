@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
@@ -224,32 +225,30 @@ class _WelcomeState extends State<_Welcome> {
     final size = widget.size;
     final onStart = widget.onStart;
     final l10n = AppLocalizations.of(context);
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.sports_esports_rounded,
-              // Smaller on short screens, so Start stays in view.
-              size: min(size * 1.2, MediaQuery.sizeOf(context).height * 0.22),
-              color: const Color(0xFFFF7A59),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.pretestWelcome,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            const SizedBox(height: 32),
-            FilledButton.icon(
-              icon: const Icon(Icons.play_arrow_rounded, size: 48),
-              label: Text(l10n.pretestStart),
-              onPressed: onStart,
-            ),
-          ],
-        ),
+    return CenteredScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.sports_esports_rounded,
+            // Smaller on short screens, so Start stays in view.
+            size: min(size * 1.2, MediaQuery.sizeOf(context).height * 0.22),
+            color: const Color(0xFFFF7A59),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l10n.pretestWelcome,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 32),
+          FilledButton.icon(
+            icon: const Icon(Icons.play_arrow_rounded, size: 48),
+            label: Text(l10n.pretestStart),
+            onPressed: onStart,
+          ),
+        ],
       ),
     );
   }

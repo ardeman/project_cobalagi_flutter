@@ -59,7 +59,6 @@ class ProfilesScreen extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: !state.loaded

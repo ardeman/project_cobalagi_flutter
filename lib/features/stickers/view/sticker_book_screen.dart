@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -103,18 +104,16 @@ class _StickerBookScreenState extends State<StickerBookScreen> {
                 ),
               ],
             );
-            return Center(
-              child: SingleChildScrollView(
-                padding: belowBars(context, const EdgeInsets.all(24)),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 900),
-                  child: Column(
-                    children: [
-                      section(l10n.stickersIslands, islands),
-                      const SizedBox(height: 40),
-                      section(conceptName(l10n, warmUpIsland), games),
-                    ],
-                  ),
+            return CenteredScrollView(
+              padding: belowBars(context, const EdgeInsets.all(24)),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 900),
+                child: Column(
+                  children: [
+                    section(l10n.stickersIslands, islands),
+                    const SizedBox(height: 40),
+                    section(conceptName(l10n, warmUpIsland), games),
+                  ],
                 ),
               ),
             );
