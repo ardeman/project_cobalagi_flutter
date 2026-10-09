@@ -329,22 +329,44 @@ class _OptionCard extends StatelessWidget {
     final border = switch (mark) {
       _Mark.right => _rightColor,
       _Mark.wrong => _wrongColor,
-      _ => Colors.transparent,
+      _ => null,
     };
     Widget card = SizedBox(
       width: size,
       height: height,
-      child: Card(
-        elevation: 3,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
+      // A soft shadow of its own: the card's elevation shadow, under its
+      // see-through glass, showed as a thick black frame.
+      child: DecoratedBox(
+        decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(24),
-          side: BorderSide(color: border, width: 8),
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x1F1D3A4A),
+              blurRadius: 14,
+              offset: Offset(0, 6),
+            ),
+          ],
         ),
-        child: InkWell(
-          onTap: onTap,
-          child: Center(
-            child: Padding(padding: const EdgeInsets.all(8), child: child),
+        child: Card(
+          elevation: 0,
+          margin: EdgeInsets.zero,
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            // A thick coloured ring once answered; before, a thin glassy
+            // rim. A painted ring doesn't move the picture inside.
+            side: border == null
+                ? BorderSide(
+                    color: Colors.white.withValues(alpha: 0.8),
+                    width: 2,
+                  )
+                : BorderSide(color: border, width: 8),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            child: Center(
+              child: Padding(padding: const EdgeInsets.all(8), child: child),
+            ),
           ),
         ),
       ),
@@ -359,7 +381,7 @@ class _OptionCard extends StatelessWidget {
             top: -10,
             child: CircleAvatar(
               radius: 24,
-              backgroundColor: border,
+              backgroundColor: border!,
               child: Icon(
                 mark == _Mark.right ? Icons.check_rounded : Icons.close_rounded,
                 color: Colors.white,

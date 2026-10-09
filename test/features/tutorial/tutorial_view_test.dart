@@ -122,21 +122,15 @@ void main() {
       Rect editor() => tester.getRect(find.byType(BlockEditor).first);
       final worldBefore = world();
       final editorBefore = editor();
-      // The end buttons wait hidden: they can't be tapped yet.
+      // The end buttons only come at the end.
       expect(find.text("Let's play!").hitTestable(), findsNothing);
       await _watch(tester);
       expect(find.text("Let's play!").hitTestable(), findsOneWidget);
       expect(world(), worldBefore);
       // The editor grows with the demo's blocks, but stays where it was.
       expect(editor().topLeft, editorBefore.topLeft);
-      // The demo's Go, only for show, has faded away.
-      final go = tester.widget<AnimatedOpacity>(
-        find.ancestor(
-          of: find.text('Go!'),
-          matching: find.byType(AnimatedOpacity),
-        ),
-      );
-      expect(go.opacity, 0);
+      // The demo's Go stays; the end buttons float over the demo.
+      expect(find.text('Go!'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   }

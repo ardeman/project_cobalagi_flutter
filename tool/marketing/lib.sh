@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shared helpers for the promo videos (invite_video.sh, promo_video.sh).
+# Shared helpers for the promo videos (short_video.sh, promo_video.sh).
 # Cards are HTML rendered by headless Chrome; gameplay comes from the frames
 # that tool/screenshots records of the "Watch me!" demos:
 #   VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens \
@@ -23,8 +23,11 @@ if [ ! -f "$FRAMES/loops-000.png" ]; then
   exit 1
 fi
 
+# The page behind the card is coral too: a screenshot that comes out short
+# (headless Chrome, now and then) must not show a white strip.
 BASE_STYLE='
   html,body{margin:0;overflow:hidden}
+  html{background:#e0532f}
   body{font-family:ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif;color:#fff;
        background:radial-gradient(circle at 85% 12%,#ffb38a 0,transparent 45%),
                   radial-gradient(circle at 10% 92%,#ffc83d66 0,transparent 42%),

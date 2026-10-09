@@ -44,7 +44,10 @@ render() { # lang suffix tagline map blocks fix until code parents chips
   still "$TMP/code.png" 3.5
   tablet_card "$9" "$TMP/parents.png" "parent-progress$s.png"
   still "$TMP/parents.png" 3.5
-  card "$title" ".chip{font-size:36px;padding:10px 28px}" "$TMP/end.png"
+  # The end card adds the website, for viewers who want to know more.
+  local web='<div style="font-size:40px;font-weight:800;margin-top:34px;opacity:.95">cobalagi.ardeman.com</div>'
+  card "${title%</div></div>}$web</div></div>" \
+    ".chip{font-size:36px;padding:10px 28px}" "$TMP/end.png"
   still "$TMP/end.png" 4.5
   finish "$OUT/promo-$lang.mp4"
 }

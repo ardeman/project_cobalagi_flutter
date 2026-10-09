@@ -175,37 +175,31 @@ class _TutorialViewState extends State<TutorialView> {
       borderRadius: BorderRadius.circular(24),
       child: GameWidget(key: ValueKey(_game), game: _game),
     );
-    // The demo's Go is only for show: it fades once the demo is over, so it
-    // doesn't look like a button to press, and keeps its place.
-    final go = AnimatedOpacity(
-      opacity: _finished ? 0 : 1,
-      duration: const Duration(milliseconds: 250),
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          AnimatedScale(
-            scale: _pressingGo ? 0.92 : 1,
-            duration: const Duration(milliseconds: 150),
-            child: FilledButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.play_arrow_rounded, size: 40),
-              label: Text(l10n.run),
+    final go = Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        AnimatedScale(
+          scale: _pressingGo ? 0.92 : 1,
+          duration: const Duration(milliseconds: 150),
+          child: FilledButton.icon(
+            onPressed: () {},
+            icon: const Icon(Icons.play_arrow_rounded, size: 40),
+            label: Text(l10n.run),
+          ),
+        ),
+        if (_pressingGo)
+          const Positioned(
+            right: -6,
+            bottom: -22,
+            child: Icon(
+              Icons.touch_app_rounded,
+              size: 48,
+              color: Colors.white,
+              shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
             ),
           ),
-          if (_pressingGo)
-            const Positioned(
-              right: -6,
-              bottom: -22,
-              child: Icon(
-                Icons.touch_app_rounded,
-                size: 48,
-                color: Colors.white,
-                shadows: [Shadow(blurRadius: 6, color: Colors.black54)],
-              ),
-            ),
-        ],
-      ),
+      ],
     );
     Widget editorFor({required bool fit}) => BlocProvider.value(
       value: _blocks,
@@ -221,44 +215,42 @@ class _TutorialViewState extends State<TutorialView> {
       ),
     );
     final editor = editorFor(fit: false);
-    // The end buttons always take their room, hidden while the demo plays
-    // (with Skip over them), so nothing moves when they appear.
-    final buttons = Stack(
-      alignment: Alignment.center,
-      children: [
-        // Keeps their size only: not tappable or read out while hidden.
-        Visibility(
-          visible: _finished,
-          maintainState: true,
-          maintainAnimation: true,
-          maintainSize: true,
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              OutlinedButton.icon(
-                onPressed: _start,
-                icon: const Icon(Icons.replay_rounded),
-                label: Text(l10n.tutorialWatchAgain),
-              ),
-              FilledButton.icon(
-                onPressed: widget.onDone,
-                icon: const Icon(Icons.arrow_forward_rounded),
-                label: Text(widget.doneLabel ?? l10n.tutorialLetsPlay),
-              ),
-            ],
+    // When the demo is over, its buttons float over the bottom of the demo
+    // instead of taking a row of their own, so nothing is pushed aside.
+    final endButtons = GlassSurface(
+      padding: const EdgeInsets.all(16),
+      radius: 28,
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        spacing: 12,
+        runSpacing: 12,
+        children: [
+          OutlinedButton.icon(
+            onPressed: _start,
+            icon: const Icon(Icons.replay_rounded),
+            label: Text(l10n.tutorialWatchAgain),
           ),
+          FilledButton.icon(
+            onPressed: widget.onDone,
+            icon: const Icon(Icons.arrow_forward_rounded),
+            label: Text(widget.doneLabel ?? l10n.tutorialLetsPlay),
+          ),
+        ],
+      ),
+    );
+    // Skip keeps its row's height when it goes, so the demo doesn't grow.
+    final skip = Visibility(
+      visible: !_finished,
+      maintainState: true,
+      maintainAnimation: true,
+      maintainSize: true,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: widget.onDone,
+          child: Text(l10n.tutorialSkip),
         ),
-        if (!_finished)
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: widget.onDone,
-              child: Text(l10n.tutorialSkip),
-            ),
-          ),
-      ],
+      ),
     );
     return Scaffold(
       body: SafeArea(
@@ -311,9 +303,22 @@ class _TutorialViewState extends State<TutorialView> {
                 children: [
                   top,
                   const SizedBox(height: 12),
-                  Expanded(child: demo),
+                  Expanded(
+                    child: Stack(
+                      children: [
+                        Positioned.fill(child: demo),
+                        if (_finished)
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: endButtons,
+                          ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  buttons,
+                  skip,
                 ],
               );
             },
