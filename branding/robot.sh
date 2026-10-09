@@ -7,11 +7,10 @@
 #   assets/images/robot_head.png   the splash screen's head (everything above
 #   assets/images/robot_body.png   the neck) and body, drawn apart so the
 #                                  head can bob while the wheels roll
-# The robot was designed with tool/generate_design.dart (Recraft V3 on
-# fal.ai); its faces are drawn by the app over the screen (paintRobotFace),
-# and the splash draws spokes over the wheel hubs (RollingRobot), so a new
-# picture must keep the screen and hubs in the same places, or those must
-# move with it.
+# The robot was designed with Recraft V3 (on fal.ai, no longer used). Its
+# faces are drawn by the app over the screen (paintRobotFace), and the splash
+# draws spokes over the wheel hubs (RollingRobot), so a new picture must keep
+# the screen and hubs in the same places, or those must move with it.
 # Run from the project root:
 #   branding/robot.sh
 set -euo pipefail

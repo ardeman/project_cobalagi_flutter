@@ -274,7 +274,7 @@ The friend children program is a small teal robot, exploring planets in space. I
 
 Each planet's puzzle world (`WorldTheme` in `lib/features/play/view/world/world_theme.dart`) has its own starry sky, ground, obstacles and finish, and every finish carries the red flag the voice talks about.
 
-The robot was designed with AI on fal.ai, paid per use. For new art, put a fal.ai key in `.env` as `FAL_KEY` (the key used for the robot was removed; make a new one at fal.ai → Keys) and run `dart run tool/generate_design.dart <ideas.json>`: it makes vector ideas with Recraft V3 (about $0.08 each) into `build/character/designs/`; with `"image"` and `"strength"` in the file it edits an image instead, but edits don't keep a character's identity. AI animation (Omnilottie) only handled very simple shapes, so the game animates the robot in code instead.
+The robot was designed with AI (Recraft V3 on fal.ai) and is finished: `branding/` holds its artwork, and `branding/robot.sh` rebuilds every picture from it without any AI service. AI animation (Omnilottie) only handled very simple shapes, so the game animates the robot in code instead.
 
 ## Website
 
