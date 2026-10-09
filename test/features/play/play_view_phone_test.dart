@@ -13,6 +13,7 @@ import 'package:cobalagi/features/play/view/play_view.dart';
 import 'package:cobalagi/learning/exercise_result.dart';
 import 'package:cobalagi/learning/learning_engine.dart';
 import 'package:flame/game.dart';
+import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -315,15 +316,15 @@ void main() {
         .add(BlockType.forward);
     await tester.pump();
     bool pulsing() => tester
-        .widget<ScaleTransition>(
+        .widget<PaintTransition>(
           find
               .ancestor(
                 of: find.widgetWithIcon(IconButton, Icons.lightbulb_rounded),
-                matching: find.byType(ScaleTransition),
+                matching: find.byType(PaintTransition),
               )
               .first,
         )
-        .scale
+        .animation
         .isAnimating;
     for (var run = 1; run <= 5; run++) {
       await tester.tap(find.widgetWithText(FilledButton, 'Go!'));

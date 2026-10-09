@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/learning/view/concepts.dart';
+import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:cobalagi/features/adventure_map/view/map_connections.dart';
 
 /// One planet on the [SpaceMap]. (The code calls a concept's world an
@@ -150,14 +151,19 @@ class _SpaceMapState extends State<SpaceMap> {
         child: Stack(
           clipBehavior: Clip.none,
           children: [
+            // Its own layer: the sky is costly (hundreds of stars, glowing
+            // clouds) and must not repaint whenever something on the map
+            // animates, such as the bobbing marker.
             Positioned.fill(
-              child: CustomPaint(
-                painter: _SkyPainter(
-                  reached: reached,
-                  paths: mapConnections(
-                    centres: centres,
-                    islandSize: size,
-                    wide: wide,
+              child: RepaintBoundary(
+                child: CustomPaint(
+                  painter: _SkyPainter(
+                    reached: reached,
+                    paths: mapConnections(
+                      centres: centres,
+                      islandSize: size,
+                      wide: wide,
+                    ),
                   ),
                 ),
               ),
@@ -658,17 +664,20 @@ class _BobbingState extends State<_Bobbing>
 
   @override
   void dispose() {
+    _curve.dispose();
     _controller.dispose();
     super.dispose();
   }
 
+  late final _curve = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeInOut,
+  );
+
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: _controller,
-    builder: (context, child) => Transform.translate(
-      offset: Offset(0, -6 * Curves.easeInOut.transform(_controller.value)),
-      child: child,
-    ),
+  Widget build(BuildContext context) => PaintTransition(
+    animation: _curve,
+    transform: PaintTransition.translateY(-6),
     child: widget.child,
   );
 }

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
+import 'package:cobalagi/core/widgets/paint_transition.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
@@ -966,6 +967,13 @@ class _RunControls extends StatelessWidget {
         // Small phones: Go keeps only its play picture, so all four
         // buttons fit at full tap size.
         final iconOnly = box.maxWidth < 340;
+        // The unused hint calls out a few tries after it turns on.
+        final calling =
+            !running &&
+            onHint != null &&
+            hintsUsed == 0 &&
+            play.tries >= hintAfterRuns + hintPulseAfterTries &&
+            play.phase != PlayPhase.succeeded;
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -1019,14 +1027,17 @@ class _RunControls extends StatelessWidget {
             // A few tries after the bulb turns on, if still unused, it
             // pulses so a child who is stuck notices it, until they ask.
             _Pulse(
-              active:
-                  !running &&
-                  onHint != null &&
-                  hintsUsed == 0 &&
-                  play.tries >= hintAfterRuns + hintPulseAfterTries &&
-                  play.phase != PlayPhase.succeeded,
+              glow: true,
+              active: calling,
+              // While it calls, the bulb lights up: amber, like a lamp on.
               child: IconButton.filledTonal(
                 tooltip: l10n.hint,
+                style: calling
+                    ? IconButton.styleFrom(
+                        backgroundColor: const Color(0xFFFFC83D),
+                        foregroundColor: const Color(0xFF3E2723),
+                      )
+                    : null,
                 onPressed: running || play.tries < hintAfterRuns
                     ? null
                     : onHint,
@@ -1040,26 +1051,43 @@ class _RunControls extends StatelessWidget {
   }
 }
 
-/// Gently grows and shrinks [child] while [active], to point it out.
+/// Grows and shrinks [child] while [active], to point it out. With [glow]
+/// (the hint bulb) it pulses bigger and golden rings ripple out from it, so
+/// a child can't miss it; when the system asks for less motion, a steady
+/// golden ring shows instead.
 class _Pulse extends StatefulWidget {
-  const _Pulse({required this.active, required this.child});
+  const _Pulse({required this.active, required this.child, this.glow = false});
 
   final bool active;
+  final bool glow;
   final Widget child;
 
   @override
   State<_Pulse> createState() => _PulseState();
 }
 
-class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
+class _PulseState extends State<_Pulse> with TickerProviderStateMixin {
   late final _controller = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 700),
   );
+  late final _curve = CurvedAnimation(
+    parent: _controller,
+    curve: Curves.easeInOut,
+  );
+
+  /// The rings' outward travel, 0 → 1 and again.
+  late final _ripple = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1400),
+  );
+
+  var _still = false;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _still = MediaQuery.disableAnimationsOf(context);
     _update();
   }
 
@@ -1070,10 +1098,15 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
   }
 
   void _update() {
-    if (widget.active && !_controller.isAnimating) {
+    final moving = widget.active && !_still;
+    if (moving && !_controller.isAnimating) {
       _controller.repeat(reverse: true);
-    } else if (!widget.active) {
+      if (widget.glow) _ripple.repeat();
+    } else if (!moving) {
       _controller
+        ..stop()
+        ..value = 0;
+      _ripple
         ..stop()
         ..value = 0;
     }
@@ -1081,16 +1114,79 @@ class _PulseState extends State<_Pulse> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
+    _curve.dispose();
     _controller.dispose();
+    _ripple.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) => ScaleTransition(
-    scale: Tween(
-      begin: 1.0,
-      end: 1.12,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut)),
-    child: widget.child,
-  );
+  Widget build(BuildContext context) {
+    final pulse = PaintTransition(
+      animation: _curve,
+      transform: PaintTransition.scaleUpTo(widget.glow ? 1.22 : 1.12),
+      child: widget.child,
+    );
+    if (!widget.glow) return pulse;
+    return Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        // Painted alone (repaint: the ripple), never rebuilding the screen.
+        Positioned.fill(
+          child: RepaintBoundary(
+            child: CustomPaint(
+              painter: _Ripple(_ripple, active: widget.active, still: _still),
+            ),
+          ),
+        ),
+        pulse,
+      ],
+    );
+  }
+}
+
+/// Golden rings rippling out from the hint bulb, two at a time.
+class _Ripple extends CustomPainter {
+  _Ripple(this.travel, {required this.active, required this.still})
+    : super(repaint: travel);
+
+  final Animation<double> travel;
+  final bool active;
+  final bool still;
+
+  static const _gold = Color(0xFFFFB300);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (!active) return;
+    final centre = size.center(Offset.zero);
+    final radius = size.shortestSide / 2;
+    if (still) {
+      canvas.drawCircle(
+        centre,
+        radius + 6,
+        Paint()
+          ..color = _gold
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 5,
+      );
+      return;
+    }
+    for (final phase in [0.0, 0.5]) {
+      final t = (travel.value + phase) % 1;
+      canvas.drawCircle(
+        centre,
+        radius * (1 + 0.8 * t),
+        Paint()
+          ..color = _gold.withValues(alpha: 0.85 * (1 - t))
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 7 * (1 - t) + 1,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_Ripple old) =>
+      old.active != active || old.still != still || old.travel != travel;
 }
