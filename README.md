@@ -9,7 +9,7 @@ Blocks and code drive the same game world. A short, voice-led placement game pic
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Android is released for now: on Google Play, and as APKs on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
-> **Status:** in Google Play's closed test (version 1.3.0, build 10): the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: character artwork and the public release after the closed test; see the roadmap.
+> **Status:** in Google Play's closed test (version 2.0.0, build 13): a robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -404,7 +404,6 @@ when the program is edited. Both editors compile to shared `SetSteps` and
 
 ### Later
 
-- **Rive character** (waiting on the user): the user will pick a CC BY character from the Rive community and send the `.riv` file with its link (the creator is credited in the Parent area and on the website). Criteria: top-down or four-direction views (the world turns the character, so its facing must stay visible), a state machine with at least idle (walk, happy and oops are welcome), roughly square, a simple friendly style. Build it only once the file arrives: `rive`/`flame_rive`, a mapping in `assets/config/character.json` (artboard, state machine, inputs for walk, turn, bump and celebrate), the drawn character kept as a fallback, no runtime network calls, the release manifest still without INTERNET, and the dependency recorded in `AGENTS.md`.
 - **Progress export and import** (parent area, behind the parent gate; a sponsor feature or for everyone, not decided): "Save progress" writes a file and opens the system share sheet, so the parent chooses where it goes (Google Drive, Files, a chat to themselves); "Load progress" on another device picks that file and merges it. The app stays without internet access and nothing leaves the device unless a parent moves it, so the privacy promises and the Families form stay as they are. Merge: union of lesson, star (best kept) and seen-puzzle data, the attempt logs combined by unique id, and the starting-island choice from the newer file. Real cloud sync (the app sending progress to the parent's Google Drive or a server) would break the "no internet, data stays on the device" promise and need a new Families review, so it is not planned.
 
 ## Documentation map
