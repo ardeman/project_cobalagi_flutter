@@ -2,7 +2,8 @@
 # Landscape (1920 x 1080) promo video for YouTube and the Google Play
 # listing's video: real gameplay from the app's "Watch me!" demos between
 # cards, with the app's music and narration. One per language:
-#   build/marketing/promo-id.mp4, build/marketing/promo-en.mp4
+#   build/marketing/promo-id.mp4, build/marketing/promo-en.mp4, each with its
+#   subtitles (.srt) and a thumbnail-<lang>.jpg for YouTube
 # Run from the project root: tool/marketing/promo_video.sh
 cd "$(dirname "$0")/../.."
 W=1920
@@ -50,6 +51,9 @@ render() { # lang suffix tagline map blocks fix until code parents chips
     ".chip{font-size:36px;padding:10px 28px}" "$TMP/end.png"
   still "$TMP/end.png" 4.5
   finish "$OUT/promo-$lang.mp4"
+  # YouTube's thumbnail: the title card (1280 x 720).
+  ffmpeg -v error -y -ss 0.3 -i "$OUT/promo-$lang.mp4" -frames:v 1 \
+    -vf scale=1280:720:flags=lanczos "$OUT/thumbnail-$lang.jpg"
 }
 
 render id "-id" "Belajar coding sambil bermain" \

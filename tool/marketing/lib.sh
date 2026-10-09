@@ -23,11 +23,8 @@ if [ ! -f "$FRAMES/loops-000.png" ]; then
   exit 1
 fi
 
-# The page behind the card is coral too: a screenshot that comes out short
-# (headless Chrome, now and then) must not show a white strip.
 BASE_STYLE='
   html,body{margin:0;overflow:hidden}
-  html{background:#e0532f}
   body{font-family:ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif;color:#fff;
        background:radial-gradient(circle at 85% 12%,#ffb38a 0,transparent 45%),
                   radial-gradient(circle at 10% 92%,#ffc83d66 0,transparent 42%),
@@ -43,8 +40,12 @@ BASE_STYLE='
 card() {
   printf '<!doctype html><html><head><meta charset="utf-8"><style>%s html,body{width:%spx;height:%spx} %s</style></head><body>%s</body></html>' \
     "$BASE_STYLE" "$W" "$H" "$2" "$1" > "$TMP/page.html"
+  # Headless Chrome's page is now and then a little shorter than its
+  # window, leaving a strip at the bottom: shoot a taller window, then crop.
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files \
-    --virtual-time-budget=3000 --window-size="$W,$H" --screenshot="$3" "file://$TMP/page.html" 2>/dev/null
+    --virtual-time-budget=3000 --window-size="$W,$((H + 200))" --screenshot="$TMP/shot.png" \
+    "file://$TMP/page.html" 2>/dev/null
+  ffmpeg -v error -y -i "$TMP/shot.png" -vf "crop=$W:$H:0:0" "$3"
 }
 
 # bezel <x> <y> <w> <h> <pad> <radius> <out.png>: a transparent picture
@@ -89,7 +90,8 @@ gameplay() {
   DURATIONS+=("$dur")
 }
 
-# finish <out.mp4>: cross-fades the segments, adds music and narration.
+# finish <out.mp4>: cross-fades the segments, adds music and narration, and
+# writes the narration's subtitles to <out.srt>.
 finish() {
   local inputs=() filters="" last="0:v" offset=0 starts=(0)
   for s in "${SEGMENTS[@]}"; do inputs+=(-i "$s"); done
@@ -119,6 +121,16 @@ finish() {
   ffmpeg -v error -y "${inputs[@]}" -filter_complex "$filters" \
     -map "[$last]" -map "[a]" -c:v libx264 -preset slow -crf 19 -pix_fmt yuv420p \
     -r $FPS -c:a aac -b:a 192k -movflags +faststart -t "$total" "$1"
+  # Subtitles for the narration, next to the video (out.mp4 → out.srt).
+  local subs=()
+  for v in "${VOICES[@]}"; do
+    local file="${v%%|*}" seg="${v##*|}" lang clip len
+    lang="$(basename "$(dirname "$file")")"
+    clip="$(basename "$file" .mp3)"
+    len="$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$file")"
+    subs+=("$(echo "${starts[$seg]} + 0.6" | bc)|$len|$lang|$clip")
+  done
+  dart run tool/marketing/subtitles.dart "${1%.mp4}.srt" "${subs[@]}" >/dev/null
   echo "$1 (${total}s)"
   SEGMENTS=()
   DURATIONS=()

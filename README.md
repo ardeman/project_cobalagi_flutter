@@ -9,7 +9,7 @@ Blocks and code drive the same game world. A short, voice-led placement game pic
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Android is released for now: on Google Play, and as APKs on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
-> **Status:** in Google Play's closed test (version 2.0.0, build 13): a robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
+> **Status:** in Google Play's closed test (version 2.0.1, build 14): a robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -231,7 +231,7 @@ After adding or replacing clips, Android builds may keep using an old asset list
 4. **Screenshots.** Run `flutter test tool/screenshots --update-goldens`, `tool/screenshots/export.sh` and `store/render.sh`. Headless Chrome is sometimes killed mid-render (exit 137, slides deleted): run `store/render.sh` again until it exits 0 and `ls store/*/phone_screenshots/*.png store/*/screenshots/*.png | wc -l` gives 32.
 5. **Drop render noise.** The solved and warm-up screens pick a random cheer and confetti, so they change on every render. If their screen didn't change, restore them: `git checkout -- 'store/*/6-solved.png' website/screenshots/solved*.png website/screenshots/phone-solved*.png website/screenshots/warm-up-pattern*.png website/screenshots/phone-warm-up*.png website/screenshots/warm-up-colors*.png website/screenshots/phone-warm-up-colors*.png`. Look at every other changed slide before keeping it.
 6. **Checks and builds.** Run the Checks, then `flutter build appbundle --release` (for Play) and `flutter build apk --release --split-per-abi`.
-7. **Tell the user what to upload:** the bundle path, the release notes, and which store slides and texts changed since the last upload (`git diff --stat <last build commit> -- store/`), marking slides that only changed slightly as optional.
+7. **Tell the user what to upload:** the bundle path, the release notes, and which listing items changed since the listing on Play (Store listing → Updating the Play listing), naming the Play Console field for each and marking slides that only changed slightly as optional. When the user says the listing is uploaded, mark that build `"listing": true` in `store/releases.json`.
 8. **Commit and push only when asked**, as two commits: the feature work (`feat:`/`fix:`), then `build: bump version to <name>+<build>` with `pubspec.yaml`, `store/` and `website/`. Pushing the version change publishes the APKs to GitHub Releases; watch it with `gh run watch $(gh run list --workflow release-apks.yml --limit 1 --json databaseId --jq '.[0].databaseId') --exit-status`.
 
 ### Checking UI changes
@@ -290,7 +290,32 @@ The icon (the robot's head on plain coral) is drawn in `branding/icon.svg`, with
 
 `store/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80), `full_description.txt` (max 4,000) and `changelogs/<versionCode>.txt` with each build's release notes (max 500), plus `feature_graphic.png` (1024 × 500), `screenshots/` (1920 × 1080, 16:9) for the 7-inch and 10-inch tablet sections and `phone_screenshots/` (1080 × 1920, 9:16) for the phone section. The app icon for the listing is `branding/play_store_icon.png`.
 
-`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders every screenshot from the real app with sample data into `website/screenshots/`, in Indonesian and English. Tablet and phone store sets each contain eight slides: the map, Loops, typed code, Magic Block, Fix it!, a solved puzzle, Until the flag, and the parent controls with the progress report. `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. Promo videos show real gameplay from the "Watch me!" demos. Record its frames once (about 15 minutes) with `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, then `tool/marketing/short_video.sh` renders the vertical promo short (1080 × 1920, about 30 seconds, for YouTube Shorts, Instagram Reels and Stories, TikTok; text kept clear of those apps' buttons and captions; it says "Coming soon to Google Play" until `STORE=live` is set) and `tool/marketing/promo_video.sh` the landscape YouTube and store-listing promo (1920 × 1080), in Indonesian and English, into `build/marketing/`. `dart run tool/website_changelog.dart` rebuilds the website's release notes page (`website/changelog.html`) from `store/releases.json` and the store changelogs. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
+`flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders every screenshot from the real app with sample data into `website/screenshots/`, in Indonesian and English. Tablet and phone store sets each contain eight slides: the map, Loops, typed code, Magic Block, Fix it!, a solved puzzle, Until the flag, and the parent controls with the progress report. `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. `dart run tool/website_changelog.dart` rebuilds the website's release notes page (`website/changelog.html`) from `store/releases.json` and the store changelogs. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
+
+### Updating the Play listing
+
+Play Console → Grow → Store presence → Main store listing, once per language: Indonesian (`id`, the default) and English (`en-US`, under "Manage translations").
+
+| Play Console field | File |
+| --- | --- |
+| App icon (both languages) | `branding/play_store_icon.png` |
+| Feature graphic | `store/<locale>/feature_graphic.png` |
+| Phone screenshots | `store/<locale>/phone_screenshots/1-…8-*.png` |
+| 7-inch and 10-inch tablet screenshots | `store/<locale>/screenshots/1-…8-*.png` (the same set in both sections) |
+| App name, short and full description | `store/<locale>/title.txt`, `short_description.txt`, `full_description.txt` |
+| Video | The landscape promo's YouTube link (see `tool/marketing/youtube.md`) |
+| Release notes (in the release, not the listing) | `store/<locale>/changelogs/<build>.txt` |
+
+Upload slides in order, 1 to 8; delete the old ones first, because Play takes at most eight per section. The listing on Play matches the newest build marked `"listing": true` in `store/releases.json`. To see what to re-upload, diff from that build's commit: `git diff --stat $(git log -1 --format=%h --grep 'bump version to .*+<build>$') -- store/ branding/play_store_icon.png`. Release notes and `releases.json` aren't part of the listing.
+
+### Promo videos
+
+Promo videos show real gameplay from the "Watch me!" demos. Record its frames (about 15 minutes, again whenever the demos look different) with `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`. Then, in Indonesian and English, into `build/marketing/`:
+
+- `tool/marketing/short_video.sh`: the vertical promo short (1080 × 1920, about 30 seconds) for YouTube Shorts, Instagram Reels and Stories, TikTok and WhatsApp status. Words and the phone stay clear of those apps' own buttons and captions (the top 250 px, the bottom 380 px and the right 140 px). It ends with "Coming soon to Google Play" until it is rendered with `STORE=live` once the app is public.
+- `tool/marketing/promo_video.sh`: the landscape promo (1920 × 1080, about 50 seconds) for YouTube and the Play listing, with a `thumbnail-<lang>.jpg` for YouTube.
+
+Every video comes with a subtitle file of its narration (`<video>.srt`, the ARB words at the time each clip plays; `tool/marketing/subtitles.dart`). Cards are HTML shot by headless Chrome in a taller window and cropped, because its page is now and then a little short and left a strip at the bottom. Titles, descriptions and upload settings for YouTube are in `tool/marketing/youtube.md`.
 
 ## Roadmap (MVP)
 
@@ -415,6 +440,7 @@ Each topic has one home. Update that file instead of copying its content somewhe
 | `LICENSE` | Everyone | Terms for using the code (GPL-3.0) |
 | `NOTICE.md` | Everyone | Copyright, and the separate terms for sounds, art and the name |
 | `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots (also used by this README) |
+| `tool/marketing/youtube.md` | Whoever uploads the promo videos | YouTube titles, descriptions and upload settings |
 
 Codex, Cursor, GitHub Copilot, Windsurf, Jules, Aider, Zed and other agents that follow the [AGENTS.md](https://agents.md) convention read `AGENTS.md` directly.
 

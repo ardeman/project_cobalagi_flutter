@@ -3,7 +3,8 @@
 # Stories, TikTok and WhatsApp status: a hook, real gameplay from the app's
 # "Watch me!" demos with their narration, the space map, and an end card.
 # About 30 seconds. One per language:
-#   build/marketing/short-id.mp4, build/marketing/short-en.mp4
+#   build/marketing/short-id.mp4, build/marketing/short-en.mp4, each with its
+#   subtitles (.srt)
 # Run from the project root: tool/marketing/short_video.sh
 # Once the app is public on Google Play: STORE=live tool/marketing/short_video.sh
 #
