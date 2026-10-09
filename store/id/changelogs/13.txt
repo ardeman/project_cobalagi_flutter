@@ -1,0 +1,6 @@
+- Teman baru: robot kecil yang berkelana dari planet ke planet di luar angkasa, dengan ikon aplikasi baru.
+- Setiap planet punya dunianya sendiri, dari Bulan sampai Mars.
+- Robot menunjukkan arah hadapnya, dengan cahaya di jalan depannya.
+- Orang tua bisa mengganti nama dan gambar pemain di Area orang tua.
+- Suara bahasa Inggris kini berbicara lebih pelan.
+- Soal pemanasan muat di tablet yang dipegang miring.

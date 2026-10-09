@@ -1,0 +1,6 @@
+- A new friend: a little robot that travels from planet to planet in space, with a new app icon.
+- Each planet has its own world, from the Moon to Mars.
+- The robot shows which way it faces, with a light on the path ahead.
+- Parents can change a player's name and picture in the Parent area.
+- The English voice speaks more slowly.
+- Warm-up questions fit on a tablet held sideways.
