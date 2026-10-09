@@ -1,0 +1,4 @@
+- When a child is stuck, the hint light now glows yellow and sends out rings, so it is easy to notice.
+- The space map runs more smoothly.
+- At the end of a "Watch me!" demo, the buttons appear over the demo and nothing on screen jumps.
+- The answer cards in the warm-up games look lighter, without thick black outlines.

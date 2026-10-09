@@ -1,0 +1,4 @@
+- Saat anak kesulitan, lampu petunjuk kini menyala kuning dan memancarkan lingkaran, jadi mudah terlihat.
+- Peta luar angkasa kini berjalan lebih lancar.
+- Di akhir contoh "Lihat aku!", tombolnya muncul di atas contoh dan layar tidak lagi bergeser.
+- Kartu jawaban di permainan pemanasan kini tampak lebih ringan, tanpa garis hitam tebal.
