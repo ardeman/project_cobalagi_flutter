@@ -8,6 +8,7 @@ import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
 import 'package:cobalagi/features/tutorial/data/tutorial.dart';
 import 'package:cobalagi/features/tutorial/view/tutorial_view.dart';
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -111,6 +112,35 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  for (final size in const [Size(1280, 800), Size(412, 915)]) {
+    testWidgets('the end of the demo moves nothing ($size)', (tester) async {
+      await _pump(tester, _tutorials['variables']!, onDone: () {});
+      tester.view.physicalSize = size;
+      await tester.pump(const Duration(seconds: 1));
+      Rect world() =>
+          tester.getRect(find.byWidgetPredicate((w) => w is GameWidget).first);
+      Rect editor() => tester.getRect(find.byType(BlockEditor).first);
+      final worldBefore = world();
+      final editorBefore = editor();
+      // The end buttons wait hidden: they can't be tapped yet.
+      expect(find.text("Let's play!").hitTestable(), findsNothing);
+      await _watch(tester);
+      expect(find.text("Let's play!").hitTestable(), findsOneWidget);
+      expect(world(), worldBefore);
+      // The editor grows with the demo's blocks, but stays where it was.
+      expect(editor().topLeft, editorBefore.topLeft);
+      // The demo's Go, only for show, has faded away.
+      final go = tester.widget<AnimatedOpacity>(
+        find.ancestor(
+          of: find.text('Go!'),
+          matching: find.byType(AnimatedOpacity),
+        ),
+      );
+      expect(go.opacity, 0);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('skip leaves at once', (tester) async {
     var done = 0;
     await _pump(tester, _tutorials['directions']!, onDone: () => done++);
@@ -122,7 +152,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('leaving while the friend walks ends quietly', (tester) async {
+  testWidgets('leaving while the robot rolls ends quietly', (tester) async {
     await _pump(tester, _tutorials['loops']!, onDone: () {});
     // Long enough for the hand to press Go, not for the walk to end.
     for (var i = 0; i < 70; i++) {
