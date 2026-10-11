@@ -215,21 +215,19 @@ class _TutorialViewState extends State<TutorialView> {
       ),
     );
     final editor = editorFor(fit: false);
-    // When the demo is over, its buttons float over the bottom of the demo
-    // instead of taking a row of their own, so nothing is pushed aside.
-    final endButtons = GlassSurface(
-      padding: const EdgeInsets.all(16),
-      radius: 28,
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 12,
-        runSpacing: 12,
+    // When the demo is over, its buttons take the Go button's place on one
+    // line, so they cover none of the demo and nothing moves.
+    final endButtons = FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           OutlinedButton.icon(
             onPressed: _start,
             icon: const Icon(Icons.replay_rounded),
             label: Text(l10n.tutorialWatchAgain),
           ),
+          const SizedBox(width: 12),
           FilledButton.icon(
             onPressed: widget.onDone,
             icon: const Icon(Icons.arrow_forward_rounded),
@@ -237,6 +235,32 @@ class _TutorialViewState extends State<TutorialView> {
           ),
         ],
       ),
+    );
+    final goSlot = Stack(
+      clipBehavior: Clip.none,
+      alignment: Alignment.center,
+      children: [
+        // The slot spans the row, so the end buttons get its full width.
+        const SizedBox(width: double.infinity),
+        // The child watches: Go only shows the hand pressing it.
+        IgnorePointer(
+          child: AnimatedOpacity(
+            opacity: _finished ? 0 : 1,
+            duration: const Duration(milliseconds: 250),
+            child: go,
+          ),
+        ),
+        Positioned.fill(
+          child: IgnorePointer(
+            ignoring: !_finished,
+            child: AnimatedOpacity(
+              opacity: _finished ? 1 : 0,
+              duration: const Duration(milliseconds: 250),
+              child: Center(child: endButtons),
+            ),
+          ),
+        ),
+      ],
     );
     // Skip keeps its row's height when it goes, so the demo doesn't grow.
     final skip = Visibility(
@@ -259,64 +283,53 @@ class _TutorialViewState extends State<TutorialView> {
           child: WindowClassBuilder(
             builder: (context, windowClass) {
               // The child watches: taps on the demo itself do nothing.
-              final demo = IgnorePointer(
-                child: windowClass == WindowClass.compact
-                    ? Column(
-                        children: [
-                          Expanded(flex: 2, child: world),
-                          const SizedBox(height: 12),
-                          // Phones: the blocks get more room and scroll.
-                          Expanded(
-                            flex: 3,
+              final demo = windowClass == WindowClass.compact
+                  ? Column(
+                      children: [
+                        Expanded(flex: 2, child: IgnorePointer(child: world)),
+                        const SizedBox(height: 12),
+                        // Phones: the blocks get more room and scroll.
+                        Expanded(
+                          flex: 3,
+                          child: IgnorePointer(
                             child: SingleChildScrollView(
                               child: editorFor(fit: true),
                             ),
                           ),
-                          const SizedBox(height: 12),
-                          go,
-                        ],
-                      )
-                    : Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: Column(
-                              children: [
-                                Expanded(child: world),
-                                const SizedBox(height: 12),
-                                go,
-                              ],
-                            ),
+                        ),
+                        const SizedBox(height: 12),
+                        goSlot,
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: Column(
+                            children: [
+                              Expanded(child: IgnorePointer(child: world)),
+                              const SizedBox(height: 12),
+                              goSlot,
+                            ],
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            flex: 2,
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          flex: 2,
+                          child: IgnorePointer(
                             child: GlassSurface(
                               padding: const EdgeInsets.all(12),
                               child: editor,
                             ),
                           ),
-                        ],
-                      ),
-              );
+                        ),
+                      ],
+                    );
               return Column(
                 children: [
                   top,
                   const SizedBox(height: 12),
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Positioned.fill(child: demo),
-                        if (_finished)
-                          Positioned(
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            child: endButtons,
-                          ),
-                      ],
-                    ),
-                  ),
+                  Expanded(child: demo),
                   const SizedBox(height: 12),
                   skip,
                 ],

@@ -129,8 +129,20 @@ void main() {
       expect(world(), worldBefore);
       // The editor grows with the demo's blocks, but stays where it was.
       expect(editor().topLeft, editorBefore.topLeft);
-      // The demo's Go stays; the end buttons float over the demo.
-      expect(find.text('Go!'), findsOneWidget);
+      // The end buttons take Go's place on one line and cover nothing.
+      final play = tester.getRect(find.text("Let's play!"));
+      final again = tester.getRect(find.text('Watch again'));
+      expect(play.top, lessThan(again.bottom), reason: 'one line');
+      expect(play.overlaps(world()), isFalse);
+      final scroller = find.ancestor(
+        of: find.byType(BlockEditor).first,
+        matching: find.byType(Scrollable),
+      );
+      final shown = scroller.evaluate().isEmpty
+          ? editor()
+          : tester.getRect(scroller.first);
+      expect(play.overlaps(shown), isFalse);
+      expect(again.overlaps(shown), isFalse);
       expect(tester.takeException(), isNull);
     });
   }
