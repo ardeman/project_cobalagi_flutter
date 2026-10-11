@@ -164,6 +164,20 @@ class _TutorialViewState extends State<TutorialView> {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
+        // Skip sits up here, so the demo reaches the bottom of the screen
+        // and its end buttons sit there. It keeps its place when it goes,
+        // so the title doesn't move.
+        Visibility(
+          visible: !_finished,
+          maintainState: true,
+          maintainAnimation: true,
+          maintainSize: true,
+          child: TextButton(
+            onPressed: widget.onDone,
+            child: Text(l10n.tutorialSkip),
+          ),
+        ),
+        const SizedBox(width: 8),
         IconButton.filledTonal(
           tooltip: l10n.listenAgain,
           onPressed: _say,
@@ -262,20 +276,6 @@ class _TutorialViewState extends State<TutorialView> {
         ),
       ],
     );
-    // Skip keeps its row's height when it goes, so the demo doesn't grow.
-    final skip = Visibility(
-      visible: !_finished,
-      maintainState: true,
-      maintainAnimation: true,
-      maintainSize: true,
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: widget.onDone,
-          child: Text(l10n.tutorialSkip),
-        ),
-      ),
-    );
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -330,8 +330,6 @@ class _TutorialViewState extends State<TutorialView> {
                   top,
                   const SizedBox(height: 12),
                   Expanded(child: demo),
-                  const SizedBox(height: 12),
-                  skip,
                 ],
               );
             },

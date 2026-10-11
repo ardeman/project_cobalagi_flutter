@@ -134,6 +134,8 @@ void main() {
       final again = tester.getRect(find.text('Watch again'));
       expect(play.top, lessThan(again.bottom), reason: 'one line');
       expect(play.overlaps(world()), isFalse);
+      // At the bottom of the screen, with no empty band below them.
+      expect(play.bottom, greaterThan(size.height - 60));
       final scroller = find.ancestor(
         of: find.byType(BlockEditor).first,
         matching: find.byType(Scrollable),
