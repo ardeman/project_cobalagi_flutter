@@ -53,5 +53,7 @@ void main() {
     expect(part('changelog.html', 'footer'), footer);
     expect(part('index.html', 'header'), asHome(header));
     expect(part('index.html', 'footer'), footer);
+    expect(part('404.html', 'header'), header);
+    expect(part('404.html', 'footer'), footer);
   });
 }

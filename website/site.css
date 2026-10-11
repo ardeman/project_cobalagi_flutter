@@ -332,3 +332,9 @@ footer { padding: 40px 0 56px; color: var(--muted); font-size: 0.95rem; }
 .video-note { text-align: center; color: var(--muted); font-size: 0.9rem; margin: 14px 0 0; }
 @media (max-width: 560px) { .video-play { width: 64px; height: 64px; } .video-play svg { width: 30px; height: 30px; } }
 @media (prefers-reduced-motion: reduce) { .video-play { transition: none; } }
+
+/* 404 page */
+.notfound { text-align: center; padding-top: 48px; padding-bottom: 64px; }
+.notfound-robot { display: block; margin: 0 auto 8px; width: 160px; height: auto; }
+.notfound-code { margin: 0; font-size: 1rem; font-weight: 800; letter-spacing: 0.2em; color: var(--teal-deep); }
+.notfound .btn { margin-top: 8px; }
