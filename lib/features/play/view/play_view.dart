@@ -460,29 +460,32 @@ class _PlayViewState extends State<PlayView> {
                                       onPressed: _toggleFollow,
                                     ),
                                   ),
-                                  Positioned(
-                                    top: 8,
-                                    left: 8,
-                                    child: IconButton.filledTonal(
-                                      tooltip: AppLocalizations.of(
-                                        context,
-                                      ).tourHelp,
-                                      style: IconButton.styleFrom(
-                                        backgroundColor: Colors.white
-                                            .withValues(alpha: 0.85),
-                                        foregroundColor: const Color(
-                                          0xFF263238,
+                                  // Solved: nothing left to explain.
+                                  if (!_finished)
+                                    Positioned(
+                                      top: 8,
+                                      left: 8,
+                                      child: IconButton.filledTonal(
+                                        tooltip: AppLocalizations.of(
+                                          context,
+                                        ).tourHelp,
+                                        style: IconButton.styleFrom(
+                                          backgroundColor: Colors.white
+                                              .withValues(alpha: 0.85),
+                                          foregroundColor: const Color(
+                                            0xFF263238,
+                                          ),
+                                        ),
+                                        onPressed: _touring
+                                            ? null
+                                            : () => setState(
+                                                () => _touring = true,
+                                              ),
+                                        icon: const Icon(
+                                          Icons.question_mark_rounded,
                                         ),
                                       ),
-                                      onPressed: _touring || _finished
-                                          ? null
-                                          : () =>
-                                                setState(() => _touring = true),
-                                      icon: const Icon(
-                                        Icons.question_mark_rounded,
-                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
