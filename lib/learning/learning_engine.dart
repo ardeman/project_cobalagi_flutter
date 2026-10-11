@@ -124,10 +124,13 @@ final class LearningEngine {
     );
   }
 
-  /// On the island the child is on, with every lesson solved: how many more
-  /// solved puzzles at most before it leads on to the next island (it may
-  /// come sooner, on good scores). Null when that doesn't apply: lessons
-  /// still to do, another island, or the last island.
+  /// On the island the child is on, with every lesson solved: the fewest
+  /// solved puzzles that could lead on to the next island, if they go well
+  /// (the same rule as [record]; poor scores can take more, up to
+  /// [AdaptiveConfig.practiceLimit]). Never more than the rules may need, so
+  /// the island never promises a longer way than the child gets. Null when
+  /// that doesn't apply: lessons still to do, another island, or the last
+  /// island.
   int? puzzlesToMoveOn(
     LearnerState state,
     String conceptId, {
@@ -137,7 +140,19 @@ final class LearningEngine {
     if (graph.nextAfter(conceptId) == null || lessons.isEmpty) return null;
     final progress = progressOf(state, conceptId);
     if (!lessons.every(progress.solvedLessons.contains)) return null;
-    return max(1, config.practiceLimit - progress.exercises);
+    final scores = [...progress.scores];
+    for (var k = 1; ; k++) {
+      final exercises = progress.exercises + k;
+      scores.add(1);
+      final recent = scores.sublist(
+        max(0, scores.length - config.masteryWindow),
+      );
+      final mastery = recent.reduce((a, b) => a + b) / recent.length;
+      if ((exercises >= config.minExercises && mastery >= config.practiceAt) ||
+          exercises >= config.practiceLimit) {
+        return k;
+      }
+    }
   }
 
   /// Remembers a served puzzle so it is never served again.

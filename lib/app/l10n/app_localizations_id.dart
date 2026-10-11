@@ -709,8 +709,8 @@ class AppLocalizationsId extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Paling banyak $count teka-teki lagi menuju $island!',
-      one: 'Satu teka-teki lagi menuju $island!',
+      other: 'Cukup $count teka-teki lagi bisa membawamu ke $island!',
+      one: 'Teka-teki berikutnya bisa membawamu ke $island!',
     );
     return '$_temp0';
   }

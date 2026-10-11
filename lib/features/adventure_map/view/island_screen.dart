@@ -98,14 +98,13 @@ class IslandScreen extends StatelessWidget {
                       case final left?) ...[
                     const SizedBox(height: 32),
                     _NextIslandTrail(
-                      left: left,
-                      // Never fewer circles than puzzles left: after a
-                      // bonus adventure the count starts again, so the trail
-                      // can be longer than right after the lessons.
-                      slots: max(
-                        left,
-                        cubit.engine.config.practiceLimit - lessons.length,
+                      // A long run of puzzles shows as a full trail, never
+                      // more dots than fit.
+                      done: min(
+                        progress.exercises,
+                        max(0, cubit.engine.config.practiceLimit - left),
                       ),
+                      left: left,
                       next: cubit.engine.graph.nextAfter(conceptId)!,
                     ),
                   ],
@@ -226,20 +225,22 @@ class _LevelTile extends StatelessWidget {
 /// lead to the next island's emblem, so moving on is something to see.
 class _NextIslandTrail extends StatelessWidget {
   const _NextIslandTrail({
+    required this.done,
     required this.left,
-    required this.slots,
     required this.next,
   });
 
-  /// Solved puzzles left at most; [slots] dots in all.
+  /// Puzzles played on the island so far, shown filled.
+  final int done;
+
+  /// The fewest solved puzzles that could lead on, shown empty.
   final int left;
-  final int slots;
   final String next;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final filled = slots - min(left, slots);
+    final slots = done + left;
     final color = conceptColor(next);
     return Semantics(
       label: l10n.nextIslandSoon(left, conceptName(l10n, next)),
@@ -259,7 +260,7 @@ class _NextIslandTrail extends StatelessWidget {
                     height: 22,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: i < filled ? const Color(0xFFFFC83D) : null,
+                      color: i < done ? const Color(0xFFFFC83D) : null,
                       border: Border.all(
                         color: const Color(0xFFFFC83D),
                         width: 3,

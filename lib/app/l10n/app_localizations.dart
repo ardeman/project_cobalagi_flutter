@@ -1355,7 +1355,7 @@ abstract class AppLocalizations {
   /// No description provided for @nextIslandSoon.
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, =1{One more puzzle to {island}!} other{Up to {count} more puzzles to {island}!}}'**
+  /// **'{count, plural, =1{The next puzzle could take you to {island}!} other{Just {count} more puzzles could take you to {island}!}}'**
   String nextIslandSoon(int count, String island);
 
   /// No description provided for @conceptWarmUp.

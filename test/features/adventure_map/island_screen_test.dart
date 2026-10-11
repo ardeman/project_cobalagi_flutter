@@ -164,7 +164,9 @@ void main() {
     expect(find.text('replay directions-02'), findsOneWidget);
   });
 
-  testWidgets('the trail has a circle for every puzzle left', (tester) async {
+  testWidgets('the trail shows played puzzles and the fewest left', (
+    tester,
+  ) async {
     tester.view.physicalSize = const Size(2560, 1600);
     tester.view.devicePixelRatio = 2;
     addTearDown(tester.view.reset);
@@ -209,14 +211,17 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    final left = curriculum.engine.config.practiceLimit - 1;
-    expect(find.textContaining('Up to $left more puzzles'), findsOneWidget);
+    // One puzzle played, no scores yet: two good puzzles could move on.
+    expect(
+      find.textContaining('Just 2 more puzzles could take you'),
+      findsOneWidget,
+    );
     final circles = find.byWidgetPredicate(
       (w) =>
           w is AnimatedContainer &&
           w.constraints == BoxConstraints.tight(const Size(22, 22)) &&
           (w.decoration as BoxDecoration?)?.shape == BoxShape.circle,
     );
-    expect(circles, findsNWidgets(left));
+    expect(circles, findsNWidgets(3));
   });
 }

@@ -720,8 +720,8 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Up to $count more puzzles to $island!',
-      one: 'One more puzzle to $island!',
+      other: 'Just $count more puzzles could take you to $island!',
+      one: 'The next puzzle could take you to $island!',
     );
     return '$_temp0';
   }

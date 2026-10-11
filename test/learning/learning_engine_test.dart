@@ -386,10 +386,9 @@ void main() {
         ),
     ], lessons: lessons);
     final before = engine.puzzlesToMoveOn(state, 'directions', lessons: ids)!;
-    expect(before, config.practiceLimit - 6);
-    (state, _) = play(state, [
-      result('directions', hints: 3, runs: 3),
-    ], lessons: lessons);
+    expect(before, greaterThan(1), reason: 'low scores need good puzzles');
+    expect(before, lessThanOrEqualTo(config.practiceLimit - 6));
+    (state, _) = play(state, [result('directions')], lessons: lessons);
     expect(
       engine.puzzlesToMoveOn(state, 'directions', lessons: ids),
       before - 1,
@@ -399,6 +398,43 @@ void main() {
       isNull,
       reason: 'not the island the child is on',
     );
+  });
+
+  test('puzzlesToMoveOn never promises more than the rules need', () {
+    // Back from a bonus adventure with every lesson solved: the count
+    // restarted. A tester was told 9 more and moved on after 1.
+    final ids = [for (var i = 1; i <= 6; i++) 'loops-0$i'];
+    for (final start in <List<double>>[
+      [],
+      [1],
+      [0.2],
+    ]) {
+      var state = LearnerState(
+        currentConcept: 'loops',
+        progress: {
+          'loops': ConceptProgress(
+            difficulty: 1,
+            exercises: start.length,
+            scores: start,
+            attemptedLessons: {...ids},
+            solvedLessons: {...ids},
+          ),
+        },
+      );
+      final promised = engine.puzzlesToMoveOn(state, 'loops', lessons: ids)!;
+      late Decision decision;
+      var played = 0;
+      do {
+        (state, decision) = engine.record(
+          state,
+          result('loops'),
+          lessons: {'loops': ids},
+        );
+        played++;
+      } while (decision is! Advance && played < config.practiceLimit);
+      expect(decision, isA<Advance>(), reason: 'from $start');
+      expect(played, promised, reason: 'from $start');
+    }
   });
 
   group('puzzle stars', () {
