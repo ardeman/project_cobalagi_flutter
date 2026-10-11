@@ -1496,6 +1496,12 @@ abstract class AppLocalizations {
   /// **'Not earned yet'**
   String get stickerNotYet;
 
+  /// No description provided for @stickerGold.
+  ///
+  /// In en, this message translates to:
+  /// **'Every star collected!'**
+  String get stickerGold;
+
   /// No description provided for @blockIfElse.
   ///
   /// In en, this message translates to:

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 /// A round die-cut sticker: an emblem on a coloured disc with a white edge,
 /// tilted a little like a real one. Not yet earned, it is a faint outline.
-/// A [fresh] sticker pops in once, with a few sparkles.
+/// A [gold] sticker (every star collected) has a gold edge, a shine and a
+/// star badge. A [fresh] sticker pops in once, with a few sparkles.
 class StickerView extends StatelessWidget {
   const StickerView({
     super.key,
@@ -12,6 +13,7 @@ class StickerView extends StatelessWidget {
     required this.size,
     this.tilt = 0,
     this.fresh = false,
+    this.gold = false,
   });
 
   final IconData icon;
@@ -22,6 +24,11 @@ class StickerView extends StatelessWidget {
   /// Turns, e.g. 0.02 for a slight clockwise tilt.
   final double tilt;
   final bool fresh;
+  final bool gold;
+
+  static const _goldLight = Color(0xFFFFE680);
+  static const _goldMid = Color(0xFFFFC83D);
+  static const _goldDeep = Color(0xFFD99A00);
 
   @override
   Widget build(BuildContext context) {
@@ -38,33 +45,103 @@ class StickerView extends StatelessWidget {
         child: Icon(icon, size: size * 0.45, color: scheme.outlineVariant),
       );
     }
+    final disc = DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          center: const Alignment(-0.3, -0.4),
+          colors: [Color.lerp(color, Colors.white, 0.3)!, color],
+        ),
+      ),
+      child: Icon(icon, size: size * 0.48, color: Colors.white),
+    );
     final sticker = RotationTransition(
       turns: AlwaysStoppedAnimation(tilt),
-      child: Container(
-        width: size,
-        height: size,
-        padding: EdgeInsets.all(size * 0.06),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.25),
-              blurRadius: size * 0.08,
-              offset: Offset(0, size * 0.04),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            padding: EdgeInsets.all(size * (gold ? 0.08 : 0.06)),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: gold ? null : Colors.white,
+              // Gold foil: light and deep bands around the edge.
+              gradient: gold
+                  ? const SweepGradient(
+                      colors: [
+                        _goldLight,
+                        _goldDeep,
+                        _goldMid,
+                        _goldLight,
+                        _goldDeep,
+                        _goldLight,
+                      ],
+                    )
+                  : null,
+              boxShadow: [
+                BoxShadow(
+                  color: gold
+                      ? _goldDeep.withValues(alpha: 0.55)
+                      : Colors.black.withValues(alpha: 0.25),
+                  blurRadius: size * (gold ? 0.14 : 0.08),
+                  offset: Offset(0, size * 0.04),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              center: const Alignment(-0.3, -0.4),
-              colors: [Color.lerp(color, Colors.white, 0.3)!, color],
-            ),
+            child: gold
+                ? Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      disc,
+                      // A glossy band across the face.
+                      ClipOval(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                Colors.white.withValues(alpha: 0),
+                                Colors.white.withValues(alpha: 0.45),
+                                Colors.white.withValues(alpha: 0),
+                              ],
+                              stops: const [0.3, 0.42, 0.54],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : disc,
           ),
-          child: Icon(icon, size: size * 0.48, color: Colors.white),
-        ),
+          if (gold)
+            Positioned(
+              right: -size * 0.04,
+              top: -size * 0.04,
+              child: Container(
+                width: size * 0.36,
+                height: size * 0.36,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _goldMid,
+                  border: Border.all(color: Colors.white, width: size * 0.03),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.2),
+                      blurRadius: size * 0.05,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.star_rounded,
+                  size: size * 0.26,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+        ],
       ),
     );
     if (!fresh || MediaQuery.disableAnimationsOf(context)) return sticker;
@@ -89,7 +166,7 @@ class StickerView extends StatelessWidget {
                   child: Icon(
                     Icons.star_rounded,
                     size: size * 0.18,
-                    color: const Color(0xFFFFC83D),
+                    color: _goldMid,
                   ),
                 ),
               ),

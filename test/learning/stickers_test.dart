@@ -45,6 +45,34 @@ void main() {
     expect(newStickers(seen, book(seen)), {'warmup-counting'});
   });
 
+  test('an island sticker turns gold at three stars on every lesson', () {
+    LearnerState withStars(Map<String, int> stars) => state.copyWith(
+      progress: {
+        ...state.progress,
+        'directions': ConceptProgress(
+          difficulty: 1,
+          solvedLessons: const {'d1', 'd2'},
+          lessonStars: stars,
+        ),
+      },
+    );
+    bool gold(LearnerState s) =>
+        book(s).firstWhere((s) => s.id == 'directions').gold;
+    expect(gold(state), isFalse, reason: 'solved before stars: one each');
+    expect(gold(withStars({'d1': 3, 'd2': 2})), isFalse);
+    final all = withStars({'d1': 3, 'd2': 3});
+    expect(gold(all), isTrue);
+    expect(book(all).where((s) => s.gold).map((s) => s.id), ['directions']);
+
+    // Turning gold makes it new again, once.
+    final seen = all.copyWith(stickersSeen: {'directions', 'warmup-counting'});
+    expect(newStickers(seen, book(seen)), {'directions:gold'});
+    final seenGold = seen.copyWith(
+      stickersSeen: {...seen.stickersSeen, 'directions:gold'},
+    );
+    expect(newStickers(seenGold, book(seenGold)), isEmpty);
+  });
+
   test('seen stickers survive a save', () {
     final seen = state.copyWith(stickersSeen: {'directions'});
     final back = LearnerState.fromJson(

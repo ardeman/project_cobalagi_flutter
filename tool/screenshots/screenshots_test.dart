@@ -127,9 +127,11 @@ Future<Database> _seed(String language, {bool reader = false}) async {
             difficulty: 3,
             attemptedLessons: lessons(id, n),
             solvedLessons: lessons(id, n),
-            // Mostly first tries; one level could still earn a star.
+            // Mostly first tries; one level could still earn a star, except
+            // on Directions, whose sticker has turned gold.
             lessonStars: {
-              for (final l in lessons(id, n)) l: l.endsWith('5') ? 2 : 3,
+              for (final l in lessons(id, n))
+                l: l.endsWith('5') && id != 'directions' ? 2 : 3,
             },
           ),
         'functions': ConceptProgress(

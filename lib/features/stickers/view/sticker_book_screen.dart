@@ -98,7 +98,7 @@ class _StickerBookScreenState extends State<StickerBookScreen> {
                         size: size,
                         // Alternate tilts, like stuck on by hand.
                         tilt: (i.isEven ? 1 : -1) * (0.01 + (i % 3) * 0.012),
-                        fresh: fresh.contains(s.id),
+                        fresh: fresh.contains(s.id) || fresh.contains(s.goldId),
                       ),
                   ],
                 ),
@@ -145,7 +145,11 @@ class _Slot extends StatelessWidget {
         ? conceptName(l10n, sticker.id)
         : game.label(l10n);
     return Semantics(
-      label: sticker.earned ? name : '$name, ${l10n.stickerNotYet}',
+      label: switch (sticker) {
+        Sticker(gold: true) => '$name, ${l10n.stickerGold}',
+        Sticker(earned: true) => name,
+        _ => '$name, ${l10n.stickerNotYet}',
+      },
       excludeSemantics: true,
       child: SizedBox(
         width: size * 1.35,
@@ -155,6 +159,7 @@ class _Slot extends StatelessWidget {
               icon: game?.icon ?? conceptIcon(sticker.id),
               color: game?.color ?? conceptColor(sticker.id),
               earned: sticker.earned,
+              gold: sticker.gold,
               size: size,
               tilt: tilt,
               fresh: fresh,

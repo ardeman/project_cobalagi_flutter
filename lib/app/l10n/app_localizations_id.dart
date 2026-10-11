@@ -787,6 +787,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get stickerNotYet => 'Belum didapat';
 
   @override
+  String get stickerGold => 'Semua bintang terkumpul!';
+
+  @override
   String get blockIfElse => 'Jika kosong, kalau tidak';
 
   @override

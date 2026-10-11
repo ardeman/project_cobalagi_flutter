@@ -798,6 +798,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stickerNotYet => 'Not earned yet';
 
   @override
+  String get stickerGold => 'Every star collected!';
+
+  @override
   String get blockIfElse => 'If clear, otherwise';
 
   @override
