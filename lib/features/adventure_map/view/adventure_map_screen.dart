@@ -331,19 +331,25 @@ class _CelebrationTrigger extends StatefulWidget {
 
 class _CelebrationTriggerState extends State<_CelebrationTrigger> {
   Timer? _done;
+  late final LearningCubit _learning;
 
   @override
   void initState() {
     super.initState();
     if (widget.island == null) return;
-    final learning = context.read<LearningCubit>();
+    _learning = context.read<LearningCubit>();
     context.read<AudioService>().playEffect(SoundEffect.goal);
-    _done = Timer(const Duration(milliseconds: 2400), learning.celebrated);
+    _done = Timer(const Duration(milliseconds: 2400), _learning.celebrated);
   }
 
   @override
   void dispose() {
-    _done?.cancel();
+    // Leaving the map before it ends still counts as celebrated, so the
+    // next puzzle doesn't send the child back to the map.
+    if (_done?.isActive ?? false) {
+      _done!.cancel();
+      _learning.celebrated();
+    }
     super.dispose();
   }
 
