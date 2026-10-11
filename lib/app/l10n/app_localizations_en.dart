@@ -684,6 +684,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'These blocks come back again and again. Try the loop block!';
 
   @override
+  String get hintAgain =>
+      'Tap the light bulb again to see the blocks that repeat!';
+
+  @override
   String get breakTitle => 'Time for a break!';
 
   @override

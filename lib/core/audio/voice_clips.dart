@@ -40,6 +40,7 @@ abstract final class VoiceClips {
   static const playGoalOtherwise = 'play_goal_otherwise';
   static const playHowTo = 'play_how_to';
   static const hintPattern = 'hint_pattern';
+  static const hintAgain = 'hint_again';
   static const breakTime = 'break_time';
 
   static const feedbackBumped = 'feedback_bumped';
@@ -107,6 +108,7 @@ abstract final class VoiceClips {
     playGoalOtherwise: 'playGoalOtherwise',
     playHowTo: 'playHowTo',
     hintPattern: 'hintPattern',
+    hintAgain: 'hintAgain',
     breakTime: 'breakVoice',
     feedbackBumped: 'feedbackBumped',
     feedbackStoppedShort: 'feedbackStoppedShort',

@@ -34,6 +34,7 @@ Future<void> _pumpPhone(
   bool allowCode = true,
   int hintAfterRuns = 1,
   Decision? decision,
+  AudioService audio = const SilentAudioService(),
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -44,7 +45,7 @@ Future<void> _pumpPhone(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: RepositoryProvider<AudioService>.value(
-        value: const SilentAudioService(),
+        value: audio,
         child: PlayView(
           // A fresh puzzle for each decision a test tries.
           key: ValueKey(decision),
@@ -76,6 +77,17 @@ Future<void> _pumpScroll(WidgetTester tester) async {
   for (var i = 0; i < 6; i++) {
     await tester.pump(const Duration(milliseconds: 100));
   }
+}
+
+class _Voices extends SilentAudioService {
+  final clips = <String>[];
+
+  @override
+  Future<void> playVoice(
+    String clipId, {
+    required String languageCode,
+    bool queue = false,
+  }) async => clips.add(clipId);
 }
 
 void main() {
@@ -364,5 +376,63 @@ void main() {
       }
       expect(find.text(label), findsOneWidget, reason: '$decision');
     }
+  });
+
+  testWidgets('after the route, the bulb says it can show what repeats', (
+    tester,
+  ) async {
+    final voices = _Voices();
+    final loops = Level.fromRows(
+      id: 'loops',
+      concept: 'loops',
+      rows: ['S.......G'],
+      startFacing: Direction.east,
+      palette: {InstructionKind.move, InstructionKind.repeat},
+      maxBlocks: 3,
+    );
+    await _pumpPhone(
+      tester,
+      size: const Size(1280, 800),
+      level: loops,
+      audio: voices,
+    );
+    tester
+        .element(find.byType(BlockEditor))
+        .read<BlocksCubit>()
+        .add(BlockType.forward);
+    await tester.pump();
+    await tester.tap(find.widgetWithText(FilledButton, 'Go!'));
+    for (var i = 0; i < 60 && find.text('Try again!').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.tap(find.text('Try again!'));
+    await tester.pump(const Duration(milliseconds: 300));
+    final bulb = find.widgetWithIcon(IconButton, Icons.lightbulb_rounded);
+    final badge = find.descendant(
+      of: find.ancestor(of: bulb, matching: find.byType(Stack)).first,
+      matching: find.byIcon(Icons.repeat_rounded),
+    );
+    double badgeScale() => tester
+        .widget<AnimatedScale>(
+          find.ancestor(of: badge, matching: find.byType(AnimatedScale)),
+        )
+        .scale;
+    expect(badgeScale(), 0);
+
+    await tester.tap(bulb);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(voices.clips, contains('hint_again'));
+    expect(
+      tester.widget<IconButton>(bulb).tooltip,
+      'Tap the light bulb again to see the blocks that repeat!',
+    );
+    expect(badgeScale(), 1);
+
+    // The pattern shows, and the badge goes until the route is back.
+    await tester.tap(bulb);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(voices.clips.last, 'hint_pattern');
+    expect(badgeScale(), 0);
+    expect(tester.takeException(), isNull);
   });
 }

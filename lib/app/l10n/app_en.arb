@@ -331,6 +331,7 @@
   "tutorialDebugging": "These blocks aren't quite right. Press Go and watch. Then tap the block to fix, and tap the right one!",
   "tutorialUntil": "Repeat until the flag keeps going by itself, so you never have to count!",
   "hintPattern": "These blocks come back again and again. Try the loop block!",
+  "hintAgain": "Tap the light bulb again to see the blocks that repeat!",
   "breakTitle": "Time for a break!",
   "breakBody": "You played really well. Rest your eyes, have a stretch, and come back later.",
   "breakHome": "Back to players",

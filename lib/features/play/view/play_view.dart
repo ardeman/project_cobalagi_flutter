@@ -29,6 +29,7 @@ import '../../../learning/learning_engine.dart';
 import '../../editors/blocks/cubit/blocks_cubit.dart';
 import '../../editors/blocks/data/block.dart';
 import '../../editors/blocks/view/block_editor.dart';
+import '../../editors/blocks/view/block_tile.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../cubit/play_cubit.dart';
@@ -106,6 +107,9 @@ class _PlayViewState extends State<PlayView> {
   );
   final _clock = Stopwatch()..start();
   var _hints = 0;
+
+  /// The route hint is showing, and asking again shows the pattern.
+  var _patternNext = false;
   var _finishing = false;
   final _cheers = CheerPicker();
 
@@ -204,8 +208,14 @@ class _PlayViewState extends State<PlayView> {
       pattern ?? hintMarks(_level, solution, labelFont: font),
       trail: hintTrail(_level, solution),
     );
-    // Pre-readers hear what the pattern means.
+    // Pre-readers hear what the pattern means. After the route, they hear
+    // that the bulb has more to show, if it does.
+    final patternNext =
+        pattern == null &&
+        patternHintMarks(_level, solution, labelFont: font) != null;
+    setState(() => _patternNext = patternNext);
     if (pattern != null) _say(VoiceClips.hintPattern);
+    if (patternNext) _say(VoiceClips.hintAgain);
   }
 
   void _onPlayChanged(BuildContext context, PlayState state) {
@@ -350,6 +360,7 @@ class _PlayViewState extends State<PlayView> {
                       hintAfterRuns: widget.hintAfterRuns,
                       hintPulseAfterTries: widget.hintPulseAfterTries,
                       hintsUsed: _hints,
+                      patternNext: _patternNext,
                       howTo: widget.showHowTo,
                       compact: tight,
                       codeMode: _codeMode,
@@ -923,6 +934,7 @@ class _RunControls extends StatelessWidget {
     required this.hintAfterRuns,
     required this.hintPulseAfterTries,
     this.hintsUsed = 0,
+    this.patternNext = false,
     this.howTo = false,
     this.compact = false,
     this.codeMode = false,
@@ -939,6 +951,9 @@ class _RunControls extends StatelessWidget {
 
   /// Hints asked for so far; the bulb pulses until the first one.
   final int hintsUsed;
+
+  /// Asking again shows the repeating pattern: the bulb wears a loop badge.
+  final bool patternNext;
 
   /// Narrow screens (phones): tighter spacing so all four buttons fit.
   final bool compact;
@@ -1030,18 +1045,21 @@ class _RunControls extends StatelessWidget {
               glow: true,
               active: calling,
               // While it calls, the bulb lights up: amber, like a lamp on.
-              child: IconButton.filledTonal(
-                tooltip: l10n.hint,
-                style: calling
-                    ? IconButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFC83D),
-                        foregroundColor: const Color(0xFF3E2723),
-                      )
-                    : null,
-                onPressed: running || play.tries < hintAfterRuns
-                    ? null
-                    : onHint,
-                icon: const Icon(Icons.lightbulb_rounded),
+              child: _HintBadge(
+                show: patternNext && !running,
+                child: IconButton.filledTonal(
+                  tooltip: patternNext ? l10n.hintAgain : l10n.hint,
+                  style: calling
+                      ? IconButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFC83D),
+                          foregroundColor: const Color(0xFF3E2723),
+                        )
+                      : null,
+                  onPressed: running || play.tries < hintAfterRuns
+                      ? null
+                      : onHint,
+                  icon: const Icon(Icons.lightbulb_rounded),
+                ),
               ),
             ),
           ],
@@ -1049,6 +1067,47 @@ class _RunControls extends StatelessWidget {
       },
     );
   }
+}
+
+/// A small loop badge on the hint bulb: tap again to see what repeats.
+class _HintBadge extends StatelessWidget {
+  const _HintBadge({required this.show, required this.child});
+
+  final bool show;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Stack(
+    clipBehavior: Clip.none,
+    children: [
+      child,
+      Positioned(
+        right: -6,
+        top: -6,
+        child: IgnorePointer(
+          child: AnimatedScale(
+            scale: show ? 1 : 0,
+            duration: const Duration(milliseconds: 250),
+            curve: Curves.easeOutBack,
+            child: Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: BlockType.repeat.color,
+                border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: const Icon(
+                Icons.repeat_rounded,
+                size: 16,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ),
+      ),
+    ],
+  );
 }
 
 /// Grows and shrinks [child] while [active], to point it out. With [glow]

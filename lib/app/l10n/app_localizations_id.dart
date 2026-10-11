@@ -673,6 +673,9 @@ class AppLocalizationsId extends AppLocalizations {
       'Blok-blok ini muncul lagi dan lagi. Coba pakai blok pengulang!';
 
   @override
+  String get hintAgain => 'Ketuk lampu lagi untuk melihat blok yang berulang!';
+
+  @override
   String get breakTitle => 'Waktunya istirahat!';
 
   @override

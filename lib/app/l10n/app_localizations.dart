@@ -1298,6 +1298,12 @@ abstract class AppLocalizations {
   /// **'These blocks come back again and again. Try the loop block!'**
   String get hintPattern;
 
+  /// No description provided for @hintAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the light bulb again to see the blocks that repeat!'**
+  String get hintAgain;
+
   /// No description provided for @breakTitle.
   ///
   /// In en, this message translates to:
