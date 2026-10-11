@@ -108,6 +108,10 @@ class _PlayViewState extends State<PlayView> {
   final _clock = Stopwatch()..start();
   var _hints = 0;
 
+  /// The block that walked into a rock on the last run, marked until the
+  /// child changes the program or runs again.
+  String? _bumped;
+
   /// The route hint is showing, and asking again shows the pattern.
   var _patternNext = false;
   var _finishing = false;
@@ -220,6 +224,10 @@ class _PlayViewState extends State<PlayView> {
 
   void _onPlayChanged(BuildContext context, PlayState state) {
     _game.apply(state);
+    if (state.phase == PlayPhase.running && _bumped != null) {
+      setState(() => _bumped = null);
+    }
+    if (state.bumpedBlockId case final id?) setState(() => _bumped = id);
     final mood = switch (state.phase) {
       PlayPhase.succeeded => CheerMood.celebrate,
       PlayPhase.failed => CheerMood.encourage,
@@ -268,6 +276,7 @@ class _PlayViewState extends State<PlayView> {
           ),
           BlocListener<TypedCodeCubit, TypedCodeState>(
             listener: (_, _) {
+              if (_bumped != null) setState(() => _bumped = null);
               if (_play.state.phase != PlayPhase.editing) _play.reset();
             },
           ),
@@ -281,6 +290,15 @@ class _PlayViewState extends State<PlayView> {
               // when the device's touch vibration is off.
               HapticFeedback.selectionClick();
             },
+          ),
+          // A changed program clears the bumped mark; picking a block to
+          // fix keeps it.
+          BlocListener<BlocksCubit, BlockProgram>(
+            listenWhen: (before, after) =>
+                _bumped != null &&
+                (!identical(before.main, after.main) ||
+                    !identical(before.star, after.star)),
+            listener: (_, _) => setState(() => _bumped = null),
           ),
           BlocListener<BlocksCubit, Object>(
             listener: (_, _) {
@@ -395,13 +413,16 @@ class _PlayViewState extends State<PlayView> {
                         return _codeMode
                             ? TypedCodeEditor(
                                 enabled: enabled,
-                                activeBlockId: play.activeBlockId,
+                                // Code marks the bumped command like the
+                                // running one.
+                                activeBlockId: play.activeBlockId ?? _bumped,
                                 fitContent: fit,
                               )
                             : BlockEditor(
                                 palette: _level.palette,
                                 blockSize: tight ? 56.0 : 72.0,
                                 activeBlockId: play.activeBlockId,
+                                bumpedBlockId: _bumped,
                                 issueBlockIds: {
                                   for (final issue in play.issues)
                                     ?issue.blockId,

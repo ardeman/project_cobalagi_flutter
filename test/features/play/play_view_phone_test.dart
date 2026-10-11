@@ -7,6 +7,7 @@ import 'package:cobalagi/engine/world/level.dart';
 import 'package:cobalagi/features/editors/blocks/cubit/blocks_cubit.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_editor.dart';
+import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
 import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/play/view/play_view.dart';
@@ -433,6 +434,45 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(voices.clips.last, 'hint_pattern');
     expect(badgeScale(), 0);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the block that bumped is marked until the child changes it', (
+    tester,
+  ) async {
+    await _pumpPhone(tester, size: const Size(1280, 800));
+    final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
+    // Turn left on a one-row road, then step: off the road.
+    cubit
+      ..add(BlockType.turnLeft)
+      ..add(BlockType.forward);
+    await tester.pump();
+    final step = cubit.state.main.last.id;
+    bool marked(String id) => tester
+        .widgetList<BlockTile>(find.byType(BlockTile))
+        .any((t) => t.bumped && t.key == ValueKey(id));
+    await tester.tap(find.widgetWithText(FilledButton, 'Go!'));
+    for (var i = 0; i < 60 && find.text('Try again!').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(marked(step), isTrue);
+    expect(marked(cubit.state.main.first.id), isFalse);
+
+    // Still marked while the child gets ready to fix it.
+    await tester.tap(find.text('Try again!'));
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(marked(step), isTrue);
+    cubit.pickBlock(step);
+    await tester.pump();
+    expect(marked(step), isTrue);
+
+    // Fixed: the mark goes.
+    cubit.replace(step, BlockType.turnLeft);
+    await tester.pump();
+    expect(
+      tester.widgetList<BlockTile>(find.byType(BlockTile)).any((t) => t.bumped),
+      isFalse,
+    );
     expect(tester.takeException(), isNull);
   });
 }

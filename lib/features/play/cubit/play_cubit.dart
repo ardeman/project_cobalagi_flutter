@@ -68,6 +68,15 @@ class PlayState {
     return events[cursor.clamp(0, events.length - 1)].blockId;
   }
 
+  /// After a run that walked into a rock: the block that made the move,
+  /// so the child sees which one to fix. Other runs that fail are missing
+  /// blocks rather than a wrong one, so they mark none.
+  String? get bumpedBlockId {
+    final last = result?.events.lastOrNull;
+    if (phase != PlayPhase.failed || last is! Bumped) return null;
+    return last.blockId;
+  }
+
   PlayState copyWith({
     PlayPhase? phase,
     int? cursor,

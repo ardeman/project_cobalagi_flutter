@@ -48,7 +48,8 @@ extension BlockTypeStyle on BlockType {
 }
 
 /// A block: a square picture. [highlighted] marks the block that is running;
-/// [hasIssue] marks a block the child needs to fix.
+/// [hasIssue] marks a block the child needs to fix; [bumped] marks the block
+/// that walked into a rock on the last run.
 class BlockTile extends StatelessWidget {
   const BlockTile({
     super.key,
@@ -56,6 +57,7 @@ class BlockTile extends StatelessWidget {
     required this.size,
     this.highlighted = false,
     this.hasIssue = false,
+    this.bumped = false,
     this.stepValue,
   });
 
@@ -63,6 +65,10 @@ class BlockTile extends StatelessWidget {
   final double size;
   final bool highlighted;
   final bool hasIssue;
+  final bool bumped;
+
+  /// The orange the warm-up uses for a tap to try again: never red.
+  static const bumpedColor = Color(0xFFFB8C00);
 
   /// On a placed "use steps" block: the Step Box number it will use, or
   /// "?" before one is saved. Shown in a bubble in the Step Box's colour.
@@ -100,8 +106,34 @@ class BlockTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tile = _tile();
     final value = stepValue;
+    final tile = bumped
+        ? Stack(
+            clipBehavior: Clip.none,
+            children: [
+              _tile(),
+              // "Look here": the move that bumped into the rock.
+              Positioned(
+                top: -size * 0.14,
+                left: -size * 0.14,
+                child: Container(
+                  width: size * 0.42,
+                  height: size * 0.42,
+                  decoration: BoxDecoration(
+                    color: bumpedColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: Icon(
+                    Icons.priority_high_rounded,
+                    color: Colors.white,
+                    size: size * 0.3,
+                  ),
+                ),
+              ),
+            ],
+          )
+        : _tile();
     return Semantics(
       label: value == null
           ? type.label(AppLocalizations.of(context))
@@ -143,7 +175,7 @@ class BlockTile extends StatelessWidget {
 
   Widget _tile() => ExcludeSemantics(
     child: AnimatedScale(
-      scale: highlighted ? 1.12 : 1,
+      scale: highlighted || bumped ? 1.12 : 1,
       duration: const Duration(milliseconds: 150),
       child: Container(
         width: size,
@@ -163,6 +195,8 @@ class BlockTile extends StatelessWidget {
             width: size * 0.07,
             color: hasIssue
                 ? const Color(0xFFE53935)
+                : bumped
+                ? bumpedColor
                 : highlighted
                 ? const Color(0xFFFFD54F)
                 : Colors.white.withValues(alpha: 0.35),
