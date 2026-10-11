@@ -217,3 +217,36 @@
     if (e.key === 'Escape' && nav.classList.contains('open')) { set(false); toggle.focus(); }
   });
 })();
+
+// The promo video. The page shows its title card and links to YouTube; only
+// when the visitor presses play does the YouTube player load (from the
+// no-cookie domain), so the page itself makes no third-party requests.
+(function () {
+  var lang = document.documentElement.lang;
+  document.querySelectorAll('[data-video]').forEach(function (box) {
+    var poster = box.querySelector('.video-poster');
+    var idHref = poster.getAttribute('href');
+    function reset() {
+      var frame = box.querySelector('iframe');
+      if (frame) { frame.remove(); poster.hidden = false; }
+      poster.href = lang === 'en' ? poster.dataset.enHref : idHref;
+    }
+    poster.addEventListener('click', function (e) {
+      e.preventDefault();
+      var en = lang === 'en';
+      var frame = document.createElement('iframe');
+      frame.src = 'https://www.youtube-nocookie.com/embed/' +
+        (en ? box.dataset.enVideo : box.dataset.video) +
+        '?autoplay=1&rel=0&hl=' + lang;
+      frame.title = poster.getAttribute('aria-label');
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+      frame.allowFullscreen = true;
+      frame.referrerPolicy = 'strict-origin-when-cross-origin';
+      poster.hidden = true;
+      box.appendChild(frame);
+      frame.focus();
+    });
+    document.addEventListener('langchange', function (e) { lang = e.detail; reset(); });
+    reset();
+  });
+})();

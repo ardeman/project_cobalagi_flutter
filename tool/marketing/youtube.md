@@ -17,7 +17,7 @@ YouTube can't replace a video's file: to update a video, delete it and upload th
 | Tags | `Coba Lagi, cobalagi, coding for kids, learn to code, block coding, kids coding app, belajar coding anak` | Catches "cobalagi" written as one word |
 | Video language | English for `-en`, Indonesian for `-id` | |
 | Caption certification | This content has never aired on television in the US | |
-| Licence | Standard YouTube licence; allow embedding (the Play listing embeds it) | |
+| Licence | Standard YouTube licence; allow embedding (the Play listing and the website embed it) | |
 | Shorts remixing | Allow video and audio | |
 | Category | Education; Type, Problems, Academic system, Level and Exam left empty | A promo, not a lesson |
 | Comments | On, anyone, top first; moderation Strict | A children's app: hold possibly inappropriate comments |
