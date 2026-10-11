@@ -57,6 +57,35 @@ void main() {
     expect(find.byIcon(Icons.star_rounded), findsNothing);
   });
 
+  for (final size in const [
+    Size(360, 640),
+    Size(412, 915),
+    Size(640, 360),
+    Size(780, 360),
+    Size(1280, 800),
+    Size(800, 1280),
+  ]) {
+    testWidgets('every game is in view without scrolling ($size)', (
+      tester,
+    ) async {
+      await pumpScreen(tester, const WarmUpIslandScreen(profileId: 1));
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1;
+      await tester.pump();
+      final scroll = tester.state<ScrollableState>(find.byType(Scrollable));
+      expect(scroll.position.maxScrollExtent, 0);
+      for (final card in tester.widgetList(find.byType(Card))) {
+        final rect = tester.getRect(find.byWidget(card));
+        expect(rect.shortestSide, greaterThanOrEqualTo(80));
+        expect(
+          (Offset.zero & size).contains(rect.bottomRight - const Offset(1, 1)),
+          isTrue,
+          reason: '$rect on screen',
+        );
+      }
+    });
+  }
+
   testWidgets('a round ends with play again, which starts a new one', (
     tester,
   ) async {

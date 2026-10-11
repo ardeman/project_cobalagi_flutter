@@ -144,7 +144,8 @@ void main() {
     tester.view.physicalSize = const Size(1080, 4200);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
-    // A question whose right answer has another card under it.
+    // A question whose right answer has another card in a row under it
+    // (on a narrow phone, step cards go two to a row).
     late SequencingQuestion steps;
     for (var seed = 0; ; seed++) {
       steps =
@@ -153,22 +154,23 @@ void main() {
                 'colors': ['red', 'blue', 'green'],
               }, Random(seed)).question(PretestSkill.sequencing, 1)
               as SequencingQuestion;
-      if (steps.correct < steps.optionCount - 1) break;
+      if (steps.correct < 2 && steps.optionCount > 2) break;
     }
-    final wrong = steps.optionCount - 1;
+    final wrong = steps.optionCount - 1 == steps.correct ? 0 : 2;
     await pumpQuestion(tester, steps, chosen: wrong, size: 110);
-    final right = find.byType(Card).at(steps.correct);
-    final below = find.byType(Card).at(steps.correct + 1);
-    expect(
-      tester.getTopLeft(below).dy,
-      greaterThan(tester.getBottomLeft(right).dy + 40),
-      reason: 'the cards stack in one column',
-    );
+    final cards = find.byType(Card);
+    final right = tester.getRect(cards.at(steps.correct));
+    final below = [
+      for (var i = 0; i < steps.optionCount; i++)
+        if (tester.getRect(cards.at(i)).top > right.bottom)
+          tester.getRect(cards.at(i)),
+    ];
+    expect(below, isNotEmpty, reason: 'a card in the next row');
     final label = find.text('The answer is this one!');
     expect(
       tester.getBottomLeft(label).dy,
-      lessThanOrEqualTo(tester.getTopLeft(below).dy),
-      reason: 'the label ends before the next card',
+      lessThanOrEqualTo(below.first.top),
+      reason: 'the label ends before the next row of cards',
     );
   });
 }

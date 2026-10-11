@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,13 +71,20 @@ class _WarmUpIslandScreenState extends State<WarmUpIslandScreen> {
         bottom: false,
         child: WindowClassBuilder(
           builder: (context, windowClass) {
-            final tile = windowClass == WindowClass.compact ? 132.0 : 168.0;
+            final padding = belowBars(context, const EdgeInsets.all(24));
+            final room = MediaQuery.sizeOf(context);
+            final tile = _tileSize(
+              games: cubit.curriculum.warmUp.games.length,
+              width: room.width - padding.horizontal,
+              height: room.height - padding.vertical,
+              largest: windowClass == WindowClass.compact ? 132.0 : 168.0,
+            );
             return CenteredScrollView(
-              padding: belowBars(context, const EdgeInsets.all(24)),
+              padding: padding,
               child: Wrap(
                 alignment: WrapAlignment.center,
-                spacing: 20,
-                runSpacing: 20,
+                spacing: _gap,
+                runSpacing: _gap,
                 children: [
                   for (final game in cubit.curriculum.warmUp.games)
                     _GameTile(
@@ -93,6 +102,35 @@ class _WarmUpIslandScreenState extends State<WarmUpIslandScreen> {
       ),
     );
   }
+}
+
+/// Gap between game tiles.
+const _gap = 20.0;
+
+/// The biggest tile, up to [largest], at which every game fits the screen
+/// at once in some number of columns (a phone held sideways puts them all in
+/// one row), so the games never need scrolling. Never below a big finger's
+/// size: on a tiny screen the page scrolls instead.
+double _tileSize({
+  required int games,
+  required double width,
+  required double height,
+  required double largest,
+}) {
+  var best = 0.0;
+  for (var columns = 1; columns <= max(1, games); columns++) {
+    final rows = (games / columns).ceil();
+    // Each tile's card has a 4 dp margin around it.
+    final fit =
+        min(
+          (width - _gap * (columns - 1)) / columns,
+          (height - _gap * (rows - 1)) / rows,
+        ) -
+        8;
+    best = max(best, fit);
+  }
+  // Rounded down, so a row that fills the width exactly never wraps.
+  return best.floorToDouble().clamp(80.0, largest);
 }
 
 class _GameTile extends StatelessWidget {

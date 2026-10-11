@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../app/l10n/app_localizations.dart';
@@ -120,9 +119,6 @@ class _QuestionGameState extends State<QuestionGame> {
     _speak();
   }
 
-  /// The prompt or the cheer above the pictures: one height for both.
-  static const _topRow = 96.0;
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -134,79 +130,104 @@ class _QuestionGameState extends State<QuestionGame> {
         leading: CloseButton(onPressed: widget.onClose),
         title: _Footprints(steps: widget.steps, progress: _round.progress),
       ),
-      // The scroll view pads itself, so content passes under the bar.
+      // The game pads itself below the bar.
       body: SafeArea(
         top: false,
         bottom: false,
         child: WindowClassBuilder(
           builder: (context, windowClass) {
             final media = MediaQuery.of(context);
+            // A phone held sideways has little height: slimmer margins and
+            // prompt row leave more of it to the pictures.
+            final short = media.size.height < 480;
+            final topRow = short ? 64.0 : 96.0;
+            final padding = belowBars(
+              context,
+              EdgeInsets.symmetric(horizontal: 24, vertical: short ? 8 : 24),
+            );
             // Also fit the height, so a phone held sideways shows the
             // answers without scrolling.
-            final height = media.size.height - media.padding.vertical - 48;
+            final height = media.size.height - padding.vertical;
             final size = min(switch (windowClass) {
               WindowClass.compact => 110.0,
               WindowClass.medium => 150.0,
               WindowClass.expanded => 190.0,
             }, max(80.0, height / 3.4));
-            return CenteredScrollView(
-              padding: belowBars(context, const EdgeInsets.all(24)),
-              child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 250),
-                child: feedback != null
-                    // The question and its answer share one layout: the
-                    // same top row height, the same room under the cards,
-                    // so the pictures stay put when the child answers.
-                    ? Column(
-                        key: ValueKey('feedback-${_round.questionsAsked}'),
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: _topRow,
-                            child: Center(
-                              child: _FeedbackBanner(cheer: feedback.cheer),
-                            ),
-                          ),
-                          SizedBox(height: size * 0.2),
-                          QuestionView(
-                            question: feedback.question,
-                            size: size,
-                            onAnswer: null,
-                            chosen: feedback.chosen,
-                            answerLabel: l10n.answerWas,
-                          ),
-                          // Room for the label under the right answer.
-                          SizedBox(height: size * 0.6),
-                        ],
-                      )
-                    : question == null
-                    ? KeyedSubtree(
-                        key: const ValueKey('done'),
-                        child: widget.done(context),
-                      )
-                    : Column(
-                        key: ValueKey(_round.questionsAsked),
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: _topRow,
-                            child: Center(
-                              child: _Prompt(
-                                text: promptFor(l10n, question).$1,
-                                onListen: _speak,
+            // Never a scroll: a game taller than the screen (many things to
+            // count, a long row of steps) shrinks as a whole to fit. The
+            // question and its answer are the same height, so they shrink
+            // alike and the pictures stay put.
+            return Padding(
+              padding: padding,
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: SizedBox(
+                    width: media.size.width - padding.horizontal,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: feedback != null
+                          // The question and its answer share one layout: the
+                          // same top row height, the same room under the cards,
+                          // so the pictures stay put when the child answers.
+                          ? Column(
+                              key: ValueKey(
+                                'feedback-${_round.questionsAsked}',
                               ),
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  height: topRow,
+                                  child: Center(
+                                    child: _FeedbackBanner(
+                                      cheer: feedback.cheer,
+                                      size: min(72, topRow),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: size * 0.2),
+                                QuestionView(
+                                  question: feedback.question,
+                                  size: size,
+                                  onAnswer: null,
+                                  chosen: feedback.chosen,
+                                  answerLabel: l10n.answerWas,
+                                ),
+                                // Room for the label under the right answer.
+                                SizedBox(height: size * 0.6),
+                              ],
+                            )
+                          : question == null
+                          ? KeyedSubtree(
+                              key: const ValueKey('done'),
+                              child: widget.done(context),
+                            )
+                          : Column(
+                              key: ValueKey(_round.questionsAsked),
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  height: topRow,
+                                  child: Center(
+                                    child: _Prompt(
+                                      text: promptFor(l10n, question).$1,
+                                      onListen: _speak,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: size * 0.2),
+                                QuestionView(
+                                  question: question,
+                                  size: size,
+                                  onAnswer: _answer,
+                                  answerLabel: l10n.answerWas,
+                                ),
+                                SizedBox(height: size * 0.6),
+                              ],
                             ),
-                          ),
-                          SizedBox(height: size * 0.2),
-                          QuestionView(
-                            question: question,
-                            size: size,
-                            onAnswer: _answer,
-                            answerLabel: l10n.answerWas,
-                          ),
-                          SizedBox(height: size * 0.6),
-                        ],
-                      ),
+                    ),
+                  ),
+                ),
               ),
             );
           },
@@ -271,15 +292,16 @@ class _Footprints extends StatelessWidget {
 
 /// The cheer after an answer.
 class _FeedbackBanner extends StatelessWidget {
-  const _FeedbackBanner({required this.cheer});
+  const _FeedbackBanner({required this.cheer, required this.size});
 
   final Cheer cheer;
+  final double size;
 
   @override
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      CheerBadge(cheer: cheer, size: 72),
+      CheerBadge(cheer: cheer, size: size),
       const SizedBox(width: 16),
       Flexible(
         child: Text(

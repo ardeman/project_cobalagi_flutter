@@ -93,25 +93,39 @@ class QuestionView extends StatelessWidget {
     final (Widget? stimulus, List<Widget> options) = switch (question) {
       ReadingQuestion(:final words, :final options) => (
         _Board(
-          child: Text(
-            writtenWords(l10n, words),
-            style: Theme.of(
-              context,
-            ).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w800),
+          child: ConstrainedBox(
+            // A long sentence wraps instead of pushing the answers away.
+            constraints: BoxConstraints(maxWidth: size * 3),
+            child: Text(
+              writtenWords(l10n, words),
+              textAlign: TextAlign.center,
+              // Grows with the pictures, like every other game.
+              style: TextStyle(
+                fontSize: size * 0.3,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
           ),
         ),
         [for (final p in options) PretestPicture(picture: p, size: size * 0.6)],
       ),
       CountingQuestion(:final object, :final count, :final options) => (
         _Board(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (var i = 0; i < count; i++)
-                PretestPicture(picture: Picture(object), size: size * 0.38),
-            ],
+          // A few to a row, so many things to count stack into a block
+          // instead of one long line beside the answers.
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: (size * 0.38 + 8) * (sideways ? 5 : 6),
+            ),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (var i = 0; i < count; i++)
+                  PretestPicture(picture: Picture(object), size: size * 0.38),
+              ],
+            ),
           ),
         ),
         [
@@ -158,19 +172,27 @@ class QuestionView extends StatelessWidget {
       ),
       PatternQuestion(:final sequence, :final options) => (
         _Board(
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            spacing: 8,
-            children: [
-              for (final p in sequence)
-                PretestPicture(picture: p, size: size * 0.4),
-              Icon(
-                Icons.help_rounded,
-                size: size * 0.45,
-                color: Theme.of(context).colorScheme.outline,
-              ),
-            ],
+          // Beside the answers, a long pattern takes two rows so the
+          // answers keep theirs.
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: sideways ? (size * 0.45 + 8) * 4 : double.infinity,
+            ),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final p in sequence)
+                  PretestPicture(picture: p, size: size * 0.4),
+                Icon(
+                  Icons.help_rounded,
+                  size: size * 0.45,
+                  color: Theme.of(context).colorScheme.outline,
+                ),
+              ],
+            ),
           ),
         ),
         [for (final p in options) PretestPicture(picture: p, size: size * 0.5)],
@@ -211,8 +233,14 @@ class QuestionView extends StatelessWidget {
         _OptionCard(
           // On a short screen held sideways, step cards share the row with
           // the map, so they shrink.
+          // On a narrow phone they go two to a row instead of three high.
           size: question is SequencingQuestion
-              ? size * (sideways && short ? 1.3 : 1.6)
+              ? size *
+                    (sideways && short
+                        ? 1.15
+                        : screen.width < 500
+                        ? 1.3
+                        : 1.6)
               : size,
           onTap: onAnswer == null ? null : () => onAnswer!(i),
           mark: switch (chosen) {
@@ -301,9 +329,9 @@ enum _Mark { none, right, wrong, faded }
 
 const _rightColor = Color(0xFF43A047);
 
-/// Height of the arrow and one line of "The answer is this one!" under a
-/// card, plus a little air.
-const _labelRoom = 96.0;
+/// Height of the arrow and "The answer is this one!" under a card, plus a
+/// little air: two lines, for narrow cards and longer words.
+const _labelRoom = 112.0;
 const _wrongColor = Color(0xFFFB8C00);
 
 class _OptionCard extends StatelessWidget {
