@@ -10,6 +10,7 @@ class SettingsRepository {
   static const _effectsKey = 'soundEffects';
   static const _musicKey = 'music';
   static const _breakKey = 'breakMinutes';
+  static const _followKey = 'followRobot';
 
   /// Language code chosen in the parent area, or null to follow the device.
   Future<String?> loadLanguageCode() async =>
@@ -46,4 +47,12 @@ class SettingsRepository {
 
   Future<void> saveBreakMinutes(int minutes) =>
       _store.record(_breakKey).put(_db, minutes);
+
+  /// Whether the play world turns with the robot, so the way it faces is
+  /// always up; off unless a child turned it on.
+  Future<bool> loadFollowRobot() async =>
+      await _store.record(_followKey).get(_db) as bool? ?? false;
+
+  Future<void> saveFollowRobot(bool on) =>
+      _store.record(_followKey).put(_db, on);
 }

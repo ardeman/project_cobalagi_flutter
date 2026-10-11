@@ -36,6 +36,7 @@ Future<void> _pumpPhone(
   int hintAfterRuns = 1,
   Decision? decision,
   AudioService audio = const SilentAudioService(),
+  ValueChanged<bool>? onFollowRobot,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -66,6 +67,7 @@ Future<void> _pumpPhone(
           onFinished: (_) async => decision,
           onNext: () {},
           allowCode: allowCode,
+          onFollowRobot: onFollowRobot,
         ),
       ),
     ),
@@ -473,6 +475,22 @@ void main() {
       tester.widgetList<BlockTile>(find.byType(BlockTile)).any((t) => t.bumped),
       isFalse,
     );
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the compass turns the map with the robot, and back', (
+    tester,
+  ) async {
+    final saved = <bool>[];
+    await _pumpPhone(tester, onFollowRobot: saved.add);
+    await tester.tap(find.byIcon(Icons.explore_rounded));
+    await tester.pump();
+    expect(saved, [true]);
+    expect(find.byIcon(Icons.navigation_rounded), findsOneWidget);
+    expect(find.byTooltip('Show the map the usual way'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.navigation_rounded));
+    await tester.pump();
+    expect(saved, [true, false]);
     expect(tester.takeException(), isNull);
   });
 }

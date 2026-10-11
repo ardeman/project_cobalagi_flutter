@@ -688,6 +688,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tap the light bulb again to see the blocks that repeat!';
 
   @override
+  String get followRobotOn => 'Turn the map with Koba';
+
+  @override
+  String get followRobotOff => 'Show the map the usual way';
+
+  @override
   String get breakTitle => 'Time for a break!';
 
   @override

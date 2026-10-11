@@ -8,6 +8,7 @@ import '../../play_time/cubit/break_reminder_cubit.dart';
 import '../../play_time/data/play_clock.dart';
 import '../../play_time/view/break_screen.dart';
 import '../../tutorial/view/tutorial_view.dart';
+import '../cubit/follow_robot_cubit.dart';
 import 'play_view.dart';
 
 /// Serves exercises from the learning loop, one after another.
@@ -81,6 +82,8 @@ class _PlayScreenState extends State<PlayScreen> {
       },
       // Readers (from the warm-up game, or a parent's choice) can type code.
       allowCode: learning.state.learner!.placement?.readsWords ?? false,
+      followRobot: context.watch<FollowRobotCubit>().state,
+      onFollowRobot: context.read<FollowRobotCubit>().set,
       // Until the child has solved a first puzzle.
       showHowTo: learning.state.learner!.progress.values.every(
         (p) => p.solvedLessons.isEmpty && p.scores.every((s) => s == 0),

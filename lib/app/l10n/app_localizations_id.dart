@@ -676,6 +676,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get hintAgain => 'Ketuk lampu lagi untuk melihat blok yang berulang!';
 
   @override
+  String get followRobotOn => 'Putar peta bersama Koba';
+
+  @override
+  String get followRobotOff => 'Tampilkan peta seperti biasa';
+
+  @override
   String get breakTitle => 'Waktunya istirahat!';
 
   @override

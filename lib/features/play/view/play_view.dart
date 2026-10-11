@@ -51,9 +51,16 @@ class PlayView extends StatefulWidget {
     required this.onNext,
     this.showHowTo = false,
     this.allowCode = false,
+    this.followRobot = false,
+    this.onFollowRobot,
   });
 
   final Exercise exercise;
+
+  /// The world turns with the robot, so the way it faces is up and its left
+  /// and right are the child's. [onFollowRobot] saves a change.
+  final bool followRobot;
+  final ValueChanged<bool>? onFollowRobot;
 
   /// Offers the Code tab beside the blocks: for children who read, or when
   /// a parent turns it on. Otherwise only picture blocks show.
@@ -104,7 +111,14 @@ class _PlayViewState extends State<PlayView> {
     level: _level,
     onEventShown: _play.eventShown,
     onSound: context.read<AudioService>().playEffect,
-  );
+  )..follow = widget.followRobot;
+
+  void _toggleFollow() {
+    final on = !_game.follow;
+    setState(() => _game.follow = on);
+    widget.onFollowRobot?.call(on);
+  }
+
   final _clock = Stopwatch()..start();
   var _hints = 0;
 
@@ -363,7 +377,21 @@ class _PlayViewState extends State<PlayView> {
                                 : const EdgeInsets.fromLTRB(8, 8, 8, 0),
                             child: _StepBoxValue(compact: tight),
                           ),
-                        Expanded(child: GameWidget(game: _game)),
+                        Expanded(
+                          child: Stack(
+                            children: [
+                              Positioned.fill(child: GameWidget(game: _game)),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: _FollowButton(
+                                  on: _game.follow,
+                                  onPressed: _toggleFollow,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1086,6 +1114,34 @@ class _RunControls extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// Turns the world with the robot, or back: a compass, filled while on.
+class _FollowButton extends StatelessWidget {
+  const _FollowButton({required this.on, required this.onPressed});
+
+  final bool on;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Semantics(
+      toggled: on,
+      child: IconButton.filledTonal(
+        tooltip: on ? l10n.followRobotOff : l10n.followRobotOn,
+        isSelected: on,
+        style: IconButton.styleFrom(
+          backgroundColor: on
+              ? const Color(0xFFFFC83D)
+              : Colors.white.withValues(alpha: 0.85),
+          foregroundColor: const Color(0xFF263238),
+        ),
+        onPressed: onPressed,
+        icon: Icon(on ? Icons.navigation_rounded : Icons.explore_rounded),
+      ),
     );
   }
 }

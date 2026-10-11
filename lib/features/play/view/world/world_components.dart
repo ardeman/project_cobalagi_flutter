@@ -37,12 +37,49 @@ class BoardComponent extends PositionComponent {
     return recorder.endRecording();
   }();
 
+  /// How far the view is turned (see `WorldGame.follow`): each obstacle
+  /// stands upright on the screen, so rocks never lie on their sides.
+  var upright = 0.0;
+
+  /// Each obstacle, drawn once around its own centre.
+  late final List<(Offset, Picture)> _obstacles = [
+    for (var y = 0; y < level.height; y++)
+      for (var x = 0; x < level.width; x++)
+        if (level.tiles[y][x] != Tile.floor)
+          (
+            Offset(x + 0.5, y + 0.5),
+            () {
+              final recorder = PictureRecorder();
+              drawObstacle(
+                Canvas(recorder),
+                const Rect.fromLTWH(-0.5, -0.5, 1, 1),
+                theme.obstacle,
+                y * 997 + x,
+              );
+              return recorder.endRecording();
+            }(),
+          ),
+  ];
+
   @override
-  void render(Canvas canvas) => canvas.drawPicture(_picture);
+  void render(Canvas canvas) {
+    canvas.drawPicture(_picture);
+    for (final (at, obstacle) in _obstacles) {
+      canvas
+        ..save()
+        ..translate(at.dx, at.dy)
+        ..rotate(upright)
+        ..drawPicture(obstacle)
+        ..restore();
+    }
+  }
 
   @override
   void onRemove() {
     _picture.dispose();
+    for (final (_, obstacle) in _obstacles) {
+      obstacle.dispose();
+    }
     super.onRemove();
   }
 
@@ -76,8 +113,6 @@ class BoardComponent extends PositionComponent {
               ),
               _floor,
             );
-        } else {
-          drawObstacle(canvas, cell, theme.obstacle, y * 997 + x);
         }
       }
     }
@@ -183,6 +218,10 @@ class ActorComponent extends PositionComponent {
   /// Set while it moves between tiles, for a livelier bounce.
   var rolling = false;
 
+  /// How far the view is turned (see `WorldGame.follow`): the robot stands
+  /// upright on the screen, not on the board.
+  var viewAngle = 0.0;
+
   /// The face on the robot's screen.
   var face = RobotFace.normal;
 
@@ -226,6 +265,8 @@ class ActorComponent extends PositionComponent {
   @override
   void render(Canvas canvas) {
     if (sprite == null) return _renderPlain(canvas);
+    // Its facing as seen on the screen, which may be turned with it.
+    final angle = this.angle - viewAngle;
     // Facing up the board, it walks away: its back shows. Its faces
     // (dizzy, cheering) always turn to the child.
     final away = face == RobotFace.normal && cos(angle) > 0.7;

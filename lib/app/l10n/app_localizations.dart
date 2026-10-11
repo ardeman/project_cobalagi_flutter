@@ -1304,6 +1304,18 @@ abstract class AppLocalizations {
   /// **'Tap the light bulb again to see the blocks that repeat!'**
   String get hintAgain;
 
+  /// No description provided for @followRobotOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn the map with Koba'**
+  String get followRobotOn;
+
+  /// No description provided for @followRobotOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Show the map the usual way'**
+  String get followRobotOff;
+
   /// No description provided for @breakTitle.
   ///
   /// In en, this message translates to:

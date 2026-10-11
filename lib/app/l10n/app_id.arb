@@ -225,6 +225,8 @@
   "tutorialUntil": "Ulangi sampai bendera terus jalan sendiri, jadi kamu tidak perlu menghitung!",
   "hintPattern": "Blok-blok ini muncul lagi dan lagi. Coba pakai blok pengulang!",
   "hintAgain": "Ketuk lampu lagi untuk melihat blok yang berulang!",
+  "followRobotOn": "Putar peta bersama Koba",
+  "followRobotOff": "Tampilkan peta seperti biasa",
   "breakTitle": "Waktunya istirahat!",
   "breakBody": "Kamu sudah bermain dengan hebat. Istirahatkan matamu, coba peregangan, lalu main lagi nanti.",
   "breakHome": "Kembali ke pemain",
