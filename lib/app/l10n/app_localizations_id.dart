@@ -269,7 +269,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get dropBlocksHere => 'Taruh blok di sini';
 
   @override
-  String get pretestWelcome => 'Ayo main pemanasan dulu!';
+  String get pretestWelcome => 'Hai, aku Koba! Ayo main pemanasan dulu!';
 
   @override
   String get pretestStart => 'Mulai';
@@ -638,7 +638,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tutorialDirections =>
-      'Ketuk blok panah untuk memberi tahu robot ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!';
+      'Ketuk blok panah untuk memberi tahu Koba ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!';
 
   @override
   String get tutorialSequencing =>
@@ -654,7 +654,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'Blok mata melihat ke depan. Kalau jalannya kosong, robot maju. Kalau tidak, ia menunggu.';
+      'Blok mata melihat ke depan. Kalau jalannya kosong, Koba maju. Kalau tidak, ia menunggu.';
 
   @override
   String get tutorialVariables =>

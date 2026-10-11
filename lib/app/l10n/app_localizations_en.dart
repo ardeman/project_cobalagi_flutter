@@ -280,7 +280,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dropBlocksHere => 'Put blocks here';
 
   @override
-  String get pretestWelcome => 'Let\'s play a warm-up game!';
+  String get pretestWelcome => 'Hi, I\'m Koba! Let\'s play a warm-up game!';
 
   @override
   String get pretestStart => 'Start';
@@ -649,7 +649,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialDirections =>
-      'Tap the arrow blocks to tell the robot where to go: forward, turn left, turn right. Then press Go!';
+      'Tap the arrow blocks to tell Koba where to go: forward, turn left, turn right. Then press Go!';
 
   @override
   String get tutorialSequencing =>
@@ -665,7 +665,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'The eye block looks ahead. If the path is clear, the robot steps forward. If not, it waits.';
+      'The eye block looks ahead. If the path is clear, Koba steps forward. If not, it waits.';
 
   @override
   String get tutorialVariables =>

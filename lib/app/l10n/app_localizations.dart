@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @pretestWelcome.
   ///
   /// In en, this message translates to:
-  /// **'Let\'s play a warm-up game!'**
+  /// **'Hi, I\'m Koba! Let\'s play a warm-up game!'**
   String get pretestWelcome;
 
   /// No description provided for @pretestStart.
@@ -1247,7 +1247,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialDirections.
   ///
   /// In en, this message translates to:
-  /// **'Tap the arrow blocks to tell the robot where to go: forward, turn left, turn right. Then press Go!'**
+  /// **'Tap the arrow blocks to tell Koba where to go: forward, turn left, turn right. Then press Go!'**
   String get tutorialDirections;
 
   /// No description provided for @tutorialSequencing.
@@ -1271,7 +1271,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialConditions.
   ///
   /// In en, this message translates to:
-  /// **'The eye block looks ahead. If the path is clear, the robot steps forward. If not, it waits.'**
+  /// **'The eye block looks ahead. If the path is clear, Koba steps forward. If not, it waits.'**
   String get tutorialConditions;
 
   /// No description provided for @tutorialVariables.
