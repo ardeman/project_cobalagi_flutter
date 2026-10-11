@@ -1316,6 +1316,90 @@ abstract class AppLocalizations {
   /// **'Show the map the usual way'**
   String get followRobotOff;
 
+  /// No description provided for @tourPalette.
+  ///
+  /// In en, this message translates to:
+  /// **'These are your blocks. Tap one, or drag it into your program.'**
+  String get tourPalette;
+
+  /// No description provided for @tourProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Your program goes here. Koba does the blocks in order, from the first one. Tap a block to change it.'**
+  String get tourProgram;
+
+  /// No description provided for @tourGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Press Go, and Koba follows your blocks!'**
+  String get tourGo;
+
+  /// No description provided for @tourStep.
+  ///
+  /// In en, this message translates to:
+  /// **'This button does one block at a time, so you can watch closely.'**
+  String get tourStep;
+
+  /// No description provided for @tourReset.
+  ///
+  /// In en, this message translates to:
+  /// **'This one takes Koba back to the start.'**
+  String get tourReset;
+
+  /// No description provided for @tourHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Stuck? After a few tries, the light bulb lights up to show you the way.'**
+  String get tourHint;
+
+  /// No description provided for @tourFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'This turns the map, so Koba\'s left and right are your left and right.'**
+  String get tourFollow;
+
+  /// No description provided for @tourListen.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the speaker to hear what to do again.'**
+  String get tourListen;
+
+  /// No description provided for @tourWarmUpListen.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen to the question. Tap the speaker to hear it again.'**
+  String get tourWarmUpListen;
+
+  /// No description provided for @tourWarmUpAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Then tap the picture you think is right!'**
+  String get tourWarmUpAnswer;
+
+  /// No description provided for @tourWarmUpSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'The paw prints show how far you have come.'**
+  String get tourWarmUpSteps;
+
+  /// No description provided for @tourNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get tourNext;
+
+  /// No description provided for @tourDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it!'**
+  String get tourDone;
+
+  /// No description provided for @tourHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'How does it work?'**
+  String get tourHelp;
+
   /// No description provided for @breakTitle.
   ///
   /// In en, this message translates to:

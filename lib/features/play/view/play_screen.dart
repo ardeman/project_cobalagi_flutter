@@ -82,6 +82,8 @@ class _PlayScreenState extends State<PlayScreen> {
       },
       // Readers (from the warm-up game, or a parent's choice) can type code.
       allowCode: learning.state.learner!.placement?.readsWords ?? false,
+      showTour: learning.tourDue(LearningCubit.playTour),
+      onTourDone: () => learning.markTutorialSeen(LearningCubit.playTour),
       followRobot: context.watch<FollowRobotCubit>().state,
       onFollowRobot: context.read<FollowRobotCubit>().set,
       // Until the child has solved a first puzzle.

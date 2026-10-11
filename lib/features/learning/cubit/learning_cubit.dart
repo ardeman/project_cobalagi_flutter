@@ -144,6 +144,15 @@ class LearningCubit extends Cubit<LearningState> {
 
   /// Remembers that the child has watched [conceptId]'s "Watch me!" demo,
   /// so it plays only on the first visit.
+  /// Ids in [LearnerState.tutorialsSeen] for the guided tours of the
+  /// coding screen and the warm-up games (never a concept id).
+  static const playTour = 'tour-play';
+  static const warmUpTour = 'tour-warmup';
+
+  /// Whether the child has yet to see the tour [id] (see [playTour]).
+  bool tourDue(String id) =>
+      !(state.learner?.tutorialsSeen.contains(id) ?? true);
+
   Future<void> markTutorialSeen(String conceptId) async {
     final current = _pending ?? state.learner!;
     if (current.tutorialsSeen.contains(conceptId)) return;

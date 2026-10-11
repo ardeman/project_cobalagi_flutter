@@ -682,6 +682,56 @@ class AppLocalizationsId extends AppLocalizations {
   String get followRobotOff => 'Tampilkan peta seperti biasa';
 
   @override
+  String get tourPalette =>
+      'Ini blok-blokmu. Ketuk satu, atau seret ke programmu.';
+
+  @override
+  String get tourProgram =>
+      'Programmu ada di sini. Koba menjalankan bloknya berurutan, dari yang pertama. Ketuk blok untuk menggantinya.';
+
+  @override
+  String get tourGo => 'Tekan Jalan, dan Koba mengikuti blok-blokmu!';
+
+  @override
+  String get tourStep =>
+      'Tombol ini menjalankan satu blok setiap kali, jadi kamu bisa melihat dengan teliti.';
+
+  @override
+  String get tourReset => 'Yang ini membawa Koba kembali ke awal.';
+
+  @override
+  String get tourHint =>
+      'Bingung? Setelah beberapa kali mencoba, lampunya menyala untuk menunjukkan jalannya.';
+
+  @override
+  String get tourFollow =>
+      'Ini memutar peta, jadi kiri dan kanan Koba sama dengan kiri dan kananmu.';
+
+  @override
+  String get tourListen =>
+      'Ketuk speaker untuk mendengar lagi apa yang harus dilakukan.';
+
+  @override
+  String get tourWarmUpListen =>
+      'Dengarkan pertanyaannya. Ketuk speaker untuk mendengarnya lagi.';
+
+  @override
+  String get tourWarmUpAnswer => 'Lalu ketuk gambar yang menurutmu benar!';
+
+  @override
+  String get tourWarmUpSteps =>
+      'Jejak kaki menunjukkan sudah sejauh mana kamu bermain.';
+
+  @override
+  String get tourNext => 'Lanjut';
+
+  @override
+  String get tourDone => 'Paham!';
+
+  @override
+  String get tourHelp => 'Bagaimana caranya?';
+
+  @override
   String get breakTitle => 'Waktunya istirahat!';
 
   @override

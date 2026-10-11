@@ -37,6 +37,8 @@ Future<void> _pumpPhone(
   Decision? decision,
   AudioService audio = const SilentAudioService(),
   ValueChanged<bool>? onFollowRobot,
+  bool showTour = false,
+  VoidCallback? onTourDone,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -68,6 +70,8 @@ Future<void> _pumpPhone(
           onNext: () {},
           allowCode: allowCode,
           onFollowRobot: onFollowRobot,
+          showTour: showTour,
+          onTourDone: onTourDone,
         ),
       ),
     ),
@@ -491,6 +495,54 @@ void main() {
     await tester.tap(find.byIcon(Icons.navigation_rounded));
     await tester.pump();
     expect(saved, [true, false]);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('the tour shows each part, out loud, then says the goal', (
+    tester,
+  ) async {
+    final voices = _Voices();
+    var done = 0;
+    await _pumpPhone(
+      tester,
+      size: const Size(1280, 800),
+      audio: voices,
+      showTour: true,
+      onTourDone: () => done++,
+    );
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.textContaining('These are your blocks'), findsOneWidget);
+    expect(voices.clips, ['tour_palette'], reason: 'the goal waits');
+    final seen = <String>[];
+    for (var i = 0; i < 10 && find.text('Got it!').evaluate().isEmpty; i++) {
+      await tester.tap(find.text('Next'));
+      await _pumpScroll(tester);
+      seen.add(voices.clips.last);
+    }
+    expect(seen, [
+      'tour_program',
+      'tour_go',
+      'tour_step',
+      'tour_reset',
+      'tour_hint',
+      'tour_follow',
+      'tour_listen',
+    ]);
+    await tester.tap(find.text('Got it!'));
+    await _pumpScroll(tester);
+    expect(done, 1);
+    expect(voices.clips.last, 'play_goal');
+    expect(find.textContaining('These are your blocks'), findsNothing);
+
+    // "?" shows it again.
+    await tester.tap(find.byIcon(Icons.question_mark_rounded));
+    await _pumpScroll(tester);
+    expect(find.textContaining('These are your blocks'), findsOneWidget);
+    await tester.tap(find.text('Skip'));
+    await _pumpScroll(tester);
+    expect(find.textContaining('These are your blocks'), findsNothing);
     expect(tester.takeException(), isNull);
   });
 }

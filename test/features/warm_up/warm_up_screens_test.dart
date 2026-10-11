@@ -11,7 +11,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
 
-Future<LearningCubit> pumpScreen(WidgetTester tester, Widget screen) async {
+Future<LearningCubit> pumpScreen(
+  WidgetTester tester,
+  Widget screen, {
+  bool tour = false,
+}) async {
   tester.view.physicalSize = const Size(2560, 1600);
   tester.view.devicePixelRatio = 2;
   addTearDown(tester.view.reset);
@@ -26,6 +30,12 @@ Future<LearningCubit> pumpScreen(WidgetTester tester, Widget screen) async {
   );
   addTearDown(cubit.close);
   await tester.runAsync(cubit.load);
+  // The how-to-play tour has its own tests.
+  if (!tour) {
+    await tester.runAsync(
+      () => cubit.markTutorialSeen(LearningCubit.warmUpTour),
+    );
+  }
   await tester.pumpWidget(
     RepositoryProvider<AudioService>.value(
       value: const SilentAudioService(),

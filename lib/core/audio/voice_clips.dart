@@ -43,6 +43,18 @@ abstract final class VoiceClips {
   static const hintAgain = 'hint_again';
   static const breakTime = 'break_time';
 
+  static const tourPalette = 'tour_palette';
+  static const tourProgram = 'tour_program';
+  static const tourGo = 'tour_go';
+  static const tourStep = 'tour_step';
+  static const tourReset = 'tour_reset';
+  static const tourHint = 'tour_hint';
+  static const tourFollow = 'tour_follow';
+  static const tourListen = 'tour_listen';
+  static const tourWarmUpListen = 'tour_warm_up_listen';
+  static const tourWarmUpAnswer = 'tour_warm_up_answer';
+  static const tourWarmUpSteps = 'tour_warm_up_steps';
+
   static const feedbackBumped = 'feedback_bumped';
   static const feedbackStoppedShort = 'feedback_stopped_short';
   static const feedbackMissedStars = 'feedback_missed_stars';
@@ -110,6 +122,17 @@ abstract final class VoiceClips {
     hintPattern: 'hintPattern',
     hintAgain: 'hintAgain',
     breakTime: 'breakVoice',
+    tourPalette: 'tourPalette',
+    tourProgram: 'tourProgram',
+    tourGo: 'tourGo',
+    tourStep: 'tourStep',
+    tourReset: 'tourReset',
+    tourHint: 'tourHint',
+    tourFollow: 'tourFollow',
+    tourListen: 'tourListen',
+    tourWarmUpListen: 'tourWarmUpListen',
+    tourWarmUpAnswer: 'tourWarmUpAnswer',
+    tourWarmUpSteps: 'tourWarmUpSteps',
     feedbackBumped: 'feedbackBumped',
     feedbackStoppedShort: 'feedbackStoppedShort',
     feedbackMissedStars: 'feedbackMissedStars',

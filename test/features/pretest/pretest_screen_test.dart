@@ -56,6 +56,7 @@ Future<LearningCubit> pumpPretest(
   AudioService audio, {
   Size physicalSize = const Size(2560, 1600),
   double pixelRatio = 2,
+  bool tour = false,
 }) async {
   tester.view.physicalSize = physicalSize;
   tester.view.devicePixelRatio = pixelRatio;
@@ -71,6 +72,12 @@ Future<LearningCubit> pumpPretest(
   );
   addTearDown(cubit.close);
   await tester.runAsync(cubit.load);
+  // The how-to-play tour has its own tests.
+  if (!tour) {
+    await tester.runAsync(
+      () => cubit.markTutorialSeen(LearningCubit.warmUpTour),
+    );
+  }
   await tester.pumpWidget(
     RepositoryProvider<AudioService>.value(
       value: audio,
@@ -204,5 +211,28 @@ void main() {
     }
     expect(tester.takeException(), isNull);
     audio.finish();
+  });
+
+  testWidgets('a first warm-up shows how to play before the question', (
+    tester,
+  ) async {
+    final audio = HeldAudio();
+    final cubit = await pumpPretest(tester, audio, tour: true);
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.textContaining('Listen to the question'), findsOneWidget);
+    expect(audio.played, ['tour_warm_up_listen'], reason: 'the question waits');
+    await tester.tap(find.text('Next'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.textContaining('tap the picture'), findsOneWidget);
+    await tester.tap(find.text('Next'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.textContaining('paw prints'), findsOneWidget);
+    await tester.tap(find.text('Got it!'));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(audio.played.last, startsWith('pretest_'));
+    expect(
+      cubit.state.learner!.tutorialsSeen,
+      contains(LearningCubit.warmUpTour),
+    );
   });
 }

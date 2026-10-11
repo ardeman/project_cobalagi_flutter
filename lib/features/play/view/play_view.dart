@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 import 'package:cobalagi/core/widgets/paint_transition.dart';
+import 'package:cobalagi/core/widgets/coach_tour.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
@@ -53,7 +54,14 @@ class PlayView extends StatefulWidget {
     this.allowCode = false,
     this.followRobot = false,
     this.onFollowRobot,
+    this.showTour = false,
+    this.onTourDone,
   });
+
+  /// Opens with Koba showing what each part of the screen does; "?" on the
+  /// world shows it again. [onTourDone] remembers it was seen.
+  final bool showTour;
+  final VoidCallback? onTourDone;
 
   final Exercise exercise;
 
@@ -113,6 +121,56 @@ class _PlayViewState extends State<PlayView> {
     onSound: context.read<AudioService>().playEffect,
   )..follow = widget.followRobot;
 
+  /// The guided tour is showing (see [PlayView.showTour]).
+  late var _touring = widget.showTour;
+  final _tour = _TourKeys();
+
+  void _endTour() {
+    if (!_touring) return;
+    setState(() => _touring = false);
+    widget.onTourDone?.call();
+    _sayGoal();
+  }
+
+  List<CoachStep> _tourSteps(AppLocalizations l10n) => [
+    CoachStep(
+      target: _tour.palette,
+      text: l10n.tourPalette,
+      clip: VoiceClips.tourPalette,
+    ),
+    CoachStep(
+      target: _tour.program,
+      text: l10n.tourProgram,
+      clip: VoiceClips.tourProgram,
+    ),
+    CoachStep(target: _tour.go, text: l10n.tourGo, clip: VoiceClips.tourGo),
+    CoachStep(
+      target: _tour.step,
+      text: l10n.tourStep,
+      clip: VoiceClips.tourStep,
+    ),
+    CoachStep(
+      target: _tour.reset,
+      text: l10n.tourReset,
+      clip: VoiceClips.tourReset,
+    ),
+    CoachStep(
+      target: _tour.hint,
+      text: l10n.tourHint,
+      clip: VoiceClips.tourHint,
+    ),
+    CoachStep(
+      target: _tour.follow,
+      text: l10n.tourFollow,
+      clip: VoiceClips.tourFollow,
+    ),
+    CoachStep(
+      target: _tour.listen,
+      text: l10n.tourListen,
+      clip: VoiceClips.tourListen,
+    ),
+  ];
+
   void _toggleFollow() {
     final on = !_game.follow;
     setState(() => _game.follow = on);
@@ -146,7 +204,10 @@ class _PlayViewState extends State<PlayView> {
     super.initState();
     // Puzzle time counts toward the parent's break reminder.
     _playClock?.start();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _sayGoal());
+    // With the tour, the goal is said once it is over.
+    if (!_touring) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _sayGoal());
+    }
   }
 
   /// Missing where a play view stands alone, as in some tests.
@@ -323,269 +384,323 @@ class _PlayViewState extends State<PlayView> {
             },
           ),
         ],
-        child: Scaffold(
-          // Phones pad inside their glass bars instead, so the page can
-          // scroll under the bars from edge to edge.
-          body: SafeArea(
-            child: WindowClassBuilder(
-              builder: (context, windowClass) {
-                final compact = windowClass == WindowClass.compact;
-                // Phones held sideways: wide enough for two columns, too short
-                // for the tablet's big blocks and fixed editor.
-                final short =
-                    !compact && MediaQuery.sizeOf(context).height < 500;
-                // Small blocks, an icon editor switch and a page that scrolls.
-                final tight = compact || short;
-                // Tall screens (phones, tablets held upright) stack the world
-                // over the editor in one scrolling page.
-                final screen = MediaQuery.sizeOf(context);
-                final stacked = compact || screen.height > screen.width * 1.15;
-                final topBar = _TopBar(
-                  plan: widget.exercise.plan,
-                  goal: _goal(_level).$1(AppLocalizations.of(context)),
-                  onListen: _sayGoal,
-                  homePath: widget.homePath,
-                  compact: tight,
-                  // Phones keep the editor switch up here, so the world
-                  // keeps its height.
-                  editorSwitch: widget.allowCode && (tight || stacked)
-                      ? BlocBuilder<PlayCubit, PlayState>(
-                          builder: (context, play) => _EditorSwitch(
-                            codeMode: _codeMode,
-                            iconOnly: true,
-                            onPick:
-                                !_finished && play.phase != PlayPhase.running
-                                ? _pickEditor
-                                : null,
-                          ),
-                        )
-                      : null,
-                );
-                final panel = ClipRRect(
-                  borderRadius: BorderRadius.circular(24),
-                  // The Step Box sits beside or above the world, never over
-                  // it, so it never hides a cell.
-                  child: ColoredBox(
-                    color: _game.backgroundColor(),
-                    child: Flex(
-                      direction: tight ? Axis.horizontal : Axis.vertical,
-                      children: [
-                        if (_level.palette.contains(InstructionKind.setSteps))
-                          Padding(
-                            padding: tight
-                                ? const EdgeInsets.fromLTRB(8, 8, 0, 8)
-                                : const EdgeInsets.fromLTRB(8, 8, 8, 0),
-                            child: _StepBoxValue(compact: tight),
-                          ),
-                        Expanded(
-                          child: Stack(
-                            children: [
-                              Positioned.fill(child: GameWidget(game: _game)),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: _FollowButton(
-                                  on: _game.follow,
-                                  onPressed: _toggleFollow,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-                // Feedback replaces the controls, so it never hides the
-                // world, and the controls aren't usable meanwhile anyway.
-                final feedback = _feedbackCard(context);
-                final controls =
-                    feedback ??
-                    _RunControls(
-                      onHint: _finished ? null : _showHint,
-                      hintAfterRuns: widget.hintAfterRuns,
-                      hintPulseAfterTries: widget.hintPulseAfterTries,
-                      hintsUsed: _hints,
-                      patternNext: _patternNext,
-                      howTo: widget.showHowTo,
+        child: Stack(
+          children: [
+            Scaffold(
+              // Phones pad inside their glass bars instead, so the page can
+              // scroll under the bars from edge to edge.
+              body: SafeArea(
+                child: WindowClassBuilder(
+                  builder: (context, windowClass) {
+                    final compact = windowClass == WindowClass.compact;
+                    // Phones held sideways: wide enough for two columns, too short
+                    // for the tablet's big blocks and fixed editor.
+                    final short =
+                        !compact && MediaQuery.sizeOf(context).height < 500;
+                    // Small blocks, an icon editor switch and a page that scrolls.
+                    final tight = compact || short;
+                    // Tall screens (phones, tablets held upright) stack the world
+                    // over the editor in one scrolling page.
+                    final screen = MediaQuery.sizeOf(context);
+                    final stacked =
+                        compact || screen.height > screen.width * 1.15;
+                    final topBar = _TopBar(
+                      plan: widget.exercise.plan,
+                      goal: _goal(_level).$1(AppLocalizations.of(context)),
+                      onListen: _sayGoal,
+                      listenKey: _touring ? _tour.listen : null,
+                      homePath: widget.homePath,
                       compact: tight,
-                      codeMode: _codeMode,
+                      // Phones keep the editor switch up here, so the world
+                      // keeps its height.
+                      editorSwitch: widget.allowCode && (tight || stacked)
+                          ? BlocBuilder<PlayCubit, PlayState>(
+                              builder: (context, play) => _EditorSwitch(
+                                codeMode: _codeMode,
+                                iconOnly: true,
+                                onPick:
+                                    !_finished &&
+                                        play.phase != PlayPhase.running
+                                    ? _pickEditor
+                                    : null,
+                              ),
+                            )
+                          : null,
                     );
-                // Beside the editor, the world takes what the controls
-                // leave. Their slot keeps one height, with room for a
-                // one-line card, so the world never resizes when the card
-                // comes and goes; a taller card grows up over the gap.
-                final controlSlot = SizedBox(
-                  height: _controlSlotHeight,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    alignment: Alignment.center,
-                    children: [
-                      if (feedback == null)
-                        controls
-                      else
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: Center(child: feedback),
-                        ),
-                    ],
-                  ),
-                );
-                Widget editorFor({required bool fit}) =>
-                    BlocBuilder<PlayCubit, PlayState>(
-                      builder: (context, play) {
-                        final enabled =
-                            !_finished && play.phase != PlayPhase.running;
-                        return _codeMode
-                            ? TypedCodeEditor(
-                                enabled: enabled,
-                                // Code marks the bumped command like the
-                                // running one.
-                                activeBlockId: play.activeBlockId ?? _bumped,
-                                fitContent: fit,
-                              )
-                            : BlockEditor(
-                                palette: _level.palette,
-                                blockSize: tight ? 56.0 : 72.0,
-                                activeBlockId: play.activeBlockId,
-                                bumpedBlockId: _bumped,
-                                issueBlockIds: {
-                                  for (final issue in play.issues)
-                                    ?issue.blockId,
-                                },
-                                enabled: enabled,
-                                showTips: !tight,
-                                fitContent: fit,
-                                showHowTo: widget.showHowTo && play.runs == 0,
-                              );
-                      },
-                    );
-                // Typing code on a phone: the code gets the room. The tree
-                // keeps its shape, so the code field keeps the keyboard.
-                final typing = tight && _codeMode && keyboardOpen;
-                if (stacked) {
-                  // Phones: the world and the editor scroll as one page
-                  // under a glass top bar and glass controls at the bottom.
-                  return GlassFrame(
-                    top: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
-                      child: topBar,
-                    ),
-                    bottom: typing
-                        ? null
-                        : Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                            child: controls,
-                          ),
-                    builder: (context, insets) => LayoutBuilder(
-                      builder: (context, box) => SingleChildScrollView(
-                        controller: _page,
-                        padding:
-                            insets + const EdgeInsets.symmetric(horizontal: 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                    final panel = ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      // The Step Box sits beside or above the world, never over
+                      // it, so it never hides a cell.
+                      child: ColoredBox(
+                        color: _game.backgroundColor(),
+                        child: Flex(
+                          direction: tight ? Axis.horizontal : Axis.vertical,
                           children: [
-                            // Hidden, not removed, while typing: the world
-                            // keeps running and comes back as it was.
-                            Offstage(
-                              offstage: typing,
-                              child: SizedBox(
-                                // Large, with the editor peeking below.
-                                height: max(
-                                  0,
-                                  min(
-                                    (box.maxHeight - insets.vertical) * 0.75,
-                                    box.maxWidth - 32,
+                            if (_level.palette.contains(
+                              InstructionKind.setSteps,
+                            ))
+                              Padding(
+                                padding: tight
+                                    ? const EdgeInsets.fromLTRB(8, 8, 0, 8)
+                                    : const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                                child: _StepBoxValue(compact: tight),
+                              ),
+                            Expanded(
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: GameWidget(game: _game),
                                   ),
-                                ),
-                                child: panel,
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: _FollowButton(
+                                      key: _touring ? _tour.follow : null,
+                                      on: _game.follow,
+                                      onPressed: _toggleFollow,
+                                    ),
+                                  ),
+                                  Positioned(
+                                    top: 8,
+                                    left: 8,
+                                    child: IconButton.filledTonal(
+                                      tooltip: AppLocalizations.of(
+                                        context,
+                                      ).tourHelp,
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Colors.white
+                                            .withValues(alpha: 0.85),
+                                        foregroundColor: const Color(
+                                          0xFF263238,
+                                        ),
+                                      ),
+                                      onPressed: _touring || _finished
+                                          ? null
+                                          : () =>
+                                                setState(() => _touring = true),
+                                      icon: const Icon(
+                                        Icons.question_mark_rounded,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            SizedBox(height: typing ? 0 : 12),
-                            editorFor(fit: true),
                           ],
                         ),
                       ),
-                    ),
-                  );
-                }
-                if (short) {
-                  // Sideways phones: world and Go on the left; the editor
-                  // scrolls on its own on the right.
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: Column(
-                            children: [
-                              topBar,
-                              const SizedBox(height: 12),
-                              Expanded(child: panel),
-                              const SizedBox(height: 12),
-                              controlSlot,
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          flex: 2,
-                          child: SingleChildScrollView(
-                            child: editorFor(fit: true),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: Column(
-                          children: [
-                            topBar,
-                            const SizedBox(height: 12),
-                            Expanded(child: panel),
-                            const SizedBox(height: 12),
-                            controlSlot,
-                          ],
-                        ),
+                    );
+                    // Feedback replaces the controls, so it never hides the
+                    // world, and the controls aren't usable meanwhile anyway.
+                    final feedback = _feedbackCard(context);
+                    final controls =
+                        feedback ??
+                        _RunControls(
+                          onHint: _finished ? null : _showHint,
+                          hintAfterRuns: widget.hintAfterRuns,
+                          hintPulseAfterTries: widget.hintPulseAfterTries,
+                          hintsUsed: _hints,
+                          patternNext: _patternNext,
+                          tour: _touring ? _tour : null,
+                          howTo: widget.showHowTo,
+                          compact: tight,
+                          codeMode: _codeMode,
+                        );
+                    // Beside the editor, the world takes what the controls
+                    // leave. Their slot keeps one height, with room for a
+                    // one-line card, so the world never resizes when the card
+                    // comes and goes; a taller card grows up over the gap.
+                    final controlSlot = SizedBox(
+                      height: _controlSlotHeight,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        alignment: Alignment.center,
+                        children: [
+                          if (feedback == null)
+                            controls
+                          else
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: Center(child: feedback),
+                            ),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          children: [
-                            if (widget.allowCode)
-                              BlocBuilder<PlayCubit, PlayState>(
-                                builder: (context, play) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
-                                  child: _EditorSwitch(
-                                    codeMode: _codeMode,
-                                    onPick:
-                                        !_finished &&
-                                            play.phase != PlayPhase.running
-                                        ? _pickEditor
-                                        : null,
+                    );
+                    Widget editorFor({required bool fit}) =>
+                        BlocBuilder<PlayCubit, PlayState>(
+                          builder: (context, play) {
+                            final enabled =
+                                !_finished && play.phase != PlayPhase.running;
+                            return _codeMode
+                                ? TypedCodeEditor(
+                                    enabled: enabled,
+                                    // Code marks the bumped command like the
+                                    // running one.
+                                    activeBlockId:
+                                        play.activeBlockId ?? _bumped,
+                                    fitContent: fit,
+                                  )
+                                : BlockEditor(
+                                    palette: _level.palette,
+                                    blockSize: tight ? 56.0 : 72.0,
+                                    activeBlockId: play.activeBlockId,
+                                    bumpedBlockId: _bumped,
+                                    paletteKey: _touring ? _tour.palette : null,
+                                    programKey: _touring ? _tour.program : null,
+                                    issueBlockIds: {
+                                      for (final issue in play.issues)
+                                        ?issue.blockId,
+                                    },
+                                    enabled: enabled,
+                                    showTips: !tight,
+                                    fitContent: fit,
+                                    showHowTo:
+                                        widget.showHowTo &&
+                                        play.runs == 0 &&
+                                        !_touring,
+                                  );
+                          },
+                        );
+                    // Typing code on a phone: the code gets the room. The tree
+                    // keeps its shape, so the code field keeps the keyboard.
+                    final typing = tight && _codeMode && keyboardOpen;
+                    if (stacked) {
+                      // Phones: the world and the editor scroll as one page
+                      // under a glass top bar and glass controls at the bottom.
+                      return GlassFrame(
+                        top: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+                          child: topBar,
+                        ),
+                        bottom: typing
+                            ? null
+                            : Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  12,
+                                  16,
+                                  16,
+                                ),
+                                child: controls,
+                              ),
+                        builder: (context, insets) => LayoutBuilder(
+                          builder: (context, box) => SingleChildScrollView(
+                            controller: _page,
+                            padding:
+                                insets +
+                                const EdgeInsets.symmetric(horizontal: 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                // Hidden, not removed, while typing: the world
+                                // keeps running and comes back as it was.
+                                Offstage(
+                                  offstage: typing,
+                                  child: SizedBox(
+                                    // Large, with the editor peeking below.
+                                    height: max(
+                                      0,
+                                      min(
+                                        (box.maxHeight - insets.vertical) *
+                                            0.75,
+                                        box.maxWidth - 32,
+                                      ),
+                                    ),
+                                    child: panel,
                                   ),
                                 ),
+                                SizedBox(height: typing ? 0 : 12),
+                                editorFor(fit: true),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    if (short) {
+                      // Sideways phones: world and Go on the left; the editor
+                      // scrolls on its own on the right.
+                      return Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: Column(
+                                children: [
+                                  topBar,
+                                  const SizedBox(height: 12),
+                                  Expanded(child: panel),
+                                  const SizedBox(height: 12),
+                                  controlSlot,
+                                ],
                               ),
-                            Expanded(child: editorFor(fit: false)),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              flex: 2,
+                              child: SingleChildScrollView(
+                                child: editorFor(fit: true),
+                              ),
+                            ),
                           ],
                         ),
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: Column(
+                              children: [
+                                topBar,
+                                const SizedBox(height: 12),
+                                Expanded(child: panel),
+                                const SizedBox(height: 12),
+                                controlSlot,
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              children: [
+                                if (widget.allowCode)
+                                  BlocBuilder<PlayCubit, PlayState>(
+                                    builder: (context, play) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 8),
+                                      child: _EditorSwitch(
+                                        codeMode: _codeMode,
+                                        onPick:
+                                            !_finished &&
+                                                play.phase != PlayPhase.running
+                                            ? _pickEditor
+                                            : null,
+                                      ),
+                                    ),
+                                  ),
+                                Expanded(child: editorFor(fit: false)),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              },
+                    );
+                  },
+                ),
+              ),
             ),
-          ),
+            if (_touring)
+              CoachTour(
+                steps: _tourSteps(AppLocalizations.of(context)),
+                onDone: _endTour,
+              ),
+          ],
         ),
       ),
     );
@@ -703,6 +818,7 @@ class _TopBar extends StatelessWidget {
     required this.plan,
     required this.goal,
     required this.onListen,
+    this.listenKey,
     required this.homePath,
     this.compact = false,
     this.editorSwitch,
@@ -711,6 +827,7 @@ class _TopBar extends StatelessWidget {
   final ExercisePlan plan;
   final String goal;
   final VoidCallback onListen;
+  final Key? listenKey;
   final String homePath;
 
   /// Phones show the island's emblem without its name, to make room for
@@ -782,6 +899,7 @@ class _TopBar extends StatelessWidget {
           const SizedBox(width: 8),
         ],
         IconButton.filledTonal(
+          key: listenKey,
           tooltip: '${l10n.listenAgain}: $goal',
           onPressed: onListen,
           icon: const Icon(Icons.volume_up_rounded),
@@ -984,6 +1102,7 @@ class _RunControls extends StatelessWidget {
     required this.hintPulseAfterTries,
     this.hintsUsed = 0,
     this.patternNext = false,
+    this.tour,
     this.howTo = false,
     this.compact = false,
     this.codeMode = false,
@@ -1003,6 +1122,9 @@ class _RunControls extends StatelessWidget {
 
   /// Asking again shows the repeating pattern: the bulb wears a loop badge.
   final bool patternNext;
+
+  /// Marks the buttons while the guided tour shows.
+  final _TourKeys? tour;
 
   /// Narrow screens (phones): tighter spacing so all four buttons fit.
   final bool compact;
@@ -1042,6 +1164,7 @@ class _RunControls extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _Pulse(
+              key: tour?.go,
               active: howTo && hasBlocks && play.runs == 0 && !running,
               child: iconOnly
                   ? Tooltip(
@@ -1073,6 +1196,7 @@ class _RunControls extends StatelessWidget {
             ),
             SizedBox(width: gap),
             IconButton.filledTonal(
+              key: tour?.step,
               tooltip: l10n.step,
               onPressed: canGo && (!running || (play.stepping && !play.playing))
                   ? () => context.read<PlayCubit>().step(program!)
@@ -1081,6 +1205,7 @@ class _RunControls extends StatelessWidget {
             ),
             SizedBox(width: gap),
             IconButton.filledTonal(
+              key: tour?.reset,
               tooltip: l10n.reset,
               onPressed: play.phase == PlayPhase.editing
                   ? null
@@ -1095,6 +1220,7 @@ class _RunControls extends StatelessWidget {
               active: calling,
               // While it calls, the bulb lights up: amber, like a lamp on.
               child: _HintBadge(
+                key: tour?.hint,
                 show: patternNext && !running,
                 child: IconButton.filledTonal(
                   tooltip: patternNext ? l10n.hintAgain : l10n.hint,
@@ -1118,9 +1244,21 @@ class _RunControls extends StatelessWidget {
   }
 }
 
+/// The parts of the screen the guided tour points at.
+final class _TourKeys {
+  final palette = GlobalKey();
+  final program = GlobalKey();
+  final go = GlobalKey();
+  final step = GlobalKey();
+  final reset = GlobalKey();
+  final hint = GlobalKey();
+  final follow = GlobalKey();
+  final listen = GlobalKey();
+}
+
 /// Turns the world with the robot, or back: a compass, filled while on.
 class _FollowButton extends StatelessWidget {
-  const _FollowButton({required this.on, required this.onPressed});
+  const _FollowButton({super.key, required this.on, required this.onPressed});
 
   final bool on;
   final VoidCallback onPressed;
@@ -1148,7 +1286,7 @@ class _FollowButton extends StatelessWidget {
 
 /// A small loop badge on the hint bulb: tap again to see what repeats.
 class _HintBadge extends StatelessWidget {
-  const _HintBadge({required this.show, required this.child});
+  const _HintBadge({super.key, required this.show, required this.child});
 
   final bool show;
   final Widget child;
@@ -1192,7 +1330,12 @@ class _HintBadge extends StatelessWidget {
 /// a child can't miss it; when the system asks for less motion, a steady
 /// golden ring shows instead.
 class _Pulse extends StatefulWidget {
-  const _Pulse({required this.active, required this.child, this.glow = false});
+  const _Pulse({
+    super.key,
+    required this.active,
+    required this.child,
+    this.glow = false,
+  });
 
   final bool active;
   final bool glow;

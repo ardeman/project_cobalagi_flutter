@@ -694,6 +694,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get followRobotOff => 'Show the map the usual way';
 
   @override
+  String get tourPalette =>
+      'These are your blocks. Tap one, or drag it into your program.';
+
+  @override
+  String get tourProgram =>
+      'Your program goes here. Koba does the blocks in order, from the first one. Tap a block to change it.';
+
+  @override
+  String get tourGo => 'Press Go, and Koba follows your blocks!';
+
+  @override
+  String get tourStep =>
+      'This button does one block at a time, so you can watch closely.';
+
+  @override
+  String get tourReset => 'This one takes Koba back to the start.';
+
+  @override
+  String get tourHint =>
+      'Stuck? After a few tries, the light bulb lights up to show you the way.';
+
+  @override
+  String get tourFollow =>
+      'This turns the map, so Koba\'s left and right are your left and right.';
+
+  @override
+  String get tourListen => 'Tap the speaker to hear what to do again.';
+
+  @override
+  String get tourWarmUpListen =>
+      'Listen to the question. Tap the speaker to hear it again.';
+
+  @override
+  String get tourWarmUpAnswer => 'Then tap the picture you think is right!';
+
+  @override
+  String get tourWarmUpSteps => 'The paw prints show how far you have come.';
+
+  @override
+  String get tourNext => 'Next';
+
+  @override
+  String get tourDone => 'Got it!';
+
+  @override
+  String get tourHelp => 'How does it work?';
+
+  @override
   String get breakTitle => 'Time for a break!';
 
   @override

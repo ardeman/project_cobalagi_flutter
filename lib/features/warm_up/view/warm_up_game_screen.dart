@@ -48,6 +48,10 @@ class _WarmUpGameScreenState extends State<WarmUpGameScreen> {
       onClose: toIsland,
       onFinished: () => context.read<LearningCubit>().recordWarmUp(round),
       doneClip: VoiceClips.warmUpDone,
+      tour: context.read<LearningCubit>().tourDue(LearningCubit.warmUpTour),
+      onTourDone: () => context.read<LearningCubit>().markTutorialSeen(
+        LearningCubit.warmUpTour,
+      ),
       done: (_) => _Done(
         stars: round.best,
         onAgain: () => setState(() => _round = _newRound()),

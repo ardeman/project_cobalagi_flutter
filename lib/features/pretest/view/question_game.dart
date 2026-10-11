@@ -10,6 +10,7 @@ import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/placement/pretest_question.dart';
 import '../../../learning/placement/question_round.dart';
+import 'package:cobalagi/core/widgets/coach_tour.dart';
 import 'question_views.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
@@ -26,7 +27,16 @@ class QuestionGame extends StatefulWidget {
     required this.onFinished,
     required this.doneClip,
     required this.done,
+    this.tour = false,
+    this.onTourDone,
   });
+
+  /// Opens with Koba showing how to play: listen, tap a picture, the paw
+  /// prints. "?" shows it again any time.
+  final bool tour;
+
+  /// The opening tour has been seen.
+  final VoidCallback? onTourDone;
 
   final QuestionRound round;
 
@@ -54,11 +64,26 @@ class _QuestionGameState extends State<QuestionGame> {
   /// Shown briefly after each answer, over the question just answered.
   ({PretestQuestion question, int chosen, bool right, Cheer cheer})? _feedback;
   var _saved = false;
+  var _touring = false;
+  final _listenKey = GlobalKey();
+  final _answersKey = GlobalKey();
+  final _pawsKey = GlobalKey();
+
+  void _endTour() {
+    if (!_touring) return;
+    setState(() => _touring = false);
+    widget.onTourDone?.call();
+    _speak();
+  }
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _speak());
+    _touring = widget.tour;
+    // The question is asked once the tour is over.
+    if (!_touring) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _speak());
+    }
   }
 
   String get _language => Localizations.localeOf(context).languageCode;
@@ -124,11 +149,27 @@ class _QuestionGameState extends State<QuestionGame> {
     final l10n = AppLocalizations.of(context);
     final question = _round.current;
     final feedback = _feedback;
-    return Scaffold(
+    final game = Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
         leading: CloseButton(onPressed: widget.onClose),
-        title: _Footprints(steps: widget.steps, progress: _round.progress),
+        title: KeyedSubtree(
+          key: _pawsKey,
+          // On a narrow phone the prints shrink to leave room for "?".
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: _Footprints(steps: widget.steps, progress: _round.progress),
+          ),
+        ),
+        actions: [
+          IconButton.filledTonal(
+            tooltip: l10n.tourHelp,
+            onPressed: _touring || question == null
+                ? null
+                : () => setState(() => _touring = true),
+            icon: const Icon(Icons.question_mark_rounded),
+          ),
+        ],
       ),
       // The game pads itself below the bar.
       body: SafeArea(
@@ -210,17 +251,21 @@ class _QuestionGameState extends State<QuestionGame> {
                                   height: topRow,
                                   child: Center(
                                     child: _Prompt(
+                                      listenKey: _touring ? _listenKey : null,
                                       text: promptFor(l10n, question).$1,
                                       onListen: _speak,
                                     ),
                                   ),
                                 ),
                                 SizedBox(height: size * 0.2),
-                                QuestionView(
-                                  question: question,
-                                  size: size,
-                                  onAnswer: _answer,
-                                  answerLabel: l10n.answerWas,
+                                KeyedSubtree(
+                                  key: _touring ? _answersKey : null,
+                                  child: QuestionView(
+                                    question: question,
+                                    size: size,
+                                    onAnswer: _answer,
+                                    answerLabel: l10n.answerWas,
+                                  ),
                                 ),
                                 SizedBox(height: size * 0.6),
                               ],
@@ -234,11 +279,39 @@ class _QuestionGameState extends State<QuestionGame> {
         ),
       ),
     );
+    return Stack(
+      children: [
+        game,
+        if (_touring)
+          CoachTour(
+            onDone: _endTour,
+            steps: [
+              CoachStep(
+                target: _listenKey,
+                text: l10n.tourWarmUpListen,
+                clip: VoiceClips.tourWarmUpListen,
+              ),
+              CoachStep(
+                target: _answersKey,
+                text: l10n.tourWarmUpAnswer,
+                clip: VoiceClips.tourWarmUpAnswer,
+              ),
+              CoachStep(
+                target: _pawsKey,
+                text: l10n.tourWarmUpSteps,
+                clip: VoiceClips.tourWarmUpSteps,
+              ),
+            ],
+          ),
+      ],
+    );
   }
 }
 
 class _Prompt extends StatelessWidget {
-  const _Prompt({required this.text, required this.onListen});
+  const _Prompt({required this.text, required this.onListen, this.listenKey});
+
+  final Key? listenKey;
 
   final String text;
   final VoidCallback onListen;
@@ -248,6 +321,7 @@ class _Prompt extends StatelessWidget {
     mainAxisSize: MainAxisSize.min,
     children: [
       IconButton.filled(
+        key: listenKey,
         tooltip: AppLocalizations.of(context).listenAgain,
         iconSize: 40,
         onPressed: onListen,

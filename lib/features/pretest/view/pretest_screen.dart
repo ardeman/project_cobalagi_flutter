@@ -36,6 +36,10 @@ class _PretestScreenState extends State<PretestScreen> {
           context.read<LearningCubit>().completePretest(_session.levels),
       doneClip: VoiceClips.pretestDone,
       done: (_) => _Done(onGo: toMap),
+      tour: context.read<LearningCubit>().tourDue(LearningCubit.warmUpTour),
+      onTourDone: () => context.read<LearningCubit>().markTutorialSeen(
+        LearningCubit.warmUpTour,
+      ),
     );
   }
 }
