@@ -151,11 +151,12 @@ class _Spokes extends CustomPainter {
     ..strokeWidth = 3.2
     ..strokeCap = StrokeCap.round;
 
-  /// Each hub's centre and radii in the picture: the near wheel is seen
-  /// at a slant, so its hub is an upright oval.
+  /// Each hub's centre and radii in the picture (the 3D robot's body at
+  /// 310°, from `branding/robot.sh`): both wheels are seen at a slant, so
+  /// their hubs are upright ovals.
   static const _hubs = [
-    (center: Offset(216, 471), radii: Offset(8, 13.5)),
-    (center: Offset(311.5, 464.5), radii: Offset(8.5, 8.5)),
+    (center: Offset(229, 472), radii: Offset(8.5, 11.5)),
+    (center: Offset(295.5, 472), radii: Offset(8, 11.5)),
   ];
 
   @override

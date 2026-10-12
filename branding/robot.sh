@@ -7,8 +7,9 @@
 #   assets/images/robot_back.png   from behind, from robot_front_source.png
 #   assets/images/robot_front.png  facing the child, from robot_front_source.png
 #   assets/images/robot_head.png   the splash screen's head (everything above
-#   assets/images/robot_body.png   the neck) and body, drawn apart so the
-#                                  head can bob while the wheels roll
+#                                  the neck) and body, drawn apart so the
+#   assets/images/robot_body.png   head can bob while the wheels roll; the
+#                                  body is the three-quarter one
 # The robot was designed with Recraft V3 (on fal.ai, no longer used). Its
 # faces are drawn by the app over the screen (paintRobotFace), and the splash
 # draws spokes over the wheel hubs (RollingRobot), so a new picture must keep
@@ -70,7 +71,6 @@ if(layer==="head"||layer==="body"){
 render all assets/images/robot.png
 cp assets/images/robot.png "$TMP/full.png"
 render head assets/images/robot_head.png
-render body assets/images/robot_body.png
 
 # The three-quarter robot: the drawn head over the 3D body (see above).
 cp tool/robot/three_quarter.html "$TMP/three_quarter.html"
@@ -81,6 +81,11 @@ cp assets/images/robot_head.png "$TMP/head.png"
   --window-size=512,512 --screenshot="$PWD/assets/images/robot.png" \
   "file://$TMP/three_quarter.html" 2>/dev/null
 echo "assets/images/robot.png"
+"$CHROME" --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files \
+  --virtual-time-budget=5000 --default-background-color=00000000 \
+  --window-size=512,512 --screenshot="$PWD/assets/images/robot_body.png" \
+  "file://$TMP/three_quarter.html?body" 2>/dev/null
+echo "assets/images/robot_body.png"
 
 # The robot facing the child comes from a picture (the user's reference,
 # branding/robot_front_source.png); tool/robot/front.html clears its

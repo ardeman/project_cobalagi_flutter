@@ -5,8 +5,9 @@
      neck cut leaves out) over the 3D robot's body turned to match
      (body.png, branding/robot_body_three_quarter.png from
      tool/robot/render_body.py), so its body matches the front and back
-     pictures and the 3D robot. Run by branding/robot.sh, which screenshots
-     this page. -->
+     pictures and the 3D robot. With ?body it leaves the head out, for the
+     splash screen's body layer (assets/images/robot_body.png). Run by
+     branding/robot.sh, which screenshots this page. -->
 <html><head><style>html,body{margin:0;background:transparent}canvas{display:block}</style></head>
 <body><canvas id="out" width="512" height="512"></canvas><script>
 const load = (src) => new Promise((done) => {
@@ -36,6 +37,7 @@ Promise.all(["body.png", "head.png", "full.png"].map(load)).then(([body, head, f
     o.fill();
   }
   o.drawImage(body, 0, 0);
+  if (location.search.includes("body")) return;
   o.drawImage(head, 0, 0);
   // Left of the old neck (which starts at x = 224) the full drawing below the
   // cut is still helmet: put that corner back.
