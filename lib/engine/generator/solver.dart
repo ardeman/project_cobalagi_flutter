@@ -9,8 +9,29 @@ import '../world/level.dart';
 /// Finds a shortest straight-line solution (single moves and turns, no loops)
 /// with breadth-first search, or returns null when [level] can't be solved.
 ///
-/// Used to check generated puzzles and, later, to give hints.
-Program? solve(Level level) {
+/// Used to check generated puzzles and to give hints.
+Program? solve(Level level) =>
+    switch (_search(level, level.start, level.startFacing, const {})) {
+      final path? => Program(path),
+      null => null,
+    };
+
+/// The fewest single moves and turns from [position], facing [facing], with
+/// the stars in [collected] already picked up, to the finish with every
+/// star; null when it can't be reached from there.
+int? stepsToFinish(
+  Level level,
+  GridPoint position,
+  Direction facing,
+  Set<GridPoint> collected,
+) => _search(level, position, facing, collected)?.length;
+
+List<Instruction>? _search(
+  Level level,
+  GridPoint position,
+  Direction facing,
+  Set<GridPoint> collected,
+) {
   final stars = level.stars.toList();
   final allStars = (1 << stars.length) - 1;
 
@@ -19,7 +40,11 @@ Program? solve(Level level) {
     return i < 0 ? mask : mask | (1 << i);
   }
 
-  final startState = (level.start, level.startFacing, starsAt(level.start, 0));
+  var startMask = 0;
+  for (final star in collected) {
+    startMask = starsAt(star, startMask);
+  }
+  final startState = (position, facing, starsAt(position, startMask));
   final parents = <_State, (_State, Instruction)?>{startState: null};
   final queue = Queue.of([startState]);
 
@@ -27,7 +52,7 @@ Program? solve(Level level) {
     final state = queue.removeFirst();
     final (position, facing, mask) = state;
     if (position == level.goal && mask == allStars) {
-      return Program(_path(state, parents));
+      return _path(state, parents);
     }
     final next = position.step(facing);
     for (final (successor, instruction) in [

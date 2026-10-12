@@ -15,7 +15,9 @@ import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
+import '../../../engine/generator/off_track.dart';
 import '../../../engine/generator/solver.dart';
+import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
 import '../../../engine/program/instruction.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
@@ -312,6 +314,14 @@ class _PlayViewState extends State<PlayView> {
     if (solution == null) return;
     setState(() => _hints++);
     final font = Theme.of(context).textTheme.titleLarge?.fontFamily;
+    // The child's own first block that takes Koba no closer to the finish
+    // wears the "look here" ring (in code, its line is marked), so they see
+    // which one to change; none when their blocks are right so far.
+    final program = _codeMode ? _typed.state.program : _blocks.program;
+    final offTrack = program == null
+        ? null
+        : firstOffTrackBlock(_level, runProgram(program, _level));
+    if (offTrack != null) setState(() => _bumped = offTrack);
     // First the route as the level's own blocks, in their colours. Asked
     // again on islands with a loop block: the shape that repeats, and the
     // loop block that does it. Then the two take turns.
@@ -328,8 +338,12 @@ class _PlayViewState extends State<PlayView> {
         pattern == null &&
         patternHintMarks(_level, solution, labelFont: font) != null;
     setState(() => _patternNext = patternNext);
-    if (pattern != null) _say(VoiceClips.hintPattern);
-    if (patternNext) _say(VoiceClips.hintAgain);
+    if (offTrack != null) {
+      _say(VoiceClips.hintLookHere);
+    } else {
+      if (pattern != null) _say(VoiceClips.hintPattern);
+      if (patternNext) _say(VoiceClips.hintAgain);
+    }
   }
 
   void _onPlayChanged(BuildContext context, PlayState state) {

@@ -442,6 +442,56 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('the hint rings the first block that goes the wrong way', (
+    tester,
+  ) async {
+    final voices = _Voices();
+    await _pumpPhone(tester, size: const Size(1280, 800), audio: voices);
+    final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
+    bool marked(String id) => tester
+        .widgetList<BlockTile>(find.byType(BlockTile))
+        .any((t) => t.bumped && t.key == ValueKey(id));
+    final bulb = find.widgetWithIcon(IconButton, Icons.lightbulb_rounded);
+    Future<void> tryOnce() async {
+      await tester.tap(find.widgetWithText(FilledButton, 'Go!'));
+      for (
+        var i = 0;
+        i < 60 && find.text('Try again!').evaluate().isEmpty;
+        i++
+      ) {
+        await tester.pump(const Duration(milliseconds: 100));
+      }
+      await tester.tap(find.text('Try again!'));
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    // A step the right way: right so far, so the hint marks nothing.
+    cubit.add(BlockType.forward);
+    await tester.pump();
+    await tryOnce();
+    await tester.tap(bulb);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(
+      tester.widgetList<BlockTile>(find.byType(BlockTile)).any((t) => t.bumped),
+      isFalse,
+    );
+    expect(voices.clips, isNot(contains('hint_look_here')));
+
+    // Then a turn off the road: it stops short without a bump, and the hint
+    // rings the turn and says to look there.
+    cubit.add(BlockType.turnLeft);
+    await tester.pump();
+    final turn = cubit.state.main.last.id;
+    await tryOnce();
+    expect(marked(turn), isFalse, reason: 'no bump, so no mark yet');
+    await tester.tap(bulb);
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(marked(turn), isTrue);
+    expect(marked(cubit.state.main.first.id), isFalse);
+    expect(voices.clips.last, 'hint_look_here');
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('the block that bumped is marked until the child changes it', (
     tester,
   ) async {

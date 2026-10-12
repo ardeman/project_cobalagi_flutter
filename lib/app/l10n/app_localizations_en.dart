@@ -688,6 +688,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tap the light bulb again to see the blocks that repeat!';
 
   @override
+  String get hintLookHere =>
+      'Look at the block with the orange ring. Try changing it!';
+
+  @override
   String get turnMap => 'Turn the map';
 
   @override

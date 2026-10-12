@@ -676,6 +676,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get hintAgain => 'Ketuk lampu lagi untuk melihat blok yang berulang!';
 
   @override
+  String get hintLookHere =>
+      'Lihat blok yang dilingkari oranye. Coba ganti blok itu!';
+
+  @override
   String get turnMap => 'Putar peta';
 
   @override

@@ -1304,6 +1304,12 @@ abstract class AppLocalizations {
   /// **'Tap the light bulb again to see the blocks that repeat!'**
   String get hintAgain;
 
+  /// No description provided for @hintLookHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Look at the block with the orange ring. Try changing it!'**
+  String get hintLookHere;
+
   /// No description provided for @turnMap.
   ///
   /// In en, this message translates to:

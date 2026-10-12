@@ -41,6 +41,7 @@ abstract final class VoiceClips {
   static const playHowTo = 'play_how_to';
   static const hintPattern = 'hint_pattern';
   static const hintAgain = 'hint_again';
+  static const hintLookHere = 'hint_look_here';
   static const breakTime = 'break_time';
 
   static const tourPalette = 'tour_palette';
@@ -131,6 +132,7 @@ abstract final class VoiceClips {
     playHowTo: 'playHowTo',
     hintPattern: 'hintPattern',
     hintAgain: 'hintAgain',
+    hintLookHere: 'hintLookHere',
     breakTime: 'breakVoice',
     tourPalette: 'tourPalette',
     tourProgram: 'tourProgram',
