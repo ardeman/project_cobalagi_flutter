@@ -5,8 +5,9 @@ import 'package:flutter/scheduler.dart';
 
 import 'package:cobalagi/core/character/robot_face.dart';
 
-/// The splash screen's robot, rolling on the spot: its wheels turn, it
-/// bounces on them, its head nods a beat behind, and it blinks. Road marks
+/// The splash screen's robot, rolling on the spot: its wheels turn under it
+/// (it stays on the ground: a wheeled robot rolls, it doesn't hop), its head
+/// nods with the bumps of the road, and it blinks. Road marks
 /// slide past underneath so it reads as driving along. After [rollFor] it
 /// parks (the splash only stays that long for an update notice), and it
 /// holds still when the system asks for less motion.
@@ -43,8 +44,11 @@ class _RollingRobotState extends State<RollingRobot>
     _ticker = createTicker((elapsed) {
       final t = elapsed.inMicroseconds / 1e6;
       _time.value = t;
-      // Parks between bounces, with its wheels on the ground.
-      if (elapsed >= widget.rollFor && sin(t * 7).abs() < 0.2) _ticker.stop();
+      // Parks with its head up, at the nearest moment between nods.
+      if (elapsed >= widget.rollFor) {
+        _ticker.stop();
+        _time.value = (0.9 + 2 * pi * ((t * 7 - 0.9) / (2 * pi)).round()) / 7;
+      }
     });
   }
 
@@ -91,36 +95,26 @@ class _RollingRobotState extends State<RollingRobot>
 
   /// One frame of the robot at [t] seconds, in the pictures' 512 pixels.
   Widget _frame(double t) {
-    // Bounces twice per wheel bump; the head follows a beat later and only
-    // ever dips: lifting or tilting it would open a gap at the neck.
-    final bounce = -(sin(t * 7).abs()) * 6;
+    // The head nods with the road's bumps and only ever dips: lifting or
+    // tilting it would open a gap at the neck.
     final nod = (1 - cos(t * 7 - 0.9)) * 1.5;
     return Stack(
       children: [
         CustomPaint(size: const Size.square(512), painter: _Road(t)),
-        Transform.translate(
-          offset: Offset(0, bounce),
-          child: Stack(
-            children: [
-              Image.asset('assets/images/robot_body.png'),
-              CustomPaint(
-                size: const Size.square(512),
-                painter: _Spokes(t * 7),
+        Stack(
+          children: [
+            Image.asset('assets/images/robot_body.png'),
+            CustomPaint(size: const Size.square(512), painter: _Spokes(t * 7)),
+            Transform.translate(
+              offset: Offset(0, nod),
+              child: Stack(
+                children: [
+                  Image.asset('assets/images/robot_head.png'),
+                  CustomPaint(size: const Size.square(512), painter: _Face(t)),
+                ],
               ),
-              Transform.translate(
-                offset: Offset(0, nod),
-                child: Stack(
-                  children: [
-                    Image.asset('assets/images/robot_head.png'),
-                    CustomPaint(
-                      size: const Size.square(512),
-                      painter: _Face(t),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ],
     );

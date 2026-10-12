@@ -30,10 +30,11 @@ Future<void> pumpRobot(WidgetTester tester, {bool still = false}) async {
 void main() {
   testWidgets('the robot rolls along', (tester) async {
     await pumpRobot(tester);
-    final head = find.byType(Transform).last;
-    final before = tester.getRect(head);
+    Matrix4 head() =>
+        tester.widget<Transform>(find.byType(Transform).last).transform;
+    final before = head();
     await tester.pump(const Duration(milliseconds: 230));
-    expect(tester.getRect(head), isNot(before), reason: 'it bounces');
+    expect(head(), isNot(before), reason: 'its head nods');
     expect(find.bySemanticsLabel('Robot'), findsOneWidget);
     final out = Platform.environment['ROBOT_FRAMES'];
     if (out != null) {

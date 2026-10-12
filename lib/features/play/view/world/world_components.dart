@@ -9,6 +9,7 @@ import '../../../../engine/world/direction.dart';
 import '../../../../engine/world/grid_point.dart';
 import '../../../../engine/world/level.dart';
 import '../../../../core/character/robot_face.dart';
+import 'ink.dart';
 import 'world_theme.dart';
 
 export '../../../../core/character/robot_face.dart' show RobotFace;
@@ -30,6 +31,13 @@ class BoardComponent extends PositionComponent {
   late final _floor = Paint()..color = theme.floor;
   late final _floorEdge = Paint()..color = theme.floorEdge;
 
+  /// Each path tile's outline, in Koba's navy, so the path reads as drawn
+  /// like Koba.
+  static final _tileOutline = Paint()
+    ..color = ink
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 0.022;
+
   /// The board never changes, so it is drawn once and replayed each frame.
   late final Picture _picture = () {
     final recorder = PictureRecorder();
@@ -41,23 +49,25 @@ class BoardComponent extends PositionComponent {
   /// stands upright on the screen, so rocks never lie on their sides.
   var upright = 0.0;
 
-  /// Each obstacle, drawn once around its own centre.
-  late final List<(Offset, Picture)> _obstacles = [
+  /// Where an obstacle's picture reaches, around its tile's centre.
+  static const _obstacleBounds = Rect.fromLTWH(-0.6, -0.6, 1.2, 1.2);
+
+  /// Each obstacle, drawn once around its own centre in Koba's look.
+  late final List<(Offset, Image)> _obstacles = [
     for (var y = 0; y < level.height; y++)
       for (var x = 0; x < level.width; x++)
         if (level.tiles[y][x] != Tile.floor)
           (
             Offset(x + 0.5, y + 0.5),
-            () {
-              final recorder = PictureRecorder();
-              drawObstacle(
-                Canvas(recorder),
+            inkedPiece(
+              (canvas) => drawObstacle(
+                canvas,
                 const Rect.fromLTWH(-0.5, -0.5, 1, 1),
                 theme.obstacle,
                 y * 997 + x,
-              );
-              return recorder.endRecording();
-            }(),
+              ),
+              bounds: _obstacleBounds,
+            ),
           ),
   ];
 
@@ -68,9 +78,9 @@ class BoardComponent extends PositionComponent {
       canvas
         ..save()
         ..translate(at.dx, at.dy)
-        ..rotate(upright)
-        ..drawPicture(obstacle)
-        ..restore();
+        ..rotate(upright);
+      drawInked(canvas, obstacle, _obstacleBounds);
+      canvas.restore();
     }
   }
 
@@ -98,21 +108,25 @@ class BoardComponent extends PositionComponent {
       for (var x = 0; x < level.width; x++) {
         final cell = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1, 1);
         if (level.tiles[y][x] == Tile.floor) {
+          final tile = RRect.fromRectAndRadius(
+            cell.deflate(0.03),
+            const Radius.circular(0.18),
+          );
+          final face = RRect.fromRectAndRadius(
+            cell.deflate(0.08),
+            const Radius.circular(0.14),
+          );
           canvas
-            ..drawRRect(
-              RRect.fromRectAndRadius(
-                cell.deflate(0.03),
-                const Radius.circular(0.18),
-              ),
-              _floorEdge,
-            )
+            ..drawRRect(tile, _floorEdge)
+            ..drawRRect(tile, _tileOutline)
             ..drawRRect(
               RRect.fromRectAndRadius(
                 cell.deflate(0.08),
                 const Radius.circular(0.14),
               ),
               _floor,
-            );
+            )
+            ..drawRRect(face, _tileOutline);
         }
       }
     }
@@ -130,6 +144,15 @@ class GoalComponent extends PositionComponent {
 
   final Finish finish;
 
+  /// Where the finish's picture reaches, around its unit square.
+  static const _bounds = Rect.fromLTWH(-0.1, -0.1, 1.2, 1.2);
+
+  /// The finish in Koba's look, drawn once.
+  late final Image _image = inkedPiece(
+    (canvas) => drawFinish(canvas, finish),
+    bounds: _bounds,
+  );
+
   @override
   Future<void> onLoad() async => add(
     ScaleEffect.to(
@@ -139,7 +162,13 @@ class GoalComponent extends PositionComponent {
   );
 
   @override
-  void render(Canvas canvas) => drawFinish(canvas, finish);
+  void render(Canvas canvas) => drawInked(canvas, _image, _bounds);
+
+  @override
+  void onRemove() {
+    _image.dispose();
+    super.onRemove();
+  }
 }
 
 class StarComponent extends PositionComponent {
@@ -152,9 +181,9 @@ class StarComponent extends PositionComponent {
 
   static final _fill = Paint()..color = const Color(0xFFFFC83D);
   static final _outline = Paint()
-    ..color = const Color(0xFFF59E0B)
+    ..color = ink
     ..style = PaintingStyle.stroke
-    ..strokeWidth = 0.04
+    ..strokeWidth = 0.035
     ..strokeJoin = StrokeJoin.round;
 
   static final Path _shape = () {
@@ -189,7 +218,9 @@ class StarComponent extends PositionComponent {
 /// stays upright and shows its facing itself: a headlight beam on the tile
 /// ahead, its side when facing left or right, its back facing up and its
 /// front facing down, and its eyes look the way it faces. It bobs gently
-/// while idle and bounces as it rolls.
+/// while idle; as it moves it stays on the ground and its wheels roll, as
+/// far as it travels: spokes turn on the hubs seen from the side, and the
+/// treads run past seen from the front or back.
 /// Without a sprite it draws the round character, whose face turns.
 class ActorComponent extends PositionComponent {
   ActorComponent(
@@ -215,7 +246,8 @@ class ActorComponent extends PositionComponent {
   /// The robot facing the child, for facing down the board.
   Sprite? frontSprite;
 
-  /// Set while it moves between tiles, for a livelier bounce.
+  /// Set while it moves between tiles: it stays on the ground then, instead
+  /// of bobbing.
   var rolling = false;
 
   /// How far the view is turned (see `WorldGame.follow`): the robot stands
@@ -226,6 +258,10 @@ class ActorComponent extends PositionComponent {
   var face = RobotFace.normal;
 
   var _time = 0.0;
+
+  /// How far it has travelled, in tiles, which turns its wheels.
+  var _travelled = 0.0;
+  Vector2? _last;
 
   static final _body = Paint()..color = const Color(0xFFFF7A59);
   static final _belly = Paint()..color = const Color(0xFFFFB199);
@@ -260,6 +296,9 @@ class ActorComponent extends PositionComponent {
   void update(double dt) {
     super.update(dt);
     _time += dt;
+    final last = _last;
+    if (last != null) _travelled += position.distanceTo(last);
+    _last = position.clone();
   }
 
   @override
@@ -277,9 +316,7 @@ class ActorComponent extends PositionComponent {
         : front
         ? frontSprite!
         : sprite!;
-    final bounce = rolling
-        ? -(sin(_time * 18).abs()) * 0.07
-        : sin(_time * 2.4) * 0.02;
+    final bounce = rolling ? 0.0 : sin(_time * 2.4) * 0.02;
     // Upright: undo the component's turn, so up is up again. The robot
     // shows its facing instead (see the class comment), its eyes sweeping
     // round with the world's turn effects.
@@ -305,12 +342,23 @@ class ActorComponent extends PositionComponent {
       position: Vector2(-0.55, -0.82),
       size: Vector2.all(1.1),
     );
-    // The face, drawn over the picture's screen in its own pixels (512);
-    // the back picture has none.
+    // The wheels and the face, drawn over the picture in its own pixels
+    // (512); the back picture has no face.
+    canvas
+      ..translate(-0.55, -0.82)
+      ..scale(1.1 / 512);
+    // The picture is 1.1 tiles for 512 pixels: how far the wheels' rims
+    // have run, in its pixels.
+    final run = _travelled * 512 / 1.1;
+    if (identical(robot, frontSprite)) {
+      // Coming towards the child, the treads run down.
+      _paintTreads(canvas, run);
+    } else if (identical(robot, backSprite)) {
+      _paintTreads(canvas, -run);
+    } else {
+      _paintSpokes(canvas, run);
+    }
     if (!away) {
-      canvas
-        ..translate(-0.55, -0.82)
-        ..scale(1.1 / 512);
       paintRobotFace(
         canvas,
         face,
@@ -323,6 +371,58 @@ class ActorComponent extends PositionComponent {
       );
     }
     canvas.restore();
+  }
+
+  static final _navy = Paint()
+    ..color = const Color(0xFF222244)
+    ..strokeCap = StrokeCap.round;
+  static final _teal = Paint()..color = const Color(0xFF92DCCF);
+
+  /// Spokes on both hubs of the three-quarter picture (`branding/robot.sh`,
+  /// as on the splash), turned by [run] pixels of rim: a wheel's radius is
+  /// about 28 pixels.
+  static void _paintSpokes(Canvas canvas, double run) {
+    _navy.strokeWidth = 3.2;
+    const hubs = [
+      (center: Offset(229, 472), radii: Offset(8.5, 11.5)),
+      (center: Offset(295.5, 472), radii: Offset(8, 11.5)),
+    ];
+    final turn = run / 28;
+    for (final hub in hubs) {
+      for (var i = 0; i < 3; i++) {
+        final a = turn + i * 2 * pi / 3;
+        canvas.drawLine(
+          hub.center,
+          hub.center + Offset(cos(a) * hub.radii.dx, sin(a) * hub.radii.dy),
+          _navy,
+        );
+      }
+    }
+  }
+
+  /// The treads of both wheels of the front and back pictures (drawn by
+  /// `tool/robot/front.html`: 38 by 54 pixels, lines 11 apart), moved
+  /// down by [run] pixels.
+  static void _paintTreads(Canvas canvas, double run) {
+    _navy.strokeWidth = 2;
+    final shift = run % 11;
+    for (final x in [204.0, 308.0]) {
+      final inside = RRect.fromLTRBR(
+        x - 17,
+        440,
+        x + 17,
+        490,
+        const Radius.circular(12),
+      );
+      canvas
+        ..save()
+        ..clipRRect(inside)
+        ..drawRRect(inside, _teal);
+      for (var y = 450 - 22 + shift; y < 492; y += 11) {
+        canvas.drawLine(Offset(x - 16, y), Offset(x + 16, y), _navy);
+      }
+      canvas.restore();
+    }
   }
 
   void _renderPlain(Canvas canvas) {

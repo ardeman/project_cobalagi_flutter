@@ -148,6 +148,15 @@ void drawSky(Canvas canvas, Rect area) {
 
 Paint _fill(int color) => Paint()..color = Color(color);
 
+/// Thin navy lines for a piece's inner details, like the lines inside Koba's
+/// picture (its outline is added around the whole piece, see `inkedPiece`).
+final _detail = Paint()
+  ..color = const Color(0xFF222244)
+  ..style = PaintingStyle.stroke
+  ..strokeWidth = 0.02
+  ..strokeCap = StrokeCap.round
+  ..strokeJoin = StrokeJoin.round;
+
 /// Draws [obstacle] in the unit cell at [cell], varied a little by [seed] so
 /// neighbouring tiles don't look stamped out.
 void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
@@ -171,6 +180,11 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
             const Radius.circular(0.14),
           ),
           _fill(0xFF7E6CD0),
+        )
+        ..drawLine(
+          Offset(c.dx - 0.36, c.dy - 0.12),
+          Offset(c.dx + 0.36, c.dy - 0.12),
+          _detail,
         );
       for (var i = 0; i < 4; i++) {
         canvas.drawCircle(
@@ -190,7 +204,9 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
         ..drawCircle(c, 0.32 * s, _fill(0xFF9196AE))
         ..drawCircle(c + Offset(-0.04, -0.05) * s, 0.26 * s, _fill(0xFFB8BCCF))
         ..drawCircle(c + Offset(-0.1, -0.08) * s, 0.07 * s, _fill(0xFF9196AE))
-        ..drawCircle(c + Offset(0.1, 0.06) * s, 0.05 * s, _fill(0xFF9196AE));
+        ..drawCircle(c + Offset(-0.1, -0.08) * s, 0.07 * s, _detail)
+        ..drawCircle(c + Offset(0.1, 0.06) * s, 0.05 * s, _fill(0xFF9196AE))
+        ..drawCircle(c + Offset(0.1, 0.06) * s, 0.05 * s, _detail);
       if (random.nextBool()) {
         canvas.drawCircle(
           c + Offset(-0.02, 0.14) * s,
@@ -241,16 +257,21 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
         ..lineTo(c.dx + 0.28 * s, c.dy - 0.14)
         ..lineTo(c.dx + 0.34 * s, c.dy + 0.2)
         ..close();
+      final facet = Path()
+        ..moveTo(c.dx - 0.26 * s, c.dy - 0.16)
+        ..lineTo(c.dx - 0.02, c.dy - 0.3 * s)
+        ..lineTo(c.dx + 0.04, c.dy)
+        ..close();
       canvas
         ..drawPath(rock.shift(const Offset(0.03, 0.05)), shadow)
         ..drawPath(rock, _fill(0xFF9AA6B2))
+        ..drawPath(facet, _fill(0xFFC3CCD5))
         ..drawPath(
           Path()
-            ..moveTo(c.dx - 0.26 * s, c.dy - 0.16)
-            ..lineTo(c.dx - 0.02, c.dy - 0.3 * s)
+            ..moveTo(c.dx - 0.02, c.dy - 0.3 * s)
             ..lineTo(c.dx + 0.04, c.dy)
-            ..close(),
-          _fill(0xFFC3CCD5),
+            ..lineTo(c.dx - 0.26 * s, c.dy - 0.16),
+          _detail,
         );
       if (random.nextInt(3) == 0) {
         // A little shell beside the rock.
@@ -311,7 +332,7 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
       final box = Rect.fromCenter(center: c, width: side, height: side);
       final wood = random.nextBool() ? 0xFFC58B52 : 0xFFB57B45;
       final plank = Paint()
-        ..color = const Color(0xFF8D5A2B)
+        ..color = const Color(0xFF222244)
         ..strokeWidth = 0.04
         ..style = PaintingStyle.stroke;
       canvas
@@ -361,7 +382,9 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
         ..drawPath(bumpy.shift(const Offset(0.03, 0.05)), _fill(0x55000000))
         ..drawPath(bumpy, _fill(0xFF8E8AA6))
         ..drawCircle(c + Offset(-0.1, -0.06) * s, 0.07 * s, _fill(0xFF6E6A88))
-        ..drawCircle(c + Offset(0.1, 0.08) * s, 0.05 * s, _fill(0xFF6E6A88));
+        ..drawCircle(c + Offset(-0.1, -0.06) * s, 0.07 * s, _detail)
+        ..drawCircle(c + Offset(0.1, 0.08) * s, 0.05 * s, _fill(0xFF6E6A88))
+        ..drawCircle(c + Offset(0.1, 0.08) * s, 0.05 * s, _detail);
       if (random.nextInt(3) == 0) {
         // A tiny star twinkling nearby.
         canvas.drawCircle(
@@ -403,7 +426,8 @@ void _crystals(
           ..lineTo(base.dx, base.dy)
           ..close(),
         _fill(0x66FFFFFF),
-      );
+      )
+      ..drawLine(base, base - Offset(0, h * s), _detail);
   }
 }
 
