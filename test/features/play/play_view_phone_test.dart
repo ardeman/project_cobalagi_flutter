@@ -414,31 +414,45 @@ void main() {
     await tester.tap(find.text('Try again!'));
     await tester.pump(const Duration(milliseconds: 300));
     final bulb = find.widgetWithIcon(IconButton, Icons.lightbulb_rounded);
-    final badge = find.descendant(
-      of: find.ancestor(of: bulb, matching: find.byType(Stack)).first,
-      matching: find.byIcon(Icons.repeat_rounded),
-    );
-    double badgeScale() => tester
-        .widget<AnimatedScale>(
-          find.ancestor(of: badge, matching: find.byType(AnimatedScale)),
-        )
-        .scale;
-    expect(badgeScale(), 0);
+    // The badge on the bulb shows what it shows next.
+    IconData? badge() {
+      final scale = tester.widget<AnimatedScale>(
+        find
+            .descendant(
+              of: find.ancestor(of: bulb, matching: find.byType(Stack)).first,
+              matching: find.byType(AnimatedScale),
+            )
+            .first,
+      );
+      if (scale.scale == 0) return null;
+      return tester
+          .widgetList<Icon>(
+            find.descendant(
+              of: find.byWidget(scale),
+              matching: find.byType(Icon),
+            ),
+          )
+          .single
+          .icon;
+    }
+
+    expect(badge(), Icons.route_rounded);
 
     await tester.tap(bulb);
     await tester.pump(const Duration(milliseconds: 300));
     expect(voices.clips, contains('hint_again'));
+    expect(badge(), Icons.repeat_rounded);
     expect(
       tester.widget<IconButton>(bulb).tooltip,
-      'Tap the light bulb again to see the blocks that repeat!',
+      'Show me the blocks that repeat',
     );
-    expect(badgeScale(), 1);
 
-    // The pattern shows, and the badge goes until the route is back.
+    // The pattern shows; the blocks are right so far, so the way is next.
     await tester.tap(bulb);
     await tester.pump(const Duration(milliseconds: 300));
     expect(voices.clips.last, 'hint_pattern');
-    expect(badgeScale(), 0);
+    expect(badge(), Icons.route_rounded);
+    expect(tester.widget<IconButton>(bulb).tooltip, 'Show me the way');
     expect(tester.takeException(), isNull);
   });
 
@@ -484,6 +498,10 @@ void main() {
     final turn = cubit.state.main.last.id;
     await tryOnce();
     expect(marked(turn), isFalse, reason: 'no bump, so no mark yet');
+    expect(
+      tester.widget<IconButton>(bulb).tooltip,
+      'Show me which block to change',
+    );
     await tester.tap(bulb);
     await tester.pump(const Duration(milliseconds: 300));
     expect(marked(turn), isTrue);

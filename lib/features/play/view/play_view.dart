@@ -20,6 +20,7 @@ import '../../../engine/generator/solver.dart';
 import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
 import '../../../engine/program/instruction.dart';
+import '../../../engine/program/program.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/features/editors/typed/cubit/typed_code_cubit.dart';
 import 'package:cobalagi/features/play/view/hint_marks.dart';
@@ -225,7 +226,11 @@ class _PlayViewState extends State<PlayView> {
   var _hintStep = -1;
 
   /// The route hint is showing, and asking again shows the pattern.
-  var _patternNext = false;
+  /// Whether the bulb has a repeating pattern to show on this level.
+  late final _hasPattern = switch (solve(_level)) {
+    final solution? => patternHintMarks(_level, solution) != null,
+    null => false,
+  };
   var _finishing = false;
   final _cheers = CheerPicker();
 
@@ -319,20 +324,17 @@ class _PlayViewState extends State<PlayView> {
     final font = Theme.of(context).textTheme.titleLarge?.fontFamily;
     final pattern = patternHintMarks(_level, solution, labelFont: font);
     final program = _codeMode ? _typed.state.program : _blocks.program;
-    final offTrack = program == null
-        ? null
-        : firstOffTrackBlock(_level, runProgram(program, _level));
+    final offTrack = _offTrack(_level, program);
     // One hint per press, building up, then round again: the route as the
     // level's own blocks, in their colours; on islands with a loop block,
     // the shape that repeats and the loop block that does it; then the
     // child's own first block that takes Koba no closer to the finish,
     // wearing the bump's "look here" ring (in code, its line is marked). A
     // program that is right so far has no block to ring.
-    final steps = [
-      _Hint.route,
-      if (pattern != null) _Hint.pattern,
-      if (offTrack != null) _Hint.ring,
-    ];
+    final steps = _hintSteps(
+      hasPattern: pattern != null,
+      hasRing: offTrack != null,
+    );
     _hintStep = (_hintStep + 1) % steps.length;
     final step = steps[_hintStep];
     final trail = hintTrail(_level, solution);
@@ -347,11 +349,10 @@ class _PlayViewState extends State<PlayView> {
       case _Hint.ring:
         setState(() => _bumped = offTrack);
     }
-    // After the route, the bulb wears a loop badge and Koba says it has
-    // more to show, if the pattern comes next. Pre-readers hear what the
+    // After the route, Koba says the bulb has more to show, if the pattern
+    // comes next (the bulb's badge shows it too). Pre-readers hear what the
     // pattern and the ring mean.
     final next = steps[(_hintStep + 1) % steps.length];
-    setState(() => _patternNext = step == _Hint.route && next == _Hint.pattern);
     switch (step) {
       case _Hint.route when next == _Hint.pattern:
         _say(VoiceClips.hintAgain);
@@ -570,7 +571,8 @@ class _PlayViewState extends State<PlayView> {
                           hintAfterRuns: widget.hintAfterRuns,
                           hintPulseAfterTries: widget.hintPulseAfterTries,
                           hintsUsed: _hints,
-                          patternNext: _patternNext,
+                          hintStep: _hintStep,
+                          hasPattern: _hasPattern,
                           tour: _touring ? _tour : null,
                           howTo: widget.showHowTo,
                           compact: tight,
@@ -1172,7 +1174,8 @@ class _RunControls extends StatelessWidget {
     required this.hintAfterRuns,
     required this.hintPulseAfterTries,
     this.hintsUsed = 0,
-    this.patternNext = false,
+    this.hintStep = -1,
+    this.hasPattern = false,
     this.tour,
     this.howTo = false,
     this.compact = false,
@@ -1191,8 +1194,11 @@ class _RunControls extends StatelessWidget {
   /// Hints asked for so far; the bulb pulses until the first one.
   final int hintsUsed;
 
-  /// Asking again shows the repeating pattern: the bulb wears a loop badge.
-  final bool patternNext;
+  /// The hint the bulb showed last, and whether the level has a pattern to
+  /// show: together with the child's program, what the bulb shows next,
+  /// which its badge and tooltip tell.
+  final int hintStep;
+  final bool hasPattern;
 
   /// Marks the buttons while the guided tour shows.
   final _TourKeys? tour;
@@ -1214,6 +1220,13 @@ class _RunControls extends StatelessWidget {
     final hasBlocks = codeMode ? typed.canRun : !blocks.state.isEmpty;
     final running = play.phase == PlayPhase.running;
     final canGo = hasBlocks && (play.phase == PlayPhase.editing || running);
+    // What the bulb shows next, as [_PlayViewState._showHint] goes round.
+    final available = onHint != null && !running && play.tries >= hintAfterRuns;
+    final steps = _hintSteps(
+      hasPattern: hasPattern,
+      hasRing: available && _offTrack(play.level, program) != null,
+    );
+    final next = steps[(hintStep + 1) % steps.length];
 
     final gap = compact ? 8.0 : 16.0;
     final onGo = canGo && !(running && !play.stepping)
@@ -1292,18 +1305,20 @@ class _RunControls extends StatelessWidget {
               // While it calls, the bulb lights up: amber, like a lamp on.
               child: _HintBadge(
                 key: tour?.hint,
-                show: patternNext && !running,
+                next: available ? next : null,
                 child: IconButton.filledTonal(
-                  tooltip: patternNext ? l10n.hintAgain : l10n.hint,
+                  tooltip: switch (next) {
+                    _Hint.route => l10n.hint,
+                    _Hint.pattern => l10n.hintNextPattern,
+                    _Hint.ring => l10n.hintNextRing,
+                  },
                   style: calling
                       ? IconButton.styleFrom(
                           backgroundColor: const Color(0xFFFFC83D),
                           foregroundColor: const Color(0xFF3E2723),
                         )
                       : null,
-                  onPressed: running || play.tries < hintAfterRuns
-                      ? null
-                      : onHint,
+                  onPressed: available ? onHint : null,
                   icon: const Icon(Icons.lightbulb_rounded),
                 ),
               ),
@@ -1361,45 +1376,52 @@ class _TurnMapButton extends StatelessWidget {
   }
 }
 
-/// A small loop badge on the hint bulb: tap again to see what repeats.
+/// A small badge on the hint bulb showing what it shows next: the way (a
+/// route sign), the blocks that repeat (the loop block's sign), or which
+/// block to change (an orange ring, like the one it puts on the block).
 class _HintBadge extends StatelessWidget {
-  const _HintBadge({super.key, required this.show, required this.child});
+  const _HintBadge({super.key, required this.next, required this.child});
 
-  final bool show;
+  /// Null while the bulb can't be used: no badge.
+  final _Hint? next;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) => Stack(
-    clipBehavior: Clip.none,
-    children: [
-      child,
-      Positioned(
-        right: -6,
-        top: -6,
-        child: IgnorePointer(
-          child: AnimatedScale(
-            scale: show ? 1 : 0,
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeOutBack,
-            child: Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: BlockType.repeat.color,
-                border: Border.all(color: Colors.white, width: 2),
-              ),
-              child: const Icon(
-                Icons.repeat_rounded,
-                size: 16,
-                color: Colors.white,
+  Widget build(BuildContext context) {
+    final (icon, color) = switch (next ?? _Hint.route) {
+      _Hint.route => (Icons.route_rounded, BlockType.forward.color),
+      _Hint.pattern => (Icons.repeat_rounded, BlockType.repeat.color),
+      _Hint.ring => (Icons.adjust_rounded, const Color(0xFFFB8C00)),
+    };
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        Positioned(
+          right: -6,
+          top: -6,
+          child: IgnorePointer(
+            child: AnimatedScale(
+              scale: next != null ? 1 : 0,
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeOutBack,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: color,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: Icon(icon, size: 16, color: Colors.white),
               ),
             ),
           ),
         ),
-      ),
-    ],
-  );
+      ],
+    );
+  }
 }
 
 /// Grows and shrinks [child] while [active], to point it out. With [glow]
@@ -1546,6 +1568,18 @@ class _Ripple extends CustomPainter {
   bool shouldRepaint(_Ripple old) =>
       old.active != active || old.still != still || old.travel != travel;
 }
+
+/// The hints the bulb has, in the order it shows them, one per press.
+List<_Hint> _hintSteps({required bool hasPattern, required bool hasRing}) => [
+  _Hint.route,
+  if (hasPattern) _Hint.pattern,
+  if (hasRing) _Hint.ring,
+];
+
+/// The child's first block that takes Koba no closer to the finish, if any.
+String? _offTrack(Level level, Program? program) => program == null
+    ? null
+    : firstOffTrackBlock(level, runProgram(program, level));
 
 /// What the hint bulb shows, one per press, in this order.
 enum _Hint {

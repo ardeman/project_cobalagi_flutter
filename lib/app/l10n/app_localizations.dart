@@ -554,6 +554,18 @@ abstract class AppLocalizations {
   /// **'Show me the way'**
   String get hint;
 
+  /// No description provided for @hintNextPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me the blocks that repeat'**
+  String get hintNextPattern;
+
+  /// No description provided for @hintNextRing.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me which block to change'**
+  String get hintNextRing;
+
   /// No description provided for @repeatMore.
   ///
   /// In en, this message translates to:
@@ -1349,7 +1361,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourHint.
   ///
   /// In en, this message translates to:
-  /// **'Stuck? After a few tries, the light bulb lights up to show you the way.'**
+  /// **'Stuck? After a few tries, the light bulb lights up. Each tap shows a little more: first the way, then which of your blocks to change. The little sign on the bulb shows what comes next.'**
   String get tourHint;
 
   /// No description provided for @tourFollow.

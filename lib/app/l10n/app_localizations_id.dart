@@ -260,6 +260,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get hint => 'Tunjukkan jalannya';
 
   @override
+  String get hintNextPattern => 'Tunjukkan blok yang berulang';
+
+  @override
+  String get hintNextRing => 'Tunjukkan blok yang perlu diganti';
+
+  @override
   String get repeatMore => 'Tambah satu kali';
 
   @override
@@ -702,7 +708,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tourHint =>
-      'Bingung? Setelah beberapa kali mencoba, lampunya menyala untuk menunjukkan jalannya.';
+      'Bingung? Setelah beberapa kali mencoba, lampu menyala. Setiap ketukan menunjukkan sedikit lagi: pertama jalannya, lalu blok mana yang perlu diganti. Tanda kecil di lampu menunjukkan apa yang berikutnya.';
 
   @override
   String get tourFollow =>

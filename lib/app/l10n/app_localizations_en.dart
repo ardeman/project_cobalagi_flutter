@@ -271,6 +271,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hint => 'Show me the way';
 
   @override
+  String get hintNextPattern => 'Show me the blocks that repeat';
+
+  @override
+  String get hintNextRing => 'Show me which block to change';
+
+  @override
   String get repeatMore => 'One more time';
 
   @override
@@ -714,7 +720,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourHint =>
-      'Stuck? After a few tries, the light bulb lights up to show you the way.';
+      'Stuck? After a few tries, the light bulb lights up. Each tap shows a little more: first the way, then which of your blocks to change. The little sign on the bulb shows what comes next.';
 
   @override
   String get tourFollow =>
