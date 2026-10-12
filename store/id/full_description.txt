@@ -13,16 +13,16 @@ SEMBILAN PLANET CODING
 • Perbaiki!: menemukan dan membetulkan blok yang belum pas
 • Sampai bendera: blok ulangi yang terus jalan sampai bendera
 • Kalau tidak: kalau jalannya kosong, melangkah; kalau tidak, belok
-Setiap planet dimulai dengan contoh singkat yang menunjukkan idenya. Bintang di peta menunjukkan kemajuan anak di setiap planet. Pelajaran yang sudah selesai bisa dimainkan lagi dari planetnya, dan setiap planet serta permainan Pemanasan yang tuntas menambah stiker di buku stiker anak.
+Saat pertama kali, Koba menunjukkan fungsi tiap tombol. Setiap planet dimulai dengan contoh singkat yang menunjukkan idenya. Bintang di peta menunjukkan kemajuan anak di setiap planet. Pelajaran yang sudah selesai bisa dimainkan lagi dari planetnya, dan setiap planet serta permainan Pemanasan yang tuntas menambah stiker di buku stiker anak. Stiker planet berubah emas setelah semua bintangnya terkumpul.
 
 BLOK BERGAMBAR DAN KODE
-Anak yang masih belajar membaca memakai blok bergambar. Anak yang sudah bisa membaca dapat pindah ke tab Kode dan mengetik program yang sama. Blok bisa diseret atau diketuk untuk menambahkannya, di tablet maupun ponsel.
+Anak yang masih belajar membaca memakai blok bergambar. Anak yang sudah bisa membaca dapat pindah ke tab Kode dan mengetik program yang sama. Blok bisa diseret atau diketuk untuk menambahkannya, di tablet maupun ponsel. Kompas memutar peta agar kiri dan kanan Koba sama dengan kiri dan kanan anak.
 
 BELAJAR SESUAI KEMAMPUAN ANAK
 Setelah tiap teka-teki, Coba Lagi memilih langkah berikutnya: lanjut ke planet berikutnya, berlatih dengan teka-teki lain, atau petualangan bonus untuk mengulang materi sebelumnya. Teka-teki latihan dibuat otomatis dan selalu diperiksa bisa diselesaikan, jadi anak tidak pernah mendapat teka-teki yang sama dua kali.
 
 SALAH ITU BAGIAN DARI BELAJAR
-Namanya berarti "coba lagi". Setiap percobaan disambut dengan semangat, tidak pernah dengan kata "salah". Lampu petunjuk menunjukkan jalannya saat anak bingung.
+Namanya berarti "coba lagi". Setiap percobaan disambut dengan semangat, tidak pernah dengan kata "salah". Jika Koba menabrak batu, blok penyebabnya ditandai. Lampu petunjuk menunjukkan jalannya saat anak bingung.
 
 UNTUK ORANG TUA
 • Area orang tua dilindungi pertanyaan untuk orang dewasa

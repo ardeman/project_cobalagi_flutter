@@ -1,0 +1,7 @@
+- The robot now has a name: Koba! On first play, Koba shows what each button does and how the warm-up games work.
+- If a run bumps into a rock, the block that caused it is marked.
+- The hint says when tapping again shows the repeating blocks.
+- A compass turns the map so Koba's left and right match your child's.
+- Planet stickers turn gold once every star is collected.
+- Warm-up games fit the screen without scrolling.
+- Fixed: a planet could say "9 more puzzles" but move on after one.

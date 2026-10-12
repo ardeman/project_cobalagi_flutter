@@ -1,0 +1,7 @@
+- Robotnya kini punya nama: Koba! Saat pertama bermain, Koba menunjukkan fungsi tiap tombol dan cara bermain pemanasan.
+- Jika robot menabrak batu, blok penyebabnya ditandai.
+- Petunjuk memberi tahu bahwa mengetuk lagi menampilkan blok yang berulang.
+- Kompas memutar peta agar kiri-kanan Koba sama dengan anak.
+- Stiker planet berubah emas setelah semua bintang terkumpul.
+- Permainan pemanasan kini muat di layar.
+- Diperbaiki: planet bisa bilang "9 teka-teki lagi" lalu pindah setelah satu.
