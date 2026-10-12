@@ -3,23 +3,23 @@
   "effects": {
     "step": {
       "seconds": 0.5,
-      "text": "a single soft cartoon footstep hop, light and cute, for a children's game"
+      "text": "a little cartoon robot rolling forward one step on small rubber wheels, a short gentle whirr, cute, for a children's game, no footsteps"
     },
     "turn": {
       "seconds": 0.5,
-      "text": "a quick soft cartoon swish, gentle whoosh, for a children's game"
+      "text": "a little cartoon robot turning on the spot, a quick soft wheel swivel with a tiny servo whirr, cute, for a children's game"
     },
     "bump": {
       "seconds": 0.6,
-      "text": "a soft gentle cartoon boing bump, funny not scary, for a children's game"
+      "text": "a little cartoon robot gently bonking into a rock, a soft hollow bonk with a tiny wobble, funny not scary, for a children's game"
     },
     "star": {
       "seconds": 0.8,
-      "text": "a bright sparkly chime when picking up a star, magical and happy, for a children's game"
+      "text": "a bright sparkly space chime when a little robot picks up a star, magical and happy, for a children's game"
     },
     "goal": {
       "seconds": 2.0,
-      "text": "a short cheerful victory jingle with bells and a little fanfare, for a children's game, no voice"
+      "text": "a short cheerful victory jingle with soft synth bells and a little fanfare, playful outer space feel, for a children's game, no voice"
     },
     "drop": {
       "seconds": 0.5,
