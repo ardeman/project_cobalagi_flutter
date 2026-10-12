@@ -98,7 +98,9 @@ class _BlockEditorState extends State<BlockEditor> {
       holdToDrag: true,
     );
 
-    final top = <Widget>[
+    // [starMax]: on a tablet the star row may take this much height at most
+    // and scrolls inside it, so the main program always keeps room.
+    List<Widget> topFor(double? starMax) => <Widget>[
       KeyedSubtree(
         key: widget.paletteKey,
         child: DragTarget<Block>(
@@ -140,12 +142,17 @@ class _BlockEditorState extends State<BlockEditor> {
         SizedBox(height: gap),
       ],
       if (showStar) ...[
-        GestureDetector(
-          onTap: () => cubit.pickRow(star: true),
-          child: _StarRow(
-            blocks: cubit.state.star,
-            style: style,
-            picked: cubit.state.tapToStar,
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: starMax ?? double.infinity),
+          child: SingleChildScrollView(
+            child: GestureDetector(
+              onTap: () => cubit.pickRow(star: true),
+              child: _StarRow(
+                blocks: cubit.state.star,
+                style: style,
+                picked: cubit.state.tapToStar,
+              ),
+            ),
           ),
         ),
         SizedBox(height: gap),
@@ -173,12 +180,12 @@ class _BlockEditorState extends State<BlockEditor> {
       ),
     );
 
-    final column = Column(
+    Widget columnFor(double? starMax) => Column(
       mainAxisSize: widget.fitContent ? MainAxisSize.min : MainAxisSize.max,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (widget.fitContent) ...[
-          ...top,
+          ...topFor(null),
           ConstrainedBox(
             key: _program,
             // Always room to drop a block.
@@ -186,7 +193,7 @@ class _BlockEditorState extends State<BlockEditor> {
             child: program,
           ),
         ] else ...[
-          ...top,
+          ...topFor(starMax),
           Expanded(key: _program, child: program),
         ],
         SizedBox(height: gap),
@@ -244,6 +251,16 @@ class _BlockEditorState extends State<BlockEditor> {
         ),
       ],
     );
+    final column = widget.fitContent
+        // Phones scroll the whole page, so the star row grows freely.
+        ? columnFor(null)
+        : LayoutBuilder(
+            builder: (context, box) => columnFor(
+              box.maxHeight.isFinite
+                  ? max(widget.blockSize * 1.5, box.maxHeight * 0.3)
+                  : null,
+            ),
+          );
     final editor = widget.fitContent
         ? BlocListener<BlocksCubit, BlockProgram>(
             // A new block in the program comes into view, even when the

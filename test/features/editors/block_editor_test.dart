@@ -52,6 +52,29 @@ Future<BlocksCubit> pumpEditor(
 Finder paletteBlock(IconData icon) => find.byIcon(icon).first;
 
 void main() {
+  testWidgets('a full star row leaves the main program room on a tablet', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester, star: true);
+    // A long Magic Block: far more than fits beside the program.
+    for (var i = 0; i < 16; i++) {
+      cubit.add(BlockType.forward, parentId: BlocksCubit.starRow);
+    }
+    // Two rows of the main program.
+    for (var i = 0; i < 10; i++) {
+      cubit.add(i.isEven ? BlockType.star : BlockType.forward);
+    }
+    await tester.pumpAndSettle();
+    final last = find.byKey(ValueKey(cubit.state.main.last.id)).first;
+    final view = tester.getRect(
+      find.ancestor(of: last, matching: find.byType(Scrollable)).first,
+    );
+    // Both rows show without scrolling the program.
+    expect(view.contains(tester.getRect(last).bottomRight), isTrue);
+    expect(view.height, greaterThanOrEqualTo(64 * 2));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('Step Box buttons save 1–9 with 64dp targets', (tester) async {
     tester.view.physicalSize = const Size(400, 800);
     tester.view.devicePixelRatio = 1;
