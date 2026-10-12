@@ -41,19 +41,57 @@ void main() {
     expect(cubit.state.update, isNull);
   });
 
-  test('late check results cannot interrupt play after the timeout', () async {
-    final result = Completer<AvailableUpdate?>();
-    final service = FakeUpdateService()..onCheck = () => result.future;
-    final cubit = AppUpdateCubit(
-      service,
-      checkTimeout: const Duration(milliseconds: 1),
-    );
+  test(
+    'a late answer never holds up play, and is offered afterwards',
+    () async {
+      final result = Completer<AvailableUpdate?>();
+      final service = FakeUpdateService()..onCheck = () => result.future;
+      final cubit = AppUpdateCubit(
+        service,
+        checkTimeout: const Duration(milliseconds: 1),
+      );
+      addTearDown(cubit.close);
+      final checking = cubit.check();
+      // The splash stops waiting at the timeout, with nothing to offer.
+      await cubit.stream.first;
+      expect(cubit.state.status, UpdateStatus.ready);
+      expect(cubit.state.offered, isFalse);
+      // Play answers later: the next screen offers it.
+      result.complete(const AvailableUpdate(buildNumber: 6));
+      await checking;
+      expect(cubit.state.update?.buildNumber, 6);
+      expect(cubit.state.offered, isTrue);
+    },
+  );
+
+  test('continue playing hides the notice; checking again keeps it', () async {
+    var asked = 0;
+    final service = FakeUpdateService()
+      ..onCheck = () async {
+        asked++;
+        return const AvailableUpdate(buildNumber: 6);
+      };
+    final cubit = AppUpdateCubit(service);
     addTearDown(cubit.close);
     await cubit.check();
-    result.complete(const AvailableUpdate(buildNumber: 6));
-    await Future<void>.delayed(Duration.zero);
-    expect(cubit.state.status, UpdateStatus.ready);
-    expect(cubit.state.update, isNull);
+    cubit.dismiss();
+    expect(cubit.state.offered, isFalse);
+    // Coming back to the app: the known update isn't asked for again.
+    await cubit.check();
+    expect(asked, 1);
+    expect(cubit.state.offered, isFalse);
+  });
+
+  test('coming back asks again when no update was known', () async {
+    AvailableUpdate? answer;
+    final service = FakeUpdateService()..onCheck = () async => answer;
+    final cubit = AppUpdateCubit(service);
+    addTearDown(cubit.close);
+    await cubit.check();
+    expect(cubit.state.offered, isFalse);
+    answer = const AvailableUpdate(buildNumber: 7);
+    await cubit.check();
+    expect(cubit.state.update?.buildNumber, 7);
   });
 
   test('failed store opening leaves the notice available for retry', () async {

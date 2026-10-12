@@ -1,3 +1,5 @@
+import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
+import 'package:cobalagi/features/splash/view/app_update_notice.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -61,6 +63,29 @@ class ProfilesScreen extends StatelessWidget {
           ),
         ],
       ),
+      // An update the store reported after the splash: offered here, never
+      // in the way (missing in screens built without the app's checker).
+      bottomNavigationBar: context.read<AppUpdateCubit?>() == null
+          ? null
+          : BlocBuilder<AppUpdateCubit, AppUpdateState>(
+              builder: (context, update) => !update.offered
+                  ? const SizedBox.shrink()
+                  : SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                        child: AppUpdateNotice(
+                          state: update,
+                          onUpdate: () async {
+                            if (await showParentGate(context) &&
+                                context.mounted) {
+                              await context.read<AppUpdateCubit>().openUpdate();
+                            }
+                          },
+                          onContinue: context.read<AppUpdateCubit>().dismiss,
+                        ),
+                      ),
+                    ),
+            ),
       body: !state.loaded
           ? const Center(child: CircularProgressIndicator())
           : WindowClassBuilder(

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
-import 'package:cobalagi/features/splash/data/app_update_service.dart';
 import 'package:cobalagi/features/parent/view/parent_gate.dart';
 import 'package:cobalagi/features/splash/view/app_update_notice.dart';
 import 'package:cobalagi/features/splash/view/rolling_robot.dart';
@@ -43,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
     if (mounted &&
         context.read<ProfilesCubit>().state.loaded &&
         _updates?.state.status != UpdateStatus.checking &&
-        _updates?.state.update == null) {
+        !(_updates?.state.offered ?? false)) {
       context.go('/');
     }
   }
@@ -51,13 +50,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _updates ??= AppUpdateCubit(context.read<AppUpdateService>())..check();
+    // The app's checker: it outlives the splash, so a late answer is still
+    // offered on the next screen.
+    _updates ??= context.read<AppUpdateCubit>();
   }
 
   @override
   void dispose() {
     _timer.cancel();
-    _updates?.close();
     super.dispose();
   }
 
@@ -116,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen> {
                                 ),
                               ),
                               const Spacer(),
-                              if (updateState.update != null)
+                              if (updateState.offered)
                                 Padding(
                                   padding: const EdgeInsets.all(24),
                                   child: AppUpdateNotice(
@@ -134,7 +134,12 @@ class _SplashScreenState extends State<SplashScreen> {
                                             .watch<ProfilesCubit>()
                                             .state
                                             .loaded
-                                        ? () => context.go('/')
+                                        ? () {
+                                            context
+                                                .read<AppUpdateCubit>()
+                                                .dismiss();
+                                            context.go('/');
+                                          }
                                         : null,
                                   ),
                                 ),

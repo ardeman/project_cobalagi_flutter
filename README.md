@@ -246,8 +246,11 @@ After adding or replacing clips, Android builds may keep using an old asset list
 
 ## Launch updates
 
-On Android, the splash checks Google Play for an available update for up to two
-seconds. If one is available, the notice offers continuing to play or asking a
+On Android, the app asks Google Play for an available update at launch and
+whenever it comes back to the foreground. The splash waits for the answer for up
+to two seconds; Play is often slower on a cold start, so a later answer (within
+30 seconds) is offered on the player picker instead. If one is available, the
+notice offers continuing to play (which hides it for the session) or asking a
 parent to update. The update action requires the parent gate; Google Play handles
 the download and installation. Unavailable stores, offline devices and slow
 checks continue to play without a notice. iOS, web and desktop skip the check.

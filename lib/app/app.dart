@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_background.dart';
+import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/data/app_update_service.dart';
 
 import '../features/play_time/cubit/break_reminder_cubit.dart';
@@ -52,6 +53,9 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
   /// Puzzle time since the last break, for the parent's break reminder.
   final _playClock = PlayClock()..attach();
 
+  /// Asks the store for an update at launch, and again on coming back.
+  late final _updates = AppUpdateCubit(widget.updates)..check();
+
   @override
   void initState() {
     super.initState();
@@ -62,12 +66,15 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     widget.audio.foreground = state == AppLifecycleState.resumed;
+    // Play may have learned of an update while the app was away.
+    if (state == AppLifecycleState.resumed) _updates.check();
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _playClock.detach();
+    _updates.close();
     _router.dispose();
     widget.entitlement.dispose();
     widget.audio.dispose();
@@ -86,6 +93,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
     child: MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => SettingsCubit(widget.settings)..load()),
+        BlocProvider.value(value: _updates),
         // Not lazy: these apply the saved settings to the audio at launch,
         // not first when the parent area reads them.
         BlocProvider(
