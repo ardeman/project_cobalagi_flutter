@@ -1,5 +1,5 @@
 {
-  "_comment": "One entry per build (versionCode), added when the version is bumped. tool/website_changelog.dart turns these and store/<locale>/changelogs/ into website/changelog.html.",
+  "_comment": "One entry per build (versionCode), added when the version is bumped; every build here was uploaded to Play. tool/website_changelog.dart turns these and store/<locale>/changelogs/ into website/changelog.html. \"listing\": true marks a build whose store listing (texts, screenshots, feature graphic) was also uploaded; the newest one is what the Play page shows, and what to re-upload next is the diff since it.",
   "releases": [
     { "build": 1, "version": "1.0.0", "date": "2026-10-05" },
     { "build": 2, "version": "1.0.0", "date": "2026-10-06" },
