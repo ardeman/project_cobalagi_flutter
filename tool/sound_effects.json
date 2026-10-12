@@ -2,8 +2,10 @@
   "prompt_influence": 0.6,
   "effects": {
     "step": {
-      "seconds": 0.5,
-      "text": "a little cartoon robot rolling forward one step on small rubber wheels, a short gentle whirr, cute, for a children's game, no footsteps"
+      "seconds": 2.0,
+      "slice": 0.35,
+      "gain_db": 4,
+      "text": "a small toy robot driving steadily on little rubber wheels across a smooth floor, a constant soft electric motor hum with a gentle rolling wheel rumble, even and unchanging the whole time, no beeps, no footsteps, for a children's game"
     },
     "turn": {
       "seconds": 0.5,
