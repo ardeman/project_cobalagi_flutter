@@ -21,6 +21,22 @@ Vector2 tileCenter(GridPoint p) => Vector2(p.x + 0.5, p.y + 0.5);
 /// Clockwise from north, matching Flame's rotation direction.
 double angleOf(Direction direction) => direction.index * pi / 2;
 
+/// How much the board tilts away from the child: the ground is drawn this
+/// much shorter than wide, and upright things (obstacles, the finish, stars,
+/// hint marks, the robot) are stretched back by its inverse where they
+/// stand, so they stand up instead of lying flat. See `TiltedViewport`.
+const tilt = 0.8;
+
+/// Stands what is drawn after it upright on the tilted board, around the
+/// point [base] (in the same, upright, frame) where it touches the ground.
+void standUp(Canvas canvas, Offset base) => canvas
+  ..translate(base.dx, base.dy)
+  ..scale(1, 1 / tilt)
+  ..translate(-base.dx, -base.dy);
+
+/// The board: a piece of the planet's surface floating in the starry sky,
+/// cut a little wider than the board, with the path's tiles raised on it and
+/// the planet's obstacles and odds and ends ([Decor]) on the ground off it.
 class BoardComponent extends PositionComponent {
   BoardComponent(this.level, this.theme)
     : super(size: Vector2(level.width.toDouble(), level.height.toDouble()));
@@ -30,6 +46,10 @@ class BoardComponent extends PositionComponent {
 
   late final _floor = Paint()..color = theme.floor;
   late final _floorEdge = Paint()..color = theme.floorEdge;
+  late final _tileSide = Paint()
+    ..color = Color.lerp(theme.floorEdge, const Color(0xFF000000), 0.2)!;
+  late final _ground = Paint()..color = theme.ground;
+  late final _groundSide = Paint()..color = theme.groundSide;
 
   /// Each path tile's outline, in Koba's navy, so the path reads as drawn
   /// like Koba.
@@ -37,65 +57,69 @@ class BoardComponent extends PositionComponent {
     ..color = ink
     ..style = PaintingStyle.stroke
     ..strokeWidth = 0.022;
+  static final _edge = Paint()
+    ..color = ink
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 0.03
+    ..strokeJoin = StrokeJoin.round;
 
-  /// The board never changes, so it is drawn once and replayed each frame.
-  late final Picture _picture = () {
-    final recorder = PictureRecorder();
-    _draw(Canvas(recorder));
-    return recorder.endRecording();
-  }();
+  /// How far the planet's piece reaches past the board, and how thick it is.
+  static const _margin = 0.32, _depth = 0.38, _tileDepth = 0.07;
 
   /// How far the view is turned (see `WorldGame.follow`): each obstacle
-  /// stands upright on the screen, so rocks never lie on their sides.
+  /// stands upright on the screen, so rocks never lie on their sides, and
+  /// the sides of the ground and tiles show at the bottom of the screen.
   var upright = 0.0;
 
-  /// Where an obstacle's picture reaches, around its tile's centre.
-  static const _obstacleBounds = Rect.fromLTWH(-0.6, -0.6, 1.2, 1.2);
+  /// The piece's outline: the board's rectangle with rounded corners and a
+  /// gently uneven edge, the same every time for a level.
+  late final Path _piece = () {
+    final random = Random(level.width * 31 + level.height);
+    final outline = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(
+            -_margin,
+            -_margin,
+            level.width + 2 * _margin,
+            level.height + 2 * _margin,
+          ),
+          const Radius.circular(0.7),
+        ),
+      );
+    final metric = outline.computeMetrics().single;
+    final steps = (metric.length * 5).round();
+    final wobbly = Path();
+    for (var i = 0; i < steps; i++) {
+      final at = metric.getTangentForOffset(metric.length * i / steps)!;
+      // Outward is to the left of the way round (the outline runs clockwise).
+      final out = Offset(at.vector.dy, -at.vector.dx);
+      final p = at.position + out * (random.nextDouble() * 0.07);
+      i == 0 ? wobbly.moveTo(p.dx, p.dy) : wobbly.lineTo(p.dx, p.dy);
+    }
+    return wobbly..close();
+  }();
 
-  /// Each obstacle, drawn once around its own centre in Koba's look.
-  late final List<(Offset, Image)> _obstacles = [
+  bool _isPath(int x, int y) =>
+      x >= 0 &&
+      y >= 0 &&
+      x < level.width &&
+      y < level.height &&
+      level.tiles[y][x] == Tile.floor;
+
+  late final List<RRect> _tiles = [
     for (var y = 0; y < level.height; y++)
       for (var x = 0; x < level.width; x++)
-        if (level.tiles[y][x] != Tile.floor)
-          (
-            Offset(x + 0.5, y + 0.5),
-            inkedPiece(
-              (canvas) => drawObstacle(
-                canvas,
-                const Rect.fromLTWH(-0.5, -0.5, 1, 1),
-                theme.obstacle,
-                y * 997 + x,
-              ),
-              bounds: _obstacleBounds,
-            ),
+        if (_isPath(x, y))
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(x.toDouble(), y.toDouble(), 1, 1).deflate(0.05),
+            const Radius.circular(0.16),
           ),
   ];
 
-  @override
-  void render(Canvas canvas) {
-    canvas.drawPicture(_picture);
-    for (final (at, obstacle) in _obstacles) {
-      canvas
-        ..save()
-        ..translate(at.dx, at.dy)
-        ..rotate(upright);
-      drawInked(canvas, obstacle, _obstacleBounds);
-      canvas.restore();
-    }
-  }
-
-  @override
-  void onRemove() {
-    _picture.dispose();
-    for (final (_, obstacle) in _obstacles) {
-      obstacle.dispose();
-    }
-    super.onRemove();
-  }
-
-  void _draw(Canvas canvas) {
-    // Stars behind the board, reaching past it into any space around.
-    drawSky(
+  /// The sky behind, never changing.
+  late final Picture _sky = _record(
+    (canvas) => drawSky(
       canvas,
       Rect.fromLTWH(
         -level.width.toDouble(),
@@ -103,33 +127,123 @@ class BoardComponent extends PositionComponent {
         level.width * 3.0,
         level.height * 3.0,
       ),
-    );
-    for (var y = 0; y < level.height; y++) {
-      for (var x = 0; x < level.width; x++) {
-        final cell = Rect.fromLTWH(x.toDouble(), y.toDouble(), 1, 1);
-        if (level.tiles[y][x] == Tile.floor) {
-          final tile = RRect.fromRectAndRadius(
-            cell.deflate(0.03),
-            const Radius.circular(0.18),
-          );
-          final face = RRect.fromRectAndRadius(
-            cell.deflate(0.08),
-            const Radius.circular(0.14),
-          );
-          canvas
-            ..drawRRect(tile, _floorEdge)
-            ..drawRRect(tile, _tileOutline)
-            ..drawRRect(
-              RRect.fromRectAndRadius(
-                cell.deflate(0.08),
-                const Radius.circular(0.14),
-              ),
-              _floor,
-            )
-            ..drawRRect(face, _tileOutline);
-        }
-      }
+    ),
+  );
+
+  /// The planet's surface, its odds and ends, and the path's tiles: all flat
+  /// on the ground, so drawn once.
+  late final Picture _surface = _record(_drawSurface);
+
+  static Picture _record(void Function(Canvas) draw) {
+    final recorder = PictureRecorder();
+    draw(Canvas(recorder));
+    return recorder.endRecording();
+  }
+
+  void _drawSurface(Canvas canvas) {
+    canvas
+      ..drawPath(_piece, _ground)
+      ..drawPath(_piece, _edge);
+    // Odds and ends on the ground, scattered so no two cells look alike,
+    // never on the path.
+    final random = Random(level.width * 7 + level.height * 13 + 1);
+    final bounds = _piece.getBounds();
+    final count = (bounds.width * bounds.height * 1.6).round();
+    for (var i = 0; i < count; i++) {
+      final at = Offset(
+        bounds.left + random.nextDouble() * bounds.width,
+        bounds.top + random.nextDouble() * bounds.height,
+      );
+      final near = Rect.fromCenter(center: at, width: 0.42, height: 0.42);
+      final onPath = _tiles.any((tile) => tile.outerRect.overlaps(near));
+      if (onPath || !_piece.contains(at)) continue;
+      drawDecor(canvas, at, theme.decor, theme.ground, random);
     }
+    for (final tile in _tiles) {
+      canvas
+        ..drawRRect(tile, _floorEdge)
+        ..drawRRect(tile, _tileOutline)
+        ..drawRRect(tile.deflate(0.05), _floor)
+        ..drawRRect(tile.deflate(0.05), _tileOutline);
+    }
+  }
+
+  /// Where an obstacle's picture reaches, around its tile's centre.
+  static const _obstacleBounds = Rect.fromLTWH(-0.6, -0.6, 1.2, 1.2);
+
+  /// Each obstacle, drawn once in Koba's look, and placed a little
+  /// differently in its tile (shifted, sized, mirrored) so the planet's
+  /// ground never looks stamped out.
+  late final List<({Offset at, Image image, double size, bool mirror})>
+  _obstacles = [
+    for (var y = 0; y < level.height; y++)
+      for (var x = 0; x < level.width; x++)
+        if (level.tiles[y][x] != Tile.floor)
+          () {
+            final random = Random(y * 997 + x + 5);
+            // A maze's hedges are its walls: they stay lined up.
+            final varied = theme.obstacle != Obstacle.hedge;
+            return (
+              at: Offset(
+                x + 0.5 + (varied ? (random.nextDouble() - 0.5) * 0.14 : 0),
+                y + 0.5 + (varied ? (random.nextDouble() - 0.5) * 0.1 : 0),
+              ),
+              image: inkedPiece(
+                (canvas) => drawObstacle(
+                  canvas,
+                  const Rect.fromLTWH(-0.5, -0.5, 1, 1),
+                  theme.obstacle,
+                  y * 997 + x,
+                ),
+                bounds: _obstacleBounds,
+              ),
+              size: varied ? 0.68 + random.nextDouble() * 0.3 : 1.0,
+              mirror: varied && random.nextBool(),
+            );
+          }(),
+  ];
+
+  @override
+  void render(Canvas canvas) {
+    // Down the screen, in the board's own (turned) frame: where the sides
+    // of the ground and the tiles show.
+    final down = Offset(-sin(upright), cos(upright));
+    canvas.drawPicture(_sky);
+    for (var i = 1; i <= 8; i++) {
+      canvas.drawPath(_piece.shift(down * (_depth * i / 8)), _groundSide);
+    }
+    canvas.drawPath(_piece.shift(down * _depth), _edge);
+    for (final tile in _tiles) {
+      canvas.drawRRect(tile.shift(down * _tileDepth), _tileSide);
+    }
+    canvas.drawPicture(_surface);
+    // Nearer the bottom of the screen draws later, in front.
+    double depth(Offset at) => sin(upright) * -at.dx + cos(upright) * at.dy;
+    final order = [..._obstacles]
+      ..sort((a, b) => depth(a.at).compareTo(depth(b.at)));
+    for (final obstacle in order) {
+      canvas
+        ..save()
+        ..translate(obstacle.at.dx, obstacle.at.dy)
+        ..rotate(upright);
+      standUp(canvas, const Offset(0, 0.28));
+      canvas.scale(
+        obstacle.mirror ? -obstacle.size : obstacle.size,
+        obstacle.size,
+      );
+      drawInked(canvas, obstacle.image, _obstacleBounds);
+      canvas.restore();
+    }
+  }
+
+  @override
+  void onRemove() {
+    _sky.dispose();
+    _surface.dispose();
+    for (final obstacle in _obstacles) {
+      obstacle.image.dispose();
+    }
+    super.onRemove();
   }
 }
 
@@ -162,7 +276,11 @@ class GoalComponent extends PositionComponent {
   );
 
   @override
-  void render(Canvas canvas) => drawInked(canvas, _image, _bounds);
+  void render(Canvas canvas) {
+    // Standing on its tile, near the bottom of its square.
+    standUp(canvas, const Offset(0.5, 0.82));
+    drawInked(canvas, _image, _bounds);
+  }
 
   @override
   void onRemove() {
@@ -208,9 +326,12 @@ class StarComponent extends PositionComponent {
   );
 
   @override
-  void render(Canvas canvas) => canvas
-    ..drawPath(_shape, _fill)
-    ..drawPath(_shape, _outline);
+  void render(Canvas canvas) {
+    standUp(canvas, const Offset(0.5, 0.5));
+    canvas
+      ..drawPath(_shape, _fill)
+      ..drawPath(_shape, _outline);
+  }
 }
 
 /// The character. The component turns to its facing direction (and the
@@ -331,7 +452,10 @@ class ActorComponent extends PositionComponent {
       ..drawOval(const Rect.fromLTWH(-0.32, 0.2, 0.64, 0.17), _shadow)
       ..rotate(angle)
       ..drawPath(_beamShape, _beam)
-      ..rotate(-angle)
+      ..rotate(-angle);
+    // Standing up on the tilted board, its wheels on the ground.
+    standUp(canvas, const Offset(0, 0.28));
+    canvas
       ..translate(0, bounce)
       // Mirrored to face left. It doesn't lean: the marks under its wheels
       // stay flat and its width true in every facing.

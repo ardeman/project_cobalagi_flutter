@@ -2,6 +2,8 @@ import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart' show IconData;
 
+import 'world_components.dart' show standUp;
+
 /// One step of a hint, drawn on the map like the block that makes it: its
 /// colour and picture. Holds no game logic; the play view decides what each
 /// step is.
@@ -119,6 +121,8 @@ class HintMarkComponent extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    // A sign standing on its tile, like the pieces around it.
+    standUp(canvas, const Offset(_size / 2, _size / 2));
     if (mark.faded) {
       canvas.saveLayer(null, Paint()..color = const Color(0x5CFFFFFF));
     }

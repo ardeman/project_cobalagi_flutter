@@ -14,19 +14,26 @@ enum Obstacle {
   hedge,
 }
 
+/// What lies about on a planet's ground between its obstacles, so the ground
+/// off the path never looks like the same tile over and over.
+enum Decor { craters, tufts, ripples, sparkles, drifts, pebbles, panels }
+
 /// The planet's finish. Every one carries the red flag the voice talks
 /// about ("reach the flag"), so the goal reads the same on every planet.
 enum Finish { flag, dome, chest, castle, igloo, tent, toolbox, rocket, ufo }
 
-/// How a planet's world looks: its sky, ground, obstacles and finish. Every
-/// planet floats in space, so the sky is dark and starry; the ground tiles
-/// stay light so the path reads clearly. Purely visual; the level decides
-/// where things are.
+/// How a planet's world looks: its sky, ground, obstacles and finish. The
+/// board is a piece of the planet's surface floating in a dark, starry sky;
+/// the path's tiles stay light on it so the path reads clearly. Purely
+/// visual; the level decides where things are.
 final class WorldTheme {
   const WorldTheme({
     required this.background,
     required this.floor,
     required this.floorEdge,
+    required this.ground,
+    required this.groundSide,
+    required this.decor,
     required this.obstacle,
     required this.finish,
   });
@@ -35,6 +42,12 @@ final class WorldTheme {
   final Color background;
   final Color floor;
   final Color floorEdge;
+
+  /// The planet's surface the path runs across, and its side where the
+  /// board is cut out of the planet (seen at the front, as the board tilts).
+  final Color ground;
+  final Color groundSide;
+  final Decor decor;
   final Obstacle obstacle;
   final Finish finish;
 
@@ -44,6 +57,9 @@ final class WorldTheme {
     background: Color(0xFF1B2150),
     floor: Color(0xFFE8EAF2),
     floorEdge: Color(0xFFB9BED3),
+    ground: Color(0xFF6E7396),
+    groundSide: Color(0xFF4B4F70),
+    decor: Decor.craters,
     obstacle: Obstacle.moonRock,
     finish: Finish.flag,
   );
@@ -52,6 +68,9 @@ final class WorldTheme {
     background: Color(0xFF14303F),
     floor: Color(0xFFE3F4D2),
     floorEdge: Color(0xFFA9D48D),
+    ground: Color(0xFF4E8F5A),
+    groundSide: Color(0xFF336A40),
+    decor: Decor.tufts,
     obstacle: Obstacle.alienPlant,
     finish: Finish.dome,
   );
@@ -60,6 +79,9 @@ final class WorldTheme {
     background: Color(0xFF102E52),
     floor: Color(0xFFD8F1FA),
     floorEdge: Color(0xFF8ACFE6),
+    ground: Color(0xFF3E8FB0),
+    groundSide: Color(0xFF2A6886),
+    decor: Decor.ripples,
     obstacle: Obstacle.rock,
     finish: Finish.chest,
   );
@@ -68,6 +90,9 @@ final class WorldTheme {
     background: Color(0xFF2A1E55),
     floor: Color(0xFFF8EAFB),
     floorEdge: Color(0xFFD5B3E6),
+    ground: Color(0xFF7A5BB0),
+    groundSide: Color(0xFF573F86),
+    decor: Decor.sparkles,
     obstacle: Obstacle.crystal,
     finish: Finish.castle,
   );
@@ -76,6 +101,9 @@ final class WorldTheme {
     background: Color(0xFF17304F),
     floor: Color(0xFFF1F8FF),
     floorEdge: Color(0xFFAFD0EA),
+    ground: Color(0xFF93BCDF),
+    groundSide: Color(0xFF6890B6),
+    decor: Decor.drifts,
     obstacle: Obstacle.iceSpike,
     finish: Finish.igloo,
   );
@@ -84,6 +112,9 @@ final class WorldTheme {
     background: Color(0xFF35183A),
     floor: Color(0xFFFFE1CC),
     floorEdge: Color(0xFFE6A47F),
+    ground: Color(0xFFC8643C),
+    groundSide: Color(0xFF94452A),
+    decor: Decor.pebbles,
     obstacle: Obstacle.cactus,
     finish: Finish.tent,
   );
@@ -92,6 +123,9 @@ final class WorldTheme {
     background: Color(0xFF1E2438),
     floor: Color(0xFFEEF1F8),
     floorEdge: Color(0xFFAAB3CC),
+    ground: Color(0xFF5B6478),
+    groundSide: Color(0xFF3E4556),
+    decor: Decor.panels,
     obstacle: Obstacle.crate,
     finish: Finish.toolbox,
   );
@@ -100,6 +134,9 @@ final class WorldTheme {
     background: Color(0xFF233056),
     floor: Color(0xFFFFF4D6),
     floorEdge: Color(0xFFB9C2E8),
+    ground: Color(0xFF5E5878),
+    groundSide: Color(0xFF413C58),
+    decor: Decor.craters,
     obstacle: Obstacle.asteroid,
     finish: Finish.rocket,
   );
@@ -109,6 +146,9 @@ final class WorldTheme {
     background: Color(0xFF221C45),
     floor: Color(0xFFF2ECDB),
     floorEdge: Color(0xFFCDBB92),
+    ground: Color(0xFF4B7A55),
+    groundSide: Color(0xFF32583C),
+    decor: Decor.tufts,
     obstacle: Obstacle.hedge,
     finish: Finish.ufo,
   );
@@ -673,5 +713,125 @@ void drawFinish(Canvas canvas, Finish finish) {
           _fill(0xFFE65100),
         );
       _flag(canvas, const Offset(0.5, 0.32), 0.24, scale: 0.7);
+  }
+}
+
+/// One of [decor]'s small things lying on the ground at [at], in shades of
+/// the planet's [ground], varied by [random]. Flat on the ground (the board's
+/// tilt flattens them with it), with thin navy lines like Koba's.
+void drawDecor(
+  Canvas canvas,
+  Offset at,
+  Decor decor,
+  Color ground,
+  Random random,
+) {
+  final dark = Paint()
+    ..color = Color.lerp(ground, const Color(0xFF000000), 0.22)!;
+  final light = Paint()
+    ..color = Color.lerp(ground, const Color(0xFFFFFFFF), 0.22)!;
+  final s = 0.7 + random.nextDouble() * 0.6;
+  switch (decor) {
+    case Decor.craters:
+      final r = 0.09 * s + random.nextDouble() * 0.06;
+      canvas
+        ..drawCircle(at + Offset(0, r * 0.2), r * 1.15, light)
+        ..drawCircle(at, r, dark)
+        ..drawCircle(at, r, _detail);
+    case Decor.pebbles:
+      for (var i = 0; i < 2 + random.nextInt(3); i++) {
+        final p =
+            at +
+            Offset(
+              random.nextDouble() * 0.2 - 0.1,
+              random.nextDouble() * 0.16 - 0.08,
+            );
+        final r = 0.025 + random.nextDouble() * 0.025;
+        canvas
+          ..drawCircle(p, r, dark)
+          ..drawCircle(p, r, _detail);
+      }
+    case Decor.tufts:
+      final blade = Paint()
+        ..color = Color.lerp(ground, const Color(0xFFFFFFFF), 0.3)!
+        ..strokeWidth = 0.025
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke;
+      for (final dx in [-0.05, 0.0, 0.05]) {
+        canvas.drawPath(
+          Path()
+            ..moveTo(at.dx + dx * 0.5, at.dy)
+            ..quadraticBezierTo(
+              at.dx + dx,
+              at.dy - 0.06 * s,
+              at.dx + dx * 2,
+              at.dy - 0.1 * s,
+            ),
+          blade,
+        );
+      }
+      if (random.nextInt(3) == 0) {
+        canvas
+          ..drawCircle(
+            at + Offset(0.1, -0.02) * s,
+            0.03,
+            Paint()..color = const Color(0xFFFFD54F),
+          )
+          ..drawCircle(at + Offset(0.1, -0.02) * s, 0.03, _detail);
+      }
+    case Decor.ripples:
+      final ring = Paint()
+        ..color = Color.lerp(ground, const Color(0xFFFFFFFF), 0.35)!
+        ..strokeWidth = 0.018
+        ..strokeCap = StrokeCap.round
+        ..style = PaintingStyle.stroke;
+      for (final r in [0.06, 0.11]) {
+        canvas.drawArc(
+          Rect.fromCenter(center: at, width: r * 2 * s, height: r * 1.2 * s),
+          pi * 1.1,
+          pi * 0.8,
+          false,
+          ring,
+        );
+      }
+    case Decor.sparkles:
+      final shine = Paint()
+        ..color = Color.lerp(ground, const Color(0xFFFFFFFF), 0.55)!;
+      final r = 0.05 * s;
+      canvas.drawPath(
+        Path()
+          ..moveTo(at.dx, at.dy - r)
+          ..lineTo(at.dx + r * 0.25, at.dy - r * 0.25)
+          ..lineTo(at.dx + r, at.dy)
+          ..lineTo(at.dx + r * 0.25, at.dy + r * 0.25)
+          ..lineTo(at.dx, at.dy + r)
+          ..lineTo(at.dx - r * 0.25, at.dy + r * 0.25)
+          ..lineTo(at.dx - r, at.dy)
+          ..lineTo(at.dx - r * 0.25, at.dy - r * 0.25)
+          ..close(),
+        shine,
+      );
+    case Decor.drifts:
+      final rect = Rect.fromCenter(
+        center: at,
+        width: 0.28 * s,
+        height: 0.12 * s,
+      );
+      canvas
+        ..drawOval(rect.shift(const Offset(0, 0.02)), dark)
+        ..drawOval(rect, light)
+        ..drawOval(rect, _detail);
+    case Decor.panels:
+      // Bolts in a little square, where floor panels meet.
+      for (final d in [
+        const Offset(-0.06, -0.06),
+        const Offset(0.06, -0.06),
+        const Offset(-0.06, 0.06),
+        const Offset(0.06, 0.06),
+      ]) {
+        canvas
+          ..drawCircle(at + d, 0.018, light)
+          ..drawCircle(at + d, 0.018, _detail);
+      }
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'dart:math';
 
+import 'package:flame/camera.dart' show MaxViewport;
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/game.dart';
@@ -26,7 +27,7 @@ class WorldGame extends FlameGame {
     required this.level,
     required this.onEventShown,
     this.onSound = _silent,
-  });
+  }) : super(camera: CameraComponent(viewport: TiltedViewport()));
 
   final Level level;
   final VoidCallback onEventShown;
@@ -115,8 +116,12 @@ class WorldGame extends FlameGame {
     _dirty = false;
   }
 
-  /// The board with a little space around it.
-  Vector2 get _boardView => Vector2(level.width + 0.4, level.height + 0.4);
+  /// The board with the planet's ground around it.
+  Vector2 get _boardView => Vector2(level.width + 0.9, level.height + 0.9);
+
+  /// Room on the screen, in tiles, beyond the tilted ground: its side at the
+  /// bottom and the robot standing up at the top.
+  static const _standingRoom = 0.6;
 
   @override
   void update(double dt) {
@@ -140,7 +145,7 @@ class WorldGame extends FlameGame {
     final board = _boardView;
     viewfinder.visibleGameSize = Vector2(
       board.x * c + board.y * s,
-      board.x * s + board.y * c,
+      (board.x * s + board.y * c) * tilt + _standingRoom,
     );
     final upright = viewfinder.angle;
     _actor.viewAngle = upright;
@@ -360,5 +365,20 @@ bool get _canLoadAssets {
     return true;
   } on Object catch (_) {
     return false;
+  }
+}
+
+/// The game's viewport, tilting the board away from the child: everything is
+/// drawn [tilt] as tall around the middle of the screen, after the map's
+/// turn, so the board always tilts away whichever way it is turned. Upright
+/// things stand back up where they are (`standUp`).
+class TiltedViewport extends MaxViewport {
+  @override
+  void transformCanvas(Canvas canvas) {
+    super.transformCanvas(canvas);
+    canvas
+      ..translate(0, size.y / 2)
+      ..scale(1, tilt)
+      ..translate(0, -size.y / 2);
   }
 }

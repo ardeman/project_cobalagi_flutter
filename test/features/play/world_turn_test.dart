@@ -54,11 +54,13 @@ void main() {
           cos(world.whereType<BoardComponent>().single.upright - angle),
           closeTo(1, 1e-3),
         );
-        // A 3 x 2 board shows 2 wide and 3 tall when turned sideways.
+        // A 3 x 2 board shows 2 wide and 3 tall when turned sideways, with
+        // the planet's ground around it, tilted, and room for its side and
+        // the robot standing up.
         final size = game.camera.viewfinder.visibleGameSize!;
         final sideways = turns.isOdd;
-        expect(size.x, closeTo((sideways ? 2 : 3) + 0.4, 1e-2));
-        expect(size.y, closeTo((sideways ? 3 : 2) + 0.4, 1e-2));
+        expect(size.x, closeTo((sideways ? 2 : 3) + 0.9, 1e-2));
+        expect(size.y, closeTo(((sideways ? 3 : 2) + 0.9) * tilt + 0.6, 1e-2));
       }
       // A fourth turn brings it back, the short way round.
       game.quarterTurns = 0;
