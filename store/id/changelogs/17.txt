@@ -1,2 +1,4 @@
 - Koba tampil lebih rapi: saat menghadap anak atau berjalan menjauh, Koba kini berdiri tegak, dan badannya terlihat sama dari setiap sisi.
 - Layar pembuka menampilkan Koba yang menggelinding dengan tampilan barunya.
+- Koba kini menggelinding dengan rodanya saat bergerak, tidak lagi melompat.
+- Jalan, batu, dan tujuan di setiap planet kini digambar dengan gaya yang sama seperti Koba.

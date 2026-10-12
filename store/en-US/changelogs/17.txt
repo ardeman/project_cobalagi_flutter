@@ -1,2 +1,4 @@
 - Koba has a fresh look: facing your child or driving away, Koba now stands straight, and its body looks the same from every side.
 - The opening screen shows Koba rolling in with its new look.
+- Koba now rolls on its wheels when it moves, instead of hopping.
+- The paths, rocks and finishes on every planet are drawn in the same style as Koba.
