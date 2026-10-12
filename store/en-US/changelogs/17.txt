@@ -1,4 +1,4 @@
 - Koba has a fresh look: it stands straight from every side and rolls on its wheels instead of hopping.
 - Every puzzle now takes place on the planet's own surface, at a slight tilt, with varied rocks, plants and craters around the path.
-- The light bulb shows a little more with each tap: the way, the blocks that repeat, then the block to change. A sign on it shows what's next.
+- The light bulb shows a little more with each tap: the way, the blocks that repeat, then the blocks to change. A sign on it shows what's next.
 - New sounds for Koba's wheels, turns, bumps, stars and the finish.
