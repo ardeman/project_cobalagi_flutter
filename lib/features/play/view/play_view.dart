@@ -17,7 +17,6 @@ import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../engine/generator/off_track.dart';
 import '../../../engine/generator/solver.dart';
-import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
 import '../../../engine/program/instruction.dart';
 import '../../../engine/program/program.dart';
@@ -220,7 +219,8 @@ class _PlayViewState extends State<PlayView> {
 
   /// The block that walked into a rock on the last run, marked until the
   /// child changes the program or runs again.
-  String? _bumped;
+  /// Blocks wearing the orange "look here" ring (see [BlockEditor.lookHere]).
+  Set<String> _lookHere = const {};
 
   /// The hint the bulb showed last (see [_showHint]); -1 before the first.
   var _hintStep = -1;
@@ -327,13 +327,13 @@ class _PlayViewState extends State<PlayView> {
     final offTrack = _offTrack(_level, program);
     // One hint per press, building up, then round again: the route as the
     // level's own blocks, in their colours; on islands with a loop block,
-    // the shape that repeats and the loop block that does it; then the
-    // child's own first block that takes Koba no closer to the finish,
-    // wearing the bump's "look here" ring (in code, its line is marked). A
-    // program that is right so far has no block to ring.
+    // the shape that repeats and the loop block that does it; then every
+    // one of the child's own blocks that takes Koba no closer to the finish,
+    // wearing the bump's "look here" ring (in code, the first one's line is
+    // marked). A program that is right so far has no block to ring.
     final steps = _hintSteps(
       hasPattern: pattern != null,
-      hasRing: offTrack != null,
+      hasRing: offTrack.isNotEmpty,
     );
     _hintStep = (_hintStep + 1) % steps.length;
     final step = steps[_hintStep];
@@ -347,7 +347,7 @@ class _PlayViewState extends State<PlayView> {
       case _Hint.pattern:
         _game.showHint(pattern!, trail: trail);
       case _Hint.ring:
-        setState(() => _bumped = offTrack);
+        setState(() => _lookHere = offTrack.toSet());
     }
     // After the route, Koba says the bulb has more to show, if the pattern
     // comes next (the bulb's badge shows it too). Pre-readers hear what the
@@ -361,16 +361,20 @@ class _PlayViewState extends State<PlayView> {
       case _Hint.pattern:
         _say(VoiceClips.hintPattern);
       case _Hint.ring:
-        _say(VoiceClips.hintLookHere);
+        _say(
+          offTrack.length > 1
+              ? VoiceClips.hintLookHereMany
+              : VoiceClips.hintLookHere,
+        );
     }
   }
 
   void _onPlayChanged(BuildContext context, PlayState state) {
     _game.apply(state);
-    if (state.phase == PlayPhase.running && _bumped != null) {
-      setState(() => _bumped = null);
+    if (state.phase == PlayPhase.running && _lookHere.isNotEmpty) {
+      setState(() => _lookHere = const {});
     }
-    if (state.bumpedBlockId case final id?) setState(() => _bumped = id);
+    if (state.bumpedBlockId case final id?) setState(() => _lookHere = {id});
     final mood = switch (state.phase) {
       PlayPhase.succeeded => CheerMood.celebrate,
       PlayPhase.failed => CheerMood.encourage,
@@ -419,7 +423,7 @@ class _PlayViewState extends State<PlayView> {
           ),
           BlocListener<TypedCodeCubit, TypedCodeState>(
             listener: (_, _) {
-              if (_bumped != null) setState(() => _bumped = null);
+              if (_lookHere.isNotEmpty) setState(() => _lookHere = const {});
               if (_play.state.phase != PlayPhase.editing) _play.reset();
             },
           ),
@@ -438,10 +442,10 @@ class _PlayViewState extends State<PlayView> {
           // fix keeps it.
           BlocListener<BlocksCubit, BlockProgram>(
             listenWhen: (before, after) =>
-                _bumped != null &&
+                _lookHere.isNotEmpty &&
                 (!identical(before.main, after.main) ||
                     !identical(before.star, after.star)),
-            listener: (_, _) => setState(() => _bumped = null),
+            listener: (_, _) => setState(() => _lookHere = const {}),
           ),
           BlocListener<BlocksCubit, Object>(
             listener: (_, _) {
@@ -611,14 +615,15 @@ class _PlayViewState extends State<PlayView> {
                                 enabled: enabled,
                                 // Code marks the bumped command like the
                                 // running one.
-                                activeBlockId: play.activeBlockId ?? _bumped,
+                                activeBlockId:
+                                    play.activeBlockId ?? _lookHere.firstOrNull,
                                 fitContent: fit,
                               )
                             : BlockEditor(
                                 palette: _level.palette,
                                 blockSize: tight ? 56.0 : 72.0,
                                 activeBlockId: play.activeBlockId,
-                                bumpedBlockId: _bumped,
+                                lookHere: _lookHere,
                                 paletteKey: _touring ? _tour.palette : null,
                                 programKey: _touring ? _tour.program : null,
                                 blockKeys: _touring ? _tour.blocks : const {},
@@ -1224,7 +1229,7 @@ class _RunControls extends StatelessWidget {
     final available = onHint != null && !running && play.tries >= hintAfterRuns;
     final steps = _hintSteps(
       hasPattern: hasPattern,
-      hasRing: available && _offTrack(play.level, program) != null,
+      hasRing: available && _offTrack(play.level, program).isNotEmpty,
     );
     final next = steps[(hintStep + 1) % steps.length];
 
@@ -1576,10 +1581,11 @@ List<_Hint> _hintSteps({required bool hasPattern, required bool hasRing}) => [
   if (hasRing) _Hint.ring,
 ];
 
-/// The child's first block that takes Koba no closer to the finish, if any.
-String? _offTrack(Level level, Program? program) => program == null
-    ? null
-    : firstOffTrackBlock(level, runProgram(program, level));
+/// The child's blocks to change: compared with the closest right answer of
+/// the same shape when built around a loop, otherwise judged step by step.
+List<String> _offTrack(Level level, Program? program) => program == null
+    ? const []
+    : loopShapeMistakes(level, program) ?? offTrackBlocks(level, program);
 
 /// What the hint bulb shows, one per press, in this order.
 enum _Hint {

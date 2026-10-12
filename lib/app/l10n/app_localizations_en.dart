@@ -274,7 +274,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hintNextPattern => 'Show me the blocks that repeat';
 
   @override
-  String get hintNextRing => 'Show me which block to change';
+  String get hintNextRing => 'Show me which blocks to change';
 
   @override
   String get repeatMore => 'One more time';
@@ -696,6 +696,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hintLookHere =>
       'Look at the block with the orange ring. Try changing it!';
+
+  @override
+  String get hintLookHereMany =>
+      'Look at the blocks with orange rings. Try changing them!';
 
   @override
   String get turnMap => 'Turn the map';

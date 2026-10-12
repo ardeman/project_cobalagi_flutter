@@ -22,7 +22,7 @@ class BlockEditor extends StatefulWidget {
     required this.palette,
     required this.blockSize,
     this.activeBlockId,
-    this.bumpedBlockId,
+    this.lookHere = const {},
     this.issueBlockIds = const {},
     this.enabled = true,
     this.showHowTo = false,
@@ -60,8 +60,9 @@ class BlockEditor extends StatefulWidget {
   final double blockSize;
   final String? activeBlockId;
 
-  /// The block that walked into a rock on the last run, until it is fixed.
-  final String? bumpedBlockId;
+  /// Blocks wearing the orange "look here" ring: the one that walked into
+  /// a rock on the last run, or the ones the hint says to change.
+  final Set<String> lookHere;
   final Set<String> issueBlockIds;
   final bool enabled;
 
@@ -91,7 +92,7 @@ class _BlockEditorState extends State<BlockEditor> {
       gap: gap,
       enabled: widget.enabled,
       activeBlockId: widget.activeBlockId,
-      bumpedBlockId: widget.bumpedBlockId,
+      lookHere: widget.lookHere,
       issueBlockIds: widget.issueBlockIds,
       stepValues: _stepValues(blocks),
       // Placed blocks sit in rows that scroll, on tablets too.
@@ -323,7 +324,7 @@ final class _BlockStyle {
     required this.gap,
     required this.enabled,
     required this.activeBlockId,
-    this.bumpedBlockId,
+    this.lookHere = const {},
     required this.issueBlockIds,
     this.holdToDrag = false,
     this.stepValues = const {},
@@ -333,7 +334,7 @@ final class _BlockStyle {
   final double gap;
   final bool enabled;
   final String? activeBlockId;
-  final String? bumpedBlockId;
+  final Set<String> lookHere;
   final Set<String> issueBlockIds;
 
   /// See [_dragSource].
@@ -570,7 +571,7 @@ class _PlacedBlock extends StatelessWidget {
             size: size,
             highlighted: block.id == style.activeBlockId,
             hasIssue: style.issueBlockIds.contains(block.id),
-            bumped: block.id == style.bumpedBlockId,
+            bumped: style.lookHere.contains(block.id),
             stepValue: style.stepValues[block.id],
           );
     if (!style.enabled) return plain;

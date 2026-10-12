@@ -500,7 +500,7 @@ void main() {
     expect(marked(turn), isFalse, reason: 'no bump, so no mark yet');
     expect(
       tester.widget<IconButton>(bulb).tooltip,
-      'Show me which block to change',
+      'Show me which blocks to change',
     );
     await tester.tap(bulb);
     await tester.pump(const Duration(milliseconds: 300));

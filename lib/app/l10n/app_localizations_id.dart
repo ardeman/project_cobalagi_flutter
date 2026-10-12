@@ -686,6 +686,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Lihat blok yang dilingkari oranye. Coba ganti blok itu!';
 
   @override
+  String get hintLookHereMany =>
+      'Lihat blok-blok yang dilingkari oranye. Coba ganti blok-blok itu!';
+
+  @override
   String get turnMap => 'Putar peta';
 
   @override

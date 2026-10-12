@@ -13,17 +13,34 @@ const defaultStepLimit = 1000;
 /// itself ends instead of hanging. Validation already reports such programs.
 const maxCallDepth = 8;
 
+/// Asked before each move and turn when given to [runProgram], about the
+/// step from [at] facing [facing] (with the stars in [collected]) to [next]
+/// facing [nextFacing]: returns the facing to end up with, or null to skip
+/// the step (nothing moves, no event, and the run goes on). For a move, any
+/// facing lets it happen; a move into a rock is always skipped, never a
+/// bump. For a turn, it may give another facing to turn to instead.
+typedef StepCheck =
+    Direction? Function(
+      GridPoint at,
+      Direction facing,
+      Set<GridPoint> collected,
+      GridPoint next,
+      Direction nextFacing,
+      String? blockId,
+    );
+
 /// Runs [program] on [level] and returns every event plus the outcome.
 ///
 /// Deterministic: the same program and level always give the same result. The
 /// run stops as soon as the goal is reached with all stars, on a bump, or at
-/// [stepLimit].
+/// [stepLimit]. With [check], steps it refuses are skipped (see [StepCheck]).
 RunResult runProgram(
   Program program,
   Level level, {
   int stepLimit = defaultStepLimit,
+  StepCheck? check,
 }) {
-  final run = _Run(level, stepLimit, program.procedure);
+  final run = _Run(level, stepLimit, program.procedure, check);
   RunOutcome outcome;
   try {
     run.execute(program.body);
@@ -56,13 +73,14 @@ final class _Halt implements Exception {
 }
 
 final class _Run {
-  _Run(this.level, this.stepLimit, this.procedure)
+  _Run(this.level, this.stepLimit, this.procedure, this.check)
     : position = level.start,
       facing = level.startFacing;
 
   final Level level;
   final int stepLimit;
   final List<Instruction> procedure;
+  final StepCheck? check;
   var _depth = 0;
   final events = <RunEvent>[];
   final collected = <GridPoint>{};
@@ -136,6 +154,18 @@ final class _Run {
   void _step(Instruction source) {
     _tick();
     final next = position.step(facing);
+    if (check case final check?) {
+      final open = level.isOpen(next);
+      final allowed = check(
+        position,
+        facing,
+        collected,
+        open ? next : position,
+        facing,
+        source.blockId,
+      );
+      if (!open || allowed == null) return;
+    }
     if (!level.isOpen(next)) {
       events.add(Bumped(position, facing, source.blockId));
       throw const _Halt(RunOutcome.bumped);
@@ -150,6 +180,18 @@ final class _Run {
 
   void _turn(Direction to, Instruction source) {
     _tick();
+    if (check case final check?) {
+      final turned = check(
+        position,
+        facing,
+        collected,
+        position,
+        to,
+        source.blockId,
+      );
+      if (turned == null) return;
+      to = turned;
+    }
     events.add(Turned(facing, to, source.blockId));
     facing = to;
   }

@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @hintNextRing.
   ///
   /// In en, this message translates to:
-  /// **'Show me which block to change'**
+  /// **'Show me which blocks to change'**
   String get hintNextRing;
 
   /// No description provided for @repeatMore.
@@ -1321,6 +1321,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Look at the block with the orange ring. Try changing it!'**
   String get hintLookHere;
+
+  /// No description provided for @hintLookHereMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Look at the blocks with orange rings. Try changing them!'**
+  String get hintLookHereMany;
 
   /// No description provided for @turnMap.
   ///
