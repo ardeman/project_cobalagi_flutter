@@ -451,7 +451,8 @@ void main() {
           await shoot('${prefix}adventure-map');
         });
 
-        testWidgets('profiles', (tester) async {
+        // Only the tablet render is used (website, README).
+        testWidgets('profiles', skip: prefix.isNotEmpty, (tester) async {
           await device(tester);
           await _open(tester, '/');
           await shoot('${prefix}profiles');
@@ -472,14 +473,16 @@ void main() {
           await shoot('${prefix}play-functions');
         });
 
-        testWidgets('look ahead', (tester) async {
+        // Only the tablet render is used (website, README).
+        testWidgets('look ahead', skip: prefix.isNotEmpty, (tester) async {
           await device(tester);
           await _open(tester, '/child/1/replay/conditions-02');
           await _buildConditionAnswer(tester);
           await shoot('${prefix}play-conditions');
         });
 
-        testWidgets('step box', (tester) async {
+        // Only the tablet render is used (website, README).
+        testWidgets('step box', skip: prefix.isNotEmpty, (tester) async {
           await device(tester);
           await _open(tester, '/child/1/replay/variables-02');
           await _buildStepBoxAnswer(tester);
@@ -499,19 +502,17 @@ void main() {
           await shoot('${prefix}play-code');
         });
 
-        for (final level in ['loops-03', 'variables-04']) {
-          testWidgets('hint $level', (tester) async {
+        // The tablet's Loops hint is the one shown (website, README).
+        {
+          const level = 'loops-03';
+          testWidgets('hint $level', skip: prefix.isNotEmpty, (tester) async {
             await device(tester);
             await _open(tester, '/child/1/replay/$level');
             // The bulb works after a few tries: one step, three times.
             final blocks = tester
                 .element(find.byType(BlockEditor))
                 .read<BlocksCubit>();
-            blocks.add(
-              level.startsWith('variables')
-                  ? BlockType.moveSteps
-                  : BlockType.forward,
-            );
+            blocks.add(BlockType.forward);
             await _settle(tester);
             for (var i = 0; i < 3; i++) {
               await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
@@ -579,7 +580,8 @@ void main() {
           await shoot('${prefix}play-until');
         });
 
-        testWidgets('otherwise', (tester) async {
+        // Only the tablet render is used (website, README).
+        testWidgets('otherwise', skip: prefix.isNotEmpty, (tester) async {
           await device(tester);
           await _open(tester, '/child/1/replay/otherwise-04');
           // Follow the walls: step if clear, otherwise turn.
@@ -597,18 +599,6 @@ void main() {
           );
           await _settle(tester);
           await shoot('${prefix}play-otherwise');
-        });
-
-        testWidgets('watch me', (tester) async {
-          await device(tester);
-          await _open(tester, '/child/1/tutorial/loops');
-          // Part-way: the hand is about to drop forward into the repeat.
-          for (var i = 0; i < 52; i++) {
-            await tester.pump(const Duration(milliseconds: 100));
-          }
-          await shoot('${prefix}tutorial-loops');
-          await tester.tap(find.text(language == 'id' ? 'Lewati' : 'Skip'));
-          await _settle(tester);
         });
 
         // Frames of "Watch me!" demos, 10 per second, for the promo videos
@@ -652,13 +642,15 @@ void main() {
           await shoot(prefix.isEmpty ? 'warm-up-pattern' : 'phone-warm-up');
         });
 
-        testWidgets('sticker book', (tester) async {
+        // Only the tablet render is used (website, README).
+        testWidgets('sticker book', skip: prefix.isNotEmpty, (tester) async {
           await device(tester);
           await _open(tester, '/child/1/stickers');
           await shoot('${prefix}sticker-book');
         });
 
-        testWidgets('warm-up island', (tester) async {
+        // Only the tablet render is used (website, README).
+        testWidgets('warm-up island', skip: prefix.isNotEmpty, (tester) async {
           await device(tester);
           await _open(tester, '/child/1/warm-up');
           await shoot('${prefix}warm-up-island');
