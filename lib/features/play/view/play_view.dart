@@ -221,6 +221,9 @@ class _PlayViewState extends State<PlayView> {
   /// child changes the program or runs again.
   String? _bumped;
 
+  /// The hint the bulb showed last (see [_showHint]); -1 before the first.
+  var _hintStep = -1;
+
   /// The route hint is showing, and asking again shows the pattern.
   var _patternNext = false;
   var _finishing = false;
@@ -314,35 +317,50 @@ class _PlayViewState extends State<PlayView> {
     if (solution == null) return;
     setState(() => _hints++);
     final font = Theme.of(context).textTheme.titleLarge?.fontFamily;
-    // The child's own first block that takes Koba no closer to the finish
-    // wears the "look here" ring (in code, its line is marked), so they see
-    // which one to change; none when their blocks are right so far.
+    final pattern = patternHintMarks(_level, solution, labelFont: font);
     final program = _codeMode ? _typed.state.program : _blocks.program;
     final offTrack = program == null
         ? null
         : firstOffTrackBlock(_level, runProgram(program, _level));
-    if (offTrack != null) setState(() => _bumped = offTrack);
-    // First the route as the level's own blocks, in their colours. Asked
-    // again on islands with a loop block: the shape that repeats, and the
-    // loop block that does it. Then the two take turns.
-    final pattern = _hints.isEven
-        ? patternHintMarks(_level, solution, labelFont: font)
-        : null;
-    _game.showHint(
-      pattern ?? hintMarks(_level, solution, labelFont: font),
-      trail: hintTrail(_level, solution),
-    );
-    // Pre-readers hear what the pattern means. After the route, they hear
-    // that the bulb has more to show, if it does.
-    final patternNext =
-        pattern == null &&
-        patternHintMarks(_level, solution, labelFont: font) != null;
-    setState(() => _patternNext = patternNext);
-    if (offTrack != null) {
-      _say(VoiceClips.hintLookHere);
-    } else {
-      if (pattern != null) _say(VoiceClips.hintPattern);
-      if (patternNext) _say(VoiceClips.hintAgain);
+    // One hint per press, building up, then round again: the route as the
+    // level's own blocks, in their colours; on islands with a loop block,
+    // the shape that repeats and the loop block that does it; then the
+    // child's own first block that takes Koba no closer to the finish,
+    // wearing the bump's "look here" ring (in code, its line is marked). A
+    // program that is right so far has no block to ring.
+    final steps = [
+      _Hint.route,
+      if (pattern != null) _Hint.pattern,
+      if (offTrack != null) _Hint.ring,
+    ];
+    _hintStep = (_hintStep + 1) % steps.length;
+    final step = steps[_hintStep];
+    final trail = hintTrail(_level, solution);
+    switch (step) {
+      case _Hint.route:
+        _game.showHint(
+          hintMarks(_level, solution, labelFont: font),
+          trail: trail,
+        );
+      case _Hint.pattern:
+        _game.showHint(pattern!, trail: trail);
+      case _Hint.ring:
+        setState(() => _bumped = offTrack);
+    }
+    // After the route, the bulb wears a loop badge and Koba says it has
+    // more to show, if the pattern comes next. Pre-readers hear what the
+    // pattern and the ring mean.
+    final next = steps[(_hintStep + 1) % steps.length];
+    setState(() => _patternNext = step == _Hint.route && next == _Hint.pattern);
+    switch (step) {
+      case _Hint.route when next == _Hint.pattern:
+        _say(VoiceClips.hintAgain);
+      case _Hint.route:
+        break;
+      case _Hint.pattern:
+        _say(VoiceClips.hintPattern);
+      case _Hint.ring:
+        _say(VoiceClips.hintLookHere);
     }
   }
 
@@ -1527,4 +1545,16 @@ class _Ripple extends CustomPainter {
   @override
   bool shouldRepaint(_Ripple old) =>
       old.active != active || old.still != still || old.travel != travel;
+}
+
+/// What the hint bulb shows, one per press, in this order.
+enum _Hint {
+  /// The route, as the level's own blocks on the map.
+  route,
+
+  /// The shape that repeats, and the loop block that does it.
+  pattern,
+
+  /// The child's own block to change, ringed.
+  ring,
 }

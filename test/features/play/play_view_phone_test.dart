@@ -495,7 +495,8 @@ void main() {
   testWidgets('after a bump, the hint moves the one ring to the real mistake', (
     tester,
   ) async {
-    await _pumpPhone(tester, size: const Size(1280, 800));
+    final voices = _Voices();
+    await _pumpPhone(tester, size: const Size(1280, 800), audio: voices);
     final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
     // Turn left on a one-row road (the mistake), then step: a bump.
     cubit
@@ -516,11 +517,25 @@ void main() {
     expect(ringed(), [ValueKey(step)]);
     await tester.tap(find.text('Try again!'));
     await tester.pump(const Duration(milliseconds: 300));
-    await tester.tap(find.widgetWithIcon(IconButton, Icons.lightbulb_rounded));
-    await tester.pump(const Duration(milliseconds: 300));
-    // The hint moves the same ring to the turn that went off the road:
-    // still one ring, never two.
+    final bulb = find.widgetWithIcon(IconButton, Icons.lightbulb_rounded);
+    Future<void> hint() async {
+      await tester.tap(bulb);
+      await tester.pump(const Duration(milliseconds: 300));
+    }
+
+    // First the route on the map; the bump's ring stays where it is.
+    await hint();
+    expect(ringed(), [ValueKey(step)]);
+    expect(voices.clips, isNot(contains('hint_look_here')));
+    // Then the ring moves to the turn that went off the road: still one
+    // ring, never two.
+    await hint();
     expect(ringed(), [ValueKey(turn)]);
+    expect(voices.clips.last, 'hint_look_here');
+    // Then round again: the route, the ring staying on the turn.
+    await hint();
+    expect(ringed(), [ValueKey(turn)]);
+    expect(voices.clips.where((c) => c == 'hint_look_here'), hasLength(1));
     expect(tester.takeException(), isNull);
   });
 
