@@ -14,7 +14,7 @@ import 'world_theme.dart';
 
 export '../../../../core/character/robot_face.dart' show RobotFace;
 
-// Placeholder art until the Rive characters arrive. One world unit is one tile.
+// The world's pieces, drawn in code in Koba's look. One world unit is one tile.
 
 Vector2 tileCenter(GridPoint p) => Vector2(p.x + 0.5, p.y + 0.5);
 

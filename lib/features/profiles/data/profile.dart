@@ -18,10 +18,4 @@ class Profile {
   final String nickname;
   final int avatar;
   final DateTime createdAt;
-
-  Map<String, Object?> toMap() => {
-    'nickname': nickname,
-    'avatar': avatar,
-    'createdAt': createdAt.millisecondsSinceEpoch,
-  };
 }

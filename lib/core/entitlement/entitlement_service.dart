@@ -33,7 +33,7 @@ abstract interface class EntitlementService {
   Future<void> dispose();
 }
 
-/// A fixed plan, for platforms without store billing (such as web) and tests.
+/// A fixed plan, for tests and the screenshot tool.
 class StaticEntitlementService implements EntitlementService {
   const StaticEntitlementService(this.plan);
 
