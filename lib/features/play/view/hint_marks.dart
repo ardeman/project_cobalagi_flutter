@@ -142,7 +142,9 @@ RoutePattern? findPattern(List<InstructionKind> steps) {
 }
 
 /// The second hint on islands with a loop block: the route's repeating
-/// shape. Its first round is bright, later rounds fade, and the island's
+/// shape. Blocks inside the loop are ringed in the loop block's colour;
+/// its first round is bright, later rounds fade, blocks before and after
+/// it look as usual, and the island's
 /// loop block (repeat, Magic Block star or until the flag) sits above the
 /// first round with how many times it runs. Null when the level has no loop
 /// block or the route has no repeating shape.
@@ -166,6 +168,11 @@ List<HintMark>? patternHintMarks(
   final pattern = findPattern(steps);
   if (pattern == null) return null;
   final end = pattern.start + pattern.unit;
+  // Where the loop's rounds stop; blocks after it are the child's to place.
+  final loopEnd = (pattern.start + pattern.unit * pattern.times).clamp(
+    0,
+    route.length,
+  );
   final first = route[pattern.start].at;
   final marks = [
     for (var i = 0; i < route.length; i++)
@@ -176,8 +183,11 @@ List<HintMark>? patternHintMarks(
         badge: route[i].badge,
         label: route[i].label,
         labelFont: labelFont,
-        // Later rounds of the shape fade: the loop does them.
-        faded: i >= end,
+        // Blocks inside the loop are ringed in its colour; its later rounds
+        // fade, because the loop does them. Blocks before and after it stay
+        // as they are: the child places those.
+        loop: i >= pattern.start && i < loopEnd ? loop.color : null,
+        faded: i >= end && i < loopEnd,
       ),
   ];
   // Pops in right after the first round: these blocks, again and again.

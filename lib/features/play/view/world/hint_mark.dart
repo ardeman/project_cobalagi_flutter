@@ -15,6 +15,7 @@ final class HintMark {
     this.badge,
     this.faded = false,
     this.big = false,
+    this.loop,
   });
 
   /// Where the mark sits, in tiles (0.5 is a tile's centre).
@@ -38,6 +39,10 @@ final class HintMark {
   /// Drawn larger (1.6 times): the loop block that the pattern hint
   /// suggests.
   final bool big;
+
+  /// A block the pattern hint puts inside the loop: ringed in the loop
+  /// block's colour, so it stands apart from blocks before or after it.
+  final Color? loop;
 }
 
 /// A [HintMark] drawn as a small block, styled like the editor's blocks: a
@@ -126,6 +131,16 @@ class HintMarkComponent extends PositionComponent {
       const Rect.fromLTWH(0, 0, _size, _size),
       _radius,
     );
+    // Inside the loop: a thick ring in the loop block's colour.
+    if (mark.loop case final loop?) {
+      canvas.drawRRect(
+        box.inflate(_size * 0.1),
+        Paint()
+          ..color = loop
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = _size * 0.1,
+      );
+    }
     canvas
       ..drawRRect(box.shift(const Offset(0, _size * 0.06)), _shadow)
       ..drawRRect(box, _fill)

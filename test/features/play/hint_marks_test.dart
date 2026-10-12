@@ -1,5 +1,6 @@
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
+import 'package:cobalagi/engine/program/program.dart';
 import 'package:cobalagi/engine/world/direction.dart';
 import 'package:cobalagi/engine/world/grid_point.dart';
 import 'package:cobalagi/engine/world/level.dart';
@@ -132,6 +133,50 @@ void main() {
       [for (final m in marks) m.faded],
       [
         false, false, true, true, true, true, //
+      ],
+    );
+  });
+
+  test('blocks inside the loop are ringed; blocks around it are not', () {
+    final level = Level.fromRows(
+      id: 'r',
+      concept: 'loops',
+      rows: ['#######', '#....G#', '#S....#', '#######'],
+      startFacing: Direction.north,
+      palette: const {
+        InstructionKind.move,
+        InstructionKind.turnLeft,
+        InstructionKind.turnRight,
+        InstructionKind.repeat,
+      },
+    );
+    // Turn, four steps (the loop), then turn and one more step.
+    final marks = patternHintMarks(
+      level,
+      const Program([
+        TurnRight(),
+        Move(),
+        Move(),
+        Move(),
+        Move(),
+        TurnLeft(),
+        Move(),
+      ]),
+    )!.where((m) => !m.big).toList();
+    expect(marks, hasLength(7));
+    final purple = BlockType.repeat.color;
+    expect(
+      [for (final m in marks) m.loop],
+      [
+        null, purple, purple, purple, purple, null, null, //
+      ],
+    );
+    // Only the loop's later rounds fade; the blocks after it are the
+    // child's to place, so they stay bright.
+    expect(
+      [for (final m in marks) m.faded],
+      [
+        false, false, true, true, true, false, false, //
       ],
     );
   });
