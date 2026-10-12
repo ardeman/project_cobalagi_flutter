@@ -688,10 +688,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tap the light bulb again to see the blocks that repeat!';
 
   @override
-  String get followRobotOn => 'Turn the map with Koba';
-
-  @override
-  String get followRobotOff => 'Show the map the usual way';
+  String get turnMap => 'Turn the map';
 
   @override
   String get tourPalette =>
@@ -717,7 +714,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourFollow =>
-      'This turns the map, so Koba\'s left and right are your left and right.';
+      'This turns the map a quarter turn each time, so you can see it from Koba\'s side.';
 
   @override
   String get tourListen => 'Tap the speaker to hear what to do again.';

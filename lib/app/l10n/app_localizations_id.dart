@@ -676,10 +676,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get hintAgain => 'Ketuk lampu lagi untuk melihat blok yang berulang!';
 
   @override
-  String get followRobotOn => 'Putar peta bersama Koba';
-
-  @override
-  String get followRobotOff => 'Tampilkan peta seperti biasa';
+  String get turnMap => 'Putar peta';
 
   @override
   String get tourPalette =>
@@ -705,7 +702,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tourFollow =>
-      'Ini memutar peta, jadi kiri dan kanan Koba sama dengan kiri dan kananmu.';
+      'Ini memutar peta seperempat putaran setiap kali, jadi kamu bisa melihatnya dari sisi Koba.';
 
   @override
   String get tourListen =>

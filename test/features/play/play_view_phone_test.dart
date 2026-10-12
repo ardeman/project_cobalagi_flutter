@@ -11,6 +11,7 @@ import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
 import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/play/view/play_view.dart';
+import 'package:cobalagi/features/play/view/world/world_game.dart';
 import 'package:cobalagi/learning/exercise_result.dart';
 import 'package:cobalagi/learning/learning_engine.dart';
 import 'package:flame/game.dart';
@@ -36,7 +37,6 @@ Future<void> _pumpPhone(
   int hintAfterRuns = 1,
   Decision? decision,
   AudioService audio = const SilentAudioService(),
-  ValueChanged<bool>? onFollowRobot,
   bool showTour = false,
   VoidCallback? onTourDone,
 }) async {
@@ -69,7 +69,6 @@ Future<void> _pumpPhone(
           onFinished: (_) async => decision,
           onNext: () {},
           allowCode: allowCode,
-          onFollowRobot: onFollowRobot,
           showTour: showTour,
           onTourDone: onTourDone,
         ),
@@ -482,19 +481,19 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('the compass turns the map with the robot, and back', (
+  testWidgets('the map turns a quarter turn each tap, and back', (
     tester,
   ) async {
-    final saved = <bool>[];
-    await _pumpPhone(tester, onFollowRobot: saved.add);
-    await tester.tap(find.byIcon(Icons.explore_rounded));
-    await tester.pump();
-    expect(saved, [true]);
-    expect(find.byIcon(Icons.navigation_rounded), findsOneWidget);
-    expect(find.byTooltip('Show the map the usual way'), findsOneWidget);
-    await tester.tap(find.byIcon(Icons.navigation_rounded));
-    await tester.pump();
-    expect(saved, [true, false]);
+    await _pumpPhone(tester);
+    final game = tester
+        .widget<GameWidget<WorldGame>>(find.byType(GameWidget<WorldGame>))
+        .game!;
+    final turn = find.byTooltip('Turn the map');
+    for (final expected in [1, 2, 3, 0]) {
+      await tester.tap(turn);
+      await tester.pump();
+      expect(game.quarterTurns, expected);
+    }
     expect(tester.takeException(), isNull);
   });
 

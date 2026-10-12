@@ -52,8 +52,6 @@ class PlayView extends StatefulWidget {
     required this.onNext,
     this.showHowTo = false,
     this.allowCode = false,
-    this.followRobot = false,
-    this.onFollowRobot,
     this.showTour = false,
     this.onTourDone,
   });
@@ -64,11 +62,6 @@ class PlayView extends StatefulWidget {
   final VoidCallback? onTourDone;
 
   final Exercise exercise;
-
-  /// The world turns with the robot, so the way it faces is up and its left
-  /// and right are the child's. [onFollowRobot] saves a change.
-  final bool followRobot;
-  final ValueChanged<bool>? onFollowRobot;
 
   /// Offers the Code tab beside the blocks: for children who read, or when
   /// a parent turns it on. Otherwise only picture blocks show.
@@ -119,7 +112,7 @@ class _PlayViewState extends State<PlayView> {
     level: _level,
     onEventShown: _play.eventShown,
     onSound: context.read<AudioService>().playEffect,
-  )..follow = widget.followRobot;
+  );
 
   /// The guided tour is showing (see [PlayView.showTour]).
   late var _touring = widget.showTour;
@@ -160,7 +153,7 @@ class _PlayViewState extends State<PlayView> {
       clip: VoiceClips.tourHint,
     ),
     CoachStep(
-      target: _tour.follow,
+      target: _tour.turn,
       text: l10n.tourFollow,
       clip: VoiceClips.tourFollow,
     ),
@@ -171,11 +164,9 @@ class _PlayViewState extends State<PlayView> {
     ),
   ];
 
-  void _toggleFollow() {
-    final on = !_game.follow;
-    setState(() => _game.follow = on);
-    widget.onFollowRobot?.call(on);
-  }
+  /// Turns the map a quarter turn clockwise; four taps bring it back.
+  void _turnMap() =>
+      setState(() => _game.quarterTurns = (_game.quarterTurns + 1) % 4);
 
   final _clock = Stopwatch()..start();
   var _hints = 0;
@@ -454,10 +445,10 @@ class _PlayViewState extends State<PlayView> {
                                   Positioned(
                                     top: 8,
                                     right: 8,
-                                    child: _FollowButton(
-                                      key: _touring ? _tour.follow : null,
-                                      on: _game.follow,
-                                      onPressed: _toggleFollow,
+                                    child: _TurnMapButton(
+                                      key: _touring ? _tour.turn : null,
+                                      quarterTurns: _game.quarterTurns,
+                                      onPressed: _turnMap,
                                     ),
                                   ),
                                   // Solved: nothing left to explain.
@@ -1255,33 +1246,38 @@ final class _TourKeys {
   final step = GlobalKey();
   final reset = GlobalKey();
   final hint = GlobalKey();
-  final follow = GlobalKey();
+  final turn = GlobalKey();
   final listen = GlobalKey();
 }
 
-/// Turns the world with the robot, or back: a compass, filled while on.
-class _FollowButton extends StatelessWidget {
-  const _FollowButton({super.key, required this.on, required this.onPressed});
+/// Turns the map a quarter turn each tap. Its arrow shows how far the map
+/// is turned; away from the start it lights up, so a child sees why the
+/// map looks different.
+class _TurnMapButton extends StatelessWidget {
+  const _TurnMapButton({
+    super.key,
+    required this.quarterTurns,
+    required this.onPressed,
+  });
 
-  final bool on;
+  final int quarterTurns;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final turned = quarterTurns != 0;
     return Semantics(
-      toggled: on,
+      value: '${quarterTurns * 90}°',
       child: IconButton.filledTonal(
-        tooltip: on ? l10n.followRobotOff : l10n.followRobotOn,
-        isSelected: on,
+        tooltip: AppLocalizations.of(context).turnMap,
         style: IconButton.styleFrom(
-          backgroundColor: on
+          backgroundColor: turned
               ? const Color(0xFFFFC83D)
               : Colors.white.withValues(alpha: 0.85),
           foregroundColor: const Color(0xFF263238),
         ),
         onPressed: onPressed,
-        icon: Icon(on ? Icons.navigation_rounded : Icons.explore_rounded),
+        icon: const Icon(Icons.rotate_right_rounded),
       ),
     );
   }

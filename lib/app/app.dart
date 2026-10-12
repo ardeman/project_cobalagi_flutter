@@ -6,7 +6,6 @@ import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/data/app_update_service.dart';
 
 import '../features/play_time/cubit/break_reminder_cubit.dart';
-import '../features/play/cubit/follow_robot_cubit.dart';
 import '../features/play_time/data/play_clock.dart';
 import '../core/audio/audio_service.dart';
 import '../core/audio/music_cubit.dart';
@@ -109,7 +108,6 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           lazy: false,
           create: (_) => BreakReminderCubit(widget.settings)..load(),
         ),
-        BlocProvider(create: (_) => FollowRobotCubit(widget.settings)..load()),
         BlocProvider(
           create: (_) => EntitlementCubit(widget.entitlement)..load(),
         ),

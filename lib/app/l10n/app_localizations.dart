@@ -1304,17 +1304,11 @@ abstract class AppLocalizations {
   /// **'Tap the light bulb again to see the blocks that repeat!'**
   String get hintAgain;
 
-  /// No description provided for @followRobotOn.
+  /// No description provided for @turnMap.
   ///
   /// In en, this message translates to:
-  /// **'Turn the map with Koba'**
-  String get followRobotOn;
-
-  /// No description provided for @followRobotOff.
-  ///
-  /// In en, this message translates to:
-  /// **'Show the map the usual way'**
-  String get followRobotOff;
+  /// **'Turn the map'**
+  String get turnMap;
 
   /// No description provided for @tourPalette.
   ///
@@ -1355,7 +1349,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourFollow.
   ///
   /// In en, this message translates to:
-  /// **'This turns the map, so Koba\'s left and right are your left and right.'**
+  /// **'This turns the map a quarter turn each time, so you can see it from Koba\'s side.'**
   String get tourFollow;
 
   /// No description provided for @tourListen.

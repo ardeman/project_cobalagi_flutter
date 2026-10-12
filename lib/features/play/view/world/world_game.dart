@@ -47,12 +47,9 @@ class WorldGame extends FlameGame {
   (int, int)? _animating;
   int? _celebrated;
 
-  /// Whether the view turns with the robot, so the way it faces is up and
-  /// its left and right are the child's.
-  var follow = false;
-
-  /// 0 (the board as drawn) to 1 (turned with the robot), easing between.
-  var _followBlend = 0.0;
+  /// Quarter turns (0 to 3) the child has turned the map, clockwise, so
+  /// they can look at it from the robot's side.
+  var quarterTurns = 0;
 
   static const _moveTime = 0.35;
   static const _turnTime = 0.25;
@@ -92,7 +89,6 @@ class WorldGame extends FlameGame {
       ..visibleGameSize = _boardView
       ..position = Vector2(level.width / 2, level.height / 2)
       ..anchor = Anchor.center;
-    _followBlend = follow ? 1 : 0;
     _build();
     _turnView(1);
     if (_pending case final state?) apply(state);
@@ -128,24 +124,24 @@ class WorldGame extends FlameGame {
     if (isLoaded) _turnView(dt);
   }
 
-  /// Eases the view towards the robot's facing (or back to the board as
-  /// drawn), and keeps the flag, stars and hint marks upright on screen.
+  /// Eases the view round to [quarterTurns], keeps the whole board in view
+  /// at every angle, and keeps the flag, stars and hint marks upright.
   void _turnView(double dt) {
-    final target = follow ? 1.0 : 0.0;
-    _followBlend += (target - _followBlend).clamp(-dt * 3, dt * 3);
     final viewfinder = camera.viewfinder;
-    // Turned, the board needs room for either side across the screen.
-    final side = max(level.width, level.height) + 0.4;
-    viewfinder.visibleGameSize =
-        _boardView + (Vector2.all(side) - _boardView) * _followBlend;
-    final facing = _actor.angle;
-    final goal = follow ? facing : 0.0;
-    // The shortest way round, quickly enough to keep up with a turn.
+    final goal = quarterTurns % 4 * pi / 2;
+    // The shortest way round, so 270° to 0° is one more quarter turn.
     final turn = atan2(
       sin(goal - viewfinder.angle),
       cos(goal - viewfinder.angle),
     );
-    viewfinder.angle += turn * min(1.0, dt * 12);
+    viewfinder.angle += turn * min(1.0, dt * 10);
+    // The board's outline as turned on the screen, so it always fits.
+    final c = cos(viewfinder.angle).abs(), s = sin(viewfinder.angle).abs();
+    final board = _boardView;
+    viewfinder.visibleGameSize = Vector2(
+      board.x * c + board.y * s,
+      board.x * s + board.y * c,
+    );
     final upright = viewfinder.angle;
     _actor.viewAngle = upright;
     for (final child in world.children) {
