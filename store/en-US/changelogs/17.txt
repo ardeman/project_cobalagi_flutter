@@ -1,4 +1,3 @@
-- Koba has a fresh look: facing your child or driving away, Koba now stands straight, and its body looks the same from every side.
-- The opening screen shows Koba rolling in with its new look.
-- Koba now rolls on its wheels when it moves, instead of hopping.
+- Koba has a fresh look: it stands straight from every side and rolls on its wheels instead of hopping, on the opening screen too.
 - Every puzzle now takes place on the planet's own surface, at a slight tilt, with varied rocks, plants and craters around the path, drawn in Koba's style.
+- The hint now rings the block to change, so your child sees where the program goes off track.
