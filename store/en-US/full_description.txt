@@ -13,7 +13,7 @@ NINE CODING PLANETS
 • Fix it!: finding and fixing the block that isn't quite right
 • Until the flag: a repeat that keeps going until the flag
 • Otherwise: if the path is clear, take a step; otherwise, turn
-The first time, Koba shows what each button does. Every planet starts with a short demo that shows the idea. Stars on the map show how far your child has come on each planet. Completed lessons can be replayed from their planet, and every finished planet and Warm-up game adds a sticker to the child's sticker book. A planet's sticker turns gold once every star is collected.
+The first time, Koba shows what each button and block does. Every planet starts with a short demo that shows the idea. Stars on the map show how far your child has come on each planet. Completed lessons can be replayed from their planet, and every finished planet and Warm-up game adds a sticker to the child's sticker book. A planet's sticker turns gold once every star is collected.
 
 PICTURE BLOCKS AND CODE
 Children who are still learning to read use picture blocks. Readers can switch to the Code tab and type the same program as text. Blocks can be dragged or tapped to add them, on tablets and phones. A button turns the map a quarter turn at a time, so your child can see it from Koba's side.

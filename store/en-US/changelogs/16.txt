@@ -1,0 +1,5 @@
+- The update notice now shows on the first launch, so there is no need to close and reopen the app.
+- The map button now turns the map a quarter turn with each tap, so your child can look at it from any side.
+- Koba's guided tour now explains each block on the screen.
+- In the hint, the blocks that go inside the loop are ringed, so they stand out from the blocks around them.
+- On tablets, a long Magic Block no longer squeezes the space for your child's own blocks.

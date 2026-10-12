@@ -9,7 +9,7 @@ Blocks and code drive the same game world. A short, voice-led placement game pic
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Android is released for now: on Google Play, and as APKs on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
-> **Status:** in Google Play's closed test (version 2.1.0, build 15): Koba the robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
+> **Status:** in Google Play's closed test (version 2.2.0, build 16): Koba the robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 

@@ -1,0 +1,5 @@
+- Pemberitahuan pembaruan kini muncul sejak aplikasi pertama dibuka, jadi tidak perlu menutup lalu membukanya lagi.
+- Tombol peta kini memutar peta seperempat putaran setiap diketuk, jadi anak bisa melihatnya dari sisi mana pun.
+- Tur Koba kini menjelaskan setiap blok di layar.
+- Di petunjuk, blok yang masuk ke dalam pengulangan diberi lingkaran, jadi terlihat beda dari blok lainnya.
+- Di tablet, Blok Ajaib yang panjang tidak lagi mempersempit ruang untuk blok anak.
