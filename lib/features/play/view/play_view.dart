@@ -222,6 +222,9 @@ class _PlayViewState extends State<PlayView> {
   /// Blocks wearing the orange "look here" ring (see [BlockEditor.lookHere]).
   Set<String> _lookHere = const {};
 
+  /// Whether [_lookHere] came from the hint rather than a bump.
+  var _lookHereFromHint = false;
+
   /// The hint the bulb showed last (see [_showHint]); -1 before the first.
   var _hintStep = -1;
 
@@ -347,7 +350,10 @@ class _PlayViewState extends State<PlayView> {
       case _Hint.pattern:
         _game.showHint(pattern!, trail: trail);
       case _Hint.ring:
-        setState(() => _lookHere = offTrack.toSet());
+        setState(() {
+          _lookHere = offTrack.toSet();
+          _lookHereFromHint = true;
+        });
     }
     // After the route, Koba says the bulb has more to show, if the pattern
     // comes next (the bulb's badge shows it too). Pre-readers hear what the
@@ -374,7 +380,12 @@ class _PlayViewState extends State<PlayView> {
     if (state.phase == PlayPhase.running && _lookHere.isNotEmpty) {
       setState(() => _lookHere = const {});
     }
-    if (state.bumpedBlockId case final id?) setState(() => _lookHere = {id});
+    if (state.bumpedBlockId case final id?) {
+      setState(() {
+        _lookHere = {id};
+        _lookHereFromHint = false;
+      });
+    }
     final mood = switch (state.phase) {
       PlayPhase.succeeded => CheerMood.celebrate,
       PlayPhase.failed => CheerMood.encourage,
@@ -624,6 +635,7 @@ class _PlayViewState extends State<PlayView> {
                                 blockSize: tight ? 56.0 : 72.0,
                                 activeBlockId: play.activeBlockId,
                                 lookHere: _lookHere,
+                                fromHint: _lookHereFromHint,
                                 paletteKey: _touring ? _tour.palette : null,
                                 programKey: _touring ? _tour.program : null,
                                 blockKeys: _touring ? _tour.blocks : const {},

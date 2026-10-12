@@ -47,9 +47,20 @@ extension BlockTypeStyle on BlockType {
   };
 }
 
+/// Why a block wears a "look here" ring.
+enum BlockMark {
+  none,
+
+  /// It walked into a rock on the last run: orange, with "!".
+  bumped,
+
+  /// The hint says to change it: amber like the lit bulb, with a bulb.
+  hint,
+}
+
 /// A block: a square picture. [highlighted] marks the block that is running;
-/// [hasIssue] marks a block the child needs to fix; [bumped] marks the block
-/// that walked into a rock on the last run.
+/// [hasIssue] marks a block the child needs to fix; [mark] rings a block to
+/// look at, each kind its own colour and sign so they never get mixed up.
 class BlockTile extends StatelessWidget {
   const BlockTile({
     super.key,
@@ -57,7 +68,7 @@ class BlockTile extends StatelessWidget {
     required this.size,
     this.highlighted = false,
     this.hasIssue = false,
-    this.bumped = false,
+    this.mark = BlockMark.none,
     this.stepValue,
   });
 
@@ -65,10 +76,16 @@ class BlockTile extends StatelessWidget {
   final double size;
   final bool highlighted;
   final bool hasIssue;
-  final bool bumped;
+  final BlockMark mark;
+
+  /// Whether it wears a "look here" ring of either kind.
+  bool get bumped => mark != BlockMark.none;
 
   /// The orange the warm-up uses for a tap to try again: never red.
   static const bumpedColor = Color(0xFFFB8C00);
+
+  /// The lit hint bulb's amber.
+  static const hintColor = Color(0xFFFFC83D);
 
   /// On a placed "use steps" block: the Step Box number it will use, or
   /// "?" before one is saved. Shown in a bubble in the Step Box's colour.
@@ -107,27 +124,55 @@ class BlockTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final value = stepValue;
+    final (ring, badge, badgeIcon) = switch (mark) {
+      BlockMark.hint => (hintColor, hintColor, const Color(0xFF3E2723)),
+      _ => (bumpedColor, bumpedColor, Colors.white),
+    };
     final tile = bumped
         ? Stack(
             clipBehavior: Clip.none,
             children: [
-              _tile(),
-              // "Look here": the move that bumped into the rock.
+              // "Look here": a ring outside the block, a white gap between,
+              // so it shows on every block's colour (the orange turn too).
               Positioned(
-                top: -size * 0.14,
-                left: -size * 0.14,
+                left: -size * 0.1,
+                top: -size * 0.1,
+                right: -size * 0.1,
+                bottom: -size * 0.1,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(size * 0.32),
+                    border: Border.all(color: ring, width: size * 0.07),
+                    // The hint's ring glows, like the lit bulb it came from.
+                    boxShadow: [
+                      if (mark == BlockMark.hint)
+                        BoxShadow(
+                          color: hintColor.withValues(alpha: 0.85),
+                          blurRadius: size * 0.22,
+                          spreadRadius: size * 0.04,
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+              _tile(),
+              Positioned(
+                top: -size * 0.2,
+                left: -size * 0.2,
                 child: Container(
                   width: size * 0.42,
                   height: size * 0.42,
                   decoration: BoxDecoration(
-                    color: bumpedColor,
+                    color: badge,
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white, width: 2),
                   ),
                   child: Icon(
-                    Icons.priority_high_rounded,
-                    color: Colors.white,
-                    size: size * 0.3,
+                    mark == BlockMark.hint
+                        ? Icons.lightbulb_rounded
+                        : Icons.priority_high_rounded,
+                    color: badgeIcon,
+                    size: size * 0.28,
                   ),
                 ),
               ),
@@ -175,7 +220,7 @@ class BlockTile extends StatelessWidget {
 
   Widget _tile() => ExcludeSemantics(
     child: AnimatedScale(
-      scale: highlighted || bumped ? 1.12 : 1,
+      scale: highlighted ? 1.12 : 1,
       duration: const Duration(milliseconds: 150),
       child: Container(
         width: size,
@@ -196,7 +241,7 @@ class BlockTile extends StatelessWidget {
             color: hasIssue
                 ? const Color(0xFFE53935)
                 : bumped
-                ? bumpedColor
+                ? Colors.white
                 : highlighted
                 ? const Color(0xFFFFD54F)
                 : Colors.white.withValues(alpha: 0.35),

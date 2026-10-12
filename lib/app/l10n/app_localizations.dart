@@ -1319,13 +1319,13 @@ abstract class AppLocalizations {
   /// No description provided for @hintLookHere.
   ///
   /// In en, this message translates to:
-  /// **'Look at the block with the orange ring. Try changing it!'**
+  /// **'Look at the block with the light bulb. Try changing it!'**
   String get hintLookHere;
 
   /// No description provided for @hintLookHereMany.
   ///
   /// In en, this message translates to:
-  /// **'Look at the blocks with orange rings. Try changing them!'**
+  /// **'Look at the blocks with the light bulb. Try changing them!'**
   String get hintLookHereMany;
 
   /// No description provided for @turnMap.

@@ -531,8 +531,13 @@ void main() {
     for (var i = 0; i < 60 && find.text('Try again!').evaluate().isEmpty; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }
-    // The bump marks the step that walked into the rock.
+    BlockMark markOf(String id) => tester
+        .widgetList<BlockTile>(find.byType(BlockTile))
+        .firstWhere((t) => t.key == ValueKey(id))
+        .mark;
+    // The bump marks the step that walked into the rock, as a bump.
     expect(ringed(), [ValueKey(step)]);
+    expect(markOf(step), BlockMark.bumped);
     await tester.tap(find.text('Try again!'));
     await tester.pump(const Duration(milliseconds: 300));
     final bulb = find.widgetWithIcon(IconButton, Icons.lightbulb_rounded);
@@ -546,9 +551,10 @@ void main() {
     expect(ringed(), [ValueKey(step)]);
     expect(voices.clips, isNot(contains('hint_look_here')));
     // Then the ring moves to the turn that went off the road: still one
-    // ring, never two.
+    // ring, never two, and now the hint's, not the bump's.
     await hint();
     expect(ringed(), [ValueKey(turn)]);
+    expect(markOf(turn), BlockMark.hint);
     expect(voices.clips.last, 'hint_look_here');
     // Then round again: the route, the ring staying on the turn.
     await hint();

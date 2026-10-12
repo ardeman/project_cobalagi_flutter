@@ -695,11 +695,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hintLookHere =>
-      'Look at the block with the orange ring. Try changing it!';
+      'Look at the block with the light bulb. Try changing it!';
 
   @override
   String get hintLookHereMany =>
-      'Look at the blocks with orange rings. Try changing them!';
+      'Look at the blocks with the light bulb. Try changing them!';
 
   @override
   String get turnMap => 'Turn the map';

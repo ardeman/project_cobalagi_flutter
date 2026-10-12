@@ -683,11 +683,11 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get hintLookHere =>
-      'Lihat blok yang dilingkari oranye. Coba ganti blok itu!';
+      'Lihat blok yang ada lampunya. Coba ganti blok itu!';
 
   @override
   String get hintLookHereMany =>
-      'Lihat blok-blok yang dilingkari oranye. Coba ganti blok-blok itu!';
+      'Lihat blok-blok yang ada lampunya. Coba ganti blok-blok itu!';
 
   @override
   String get turnMap => 'Putar peta';

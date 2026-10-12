@@ -23,6 +23,7 @@ class BlockEditor extends StatefulWidget {
     required this.blockSize,
     this.activeBlockId,
     this.lookHere = const {},
+    this.fromHint = false,
     this.issueBlockIds = const {},
     this.enabled = true,
     this.showHowTo = false,
@@ -60,9 +61,10 @@ class BlockEditor extends StatefulWidget {
   final double blockSize;
   final String? activeBlockId;
 
-  /// Blocks wearing the orange "look here" ring: the one that walked into
-  /// a rock on the last run, or the ones the hint says to change.
+  /// Blocks wearing a "look here" ring: the one that walked into a rock on
+  /// the last run, or, [fromHint], the ones the hint says to change.
   final Set<String> lookHere;
+  final bool fromHint;
   final Set<String> issueBlockIds;
   final bool enabled;
 
@@ -93,6 +95,7 @@ class _BlockEditorState extends State<BlockEditor> {
       enabled: widget.enabled,
       activeBlockId: widget.activeBlockId,
       lookHere: widget.lookHere,
+      fromHint: widget.fromHint,
       issueBlockIds: widget.issueBlockIds,
       stepValues: _stepValues(blocks),
       // Placed blocks sit in rows that scroll, on tablets too.
@@ -325,6 +328,7 @@ final class _BlockStyle {
     required this.enabled,
     required this.activeBlockId,
     this.lookHere = const {},
+    this.fromHint = false,
     required this.issueBlockIds,
     this.holdToDrag = false,
     this.stepValues = const {},
@@ -335,6 +339,7 @@ final class _BlockStyle {
   final bool enabled;
   final String? activeBlockId;
   final Set<String> lookHere;
+  final bool fromHint;
   final Set<String> issueBlockIds;
 
   /// See [_dragSource].
@@ -571,7 +576,11 @@ class _PlacedBlock extends StatelessWidget {
             size: size,
             highlighted: block.id == style.activeBlockId,
             hasIssue: style.issueBlockIds.contains(block.id),
-            bumped: style.lookHere.contains(block.id),
+            mark: !style.lookHere.contains(block.id)
+                ? BlockMark.none
+                : style.fromHint
+                ? BlockMark.hint
+                : BlockMark.bumped,
             stepValue: style.stepValues[block.id],
           );
     if (!style.enabled) return plain;
