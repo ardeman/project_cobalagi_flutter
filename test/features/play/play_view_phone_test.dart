@@ -521,6 +521,9 @@ void main() {
       seen.add(voices.clips.last);
     }
     expect(seen, [
+      // Each block this puzzle offers, in the palette's order.
+      'tour_block_forward',
+      'tour_block_turn_left',
       'tour_program',
       'tour_go',
       'tour_step',

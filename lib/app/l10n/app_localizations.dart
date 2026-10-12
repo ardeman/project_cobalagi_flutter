@@ -1376,6 +1376,66 @@ abstract class AppLocalizations {
   /// **'The paw prints show how far you have come.'**
   String get tourWarmUpSteps;
 
+  /// No description provided for @tourBlockForward.
+  ///
+  /// In en, this message translates to:
+  /// **'The green arrow moves Koba one step forward.'**
+  String get tourBlockForward;
+
+  /// No description provided for @tourBlockTurnLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'The blue arrow turns Koba to the left, without moving.'**
+  String get tourBlockTurnLeft;
+
+  /// No description provided for @tourBlockTurnRight.
+  ///
+  /// In en, this message translates to:
+  /// **'The orange arrow turns Koba to the right, without moving.'**
+  String get tourBlockTurnRight;
+
+  /// No description provided for @tourBlockRepeat.
+  ///
+  /// In en, this message translates to:
+  /// **'The repeat block does the blocks inside it again and again. Tap minus or plus to choose how many times.'**
+  String get tourBlockRepeat;
+
+  /// No description provided for @tourBlockSetSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'The Step Box saves a number of steps. Tap minus or plus to change it.'**
+  String get tourBlockSetSteps;
+
+  /// No description provided for @tourBlockMoveSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'This arrow moves Koba as many steps as the Step Box holds.'**
+  String get tourBlockMoveSteps;
+
+  /// No description provided for @tourBlockIfPathClear.
+  ///
+  /// In en, this message translates to:
+  /// **'The eye block looks ahead. The blocks inside it run only if the path is clear.'**
+  String get tourBlockIfPathClear;
+
+  /// No description provided for @tourBlockIfElse.
+  ///
+  /// In en, this message translates to:
+  /// **'This eye block has two rows: the top row runs if the path is clear, the bottom row if it isn\'t.'**
+  String get tourBlockIfElse;
+
+  /// No description provided for @tourBlockUntilGoal.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat until the flag does the blocks inside it again and again, until Koba reaches the flag.'**
+  String get tourBlockUntilGoal;
+
+  /// No description provided for @tourBlockStar.
+  ///
+  /// In en, this message translates to:
+  /// **'The star block runs the blocks in your star row: your very own magic block.'**
+  String get tourBlockStar;
+
   /// No description provided for @tourNext.
   ///
   /// In en, this message translates to:

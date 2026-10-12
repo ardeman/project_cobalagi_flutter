@@ -720,6 +720,45 @@ class AppLocalizationsId extends AppLocalizations {
       'Jejak kaki menunjukkan sudah sejauh mana kamu bermain.';
 
   @override
+  String get tourBlockForward => 'Panah hijau membuat Koba maju satu langkah.';
+
+  @override
+  String get tourBlockTurnLeft =>
+      'Panah biru membuat Koba belok ke kiri, tanpa berpindah.';
+
+  @override
+  String get tourBlockTurnRight =>
+      'Panah oranye membuat Koba belok ke kanan, tanpa berpindah.';
+
+  @override
+  String get tourBlockRepeat =>
+      'Blok ulangi menjalankan blok di dalamnya berulang kali. Ketuk minus atau plus untuk memilih berapa kali.';
+
+  @override
+  String get tourBlockSetSteps =>
+      'Kotak Langkah menyimpan jumlah langkah. Ketuk minus atau plus untuk mengubahnya.';
+
+  @override
+  String get tourBlockMoveSteps =>
+      'Panah ini membuat Koba maju sebanyak angka di Kotak Langkah.';
+
+  @override
+  String get tourBlockIfPathClear =>
+      'Blok mata melihat ke depan. Blok di dalamnya hanya berjalan kalau jalannya kosong.';
+
+  @override
+  String get tourBlockIfElse =>
+      'Blok mata ini punya dua baris: baris atas berjalan kalau jalannya kosong, baris bawah kalau tidak.';
+
+  @override
+  String get tourBlockUntilGoal =>
+      'Ulangi sampai bendera menjalankan blok di dalamnya terus-menerus, sampai Koba tiba di bendera.';
+
+  @override
+  String get tourBlockStar =>
+      'Blok bintang menjalankan blok di baris bintangmu: blok ajaib buatanmu sendiri.';
+
+  @override
   String get tourNext => 'Lanjut';
 
   @override

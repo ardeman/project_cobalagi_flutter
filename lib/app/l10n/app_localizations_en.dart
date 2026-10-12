@@ -730,6 +730,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tourWarmUpSteps => 'The paw prints show how far you have come.';
 
   @override
+  String get tourBlockForward => 'The green arrow moves Koba one step forward.';
+
+  @override
+  String get tourBlockTurnLeft =>
+      'The blue arrow turns Koba to the left, without moving.';
+
+  @override
+  String get tourBlockTurnRight =>
+      'The orange arrow turns Koba to the right, without moving.';
+
+  @override
+  String get tourBlockRepeat =>
+      'The repeat block does the blocks inside it again and again. Tap minus or plus to choose how many times.';
+
+  @override
+  String get tourBlockSetSteps =>
+      'The Step Box saves a number of steps. Tap minus or plus to change it.';
+
+  @override
+  String get tourBlockMoveSteps =>
+      'This arrow moves Koba as many steps as the Step Box holds.';
+
+  @override
+  String get tourBlockIfPathClear =>
+      'The eye block looks ahead. The blocks inside it run only if the path is clear.';
+
+  @override
+  String get tourBlockIfElse =>
+      'This eye block has two rows: the top row runs if the path is clear, the bottom row if it isn\'t.';
+
+  @override
+  String get tourBlockUntilGoal =>
+      'Repeat until the flag does the blocks inside it again and again, until Koba reaches the flag.';
+
+  @override
+  String get tourBlockStar =>
+      'The star block runs the blocks in your star row: your very own magic block.';
+
+  @override
   String get tourNext => 'Next';
 
   @override

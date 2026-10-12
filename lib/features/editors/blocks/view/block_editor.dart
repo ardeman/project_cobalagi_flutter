@@ -31,11 +31,14 @@ class BlockEditor extends StatefulWidget {
     this.fitContent = false,
     this.paletteKey,
     this.programKey,
+    this.blockKeys = const {},
   });
 
-  /// Mark the palette and the program, e.g. for a guided tour.
+  /// Mark the palette, the program and each palette block, e.g. for a
+  /// guided tour.
   final Key? paletteKey;
   final Key? programKey;
+  final Map<BlockType, Key> blockKeys;
 
   /// Shows a hand dragging the first palette block into the program, for a
   /// child who hasn't played yet. Hidden once the program has a block.
@@ -109,18 +112,21 @@ class _BlockEditorState extends State<BlockEditor> {
               runSpacing: gap,
               children: [
                 for (final type in types)
-                  _PaletteBlock(
-                    key: type == types.first ? _firstBlock : null,
-                    type: type,
-                    size: widget.blockSize,
-                    // Replacing a picked block keeps the count, so the palette
-                    // stays usable even at the block limit.
-                    enabled:
-                        widget.enabled &&
-                        (!cubit.isFull || cubit.state.pickedBlock != null),
-                    hold: widget.fitContent,
-                    pointed: type == widget.pointAt,
-                    onTap: () => cubit.tap(type),
+                  KeyedSubtree(
+                    key: widget.blockKeys[type],
+                    child: _PaletteBlock(
+                      key: type == types.first ? _firstBlock : null,
+                      type: type,
+                      size: widget.blockSize,
+                      // Replacing a picked block keeps the count, so the palette
+                      // stays usable even at the block limit.
+                      enabled:
+                          widget.enabled &&
+                          (!cubit.isFull || cubit.state.pickedBlock != null),
+                      hold: widget.fitContent,
+                      pointed: type == widget.pointAt,
+                      onTap: () => cubit.tap(type),
+                    ),
                   ),
               ],
             ),

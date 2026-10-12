@@ -118,6 +118,42 @@ class _PlayViewState extends State<PlayView> {
   late var _touring = widget.showTour;
   final _tour = _TourKeys();
 
+  /// What the tour says about a palette block, and its voice clip.
+  static (String, String) _blockTour(AppLocalizations l10n, BlockType type) =>
+      switch (type) {
+        BlockType.forward => (
+          l10n.tourBlockForward,
+          VoiceClips.tourBlockForward,
+        ),
+        BlockType.turnLeft => (
+          l10n.tourBlockTurnLeft,
+          VoiceClips.tourBlockTurnLeft,
+        ),
+        BlockType.turnRight => (
+          l10n.tourBlockTurnRight,
+          VoiceClips.tourBlockTurnRight,
+        ),
+        BlockType.repeat => (l10n.tourBlockRepeat, VoiceClips.tourBlockRepeat),
+        BlockType.setSteps => (
+          l10n.tourBlockSetSteps,
+          VoiceClips.tourBlockSetSteps,
+        ),
+        BlockType.moveSteps => (
+          l10n.tourBlockMoveSteps,
+          VoiceClips.tourBlockMoveSteps,
+        ),
+        BlockType.ifPathClear => (
+          l10n.tourBlockIfPathClear,
+          VoiceClips.tourBlockIfPathClear,
+        ),
+        BlockType.ifElse => (l10n.tourBlockIfElse, VoiceClips.tourBlockIfElse),
+        BlockType.untilGoal => (
+          l10n.tourBlockUntilGoal,
+          VoiceClips.tourBlockUntilGoal,
+        ),
+        BlockType.star => (l10n.tourBlockStar, VoiceClips.tourBlockStar),
+      };
+
   void _endTour() {
     if (!_touring) return;
     setState(() => _touring = false);
@@ -131,6 +167,14 @@ class _PlayViewState extends State<PlayView> {
       text: l10n.tourPalette,
       clip: VoiceClips.tourPalette,
     ),
+    // Then each block this puzzle offers, in the palette's order.
+    for (final type in BlockType.values)
+      if (_level.palette.contains(type.kind))
+        CoachStep(
+          target: _tour.blocks[type]!,
+          text: _blockTour(l10n, type).$1,
+          clip: _blockTour(l10n, type).$2,
+        ),
     CoachStep(
       target: _tour.program,
       text: l10n.tourProgram,
@@ -522,41 +566,42 @@ class _PlayViewState extends State<PlayView> {
                         ],
                       ),
                     );
-                    Widget editorFor({required bool fit}) =>
-                        BlocBuilder<PlayCubit, PlayState>(
-                          builder: (context, play) {
-                            final enabled =
-                                !_finished && play.phase != PlayPhase.running;
-                            return _codeMode
-                                ? TypedCodeEditor(
-                                    enabled: enabled,
-                                    // Code marks the bumped command like the
-                                    // running one.
-                                    activeBlockId:
-                                        play.activeBlockId ?? _bumped,
-                                    fitContent: fit,
-                                  )
-                                : BlockEditor(
-                                    palette: _level.palette,
-                                    blockSize: tight ? 56.0 : 72.0,
-                                    activeBlockId: play.activeBlockId,
-                                    bumpedBlockId: _bumped,
-                                    paletteKey: _touring ? _tour.palette : null,
-                                    programKey: _touring ? _tour.program : null,
-                                    issueBlockIds: {
-                                      for (final issue in play.issues)
-                                        ?issue.blockId,
-                                    },
-                                    enabled: enabled,
-                                    showTips: !tight,
-                                    fitContent: fit,
-                                    showHowTo:
-                                        widget.showHowTo &&
-                                        play.runs == 0 &&
-                                        !_touring,
-                                  );
-                          },
-                        );
+                    Widget editorFor({
+                      required bool fit,
+                    }) => BlocBuilder<PlayCubit, PlayState>(
+                      builder: (context, play) {
+                        final enabled =
+                            !_finished && play.phase != PlayPhase.running;
+                        return _codeMode
+                            ? TypedCodeEditor(
+                                enabled: enabled,
+                                // Code marks the bumped command like the
+                                // running one.
+                                activeBlockId: play.activeBlockId ?? _bumped,
+                                fitContent: fit,
+                              )
+                            : BlockEditor(
+                                palette: _level.palette,
+                                blockSize: tight ? 56.0 : 72.0,
+                                activeBlockId: play.activeBlockId,
+                                bumpedBlockId: _bumped,
+                                paletteKey: _touring ? _tour.palette : null,
+                                programKey: _touring ? _tour.program : null,
+                                blockKeys: _touring ? _tour.blocks : const {},
+                                issueBlockIds: {
+                                  for (final issue in play.issues)
+                                    ?issue.blockId,
+                                },
+                                enabled: enabled,
+                                showTips: !tight,
+                                fitContent: fit,
+                                showHowTo:
+                                    widget.showHowTo &&
+                                    play.runs == 0 &&
+                                    !_touring,
+                              );
+                      },
+                    );
                     // Typing code on a phone: the code gets the room. The tree
                     // keeps its shape, so the code field keeps the keyboard.
                     final typing = tight && _codeMode && keyboardOpen;
@@ -1248,6 +1293,7 @@ final class _TourKeys {
   final hint = GlobalKey();
   final turn = GlobalKey();
   final listen = GlobalKey();
+  final blocks = {for (final type in BlockType.values) type: GlobalKey()};
 }
 
 /// Turns the map a quarter turn each tap. Its arrow shows how far the map

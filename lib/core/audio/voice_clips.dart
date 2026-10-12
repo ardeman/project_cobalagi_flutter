@@ -54,6 +54,16 @@ abstract final class VoiceClips {
   static const tourWarmUpListen = 'tour_warm_up_listen';
   static const tourWarmUpAnswer = 'tour_warm_up_answer';
   static const tourWarmUpSteps = 'tour_warm_up_steps';
+  static const tourBlockForward = 'tour_block_forward';
+  static const tourBlockTurnLeft = 'tour_block_turn_left';
+  static const tourBlockTurnRight = 'tour_block_turn_right';
+  static const tourBlockRepeat = 'tour_block_repeat';
+  static const tourBlockSetSteps = 'tour_block_set_steps';
+  static const tourBlockMoveSteps = 'tour_block_move_steps';
+  static const tourBlockIfPathClear = 'tour_block_if_path_clear';
+  static const tourBlockIfElse = 'tour_block_if_else';
+  static const tourBlockUntilGoal = 'tour_block_until_goal';
+  static const tourBlockStar = 'tour_block_star';
 
   static const feedbackBumped = 'feedback_bumped';
   static const feedbackStoppedShort = 'feedback_stopped_short';
@@ -133,6 +143,16 @@ abstract final class VoiceClips {
     tourWarmUpListen: 'tourWarmUpListen',
     tourWarmUpAnswer: 'tourWarmUpAnswer',
     tourWarmUpSteps: 'tourWarmUpSteps',
+    tourBlockForward: 'tourBlockForward',
+    tourBlockTurnLeft: 'tourBlockTurnLeft',
+    tourBlockTurnRight: 'tourBlockTurnRight',
+    tourBlockRepeat: 'tourBlockRepeat',
+    tourBlockSetSteps: 'tourBlockSetSteps',
+    tourBlockMoveSteps: 'tourBlockMoveSteps',
+    tourBlockIfPathClear: 'tourBlockIfPathClear',
+    tourBlockIfElse: 'tourBlockIfElse',
+    tourBlockUntilGoal: 'tourBlockUntilGoal',
+    tourBlockStar: 'tourBlockStar',
     feedbackBumped: 'feedbackBumped',
     feedbackStoppedShort: 'feedbackStoppedShort',
     feedbackMissedStars: 'feedbackMissedStars',
