@@ -16,6 +16,7 @@
     { "build": 13, "version": "2.0.0", "date": "2026-10-09" },
     { "build": 14, "version": "2.0.1", "date": "2026-10-09", "listing": true },
     { "build": 15, "version": "2.1.0", "date": "2026-10-12" },
-    { "build": 16, "version": "2.2.0", "date": "2026-10-12" }
+    { "build": 16, "version": "2.2.0", "date": "2026-10-12" },
+    { "build": 17, "version": "2.3.0", "date": "2026-10-12" }
   ]
 }
