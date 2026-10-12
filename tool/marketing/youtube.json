@@ -1,0 +1,98 @@
+{
+  "_comment": "YouTube text for the promo videos. tool/marketing/youtube_text.dart turns it into build/marketing/<video>.youtube.txt whenever a video is rendered. In titles, {version} is the app's version name from pubspec.yaml (every title needs it); in descriptions, {store} is the store line for the current STORE setting. Keep every claim true for the released app, as in the store listing.",
+  "store": {
+    "soon": {
+      "en": "Coming soon to Google Play.",
+      "id": "Segera di Google Play."
+    },
+    "live": {
+      "en": "Get it on Google Play: https://play.google.com/store/apps/details?id=com.ardeman.cobalagi",
+      "id": "Unduh di Google Play: https://play.google.com/store/apps/details?id=com.ardeman.cobalagi"
+    }
+  },
+  "tags": "Coba Lagi, cobalagi, coding for kids, learn to code, block coding, kids coding app, belajar coding anak",
+  "settings": [
+    {
+      "setting": "Thumbnail",
+      "promo": "Upload thumbnail-{lang}.jpg (needs a verified channel)",
+      "short": "Select from video: the first frame",
+      "why": { "promo": "The title card", "short": "The short's hook" }
+    },
+    {
+      "setting": "Made for Kids",
+      "all": "The channel owner's legal call. Recommended: No",
+      "why": "The videos speak to parents (\"Free · No ads\", the store line); YouTube may reclassify them because they show a children's game"
+    },
+    { "setting": "Age restriction", "all": "No" },
+    { "setting": "Paid promotion", "all": "No", "why": "Our own app" },
+    {
+      "setting": "AI use",
+      "all": "No",
+      "why": "YouTube asks only about realistic content (a real person, place or event, or AI music as the main focus); the robot is animation, the music plays underneath, the narration imitates no real person"
+    },
+    {
+      "setting": "Automatic chapters, places, concepts",
+      "all": "Off",
+      "why": "Under a minute; no places"
+    },
+    { "setting": "Tags", "all": "{tags}", "why": "Catches \"cobalagi\" written as one word" },
+    { "setting": "Video language", "all": "{language}" },
+    {
+      "setting": "Caption certification",
+      "all": "This content has never aired on television in the US"
+    },
+    {
+      "setting": "Licence",
+      "all": "Standard YouTube licence; allow embedding",
+      "why": "The Play listing and the website embed it"
+    },
+    { "setting": "Shorts remixing", "all": "Allow video and audio" },
+    {
+      "setting": "Category",
+      "all": "Education; Type, Problems, Academic system, Level and Exam left empty",
+      "why": "A promo, not a lesson"
+    },
+    {
+      "setting": "Comments",
+      "all": "On, anyone, top first; moderation Strict",
+      "why": "A children's app: hold possibly inappropriate comments"
+    },
+    {
+      "setting": "Subtitles",
+      "all": "Add → Upload file → With timing → {video}.srt",
+      "why": "Many watch without sound"
+    },
+    {
+      "setting": "End screen, cards, quiz, files",
+      "all": "None",
+      "why": "An end screen would cover the end card"
+    },
+    {
+      "setting": "Google Play listing",
+      "promo": "Put this video's link in the listing's Video field ({language} listing); it must be Public or Unlisted, without ads and without an age restriction",
+      "short": "Not used"
+    }
+  ],
+  "videos": {
+    "promo-en": {
+      "language": "English",
+      "title": "Coba Lagi {version}: learn to code through play, no reading needed",
+      "description": "Coba Lagi helps children learn the basics of coding through play. They snap picture blocks together to guide Koba, a little robot, across nine planets in space: steps in order, loops, their own magic block, checking the path ahead, fixing mistakes and more. No reading needed: every instruction is spoken, in Bahasa Indonesia and English.\n\n• Free, no ads, works offline\n• No accounts and no tracking: children's data stays on the device\n• Children who read can switch to typed code\n• Parents can set a break reminder; sponsors also see a progress report\n\n{store} More at https://cobalagi.ardeman.com\n\n#coding #kids #learntocode #STEM"
+    },
+    "short-en": {
+      "language": "English",
+      "title": "Kids can learn to code, even before they can read | Coba Lagi {version} #Shorts",
+      "description": "Coba Lagi: picture blocks, Koba the little robot and nine planets to explore. Free, no ads, works offline, in Bahasa Indonesia and English. {store}\nhttps://cobalagi.ardeman.com\n#Shorts #coding #kids"
+    },
+    "promo-id": {
+      "language": "Indonesian",
+      "title": "Coba Lagi {version}: belajar coding sambil bermain, tanpa perlu bisa membaca",
+      "description": "Coba Lagi mengajak anak belajar dasar-dasar coding sambil bermain. Anak menyusun blok bergambar untuk menuntun Koba, robot kecil, menjelajahi sembilan planet di luar angkasa: urutan langkah, perulangan, blok ajaib buatan sendiri, memeriksa jalan di depan, membetulkan kesalahan, dan lainnya. Tidak perlu bisa membaca: setiap petunjuk dibacakan dengan suara, dalam Bahasa Indonesia dan English.\n\n• Gratis, tanpa iklan, bisa dipakai tanpa internet\n• Tanpa akun dan tanpa pelacakan: data anak tetap di perangkat\n• Anak yang sudah bisa membaca bisa beralih ke kode ketik\n• Orang tua bisa mengatur pengingat istirahat; sponsor juga bisa melihat laporan perkembangan\n\n{store} Info lengkap: https://cobalagi.ardeman.com\n\n#coding #anak #belajarcoding #STEM"
+    },
+    "short-id": {
+      "language": "Indonesian",
+      "title": "Anak bisa belajar coding, bahkan sebelum bisa membaca | Coba Lagi {version} #Shorts",
+      "description": "Coba Lagi: blok bergambar, Koba si robot kecil, dan sembilan planet untuk dijelajahi. Gratis, tanpa iklan, bisa tanpa internet, dalam Bahasa Indonesia dan English. {store}\nhttps://cobalagi.ardeman.com\n#Shorts #coding #anak"
+    }
+  }
+}

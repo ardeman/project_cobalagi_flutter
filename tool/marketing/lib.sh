@@ -91,7 +91,8 @@ gameplay() {
 }
 
 # finish <out.mp4>: cross-fades the segments, adds music and narration, and
-# writes the narration's subtitles to <out.srt>.
+# writes the narration's subtitles to <out.srt> and the YouTube text to
+# <out.youtube.txt>.
 finish() {
   local inputs=() filters="" last="0:v" offset=0 starts=(0)
   for s in "${SEGMENTS[@]}"; do inputs+=(-i "$s"); done
@@ -131,6 +132,9 @@ finish() {
     subs+=("$(echo "${starts[$seg]} + 0.6" | bc)|$len|$lang|$clip")
   done
   dart run tool/marketing/subtitles.dart "${1%.mp4}.srt" "${subs[@]}" >/dev/null
+  # Its YouTube title (with the app's version), description and settings.
+  dart run tool/marketing/youtube_text.dart "$(basename "${1%.mp4}")" \
+    "${1%.mp4}.youtube.txt"
   echo "$1 (${total}s)"
   SEGMENTS=()
   DURATIONS=()

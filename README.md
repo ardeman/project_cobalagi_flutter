@@ -9,7 +9,7 @@ Blocks and code drive the same game world. A short, voice-led placement game pic
 
 Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Android is released for now: on Google Play, and as APKs on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
-> **Status:** in Google Play's closed test (version 2.0.1, build 14): a robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
+> **Status:** in Google Play's closed test (version 2.1.0, build 15): Koba the robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -315,7 +315,7 @@ Promo videos show real gameplay from the "Watch me!" demos. Record its frames (a
 - `tool/marketing/short_video.sh`: the vertical promo short (1080 × 1920, about 30 seconds) for YouTube Shorts, Instagram Reels and Stories, TikTok and WhatsApp status. Words and the phone stay clear of those apps' own buttons and captions (the top 250 px, the bottom 380 px and the right 140 px). It ends with "Coming soon to Google Play" until it is rendered with `STORE=live` once the app is public.
 - `tool/marketing/promo_video.sh`: the landscape promo (1920 × 1080, about 50 seconds) for YouTube and the Play listing, with a `thumbnail-<lang>.jpg` for YouTube.
 
-Every video comes with a subtitle file of its narration (`<video>.srt`, the ARB words at the time each clip plays; `tool/marketing/subtitles.dart`). Cards are HTML shot by headless Chrome in a taller window and cropped, because its page is now and then a little short and left a strip at the bottom. Titles, descriptions and upload settings for YouTube are in `tool/marketing/youtube.md`.
+Every video comes with a subtitle file of its narration (`<video>.srt`, the ARB words at the time each clip plays; `tool/marketing/subtitles.dart`). Cards are HTML shot by headless Chrome in a taller window and cropped, because its page is now and then a little short and left a strip at the bottom. Each video also gets `<video>.youtube.txt`: its YouTube title (with the app's version), description and upload settings, from `tool/marketing/youtube.json` (see `tool/marketing/youtube.md`).
 
 ## Roadmap (MVP)
 
@@ -440,7 +440,7 @@ Each topic has one home. Update that file instead of copying its content somewhe
 | `LICENSE` | Everyone | Terms for using the code (GPL-3.0) |
 | `NOTICE.md` | Everyone | Copyright, and the separate terms for sounds, art and the name |
 | `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots (also used by this README) |
-| `tool/marketing/youtube.md` | Whoever uploads the promo videos | YouTube titles, descriptions and upload settings |
+| `tool/marketing/youtube.md` | Whoever uploads the promo videos | How the YouTube text is made; the copy itself is `tool/marketing/youtube.json` |
 
 Codex, Cursor, GitHub Copilot, Windsurf, Jules, Aider, Zed and other agents that follow the [AGENTS.md](https://agents.md) convention read `AGENTS.md` directly.
 
