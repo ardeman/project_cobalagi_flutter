@@ -1,0 +1,44 @@
+<!doctype html>
+<!-- Builds assets/images/robot.png, the robot seen three-quarter (the game's
+     side view): the drawn head from branding/robot.svg (head.png, and the
+     helmet's lower-left edge from full.png, which the head layer's straight
+     neck cut leaves out) over the 3D robot's body turned to match
+     (body.png, branding/robot_body_three_quarter.png from
+     tool/robot/render_body.py), so its body matches the front and back
+     pictures and the 3D robot. Run by branding/robot.sh, which screenshots
+     this page. -->
+<html><head><style>html,body{margin:0;background:transparent}canvas{display:block}</style></head>
+<body><canvas id="out" width="512" height="512"></canvas><script>
+const load = (src) => new Promise((done) => {
+  const img = new Image();
+  img.onload = () => done(img);
+  img.src = src;
+});
+Promise.all(["body.png", "head.png", "full.png"].map(load)).then(([body, head, full]) => {
+  const o = document.getElementById("out").getContext("2d");
+  // The ground strokes under the wheels, like the other pictures': one under
+  // each run of the body's pixels just above the ground.
+  o.drawImage(body, 0, 0);
+  const row = o.getImageData(0, 496, 512, 1).data;
+  o.clearRect(0, 0, 512, 512);
+  const wheels = [];
+  for (let x = 0, start = -1; x <= 512; x++) {
+    const solid = x < 512 && row[x * 4 + 3] > 128;
+    if (solid && start < 0) start = x;
+    if (!solid && start >= 0) { wheels.push((start + x) / 2); start = -1; }
+  }
+  o.fillStyle = "#222244";
+  for (const x of wheels) {
+    o.beginPath();
+    o.moveTo(x - 34, 503);
+    o.quadraticCurveTo(x, 497, x + 34, 503);
+    o.quadraticCurveTo(x, 508, x - 34, 503);
+    o.fill();
+  }
+  o.drawImage(body, 0, 0);
+  o.drawImage(head, 0, 0);
+  // Left of the old neck (which starts at x = 224) the full drawing below the
+  // cut is still helmet: put that corner back.
+  o.drawImage(full, 0, 330, 218, 22, 0, 330, 218, 22);
+});
+</script></body></html>

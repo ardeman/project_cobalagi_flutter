@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Renders the robot with headless Chrome, all 512 x 512,
 # transparent and cropped to the same square around the robot:
-#   assets/images/robot.png        the game character
+#   assets/images/robot.png        the game character, seen three-quarter:
+#                                  the drawn head over the 3D robot's body
+#                                  (robot_body_three_quarter.png, below)
 #   assets/images/robot_back.png   from behind, from robot_front_source.png
 #   assets/images/robot_front.png  facing the child, from robot_front_source.png
 #   assets/images/robot_head.png   the splash screen's head (everything above
@@ -11,6 +13,12 @@
 # faces are drawn by the app over the screen (paintRobotFace), and the splash
 # draws spokes over the wheel hubs (RollingRobot), so a new picture must keep
 # the screen and hubs in the same places, or those must move with it.
+# The body under the three-quarter head is the 3D robot's, rendered by
+# Blender into branding/robot_body_three_quarter.png; after changing the 3D
+# robot (tool/robot/build_model.py), render it again before running this:
+#   blender -b -P tool/robot/build_model.py -- build/robot3d/koba
+#   blender -b build/robot3d/koba/koba.blend -P tool/robot/render_body.py \
+#     -- branding/robot_body_three_quarter.png 310 16
 # Run from the project root:
 #   branding/robot.sh
 set -euo pipefail
@@ -60,8 +68,19 @@ if(layer==="head"||layer==="body"){
 }
 
 render all assets/images/robot.png
+cp assets/images/robot.png "$TMP/full.png"
 render head assets/images/robot_head.png
 render body assets/images/robot_body.png
+
+# The three-quarter robot: the drawn head over the 3D body (see above).
+cp tool/robot/three_quarter.html "$TMP/three_quarter.html"
+cp branding/robot_body_three_quarter.png "$TMP/body.png"
+cp assets/images/robot_head.png "$TMP/head.png"
+"$CHROME" --headless=new --disable-gpu --hide-scrollbars --allow-file-access-from-files \
+  --virtual-time-budget=5000 --default-background-color=00000000 \
+  --window-size=512,512 --screenshot="$PWD/assets/images/robot.png" \
+  "file://$TMP/three_quarter.html" 2>/dev/null
+echo "assets/images/robot.png"
 
 # The robot facing the child comes from a picture (the user's reference,
 # branding/robot_front_source.png); tool/robot/front.html clears its

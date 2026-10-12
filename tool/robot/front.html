@@ -117,18 +117,94 @@ img.onload = () => {
       (back && x > 258 && x < 294 && y > 346 && y < 412));
     if (teal || wheel || button) { p[i] = 146; p[i + 1] = 220; p[i + 2] = 207; }
   }
+  // Straight on: the source's body is turned a little (one arm and wheel in
+  // front, the other behind), so only its head is kept; the neck, body, arms
+  // and wheels are drawn here facing the child squarely, in the same style
+  // and proportions as the 3D robot (tool/robot/build_model.py).
+  const axis = 256, neck = 326;
+  for (let y = neck; y < 512; y++) for (let x = 0; x < 512; x++) p[(y * 512 + x) * 4 + 3] = 0;
   o.putImageData(od, 0, 0);
-  // The ground strokes under the wheels, the same tapered shapes and places
-  // as in the side view, so every facing stands on the same marks.
-  o.fillStyle = "#222244";
-  for (const [x0, x1, y, t] of [[186, 281, 496, 7], [284, 363, 483, 5.5]]) {
-    const mid = (x0 + x1) / 2 - (x1 - x0) * 0.1;
-    o.beginPath();
-    o.moveTo(x0, y);
-    o.quadraticCurveTo(mid, y - t, x1, y + 2);
-    o.quadraticCurveTo(mid, y + t, x0, y);
-    o.fill();
+  const body = document.createElement("canvas");
+  body.width = body.height = 512;
+  const b = body.getContext("2d");
+  const NAVY = "#222244", TEAL = "#92dccf", DARK = "#5cb099", YELLOW = "#fae790";
+  b.lineJoin = b.lineCap = "round";
+  b.strokeStyle = NAVY;
+  const shape = (fill, width, path) => {
+    b.beginPath();
+    path();
+    b.fillStyle = fill;
+    b.fill();
+    b.lineWidth = width;
+    b.stroke();
+  };
+  // The ground strokes, one under each wheel.
+  b.fillStyle = NAVY;
+  for (const side of [-1, 1]) {
+    const x = axis + side * 52;
+    b.beginPath();
+    b.moveTo(x - 32, 495);
+    b.quadraticCurveTo(x, 489, x + 32, 495);
+    b.quadraticCurveTo(x, 500, x - 32, 495);
+    b.fill();
   }
+  // Wheels seen head-on: their treads, under the body's sides.
+  for (const side of [-1, 1]) {
+    const x = axis + side * 52;
+    shape(TEAL, 3.5, () => b.roundRect(x - 19, 438, 38, 54, 14));
+    b.lineWidth = 2;
+    b.beginPath();
+    for (const y of [450, 461, 472, 483]) {
+      b.moveTo(x - 16, y);
+      b.lineTo(x + 16, y);
+    }
+    b.stroke();
+  }
+  // Neck band, mostly under the head.
+  shape(DARK, 3, () => b.roundRect(axis - 46, 306, 92, 40, 10));
+  // Body: a little wider at the bottom, with a seam across near the bottom.
+  shape(TEAL, 4, () => {
+    b.moveTo(axis - 68, 338);
+    b.quadraticCurveTo(axis, 330, axis + 68, 338);
+    b.lineTo(axis + 78, 432);
+    b.quadraticCurveTo(axis + 80, 458, axis + 54, 458);
+    b.lineTo(axis - 54, 458);
+    b.quadraticCurveTo(axis - 80, 458, axis - 78, 432);
+    b.closePath();
+  });
+  b.lineWidth = 2.4;
+  b.beginPath();
+  b.moveTo(axis - 77, 424);
+  b.quadraticCurveTo(axis, 432, axis + 77, 424);
+  b.stroke();
+  // Arms: ribbed yellow, hanging close to the body, hands at the bottom.
+  for (const side of [-1, 1]) {
+    b.save();
+    b.translate(axis + side * 88, 392);
+    b.rotate(-side * 0.16);
+    shape(YELLOW, 3.5, () => b.roundRect(-16, -44, 32, 88, 16));
+    b.lineWidth = 2.2;
+    b.beginPath();
+    for (const y of [-24, -10, 4, 18, 32]) {
+      const half = 15 * Math.sqrt(1 - (y / 46) ** 2);
+      b.moveTo(-half, y);
+      b.quadraticCurveTo(0, y + 3, half, y);
+    }
+    b.stroke();
+    // The hand: a little teal ring.
+    b.lineWidth = 10;
+    b.beginPath();
+    b.arc(side * 2, 52, 9, 0, Math.PI * 2);
+    b.stroke();
+    b.strokeStyle = TEAL;
+    b.lineWidth = 4.5;
+    b.stroke();
+    b.restore();
+  }
+  // The kept head goes on top, so its lower edge overlaps the neck band.
+  b.drawImage(o.canvas, 0, 0);
+  o.clearRect(0, 0, 512, 512);
+  o.drawImage(body, 0, 0);
   // The side view's small details: the seam from the antenna to the front
   // (seen head-on, straight down the middle), the two screws beside it (one
   // behind the other, so stacked), and a little ring on each side.
@@ -142,38 +218,47 @@ img.onload = () => {
     o.globalCompositeOperation = "source-atop";
     o.lineWidth = 2.8;
     o.beginPath();
-    o.moveTo(188, 90);
-    o.bezierCurveTo(180, 170, 186, 250, 200, 268);
-    o.quadraticCurveTo(206, 279, 222, 279);
-    o.lineTo(308, 279);
-    o.quadraticCurveTo(324, 279, 330, 268);
-    o.bezierCurveTo(344, 250, 350, 170, 342, 90);
-    o.moveTo(234, 279);
-    o.lineTo(228, 322);
-    o.moveTo(296, 279);
-    o.lineTo(302, 322);
-    o.moveTo(234, 288);
-    o.lineTo(296, 288);
+    o.moveTo(179, 90);
+    o.bezierCurveTo(171, 170, 177, 250, 191, 268);
+    o.quadraticCurveTo(197, 279, 213, 279);
+    o.lineTo(299, 279);
+    o.quadraticCurveTo(315, 279, 321, 268);
+    o.bezierCurveTo(335, 250, 341, 170, 333, 90);
+    o.moveTo(225, 279);
+    o.lineTo(219, 322);
+    o.moveTo(287, 279);
+    o.lineTo(293, 322);
+    o.moveTo(225, 288);
+    o.lineTo(287, 288);
     o.stroke();
     // A battery hatch on the chest.
     o.globalCompositeOperation = "source-over";
     o.fillStyle = "#78c8ba";
     o.lineWidth = 2.6;
     o.beginPath();
-    o.roundRect(258, 372, 34, 26, 7);
+    o.roundRect(239, 372, 34, 26, 7);
     o.fill();
     o.stroke();
     o.restore();
   } else {
     o.lineWidth = 2.6;
     o.beginPath();
-    o.moveTo(265, 96);
-    o.lineTo(265, 117);
+    o.moveTo(256, 96);
+    o.lineTo(256, 117);
     o.stroke();
+    // The chest buttons, one above the other on the centre line.
+    o.fillStyle = "#92dccf";
+    o.lineWidth = 2.4;
+    for (const y of [362, 388]) {
+      o.beginPath();
+      o.arc(axis, y, 7, 0, Math.PI * 2);
+      o.fill();
+      o.stroke();
+    }
   }
   o.lineWidth = 1.6;
   for (const [x, y, r, fill] of [
-    ...(back ? [] : [[276, 104, 3.2, "#fae790"], [276, 113, 3.2, "#fae790"]]),
+    ...(back ? [] : [[267, 104, 3.2, "#fae790"], [267, 113, 3.2, "#fae790"]]),
     [134, 172, 3.2, null], [384, 172, 3.2, null],
   ]) {
     o.beginPath();
