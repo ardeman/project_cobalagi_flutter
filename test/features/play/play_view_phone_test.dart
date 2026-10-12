@@ -492,6 +492,38 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('after a bump, the hint moves the one ring to the real mistake', (
+    tester,
+  ) async {
+    await _pumpPhone(tester, size: const Size(1280, 800));
+    final cubit = tester.element(find.byType(BlockEditor)).read<BlocksCubit>();
+    // Turn left on a one-row road (the mistake), then step: a bump.
+    cubit
+      ..add(BlockType.turnLeft)
+      ..add(BlockType.forward);
+    await tester.pump();
+    final turn = cubit.state.main.first.id;
+    final step = cubit.state.main.last.id;
+    Iterable<Key?> ringed() => tester
+        .widgetList<BlockTile>(find.byType(BlockTile))
+        .where((t) => t.bumped)
+        .map((t) => t.key);
+    await tester.tap(find.widgetWithText(FilledButton, 'Go!'));
+    for (var i = 0; i < 60 && find.text('Try again!').evaluate().isEmpty; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    // The bump marks the step that walked into the rock.
+    expect(ringed(), [ValueKey(step)]);
+    await tester.tap(find.text('Try again!'));
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.tap(find.widgetWithIcon(IconButton, Icons.lightbulb_rounded));
+    await tester.pump(const Duration(milliseconds: 300));
+    // The hint moves the same ring to the turn that went off the road:
+    // still one ring, never two.
+    expect(ringed(), [ValueKey(turn)]);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('the block that bumped is marked until the child changes it', (
     tester,
   ) async {
