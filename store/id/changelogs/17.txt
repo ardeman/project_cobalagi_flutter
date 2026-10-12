@@ -1,3 +1,4 @@
 - Koba tampil baru: berdiri tegak dari setiap sisi dan menggelinding dengan rodanya, tidak lagi melompat, juga di layar pembuka.
 - Setiap teka-teki kini berada di permukaan planetnya sendiri, sedikit miring, dengan batu, tanaman, dan kawah yang beragam di sekitar jalan, digambar dengan gaya Koba.
 - Petunjuk kini melingkari blok yang perlu diganti, jadi anak tahu di mana programnya mulai keluar jalur.
+- Suara baru untuk roda, belokan, tabrakan, bintang, dan garis akhir Koba.

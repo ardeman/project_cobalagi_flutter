@@ -1,3 +1,4 @@
 - Koba has a fresh look: it stands straight from every side and rolls on its wheels instead of hopping, on the opening screen too.
 - Every puzzle now takes place on the planet's own surface, at a slight tilt, with varied rocks, plants and craters around the path, drawn in Koba's style.
 - The hint now rings the block to change, so your child sees where the program goes off track.
+- New sounds for Koba's wheels, turns, bumps, stars and the finish.
