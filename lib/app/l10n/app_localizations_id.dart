@@ -148,6 +148,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get soundEffects => 'Efek suara';
 
   @override
+  String get hintArrowsFollowRoad => 'Panah petunjuk mengikuti jalan';
+
+  @override
+  String get hintArrowsFollowRoadHint =>
+      'Mati: panah menghadap ke atas, seperti di balok.';
+
+  @override
   String get soundEffectsHint => 'Suara petunjuk tetap terdengar.';
 
   @override

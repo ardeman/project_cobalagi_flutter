@@ -4,6 +4,7 @@ import '../program/program.dart';
 import '../world/direction.dart';
 import '../world/grid_point.dart';
 import '../world/level.dart';
+import 'route_pattern.dart';
 import 'solver.dart';
 
 /// Every block in [program] that takes the robot no closer to the finish
@@ -66,6 +67,10 @@ List<String> offTrackBlocks(Level level, Program program) {
 ///
 /// Step by step can't see a loop's mistakes: a magic block with one step too
 /// many walks the route the first time and only goes astray the second.
+///
+/// A program with no loop on a lesson that can't be solved without one (the
+/// route has more steps than the lesson allows blocks) is compared with the
+/// loop the pattern hint shows, so blocks that belong inside it are rung.
 List<String>? loopShapeMistakes(Level level, Program program) {
   final route = solve(level)?.body;
   if (route == null) return null;
@@ -98,7 +103,7 @@ List<String>? loopShapeMistakes(Level level, Program program) {
     loop ??= (kind: kind, id: instruction.blockId, body: blocks, times: times);
     main.add((token: _loopToken, id: instruction.blockId));
   }
-  if (loop == null) return null;
+  if (loop == null) return _missingLoopMistakes(level, route, steps, main);
 
   // Every right answer of that shape: the route as a start, a part that
   // repeats (the last round may stop early, on the flag), and an end.
@@ -122,20 +127,31 @@ List<String>? loopShapeMistakes(Level level, Program program) {
           _same(rest, shape.sublist(0, rest.length));
       // Any number of rounds from two, the rest written out after the loop,
       // or with that last part round run by the loop.
-      for (final (rounds, end) in [
-        for (var r = 2; r <= full; r++) (r, start + r * unit),
-        if (partial) (full + 1, steps.length),
+      // The Magic Block can also be called with other blocks between
+      // rounds.
+      final gapped = patternRounds(steps, start, unit, gaps: true);
+      for (final (rounds, answerMain) in [
+        for (var r = 2; r <= full; r++)
+          (
+            r,
+            _answerMain(steps, unit, [
+              for (var i = 0; i < r; i++) start + i * unit,
+            ], loop.kind),
+          ),
+        if (partial)
+          (
+            full + 1,
+            _answerMain(steps, unit, [
+              for (var i = 0; i <= full; i++) start + i * unit,
+            ], loop.kind),
+          ),
+        if (loop.kind == _LoopKind.star && gapped.length >= 2)
+          (gapped.length, _answerMain(steps, unit, gapped, loop.kind)),
       ]) {
         if (rounds < 2) continue;
-        if (loop.kind == _LoopKind.until && end != steps.length) continue;
-        final answerMain = [
-          ...steps.sublist(0, start),
-          if (loop.kind == _LoopKind.star)
-            for (var i = 0; i < rounds; i++) _loopToken
-          else
-            _loopToken,
-          ...steps.sublist(end),
-        ];
+        if (loop.kind == _LoopKind.until && answerMain.last != _loopToken) {
+          continue;
+        }
         final (mainCost, mainWrong) = _compare(main, answerMain);
         final (bodyCost, bodyWrong) = _compare(loop.body, shape);
         final countWrong =
@@ -150,6 +166,59 @@ List<String>? loopShapeMistakes(Level level, Program program) {
     }
   }
   return best?.wrong;
+}
+
+/// The blocks of a program with no loop that don't match the pattern hint's
+/// answer, or null when the lesson can be solved without a loop.
+List<String>? _missingLoopMistakes(
+  Level level,
+  List<Instruction> route,
+  List<String> steps,
+  List<_Block> main,
+) {
+  final kind = level.palette.contains(InstructionKind.untilGoal)
+      ? _LoopKind.until
+      : level.palette.contains(InstructionKind.call)
+      ? _LoopKind.star
+      : level.palette.contains(InstructionKind.repeat)
+      ? _LoopKind.repeat
+      : null;
+  final maxBlocks = level.maxBlocks;
+  if (kind == null || maxBlocks == null || steps.length <= maxBlocks) {
+    return null;
+  }
+  final pattern = findPattern(
+    steps,
+    gaps: kind == _LoopKind.star,
+    toEnd: kind == _LoopKind.until,
+  );
+  if (pattern == null) return null;
+  return _compare(
+    main,
+    _answerMain(steps, pattern.unit, pattern.rounds, kind),
+  ).$2;
+}
+
+/// The main row of the answer that runs [steps] with a loop of [unit] steps
+/// starting at each of [rounds]: the steps outside the rounds, and the loop
+/// block (once per round for the Magic Block, else once).
+List<String> _answerMain(
+  List<String> steps,
+  int unit,
+  List<int> rounds,
+  _LoopKind kind,
+) {
+  final answer = <String>[];
+  for (var i = 0; i < steps.length;) {
+    if (rounds.contains(i)) {
+      if (kind == _LoopKind.star || i == rounds.first) answer.add(_loopToken);
+      i += unit;
+    } else {
+      answer.add(steps[i]);
+      i++;
+    }
+  }
+  return answer;
 }
 
 typedef _Block = ({String token, String? id});

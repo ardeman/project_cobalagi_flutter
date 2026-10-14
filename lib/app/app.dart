@@ -12,6 +12,7 @@ import '../core/audio/music_cubit.dart';
 import '../core/audio/sound_effects_cubit.dart';
 import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
+import '../core/settings/hint_arrows_cubit.dart';
 import '../core/settings/settings_cubit.dart';
 import '../core/settings/settings_repository.dart';
 import '../features/learning/data/curriculum_repository.dart';
@@ -108,6 +109,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           lazy: false,
           create: (_) => BreakReminderCubit(widget.settings)..load(),
         ),
+        BlocProvider(create: (_) => HintArrowsCubit(widget.settings)..load()),
         BlocProvider(
           create: (_) => EntitlementCubit(widget.entitlement)..load(),
         ),

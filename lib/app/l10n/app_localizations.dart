@@ -338,6 +338,18 @@ abstract class AppLocalizations {
   /// **'Sound effects'**
   String get soundEffects;
 
+  /// No description provided for @hintArrowsFollowRoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint arrows follow the road'**
+  String get hintArrowsFollowRoad;
+
+  /// No description provided for @hintArrowsFollowRoadHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Off: the arrows point up, as on the blocks.'**
+  String get hintArrowsFollowRoadHint;
+
   /// No description provided for @soundEffectsHint.
   ///
   /// In en, this message translates to:

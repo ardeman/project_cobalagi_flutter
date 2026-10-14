@@ -1,7 +1,10 @@
+import 'dart:math' show pi;
+
 import 'package:flame/components.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart' show IconData;
 
+import '../../../../engine/world/direction.dart';
 import 'world_components.dart' show standUp;
 
 /// One step of a hint, drawn on the map like the block that makes it: its
@@ -18,6 +21,7 @@ final class HintMark {
     this.faded = false,
     this.big = false,
     this.loop,
+    this.heading,
   });
 
   /// Where the mark sits, in tiles (0.5 is a tile's centre).
@@ -45,20 +49,32 @@ final class HintMark {
   /// A block the pattern hint puts inside the loop: ringed in the loop
   /// block's colour, so it stands apart from blocks before or after it.
   final Color? loop;
+
+  /// The way Koba is going on the board at this step: a move's arrow points
+  /// that way, and a turn's arrow starts from it, so the marks follow the
+  /// road. Null for a mark drawn the right way up, such as the loop block.
+  final Direction? heading;
 }
 
 /// A [HintMark] drawn as a small block, styled like the editor's blocks: a
 /// rounded square with the block's gradient, soft rim and shadow, and its
-/// white picture the right way up.
+/// white picture turned to follow the road.
 class HintMarkComponent extends PositionComponent {
-  HintMarkComponent(this.mark)
+  HintMarkComponent(this.mark, {this.followRoad = true})
     : super(position: mark.at, size: Vector2.all(_size), anchor: Anchor.center);
 
   final HintMark mark;
 
+  /// Whether the picture turns to [HintMark.heading]; off, it stays the
+  /// right way up, exactly as on the block (a parent setting).
+  final bool followRoad;
+
   static const _size = 0.46;
 
-  static const _radius = Radius.circular(_size * 0.24);
+  /// The size the mark is drawn at before it is scaled down to [_size].
+  static const _units = 100.0;
+
+  static const _radius = Radius.circular(_units * 0.24);
 
   late final _fill = Paint()
     ..shader = LinearGradient(
@@ -69,19 +85,19 @@ class HintMarkComponent extends PositionComponent {
         mark.color,
         Color.lerp(mark.color, const Color(0xFF000000), 0.08)!,
       ],
-    ).createShader(const Rect.fromLTWH(0, 0, _size, _size));
+    ).createShader(const Rect.fromLTWH(0, 0, _units, _units));
   static final _rim = Paint()
     ..color = const Color(0x59FFFFFF)
     ..style = PaintingStyle.stroke
-    ..strokeWidth = _size * 0.07;
+    ..strokeWidth = _units * 0.07;
   static final _shadow = Paint()
     ..color = const Color(0x2E000000)
-    ..maskFilter = const MaskFilter.blur(BlurStyle.normal, _size * 0.04);
+    ..maskFilter = const MaskFilter.blur(BlurStyle.normal, _units * 0.04);
 
   late final TextPainter _icon = _glyph(
     String.fromCharCode(mark.icon.codePoint),
     TextStyle(
-      fontSize: 1,
+      fontSize: 100,
       fontFamily: mark.icon.fontFamily,
       package: mark.icon.fontPackage,
       color: const Color(0xFFFFFFFF),
@@ -92,7 +108,7 @@ class HintMarkComponent extends PositionComponent {
     final badge? => _glyph(
       String.fromCharCode(badge.icon.codePoint),
       TextStyle(
-        fontSize: 1,
+        fontSize: 100,
         fontFamily: badge.icon.fontFamily,
         package: badge.icon.fontPackage,
         color: const Color(0xFFFFFFFF),
@@ -106,7 +122,7 @@ class HintMarkComponent extends PositionComponent {
       : _glyph(
           mark.label!,
           TextStyle(
-            fontSize: 1,
+            fontSize: 100,
             fontFamily: mark.labelFont,
             fontWeight: FontWeight.w900,
             height: 1,
@@ -123,6 +139,10 @@ class HintMarkComponent extends PositionComponent {
   void render(Canvas canvas) {
     // A sign standing on its tile, like the pieces around it.
     standUp(canvas, const Offset(_size / 2, _size / 2));
+    // Drawn in a box [_units] across and scaled down to the mark's size:
+    // drawn at its real size (under half a tile), Android's renderer turns
+    // the rounded corners and the loop ring into coarse, uneven curves.
+    canvas.scale(_size / _units);
     if (mark.faded) {
       canvas.saveLayer(null, Paint()..color = const Color(0x5CFFFFFF));
     }
@@ -132,35 +152,40 @@ class HintMarkComponent extends PositionComponent {
 
   void _draw(Canvas canvas) {
     final box = RRect.fromRectAndRadius(
-      const Rect.fromLTWH(0, 0, _size, _size),
+      const Rect.fromLTWH(0, 0, _units, _units),
       _radius,
     );
     // Inside the loop: a thick ring in the loop block's colour.
     if (mark.loop case final loop?) {
       canvas.drawRRect(
-        box.inflate(_size * 0.1),
+        box.inflate(_units * 0.1),
         Paint()
           ..color = loop
           ..style = PaintingStyle.stroke
-          ..strokeWidth = _size * 0.1,
+          ..strokeWidth = _units * 0.1,
       );
     }
     canvas
-      ..drawRRect(box.shift(const Offset(0, _size * 0.06)), _shadow)
+      ..drawRRect(box.shift(const Offset(0, _units * 0.06)), _shadow)
       ..drawRRect(box, _fill)
-      ..drawRRect(box.deflate(_size * 0.035), _rim);
-    // The block's picture, the right way up, as on the block itself.
-    const glyph = _size * 0.6;
+      ..drawRRect(box.deflate(_units * 0.035), _rim);
+    // The block's picture, turned to the way Koba is going on the screen
+    // (the component itself is kept upright as the map turns).
+    const glyph = _units * 0.6;
     canvas
       ..save()
-      ..translate(_size / 2, _size / 2)
+      ..translate(_units / 2, _units / 2)
+      ..rotate(switch (mark.heading) {
+        final heading? when followRoad => heading.index * pi / 2 - angle,
+        _ => 0,
+      })
       ..scale(glyph / _icon.height)
       ..translate(-_icon.width / 2, -_icon.height / 2);
     _icon.paint(canvas, Offset.zero);
     canvas.restore();
     if ((mark.badge, _badge) case (final badge?, final glyph?)) {
-      const r = 0.1;
-      const centre = Offset(0.11, _size - 0.11);
+      const r = _units * 0.1 / _size;
+      const centre = Offset(_units * 0.24, _units * 0.76);
       canvas
         ..drawCircle(centre, r, Paint()..color = badge.color)
         ..drawCircle(
@@ -169,11 +194,11 @@ class HintMarkComponent extends PositionComponent {
           Paint()
             ..color = const Color(0xFFFFFFFF)
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 0.025,
+            ..strokeWidth = _units * 0.025 / _size,
         )
         ..save()
         ..translate(centre.dx, centre.dy)
-        ..scale(0.13 / glyph.height)
+        ..scale(_units * 0.13 / _size / glyph.height)
         ..translate(-glyph.width / 2, -glyph.height / 2);
       glyph.paint(canvas, Offset.zero);
       canvas.restore();
@@ -181,8 +206,8 @@ class HintMarkComponent extends PositionComponent {
     if (_label case final label?) {
       // A white bubble on the corner holding the number, outlined in the
       // block's colour.
-      const r = 0.17;
-      const centre = Offset(_size - 0.02, 0.02);
+      const r = _units * 0.17 / _size;
+      const centre = Offset(_units * 0.96, _units * 0.04);
       canvas
         ..drawCircle(centre, r, Paint()..color = const Color(0xFFFFFFFF))
         ..drawCircle(
@@ -191,11 +216,11 @@ class HintMarkComponent extends PositionComponent {
           Paint()
             ..color = mark.color
             ..style = PaintingStyle.stroke
-            ..strokeWidth = 0.04,
+            ..strokeWidth = _units * 0.04 / _size,
         )
         ..save()
         ..translate(centre.dx, centre.dy)
-        ..scale(0.26 / label.height)
+        ..scale(_units * 0.26 / _size / label.height)
         ..translate(-label.width / 2, -label.height / 2);
       label.paint(canvas, Offset.zero);
       canvas.restore();
@@ -205,7 +230,7 @@ class HintMarkComponent extends PositionComponent {
 
 /// The hint's route: dots along the tiles from the character to where
 /// the route ends, drawn out over [drawIn] seconds as the blocks appear, so
-/// the blocks themselves never need turning to show the way.
+/// the way shows even when the blocks are kept upright.
 class HintTrailComponent extends PositionComponent {
   // Added before the hint's blocks, so it lies under them and over the floor.
   HintTrailComponent(this.points, {required this.drawIn});

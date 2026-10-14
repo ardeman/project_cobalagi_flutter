@@ -6,14 +6,26 @@ import 'package:cobalagi/engine/world/direction.dart';
 import 'package:cobalagi/engine/world/level.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-Level level(List<String> rows, {Direction facing = Direction.east}) =>
-    Level.fromRows(
-      id: 't',
-      concept: 'test',
-      rows: rows,
-      startFacing: facing,
-      palette: InstructionKind.values.toSet(),
-    );
+Level level(
+  List<String> rows, {
+  Direction facing = Direction.east,
+  int? maxBlocks,
+  Set<InstructionKind>? palette,
+}) => Level.fromRows(
+  id: 't',
+  concept: 'test',
+  rows: rows,
+  startFacing: facing,
+  palette: palette ?? InstructionKind.values.toSet(),
+  maxBlocks: maxBlocks,
+);
+
+Set<InstructionKind> loopPalette(InstructionKind loop) => {
+  InstructionKind.move,
+  InstructionKind.turnLeft,
+  InstructionKind.turnRight,
+  loop,
+};
 
 List<String> offTrack(Level l, List<Instruction> body) =>
     offTrackBlocks(l, Program(body));
@@ -175,6 +187,66 @@ void main() {
         ], blockId: 'loop'),
       ]);
       expect(loopShapeMistakes(stairs, program), ['loop', 'wrong-turn']);
+    });
+
+    test('without a loop where one is needed, its blocks are rung', () {
+      // loops-03: six blocks can't walk eleven steps, and the pattern hint
+      // puts the first forward inside the loop.
+      final needsLoop = level(
+        ['######', '####G#', '###..#', '##..##', '#S.###'],
+        maxBlocks: 6,
+        palette: loopPalette(InstructionKind.repeat),
+      );
+      expect(
+        loopShapeMistakes(
+          needsLoop,
+          const Program([
+            Move(blockId: 'a'),
+            Move(blockId: 'b'),
+            Move(blockId: 'c'),
+          ]),
+        ),
+        ['a', 'b', 'c'],
+      );
+    });
+
+    test('a Magic Block answer with a block between calls is right', () {
+      // functions-05: star, star, forward, star.
+      final l = level(
+        [
+          '#############',
+          '#G###########',
+          '#.....#######',
+          '#####....####',
+          '########...S#',
+        ],
+        facing: Direction.west,
+        maxBlocks: 13,
+        palette: loopPalette(InstructionKind.call),
+      );
+      const program = Program(
+        [
+          Call(blockId: 's1'),
+          Call(blockId: 's2'),
+          Move(blockId: 'between'),
+          Call(blockId: 's3'),
+        ],
+        procedure: [Move(), Move(), Move(), TurnRight(), Move(), TurnLeft()],
+      );
+      expect(loopShapeMistakes(l, program), isEmpty);
+      // Without a magic block, every forward belongs in one but the one
+      // written between the calls (any of them can be that one).
+      expect(
+        loopShapeMistakes(
+          l,
+          const Program([
+            Move(blockId: 'a'),
+            Move(blockId: 'b'),
+            Move(blockId: 'c'),
+          ]),
+        ),
+        hasLength(2),
+      );
     });
 
     test('programs without a loop are judged step by step', () {

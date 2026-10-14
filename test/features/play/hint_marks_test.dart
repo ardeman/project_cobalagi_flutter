@@ -1,3 +1,4 @@
+import 'package:cobalagi/engine/generator/route_pattern.dart';
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/program/program.dart';
@@ -42,6 +43,12 @@ void main() {
     expect(marks.first.at, Vector2(1, 1.5));
     expect(marks[2].at, Vector2(2.5, 1.5));
     expect(marks.every((m) => m.label == null), isTrue);
+    // The arrows follow the road: steps the way Koba moves, a turn from the
+    // way Koba faced before it.
+    expect(
+      [for (final m in marks) m.heading],
+      [Direction.east, Direction.east, Direction.east, Direction.north],
+    );
     // The trail shows the way: the start tile, then each tile walked into.
     expect(hintTrail(level, solve(level)!), [
       Vector2(0.5, 1.5),
@@ -82,28 +89,54 @@ void main() {
   });
 
   group('findPattern', () {
+    // The shape's length, then where each round starts.
+    List<Object>? pattern(RoutePattern? p) =>
+        p == null ? null : [p.unit, p.rounds];
+
     const m = InstructionKind.move;
     const l = InstructionKind.turnLeft;
     const r = InstructionKind.turnRight;
 
     test('a corridor repeats one step', () {
-      expect(findPattern([m, m, m, m, m]), (start: 0, unit: 1, times: 5));
+      expect(pattern(findPattern([m, m, m, m, m])), [
+        1,
+        [0, 1, 2, 3, 4],
+      ]);
     });
 
     test('stairs repeat their shape, a last part-round counts', () {
-      expect(findPattern([m, l, m, r, m, l, m, r, m, l, m]), (
-        start: 0,
-        unit: 4,
-        times: 3,
-      ));
+      expect(pattern(findPattern([m, l, m, r, m, l, m, r, m, l, m])), [
+        4,
+        [0, 4, 8],
+      ]);
     });
 
     test('a lead-in comes before the repeating part', () {
-      expect(findPattern([m, m, r, m, l, m, l, m, l, m, l]), (
-        start: 3,
-        unit: 2,
-        times: 4,
-      ));
+      expect(pattern(findPattern([m, m, r, m, l, m, l, m, l, m, l])), [
+        2,
+        [3, 5, 7, 9],
+      ]);
+    });
+
+    // functions-05: the third round has one more forward first.
+    final extraStep = [m, m, m, r, m, l, m, m, m, r, m, l, m, m, m, m, r, m];
+
+    test('a part round only counts on the flag', () {
+      expect(pattern(findPattern(extraStep)), [
+        6,
+        [0, 6],
+      ]);
+    });
+
+    test('the Magic Block can have a block between its rounds', () {
+      expect(pattern(findPattern(extraStep, gaps: true)), [
+        6,
+        [0, 6, 13],
+      ]);
+    });
+
+    test('until the flag must reach the flag', () {
+      expect(findPattern([m, l, m, l, r], toEnd: true), isNull);
     });
 
     test('nothing repeats', () {

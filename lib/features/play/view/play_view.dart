@@ -15,6 +15,7 @@ import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/feedback/cheers.dart';
 import '../../../core/responsive/window_class.dart';
+import '../../../core/settings/hint_arrows_cubit.dart';
 import '../../../engine/generator/off_track.dart';
 import '../../../engine/generator/solver.dart';
 import '../../../engine/interpreter/run_event.dart';
@@ -341,14 +342,16 @@ class _PlayViewState extends State<PlayView> {
     _hintStep = (_hintStep + 1) % steps.length;
     final step = steps[_hintStep];
     final trail = hintTrail(_level, solution);
+    final followRoad = context.read<HintArrowsCubit?>()?.state ?? true;
     switch (step) {
       case _Hint.route:
         _game.showHint(
           hintMarks(_level, solution, labelFont: font),
           trail: trail,
+          followRoad: followRoad,
         );
       case _Hint.pattern:
-        _game.showHint(pattern!, trail: trail);
+        _game.showHint(pattern!, trail: trail, followRoad: followRoad);
       case _Hint.ring:
         setState(() {
           _lookHere = offTrack.toSet();

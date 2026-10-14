@@ -160,6 +160,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get soundEffects => 'Sound effects';
 
   @override
+  String get hintArrowsFollowRoad => 'Hint arrows follow the road';
+
+  @override
+  String get hintArrowsFollowRoadHint =>
+      'Off: the arrows point up, as on the blocks.';
+
+  @override
   String get soundEffectsHint => 'Voices always play.';
 
   @override

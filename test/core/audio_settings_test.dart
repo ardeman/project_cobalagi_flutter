@@ -6,6 +6,7 @@ import 'package:cobalagi/core/audio/music.dart';
 import 'package:cobalagi/core/audio/music_cubit.dart';
 import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/audio/sound_effects_cubit.dart';
+import 'package:cobalagi/core/settings/hint_arrows_cubit.dart';
 import 'package:cobalagi/core/settings/settings_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
@@ -62,6 +63,19 @@ void main() {
     await cubit.set(on: false);
     expect(audio.musicOn, isFalse);
     final reopened = MusicCubit(settings, FakeAudio());
+    await reopened.load();
+    expect(reopened.state, isFalse);
+  });
+
+  test('hint arrows follow the road unless a parent turns it off', () async {
+    final settings = SettingsRepository(
+      await newDatabaseFactoryMemory().openDatabase('h.db'),
+    );
+    final cubit = HintArrowsCubit(settings);
+    await cubit.load();
+    expect(cubit.state, isTrue);
+    await cubit.set(followRoad: false);
+    final reopened = HintArrowsCubit(settings);
     await reopened.load();
     expect(reopened.state, isFalse);
   });

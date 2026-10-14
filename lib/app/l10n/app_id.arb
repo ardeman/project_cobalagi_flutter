@@ -40,6 +40,8 @@
   "progressSponsorOnly": "Sponsor bisa melihat laporan perkembangan lengkap: teka-teki yang selesai, waktu bermain, dan kemajuan di setiap planet.",
   "music": "Musik latar",
   "soundEffects": "Efek suara",
+  "hintArrowsFollowRoad": "Panah petunjuk mengikuti jalan",
+  "hintArrowsFollowRoadHint": "Mati: panah menghadap ke atas, seperti di balok.",
   "soundEffectsHint": "Suara petunjuk tetap terdengar.",
   "supportCobaLagi": "Dukung Coba Lagi",
   "debugPlanOverride": "Debug: pakai versi lengkap",

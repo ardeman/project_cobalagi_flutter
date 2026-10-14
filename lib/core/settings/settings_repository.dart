@@ -10,6 +10,7 @@ class SettingsRepository {
   static const _effectsKey = 'soundEffects';
   static const _musicKey = 'music';
   static const _breakKey = 'breakMinutes';
+  static const _hintArrowsKey = 'hintArrowsFollowRoad';
 
   /// Language code chosen in the parent area, or null to follow the device.
   Future<String?> loadLanguageCode() async =>
@@ -46,4 +47,12 @@ class SettingsRepository {
 
   Future<void> saveBreakMinutes(int minutes) =>
       _store.record(_breakKey).put(_db, minutes);
+
+  /// Whether the hint's arrows turn to follow the road; on unless a parent
+  /// chose arrows that point up, as on the blocks.
+  Future<bool> loadHintArrowsFollowRoad() async =>
+      await _store.record(_hintArrowsKey).get(_db) as bool? ?? true;
+
+  Future<void> saveHintArrowsFollowRoad(bool on) =>
+      _store.record(_hintArrowsKey).put(_db, on);
 }

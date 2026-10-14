@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 
+import '../../../engine/generator/route_pattern.dart';
 import '../../../engine/interpreter/interpreter.dart';
 import '../../../engine/interpreter/run_event.dart';
 import '../../../engine/program/instruction.dart';
@@ -12,9 +13,9 @@ import '../../editors/blocks/view/block_tile.dart';
 import 'world/hint_mark.dart';
 
 /// Turns [solution] into hint marks that look like the level's own blocks,
-/// exactly as in the palette and never turned: a step block between tiles
-/// and a turn block on the tile where it turns. Which way the route goes is
-/// shown by [hintTrail], so a mark always means "this block".
+/// turned to follow the road: a step block between tiles, its arrow the way
+/// Koba moves, and a turn block on the tile where it turns, its arrow
+/// starting the way Koba faced. [hintTrail] draws the route under them.
 ///
 /// Levels without a single-step block move with the Step Box: each straight
 /// stretch becomes one "use steps" mark carrying its length.
@@ -45,6 +46,7 @@ List<HintMark> hintMarks(Level level, Program solution, {String? labelFont}) {
           ),
           label: '$length',
           labelFont: labelFont,
+          heading: facing,
         ),
       );
     }
@@ -68,6 +70,7 @@ List<HintMark> hintMarks(Level level, Program solution, {String? labelFont}) {
               at: _between(from, to),
               icon: walk.icon,
               color: walk.color,
+              heading: facing,
             ),
           );
         }
@@ -81,6 +84,7 @@ List<HintMark> hintMarks(Level level, Program solution, {String? labelFont}) {
             at: Vector2(at.x + 0.5 + (k - 1) * 0.3, at.y + 0.5),
             icon: turn.icon,
             color: turn.color,
+            heading: from,
           ),
         );
       default:
@@ -113,34 +117,6 @@ List<Vector2> hintTrail(Level level, Program solution) => [
     if (event case Moved(:final to)) Vector2(to.x + 0.5, to.y + 0.5),
 ];
 
-/// A run of steps that comes back again and again in a route.
-typedef RoutePattern = ({int start, int unit, int times});
-
-/// The repeating shape that covers the most of [steps] (shapes of up to
-/// half the route, coming back at least twice in a row), or null if nothing
-/// repeats. A last, partial round counts: the run stops on the flag.
-RoutePattern? findPattern(List<InstructionKind> steps) {
-  RoutePattern? best;
-  var bestCovered = 0;
-  for (var unit = 1; unit * 2 <= steps.length; unit++) {
-    for (var start = 0; start + unit * 2 <= steps.length; start++) {
-      var covered = unit;
-      while (start + covered < steps.length &&
-          steps[start + covered] == steps[start + covered % unit]) {
-        covered++;
-      }
-      final times = covered ~/ unit + (covered % unit > 0 ? 1 : 0);
-      // Whole rounds must repeat at least once; prefer covering more, then
-      // a shorter shape.
-      if (covered >= unit * 2 && covered > bestCovered) {
-        best = (start: start, unit: unit, times: times);
-        bestCovered = covered;
-      }
-    }
-  }
-  return best;
-}
-
 /// The second hint on islands with a loop block: the route's repeating
 /// shape. Blocks inside the loop are ringed in the loop block's colour;
 /// its first round is bright, later rounds fade, blocks before and after
@@ -165,15 +141,24 @@ List<HintMark>? patternHintMarks(
   final steps = [for (final i in solution.body) i.kind];
   final route = hintMarks(level, solution, labelFont: labelFont);
   if (route.length != steps.length) return null;
-  final pattern = findPattern(steps);
-  if (pattern == null) return null;
-  final end = pattern.start + pattern.unit;
-  // Where the loop's rounds stop; blocks after it are the child's to place.
-  final loopEnd = (pattern.start + pattern.unit * pattern.times).clamp(
-    0,
-    route.length,
+  final pattern = findPattern(
+    steps,
+    gaps: loop == BlockType.star,
+    toEnd: loop == BlockType.untilGoal,
   );
-  final first = route[pattern.start].at;
+  if (pattern == null) return null;
+  final (:unit, :rounds) = pattern;
+  final end = rounds.first + unit;
+  // Which round each step is in; steps outside every round are the child's
+  // to place, before, between (Magic Block) or after them.
+  int? roundOf(int i) {
+    for (var r = 0; r < rounds.length; r++) {
+      if (i >= rounds[r] && i < rounds[r] + unit) return r;
+    }
+    return null;
+  }
+
+  final first = route[rounds.first].at;
   final marks = [
     for (var i = 0; i < route.length; i++)
       HintMark(
@@ -183,11 +168,12 @@ List<HintMark>? patternHintMarks(
         badge: route[i].badge,
         label: route[i].label,
         labelFont: labelFont,
+        heading: route[i].heading,
         // Blocks inside the loop are ringed in its colour; its later rounds
-        // fade, because the loop does them. Blocks before and after it stay
-        // as they are: the child places those.
-        loop: i >= pattern.start && i < loopEnd ? loop.color : null,
-        faded: i >= end && i < loopEnd,
+        // fade, because the loop does them. Blocks outside it stay as they
+        // are: the child places those.
+        loop: roundOf(i) != null ? loop.color : null,
+        faded: (roundOf(i) ?? 0) > 0,
       ),
   ];
   // Pops in right after the first round: these blocks, again and again.
@@ -198,7 +184,7 @@ List<HintMark>? patternHintMarks(
       icon: loop.icon,
       color: loop.color,
       // Until the flag needs no count.
-      label: loop == BlockType.untilGoal ? null : '${pattern.times}',
+      label: loop == BlockType.untilGoal ? null : '${rounds.length}',
       labelFont: labelFont,
       big: true,
     ),

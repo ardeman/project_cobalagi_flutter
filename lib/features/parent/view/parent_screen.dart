@@ -10,6 +10,7 @@ import '../../../core/audio/music_cubit.dart';
 import '../../../core/audio/sound_effects_cubit.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/plan.dart';
+import '../../../core/settings/hint_arrows_cubit.dart';
 import '../../../core/settings/settings_cubit.dart';
 import '../../../core/version/app_version_text.dart';
 import '../../../learning/learner_state.dart';
@@ -118,6 +119,15 @@ class ParentScreen extends StatelessWidget {
                 title: Text(l10n.music),
                 value: context.watch<MusicCubit>().state,
                 onChanged: (on) => context.read<MusicCubit>().set(on: on),
+              ),
+              SwitchListTile(
+                contentPadding: EdgeInsets.zero,
+                secondary: const Icon(Icons.turn_right_rounded),
+                title: Text(l10n.hintArrowsFollowRoad),
+                subtitle: Text(l10n.hintArrowsFollowRoadHint),
+                value: context.watch<HintArrowsCubit>().state,
+                onChanged: (on) =>
+                    context.read<HintArrowsCubit>().set(followRoad: on),
               ),
               const SizedBox(height: 8),
               ListTile(

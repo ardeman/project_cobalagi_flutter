@@ -210,8 +210,13 @@ class WorldGame extends FlameGame {
   /// they run, then shrinks them away.
   ///
   /// The [trail] (tile centres along the route) is drawn out underneath as
-  /// the blocks appear, showing which way they go.
-  void showHint(List<HintMark> marks, {List<Vector2> trail = const []}) {
+  /// the blocks appear, showing which way they go. The blocks' arrows turn
+  /// to follow the road unless [followRoad] is off (a parent setting).
+  void showHint(
+    List<HintMark> marks, {
+    List<Vector2> trail = const [],
+    bool followRoad = true,
+  }) {
     if (!isLoaded) return;
     world.children.whereType<HintMarkComponent>().forEach(
       (old) => old.removeFromParent(),
@@ -229,7 +234,7 @@ class WorldGame extends FlameGame {
     }
     for (var i = 0; i < marks.length; i++) {
       world.add(
-        HintMarkComponent(marks[i])
+        HintMarkComponent(marks[i], followRoad: followRoad)
           ..scale = Vector2.zero()
           ..addAll([
             ScaleEffect.to(

@@ -447,12 +447,16 @@ void main() {
       'Show me the blocks that repeat',
     );
 
-    // The pattern shows; the blocks are right so far, so the way is next.
+    // The pattern shows; the forward belongs inside the loop (three blocks
+    // can't walk eight steps), so ringing it is next.
     await tester.tap(bulb);
     await tester.pump(const Duration(milliseconds: 300));
     expect(voices.clips.last, 'hint_pattern');
-    expect(badge(), Icons.route_rounded);
-    expect(tester.widget<IconButton>(bulb).tooltip, 'Show me the way');
+    expect(badge(), Icons.adjust_rounded);
+    expect(
+      tester.widget<IconButton>(bulb).tooltip,
+      'Show me which blocks to change',
+    );
     expect(tester.takeException(), isNull);
   });
 
