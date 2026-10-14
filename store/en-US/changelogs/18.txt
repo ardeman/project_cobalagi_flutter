@@ -1,0 +1,4 @@
+- The light bulb's arrows now point along the path, so children can follow the way more easily. Parents can switch them back to pointing up, like the blocks, in the Parent area.
+- The light bulb now marks blocks that belong inside a loop when a puzzle needs one.
+- The light bulb shows the right repeating blocks on the Magic Block and loop planets.
+- Smoother light bulb blocks on Android.

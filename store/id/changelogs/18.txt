@@ -1,0 +1,4 @@
+- Panah lampu petunjuk kini mengikuti arah jalan, jadi anak lebih mudah mengikuti alurnya. Orang tua bisa mengembalikannya menghadap ke atas, seperti di blok, di Area Orang Tua.
+- Lampu petunjuk kini menandai blok yang seharusnya ada di dalam perulangan saat teka-teki membutuhkannya.
+- Lampu petunjuk menunjukkan blok berulang yang tepat di planet Blok Ajaib dan perulangan.
+- Blok lampu petunjuk tampil lebih halus di Android.
