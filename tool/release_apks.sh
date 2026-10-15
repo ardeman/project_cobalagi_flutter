@@ -9,6 +9,9 @@
 #   tool/release_apks.sh            # build, then publish as a pre-release
 #   tool/release_apks.sh --dry-run  # build and show what would be published
 #   tool/release_apks.sh --latest   # publish as the latest full release
+#   tool/release_apks.sh --build-only  # only build the APKs (CI's android job)
+#   tool/release_apks.sh --skip-build  # publish APKs already in
+#                                      # build/app/outputs/flutter-apk (CI)
 #
 # GitHub Actions runs it after every version bump
 # (.github/workflows/release-apks.yml), with the upload key from the
@@ -18,10 +21,14 @@ cd "$(dirname "$0")/.."
 
 dry_run=false
 prerelease=true
+build_apks=true
+publish=true
 for arg in "$@"; do
   case "$arg" in
     --dry-run) dry_run=true ;;
     --latest) prerelease=false ;;
+    --build-only) publish=false ;;
+    --skip-build) build_apks=false ;;
     *) echo "Unknown option: $arg" >&2; exit 2 ;;
   esac
 done
@@ -34,7 +41,7 @@ out="build/release/$tag"
 
 # Without the upload key, release builds are debug-signed and would not
 # install over each other; never publish those.
-if [ ! -f android/key.properties ]; then
+if $build_apks && [ ! -f android/key.properties ]; then
   echo "android/key.properties is missing: APKs would be debug-signed." >&2
   exit 1
 fi
@@ -65,10 +72,16 @@ fi
 
 # GitHub's own version codes, so any newer APK installs over any older one
 # (android/app/build.gradle.kts).
-export COBALAGI_GITHUB_APK=1
-flutter build apk --release --split-per-abi
-# The universal APK last: it has its own file name, so both sets remain.
-flutter build apk --release
+if $build_apks; then
+  export COBALAGI_GITHUB_APK=1
+  flutter build apk --release --split-per-abi
+  # The universal APK last: it has its own file name, so both sets remain.
+  flutter build apk --release
+fi
+if ! $publish; then
+  echo "Built the APKs in build/app/outputs/flutter-apk."
+  exit 0
+fi
 
 rm -rf "$out"
 mkdir -p "$out"

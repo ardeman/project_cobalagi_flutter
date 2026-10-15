@@ -83,23 +83,14 @@ jobs:
           path: build/release/*.AppImage
           if-no-files-found: error
 
-  release:
-    needs: [version, linux]
+  # The checks, the APKs and the AppImage build side by side; the release
+  # waits for all three.
+  checks:
+    needs: version
+    if: needs.version.outputs.new == 'true'
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
-
-      - uses: actions/download-artifact@v8
-        with:
-          name: appimage
-          path: build/release
-
-      - uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '17'
 
       - uses: subosito/flutter-action@v2
         with:
@@ -113,6 +104,25 @@ jobs:
           dart format --set-exit-if-changed .
           flutter analyze
           flutter test
+
+  android:
+    needs: version
+    if: needs.version.outputs.new == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.1'
+          channel: stable
+          cache: true
 
       - name: Set up the upload key
         env:
@@ -133,14 +143,43 @@ jobs:
             echo "keyPassword=$KEY_PASSWORD"
           } > android/key.properties
 
-      - name: Build and publish
+      - name: Build the APKs
         run: |
-          if [ "${{ inputs.latest }}" = "true" ]; then
-            tool/release_apks.sh --latest
-          else
-            tool/release_apks.sh
-          fi
+          flutter pub get
+          tool/release_apks.sh --build-only
 
       - name: Remove the upload key
         if: always()
         run: rm -f android/app/upload.jks android/key.properties
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: apks
+          path: build/app/outputs/flutter-apk/*.apk
+          if-no-files-found: error
+
+  release:
+    needs: [version, checks, android, linux]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: appimage
+          path: build/release
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: apks
+          path: build/app/outputs/flutter-apk
+
+      - name: Publish
+        run: |
+          if [ "${{ inputs.latest }}" = "true" ]; then
+            tool/release_apks.sh --skip-build --latest
+          else
+            tool/release_apks.sh --skip-build
+          fi
