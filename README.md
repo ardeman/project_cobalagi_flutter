@@ -268,7 +268,7 @@ flutter build macos --release   # → build/macos/Build/Products/Release/Coba La
 
 - Needs macOS 12 or later, Xcode and CocoaPods. The window opens at 1280 × 800 and can't shrink below 960 × 600.
 - **Apple Silicon only (`ARCHS = arm64`).** Xcode 27's `lipo -verify_arch` accepts one architecture per call, which breaks Flutter 3.41's universal-build check. Remove `ARCHS = arm64` from `macos/Runner.xcodeproj` once Flutter handles it, to bring back Intel Macs.
-- **Not distributed for now:** developers build and run it themselves (`open "build/macos/Build/Products/Release/Coba Lagi.app"`). The build is ad-hoc signed, so it runs only on the Mac that built it. Distributing it later needs an Apple Developer account (Developer ID signing and notarization, or the Mac App Store).
+- **Not distributed for now:** developers build and run it themselves (`open "build/macos/Build/Products/Release/Coba Lagi.app"`). The build is ad-hoc signed, so it runs only on the Mac that built it. Distributing it later needs an Apple Developer account (Developer ID signing and notarization, or the Mac App Store); see Roadmap → Next: more platforms.
 - Donations are off on macOS (free plan only); the store is wired up for Android and iOS.
 
 ## Character
@@ -428,6 +428,29 @@ execution. A save inside a conditional does not guarantee a value outside it.
 The number shown in the world follows playback, including Step, and resets
 when the program is edited. Both editors compile to shared `SetSteps` and
 `MoveSteps` instructions; the world only displays interpreter events.
+
+### Next: more platforms
+
+Planned on 2026-10-15. Apple's stores wait for an Apple Developer account (not yet).
+
+| Where | Platforms | Built by |
+| --- | --- | --- |
+| Google Play | Android | CI (as now) |
+| App Store | iOS (also the foldable iPhone Duo), iPadOS, macOS | Locally on the developer's Mac, uploaded with Xcode or Transporter |
+| GitHub Releases (sideloading) | Android APKs (as now), macOS, Windows, Linux (also Steam Deck) | CI, when the version changes |
+
+Steps, one small change each:
+
+1. **App Store rules:** hide unlock codes in App Store builds (guideline 3.1.1 bans unlocking outside in-app purchase) and call the purchases support or tips there, not donations (only nonprofits may take donations). GitHub builds keep unlock codes.
+2. **iOS and iPadOS config:** privacy manifest (`PrivacyInfo.xcprivacy`), `ITSAppUsesNonExemptEncryption = NO`, all orientations and resizing (no `UIRequiresFullScreen`), so iPad split view and the iPhone Duo's fold work. Folding or unfolding mid-puzzle keeps the puzzle. Check that music mixes with other audio as on Android.
+3. **Mac App Store:** app sandbox and in-app purchase on macOS (donations are off there now).
+4. **App Store listing:** Kids Category with an age band, privacy label "Data Not Collected", age rating, text within Apple's limits (subtitle 30, keywords 100, promo text 170 characters) in `store/` with a limits test, and iPhone 6.9″ and iPad 13″ screenshots from `store/render.sh`.
+5. **macOS on GitHub:** Developer ID signing and notarization in CI (needs the Apple account; secrets set with the user's approval).
+6. **Windows on GitHub:** a zip or installer built in CI. Unsigned builds show a SmartScreen warning until there is a code-signing certificate.
+7. **Linux and Steam Deck on GitHub:** an x86_64 AppImage built in CI, so it runs on SteamOS's read-only system without installing packages; add it to Steam as a non-Steam game. Check on the Deck that touch, the 1280 × 800 screen, audio (GStreamer) and Game Mode work.
+8. **Docs:** update AGENTS.md (build platforms, "Google Play only" decision), the intro and status above, the website and `privacy.html` where they name only Google Play.
+
+Windows, Linux and GitHub macOS builds have no store billing, so they stay on the free plan; unlock codes still unlock sponsor features.
 
 ### Later
 
