@@ -1,0 +1,1 @@
+- Steam Deck: one small file now adds Coba Lagi to your Steam library, with its own pictures, so it opens from Game Mode like any other game. Run it again to update.
