@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Builds the release APKs (one per Android architecture, plus a universal
 # one that runs on every device) and publishes them, with the Linux AppImage
-# when tool/build_appimage.sh has built it, as a GitHub Release, tagged
+# when tool/build_appimage.sh has built it (and CobaLagi-Steam.zip, which
+# adds it to Steam: linux/steam/), as a GitHub Release, tagged
 # v<name>+<build> from pubspec.yaml, with the build's release notes from
 # store/<locale>/changelogs/<build>.txt.
 #
@@ -79,15 +80,22 @@ cp build/app/outputs/flutter-apk/app-release.apk \
   "$out/cobalagi-$name-build$build-universal.apk"
 # Built on Linux (in CI, by another job), so it is optional here.
 appimage="CobaLagi-x86_64.AppImage"
+steam_zip="CobaLagi-Steam.zip"
 if [ -f "build/release/$appimage" ]; then
   cp "build/release/$appimage" "$out/"
+  rm -rf "$out/CobaLagi-Steam"
+  mkdir -p "$out/CobaLagi-Steam"
+  cp -R linux/steam/add_to_steam.sh linux/steam/artwork "$out/CobaLagi-Steam/"
+  (cd "$out" && rm -f "$steam_zip" && zip -qr "$steam_zip" CobaLagi-Steam)
+  rm -rf "$out/CobaLagi-Steam"
 else
   appimage=""
+  steam_zip=""
 fi
 files=("$out"/*.apk)
-if [ -n "$appimage" ]; then files+=("$out/$appimage"); fi
+if [ -n "$appimage" ]; then files+=("$out/$appimage" "$out/$steam_zip"); fi
 
-(cd "$out" && shasum -a 256 ./*.apk ${appimage:+"./$appimage"} |
+(cd "$out" && shasum -a 256 ./*.apk ${appimage:+"./$appimage"} ${steam_zip:+"./$steam_zip"} |
   sed 's| \./| |' > SHA256SUMS.txt)
 
 notes="$out/notes.md"
@@ -111,6 +119,7 @@ notes="$out/notes.md"
   echo "| \`cobalagi-$name-build$build-x86_64.apk\` | Emulators and Chromebooks |"
   if [ -n "$appimage" ]; then
     echo "| \`$appimage\` | Linux PCs and the Steam Deck |"
+    echo "| \`$steam_zip\` | Adds the AppImage to Steam, with its artwork (Steam Deck) |"
   fi
   echo
   echo "## Before you install"
@@ -120,7 +129,7 @@ notes="$out/notes.md"
   echo "- **Google Play copies:** these APKs are signed with the upload key, not Google Play's key, so they can't update a copy installed from Google Play (or the other way round). Uninstall first, which removes the players' progress."
   if [ -n "$appimage" ]; then
     echo "- **Linux:** make the AppImage executable (\`chmod +x $appimage\`, or Properties → Permissions) and open it. It needs no installing and keeps progress in your home folder. To update, replace the old file with the new one (same name): progress stays."
-    echo "- **Steam Deck:** in Desktop Mode, download the AppImage, make it executable as above, then in Steam choose Add a Game → Add a Non-Steam Game and pick it. It then plays in Game Mode too, by touch or with the Deck's controls. Updating by replacing the file keeps the Steam shortcut working."
+    echo "- **Steam Deck:** in Desktop Mode, download the AppImage and \`$steam_zip\`, unzip it (right-click → Extract → Extract archive here), open the \`CobaLagi-Steam\` folder and run \`add_to_steam.sh\` (right-click → Run In Konsole). It moves the AppImage to the Applications folder in your home folder, adds Coba Lagi to Steam with its pictures, and restarts Steam; it then plays in Game Mode too, by touch or with the Deck's controls. To update, download the new AppImage and run \`add_to_steam.sh\` again: progress stays."
   fi
   echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"

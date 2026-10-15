@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+# Adds Coba Lagi to Steam as a non-Steam game, with its library artwork, so
+# it plays from Game Mode on the Steam Deck. Run it in Desktop Mode from the
+# folder it was unzipped to, with CobaLagi-x86_64.AppImage downloaded:
+#   ./add_to_steam.sh [path/to/CobaLagi-x86_64.AppImage]
+# Without a path it looks next to itself, one folder up, in ~/Downloads and
+# in ~/Applications. It moves the AppImage to ~/Applications (so the shortcut
+# never breaks), closes Steam while it edits each Steam user's shortcuts.vdf
+# (keeping a .bak copy), and starts Steam again. Running it again updates
+# the shortcut and artwork instead of adding a second one; to update the
+# game itself, run it again with the new AppImage.
+# STEAM_DIR overrides where Steam lives (for testing).
+set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
+name="CobaLagi-x86_64.AppImage"
+apps="$HOME/Applications"
+
+appimage=""
+for candidate in "${1:-}" "$here/$name" "$here/../$name" \
+    "$HOME/Downloads/$name" "$apps/$name"; do
+  if [ -n "$candidate" ] && [ -f "$candidate" ]; then
+    appimage="$(cd "$(dirname "$candidate")" && pwd)/$(basename "$candidate")"
+    break
+  fi
+done
+if [ -z "$appimage" ]; then
+  echo "Can't find $name. Download it from the same release, then run this again." >&2
+  exit 1
+fi
+
+mkdir -p "$apps"
+if [ "$appimage" != "$apps/$name" ]; then
+  mv -f "$appimage" "$apps/$name"
+fi
+appimage="$apps/$name"
+chmod +x "$appimage"
+
+steam_dir="${STEAM_DIR:-}"
+if [ -z "$steam_dir" ]; then
+  for candidate in "$HOME/.local/share/Steam" "$HOME/.steam/steam" \
+      "$HOME/.var/app/com.valvesoftware.Steam/.local/share/Steam"; do
+    if [ -d "$candidate/userdata" ]; then steam_dir="$candidate"; break; fi
+  done
+fi
+if [ -z "$steam_dir" ] || [ ! -d "$steam_dir/userdata" ]; then
+  echo "Can't find Steam. Open Steam and sign in once, then run this again." >&2
+  exit 1
+fi
+
+# Steam rewrites shortcuts.vdf when it closes, so it must not be running.
+restart=""
+if [ -z "${STEAM_DIR:-}" ] && pgrep -x steam >/dev/null; then
+  echo "Closing Steam for a moment..."
+  restart=1
+  steam -shutdown >/dev/null 2>&1 || true
+  for _ in $(seq 60); do
+    pgrep -x steam >/dev/null || break
+    sleep 1
+  done
+  if pgrep -x steam >/dev/null; then
+    echo "Steam didn't close. Quit it (Steam → Exit), then run this again." >&2
+    exit 1
+  fi
+fi
+
+python3 - "$steam_dir" "$appimage" "$here/artwork" <<'PY'
+import glob, json, os, shutil, struct, sys, zlib
+
+steam_dir, appimage, art = sys.argv[1:4]
+NAME = "Coba Lagi"
+exe = f'"{appimage}"'
+start_dir = f'"{os.path.dirname(appimage)}/"'
+ENC = ("utf-8", "surrogateescape")
+
+# Binary VDF: a type byte, a key, a value; 0x08 ends a map.
+def read_map(b, i):
+    items = []
+    while True:
+        t = b[i]; i += 1
+        if t == 8:
+            return items, i
+        j = b.index(0, i); key = b[i:j].decode(*ENC); i = j + 1
+        if t == 0:
+            value, i = read_map(b, i)
+        elif t == 1:
+            j = b.index(0, i); value = b[i:j].decode(*ENC); i = j + 1
+        elif t == 2:
+            value = struct.unpack_from("<I", b, i)[0]; i += 4
+        elif t == 7:
+            value = struct.unpack_from("<Q", b, i)[0]; i += 8
+        else:
+            raise ValueError(f"unknown VDF type {t} at byte {i - 1}")
+        items.append([t, key, value])
+
+def write_map(items):
+    out = bytearray()
+    for t, key, value in items:
+        out.append(t); out += key.encode(*ENC) + b"\0"
+        if t == 0: out += write_map(value)
+        elif t == 1: out += value.encode(*ENC) + b"\0"
+        elif t == 2: out += struct.pack("<I", value)
+        elif t == 7: out += struct.pack("<Q", value)
+    out.append(8)
+    return bytes(out)
+
+def field(entry, key):
+    for item in entry:
+        if item[1].lower() == key.lower():
+            return item
+    return None
+
+def put(entry, t, key, value):
+    item = field(entry, key)
+    if item: item[0], item[2] = t, value
+    else: entry.append([t, key, value])
+
+users = [d for d in glob.glob(os.path.join(steam_dir, "userdata", "*"))
+         if os.path.basename(d).isdigit() and os.path.basename(d) != "0"]
+if not users:
+    sys.exit("No Steam user found. Open Steam and sign in once, then run this again.")
+
+for user in users:
+    config = os.path.join(user, "config")
+    os.makedirs(config, exist_ok=True)
+    path = os.path.join(config, "shortcuts.vdf")
+    if os.path.exists(path) and os.path.getsize(path) > 0:
+        with open(path, "rb") as f: data = f.read()
+        root, _ = read_map(data, 0)
+        shutil.copyfile(path, path + ".bak")
+    else:
+        root = []
+    shortcuts = field(root, "shortcuts")
+    if shortcuts is None:
+        shortcuts = [0, "shortcuts", []]; root.append(shortcuts)
+    entries = shortcuts[2]
+
+    entry = None
+    for _, _, e in entries:
+        app_name = field(e, "AppName"); target = field(e, "Exe")
+        if (app_name and app_name[2] == NAME) or \
+           (target and target[2].strip('"').endswith("/CobaLagi-x86_64.AppImage")):
+            entry = e; break
+    if entry is None:
+        entry = [[2, "appid", zlib.crc32((exe + NAME).encode()) | 0x80000000],
+                 [1, "AppName", NAME], [1, "Exe", ""], [1, "StartDir", ""],
+                 [1, "icon", ""], [1, "ShortcutPath", ""], [1, "LaunchOptions", ""],
+                 [2, "IsHidden", 0], [2, "AllowDesktopConfig", 1],
+                 [2, "AllowOverlay", 1], [2, "OpenVR", 0], [2, "Devkit", 0],
+                 [1, "DevkitGameID", ""], [2, "DevkitOverrideAppID", 0],
+                 [2, "LastPlayTime", 0], [1, "FlatpakAppID", ""], [0, "tags", []]]
+        entries.append([0, str(len(entries)), entry])
+    # Keep an appid Steam already gave the shortcut: its artwork is named by it.
+    if field(entry, "appid") is None:
+        put(entry, 2, "appid", zlib.crc32((exe + NAME).encode()) | 0x80000000)
+    appid = field(entry, "appid")[2]
+
+    grid = os.path.join(config, "grid")
+    os.makedirs(grid, exist_ok=True)
+    for src, dst in [("capsule", f"{appid}p"), ("wide", f"{appid}"),
+                     ("hero", f"{appid}_hero"), ("logo", f"{appid}_logo"),
+                     ("icon", f"{appid}_icon")]:
+        for old in glob.glob(os.path.join(grid, dst + ".*")):
+            if not old.endswith(".json"): os.remove(old)
+        shutil.copyfile(os.path.join(art, src + ".png"), os.path.join(grid, dst + ".png"))
+    with open(os.path.join(grid, f"{appid}.json"), "w") as f:
+        json.dump({"nVersion": 1, "logoPosition": {"pinnedPosition": "BottomLeft",
+                   "nWidthPct": 50, "nHeightPct": 50}}, f)
+
+    put(entry, 1, "AppName", NAME)
+    put(entry, 1, "Exe", exe)
+    put(entry, 1, "StartDir", start_dir)
+    put(entry, 1, "icon", os.path.join(grid, f"{appid}_icon.png"))
+
+    with open(path, "wb") as f: f.write(write_map(root))
+    print(f"Added Coba Lagi for Steam user {os.path.basename(user)}.")
+PY
+
+if [ -n "$restart" ]; then
+  echo "Starting Steam again..."
+  (setsid steam >/dev/null 2>&1 &)
+fi
+echo "Done. Coba Lagi is in your Steam library, also in Game Mode."
