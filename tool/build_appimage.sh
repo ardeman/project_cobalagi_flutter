@@ -5,7 +5,10 @@
 # graphics drivers and glibc come from the system, so build on the oldest
 # distribution the AppImage should run on (CI uses Ubuntu 22.04).
 #
-#   tool/build_appimage.sh   # → build/release/cobalagi-<name>-build<build>-x86_64.AppImage
+#   tool/build_appimage.sh   # → build/release/CobaLagi-x86_64.AppImage
+#
+# The name never changes, so updating is replacing the file: the Steam
+# shortcut keeps working, and progress stays in the home folder.
 #
 # Needs an x86_64 Linux machine with Flutter's Linux build tools and:
 #   sudo apt-get install clang cmake ninja-build pkg-config libgtk-3-dev \
@@ -21,11 +24,8 @@ if [ "$(uname -s)-$(uname -m)" != "Linux-x86_64" ]; then
   exit 1
 fi
 
-version="$(sed -n 's/^version: *//p' pubspec.yaml)"
-name="${version%+*}"
-build="${version#*+}"
 out="build/release"
-appimage="$out/cobalagi-$name-build$build-x86_64.AppImage"
+appimage="$out/CobaLagi-x86_64.AppImage"
 
 # Pinned so a new upload can't change a release: the linuxdeploy release
 # tag and each plugin's commit.

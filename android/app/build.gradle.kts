@@ -56,6 +56,32 @@ android {
     }
 }
 
+// GitHub Releases' APKs (tool/release_apks.sh sets COBALAGI_GITHUB_APK=1):
+// any APK of a newer release must install over any APK of an older one, even
+// switching between the universal APK and one for a single architecture.
+// Flutter numbers split APKs 1000 × architecture + build and the universal
+// one just build, so arm64 build 19 (2019) would refuse universal build 20.
+// Here the build comes first: 100000 + build × 10 + architecture, above every
+// code published before. Google Play's App Bundle keeps the plain build.
+if (System.getenv("COBALAGI_GITHUB_APK") == "1") {
+    @Suppress("DEPRECATION")
+    android.applicationVariants.all {
+        val build = versionCode
+        outputs.all {
+            val output = this as com.android.build.gradle.api.ApkVariantOutput
+            val architecture = when (
+                output.getFilter(com.android.build.VariantOutput.FilterType.ABI)
+            ) {
+                "armeabi-v7a" -> 1
+                "arm64-v8a" -> 2
+                "x86_64" -> 4
+                else -> 0
+            }
+            output.versionCodeOverride = 100_000 + build * 10 + architecture
+        }
+    }
+}
+
 flutter {
     source = "../.."
 }

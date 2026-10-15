@@ -62,6 +62,9 @@ if ! $dry_run; then
   fi
 fi
 
+# GitHub's own version codes, so any newer APK installs over any older one
+# (android/app/build.gradle.kts).
+export COBALAGI_GITHUB_APK=1
 flutter build apk --release --split-per-abi
 # The universal APK last: it has its own file name, so both sets remain.
 flutter build apk --release
@@ -75,7 +78,7 @@ done
 cp build/app/outputs/flutter-apk/app-release.apk \
   "$out/cobalagi-$name-build$build-universal.apk"
 # Built on Linux (in CI, by another job), so it is optional here.
-appimage="cobalagi-$name-build$build-x86_64.AppImage"
+appimage="CobaLagi-x86_64.AppImage"
 if [ -f "build/release/$appimage" ]; then
   cp "build/release/$appimage" "$out/"
 else
@@ -113,10 +116,11 @@ notes="$out/notes.md"
   echo "## Before you install"
   echo
   echo "- **No automatic updates:** this copy doesn't update itself. For automatic updates, install Coba Lagi from Google Play instead."
+  echo "- **Updating:** install a newer APK from here over the old one; progress stays. Any APK of a newer release installs over any APK of an older one, whichever file you picked before."
   echo "- **Google Play copies:** these APKs are signed with the upload key, not Google Play's key, so they can't update a copy installed from Google Play (or the other way round). Uninstall first, which removes the players' progress."
   if [ -n "$appimage" ]; then
-    echo "- **Linux:** make the AppImage executable (\`chmod +x $appimage\`, or Properties → Permissions) and open it. It needs no installing and keeps progress in your home folder."
-    echo "- **Steam Deck:** in Desktop Mode, download the AppImage, make it executable as above, then in Steam choose Add a Game → Add a Non-Steam Game and pick it. It then plays in Game Mode too, by touch."
+    echo "- **Linux:** make the AppImage executable (\`chmod +x $appimage\`, or Properties → Permissions) and open it. It needs no installing and keeps progress in your home folder. To update, replace the old file with the new one (same name): progress stays."
+    echo "- **Steam Deck:** in Desktop Mode, download the AppImage, make it executable as above, then in Steam choose Add a Game → Add a Non-Steam Game and pick it. It then plays in Game Mode too, by touch or with the Deck's controls. Updating by replacing the file keeps the Steam shortcut working."
   fi
   echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"
