@@ -1,0 +1,4 @@
+- Saat blok diseret, bayangan blok menunjukkan tepat di mana blok akan diletakkan.
+- Blok bisa diletakkan sebelum atau sesudah blok perulangan yang lebar, dan melepas blok di antara blok lain menaruhnya tepat di situ.
+- Blok langsung bergerak saat disentuh; usap ruang di sekitarnya untuk menggulir.
+- Menahan blok di dekat bagian atas atau bawah layar akan menggulir, jadi setiap tempat bisa dijangkau.

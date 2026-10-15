@@ -1,0 +1,4 @@
+- While a block is dragged, a see-through copy shows exactly where it will land.
+- Blocks can be placed before or after a wide loop block, and dropping between blocks puts the block right there.
+- Blocks move as soon as they are touched; swipe the space around them to scroll.
+- Holding a block near the top or bottom of the screen scrolls, so every spot is in reach.
