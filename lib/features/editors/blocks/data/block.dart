@@ -82,6 +82,8 @@ final class BlockProgram {
     this.tapToStar = false,
     this.selectedContainer,
     this.pickedBlock,
+    this.carrying = false,
+    this.overPalette = false,
   });
 
   final List<Block> main;
@@ -97,6 +99,14 @@ final class BlockProgram {
   /// button removes just this block. How a child fixes one block in place.
   final String? pickedBlock;
 
+  /// The picked block (or picked repeat or condition) is being carried with
+  /// a controller: the d-pad moves it, A puts it down, B puts it back.
+  final bool carrying;
+
+  /// The carried block is steered back over the palette, out of the
+  /// program: putting it down there deletes it, as dropping it there does.
+  final bool overPalette;
+
   /// Nothing to run: the main row is empty.
   bool get isEmpty => main.isEmpty;
 
@@ -106,6 +116,8 @@ final class BlockProgram {
     bool? tapToStar,
     String? Function()? selectedContainer,
     String? Function()? pickedBlock,
+    bool? carrying,
+    bool? overPalette,
   }) => BlockProgram(
     main: main ?? this.main,
     star: star ?? this.star,
@@ -114,6 +126,8 @@ final class BlockProgram {
         ? selectedContainer()
         : this.selectedContainer,
     pickedBlock: pickedBlock != null ? pickedBlock() : this.pickedBlock,
+    carrying: carrying ?? this.carrying,
+    overPalette: overPalette ?? this.overPalette,
   );
 }
 

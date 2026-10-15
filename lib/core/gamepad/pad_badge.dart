@@ -12,8 +12,7 @@ class PadBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final wide =
-        button == PadButton.leftBumper || button == PadButton.rightBumper;
+    final wide = button.label.length > 1 && button.label.codeUnitAt(0) < 128;
     return ExcludeSemantics(
       child: Container(
         height: size,

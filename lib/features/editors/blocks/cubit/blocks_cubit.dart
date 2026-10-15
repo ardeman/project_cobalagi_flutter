@@ -103,15 +103,19 @@ class BlocksCubit extends Cubit<BlockProgram> {
     if (state.pickedBlock case final picked?) {
       if (replace(picked, type)) return true;
     }
+    return add(type, parentId: _tapRow(type));
+  }
+
+  /// Where a tapped palette block goes. A new repeat starts in the main
+  /// row; actions go inside the selected container. A condition can go
+  /// inside a repeat.
+  String? _tapRow(BlockType type) {
     final selected = state.selectedContainer;
-    // A new repeat starts in the main row; actions go inside the selected
-    // container. A condition can go inside a repeat.
-    final parent = selected != null && _fits(type, selected)
+    return selected != null && _fits(type, selected)
         ? selected
         : state.tapToStar && type != BlockType.star
         ? starRow
         : null;
-    return add(type, parentId: parent);
   }
 
   /// Picks the row that tapped palette blocks go to.
@@ -244,6 +248,148 @@ class BlocksCubit extends Cubit<BlockProgram> {
     } else {
       clear();
     }
+  }
+
+  /// The program before the carried block was lifted, for [cancelCarry] and
+  /// for undo, which takes back the whole move at once.
+  BlockProgram? _beforeCarry;
+
+  /// Lifts block [id] (a repeat or condition with its blocks) so a
+  /// controller can move it ([carryBy]) without dragging: R2 held on it.
+  void carry(String id) {
+    final block = _find(id);
+    if (state.carrying || block == null) return;
+    _beforeCarry = state;
+    _carried = block;
+    _carriedIsNew = false;
+    super.emit(
+      state.copyWith(
+        carrying: true,
+        pickedBlock: () => id,
+        selectedContainer: () => null,
+      ),
+    );
+  }
+
+  /// Drags a new [type] block out of the palette with a controller (R2 held
+  /// on it): it appears where a tap would put it, already carried. Putting
+  /// it down is one edit; B ([cancelCarry]) takes it away again.
+  void grabNew(BlockType type) {
+    if (state.carrying) return;
+    final before = state;
+    if (!add(type, parentId: _tapRow(type))) return;
+    // The add and the move are one edit, recorded when it is put down.
+    _past.removeLast();
+    carry('b${_nextId - 1}');
+    _beforeCarry = before;
+    _carriedIsNew = true;
+  }
+
+  /// The block being carried, kept while it is over the palette and so out
+  /// of the program.
+  Block? _carried;
+
+  /// It came from the palette ([grabNew]): put down over the palette, it
+  /// leaves no edit.
+  var _carriedIsNew = false;
+
+  /// Moves the carried block [step] spots on in reading order (negative:
+  /// back), into and out of repeats and conditions where it fits. It stops
+  /// at the last spot; back past the first, it goes over the palette
+  /// ([BlockProgram.overPalette]), where putting it down deletes it.
+  void carryBy(int step) {
+    final block = _carried;
+    if (!state.carrying || block == null) return;
+    final over = state.overPalette;
+    final without = over ? state : _removed(block.id);
+    final spots = [
+      // The star row shows above the main row.
+      if (without.star.isNotEmpty || _beforeCarry!.star.isNotEmpty)
+        ..._spotsIn(without.star, starRow, block.type),
+      ..._spotsIn(without.main, null, block.type),
+    ];
+    // The palette is the spot before the first.
+    final here = over ? -1 : spots.indexOf(_locate(block.id)!);
+    final to = (here + step).clamp(-1, spots.length - 1);
+    if (to == here || spots.isEmpty) return;
+    if (to < 0) {
+      super.emit(without.copyWith(overPalette: true));
+      return;
+    }
+    final (parentId, index) = spots[to];
+    super.emit(
+      _insert(without, parentId, index, block).copyWith(overPalette: false),
+    );
+  }
+
+  /// Whether the carried block has been steered somewhere else in the
+  /// program (not over the palette).
+  bool get carryMoved {
+    final before = _beforeCarry;
+    if (!state.carrying || before == null || state.overPalette) return false;
+    return !identical(state.main, before.main) ||
+        !identical(state.star, before.star);
+  }
+
+  /// Puts the carried block down where it is: one edit for undo.
+  void dropCarried() {
+    final before = _beforeCarry;
+    if (!state.carrying || before == null) return;
+    _beforeCarry = null;
+    final deleted = state.overPalette;
+    if (deleted && _carriedIsNew) {
+      // A new block taken straight back to the palette: nothing happened.
+      super.emit(before.copyWith(carrying: false));
+      return;
+    }
+    final moved =
+        !identical(state.main, before.main) ||
+        !identical(state.star, before.star);
+    if (moved) {
+      _past.add(before.copyWith(carrying: false));
+      if (_past.length > historyLimit) _past.removeAt(0);
+      _future.clear();
+    }
+    // A repeat or condition goes back to being picked as a row, so the
+    // delete button never takes its blocks with it by accident.
+    final container =
+        !deleted && (_find(state.pickedBlock!)?.type.isContainer ?? false);
+    super.emit(
+      state.copyWith(
+        carrying: false,
+        overPalette: false,
+        pickedBlock: container || deleted ? () => null : null,
+        selectedContainer: container ? () => state.pickedBlock : null,
+      ),
+    );
+  }
+
+  /// Puts the carried block back where it was lifted.
+  void cancelCarry() {
+    final before = _beforeCarry;
+    if (!state.carrying || before == null) return;
+    _beforeCarry = null;
+    super.emit(before.copyWith(carrying: false, overPalette: false));
+  }
+
+  /// Every spot in [blocks] (row [parentId]) and the rows inside them where a
+  /// [type] block fits, in reading order, as [move] takes them.
+  List<(String?, int)> _spotsIn(
+    List<Block> blocks,
+    String? parentId,
+    BlockType type,
+  ) {
+    final parentFits = _fits(type, parentId);
+    return [
+      for (var i = 0; i <= blocks.length; i++) ...[
+        if (parentFits) (parentId, i),
+        if (i < blocks.length && blocks[i].type.isContainer) ...[
+          ..._spotsIn(blocks[i].children, blocks[i].id, type),
+          if (blocks[i].type == BlockType.ifElse)
+            ..._spotsIn(blocks[i].otherwise, otherwiseOf(blocks[i].id), type),
+        ],
+      ],
+    ];
   }
 
   /// Edits that can be undone, oldest first.

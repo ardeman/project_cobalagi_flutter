@@ -547,7 +547,7 @@ class _PlayViewState extends State<PlayView> {
                                     top: 8,
                                     right: 8,
                                     child: GamepadShortcut(
-                                      button: PadButton.rightBumper,
+                                      button: PadButton.y,
                                       onPressed: _turnMap,
                                       // Inside the world's edge.
                                       badgeOnLeft: true,
@@ -564,7 +564,7 @@ class _PlayViewState extends State<PlayView> {
                                       top: 8,
                                       left: 8,
                                       child: GamepadShortcut(
-                                        button: PadButton.menu,
+                                        button: PadButton.view,
                                         onPressed: _touring
                                             ? null
                                             : () => setState(
@@ -853,7 +853,9 @@ class _PlayViewState extends State<PlayView> {
         stars: _solved ? _stars : null,
         message: replay ? null : _decisionMessage(l10n, decision),
         actions: [
+          // A controller's highlight starts here, so A carries on.
           FilledButton.icon(
+            autofocus: true,
             onPressed: widget.onNext,
             icon: Icon(toMap ? Icons.map_rounded : Icons.grid_view_rounded),
             label: Text(toMap ? l10n.toMap : l10n.backToIsland),
@@ -868,10 +870,15 @@ class _PlayViewState extends State<PlayView> {
         title: cheer.text,
         message: _failureMessage(l10n, play.result!.outcome),
         actions: [
-          FilledButton.icon(
+          // B closes the card, like a pop-up.
+          GamepadShortcut(
+            button: PadButton.b,
             onPressed: _play.reset,
-            icon: const Icon(Icons.replay_rounded),
-            label: Text(l10n.tryAgain),
+            child: FilledButton.icon(
+              onPressed: _play.reset,
+              icon: const Icon(Icons.replay_rounded),
+              label: Text(l10n.tryAgain),
+            ),
           ),
         ],
       );
@@ -1015,11 +1022,15 @@ class _TopBar extends StatelessWidget {
           editorSwitch,
           const SizedBox(width: 8),
         ],
-        IconButton.filledTonal(
-          key: listenKey,
-          tooltip: '${l10n.listenAgain}: $goal',
+        GamepadShortcut(
+          button: PadButton.menu,
           onPressed: onListen,
-          icon: const Icon(Icons.volume_up_rounded),
+          child: IconButton.filledTonal(
+            key: listenKey,
+            tooltip: '${l10n.listenAgain}: $goal',
+            onPressed: onListen,
+            icon: const Icon(Icons.volume_up_rounded),
+          ),
         ),
       ],
     );
@@ -1052,27 +1063,38 @@ class _EditorSwitch extends StatelessWidget {
         backgroundColor: codeMode == code ? scheme.primaryContainer : null,
       );
       final onPressed = onPick == null ? null : () => onPick!(code);
+      // R3 (pressing the right stick) switches to the other one: its badge
+      // sits on the one not open. Only readers see the switch.
+      Widget pad(Widget child) => GamepadShortcut(
+        button: PadButton.rightStick,
+        onPressed: codeMode == code ? null : onPressed,
+        child: child,
+      );
       if (iconOnly) {
-        return Tooltip(
-          message: label,
-          child: Semantics(
-            selected: codeMode == code,
-            label: label,
-            excludeSemantics: true,
-            button: true,
-            child: OutlinedButton(
-              style: style,
-              onPressed: onPressed,
-              child: icon,
+        return pad(
+          Tooltip(
+            message: label,
+            child: Semantics(
+              selected: codeMode == code,
+              label: label,
+              excludeSemantics: true,
+              button: true,
+              child: OutlinedButton(
+                style: style,
+                onPressed: onPressed,
+                child: icon,
+              ),
             ),
           ),
         );
       }
-      return OutlinedButton.icon(
-        style: style,
-        onPressed: onPressed,
-        icon: icon,
-        label: Text(label),
+      return pad(
+        OutlinedButton.icon(
+          style: style,
+          onPressed: onPressed,
+          icon: icon,
+          label: Text(label),
+        ),
       );
     }
 
@@ -1355,7 +1377,7 @@ class _RunControls extends StatelessWidget {
                 key: tour?.hint,
                 next: available ? next : null,
                 child: GamepadShortcut(
-                  button: PadButton.y,
+                  button: PadButton.leftStick,
                   onPressed: available ? onHint : null,
                   badgeOnLeft: true,
                   child: IconButton.filledTonal(

@@ -1,6 +1,8 @@
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/view/app_update_notice.dart';
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
@@ -42,23 +44,23 @@ class ProfilesScreen extends StatelessWidget {
         actions: [
           // Labelled, so parents find it and it doesn't look like the lock
           // on a full "new player" tile.
-          Tooltip(
-            message: l10n.parentArea,
-            child: TextButton.icon(
-              // Smaller than dialog buttons: it shares the bar with the
-              // title on small phones.
-              style: TextButton.styleFrom(
-                textStyle: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          GamepadShortcut(
+            button: PadButton.menu,
+            onPressed: () => _openParentArea(context),
+            child: Tooltip(
+              message: l10n.parentArea,
+              child: TextButton.icon(
+                // Smaller than dialog buttons: it shares the bar with the
+                // title on small phones.
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                icon: const Icon(Icons.family_restroom_rounded),
+                label: Text(l10n.parentArea),
+                onPressed: () => _openParentArea(context),
               ),
-              icon: const Icon(Icons.family_restroom_rounded),
-              label: Text(l10n.parentArea),
-              onPressed: () async {
-                if (await showParentGate(context) && context.mounted) {
-                  context.push('/parent');
-                }
-              },
             ),
           ),
         ],
@@ -163,4 +165,11 @@ class _Tile extends StatelessWidget {
       ),
     ),
   );
+}
+
+/// Behind the parent gate, from the bar's button or the controller's ☰.
+Future<void> _openParentArea(BuildContext context) async {
+  if (await showParentGate(context) && context.mounted) {
+    context.push('/parent');
+  }
 }

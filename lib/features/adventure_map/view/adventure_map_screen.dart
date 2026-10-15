@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:liquid_glass_easy/liquid_glass_easy.dart';
@@ -88,10 +90,14 @@ class AdventureMapScreen extends StatelessWidget {
     );
     final play = Padding(
       padding: const EdgeInsets.all(16),
-      child: FilledButton.icon(
-        icon: const Icon(Icons.play_arrow_rounded, size: 48),
-        label: Text(l10n.play),
+      child: GamepadShortcut(
+        button: PadButton.x,
         onPressed: () => context.go('/child/$profileId/play'),
+        child: FilledButton.icon(
+          icon: const Icon(Icons.play_arrow_rounded, size: 48),
+          label: Text(l10n.play),
+          onPressed: () => context.go('/child/$profileId/play'),
+        ),
       ),
     );
     final banner = switch (learner.review) {
@@ -189,15 +195,21 @@ class _StickerButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => IconButton.filledTonal(
-    tooltip: AppLocalizations.of(context).stickerBook,
-    style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
+  Widget build(BuildContext context) => GamepadShortcut(
+    button: PadButton.y,
     onPressed: onPressed,
-    icon: Badge(
-      isLabelVisible: fresh > 0,
-      label: Text('$fresh'),
-      backgroundColor: const Color(0xFFFF7A59),
-      child: const Icon(Icons.collections_bookmark_rounded, size: 32),
+    // The top right carries the count of new stickers.
+    badgeOnLeft: true,
+    child: IconButton.filledTonal(
+      tooltip: AppLocalizations.of(context).stickerBook,
+      style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
+      onPressed: onPressed,
+      icon: Badge(
+        isLabelVisible: fresh > 0,
+        label: Text('$fresh'),
+        backgroundColor: const Color(0xFFFF7A59),
+        child: const Icon(Icons.collections_bookmark_rounded, size: 32),
+      ),
     ),
   );
 }
@@ -249,10 +261,14 @@ class _WelcomeState extends State<_Welcome> {
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 32),
-          FilledButton.icon(
-            icon: const Icon(Icons.play_arrow_rounded, size: 48),
-            label: Text(l10n.pretestStart),
+          GamepadShortcut(
+            button: PadButton.x,
             onPressed: onStart,
+            child: FilledButton.icon(
+              icon: const Icon(Icons.play_arrow_rounded, size: 48),
+              label: Text(l10n.pretestStart),
+              onPressed: onStart,
+            ),
           ),
         ],
       ),

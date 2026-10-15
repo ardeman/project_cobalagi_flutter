@@ -5,9 +5,17 @@ import 'package:cobalagi/core/gamepad/gamepad_scope.dart';
 /// Takes the controller while it is on screen (a guided tour): the screen's
 /// shortcuts wait, B calls [onBack], and the highlight stays inside [child].
 class GamepadCapture extends StatefulWidget {
-  const GamepadCapture({super.key, required this.onBack, required this.child});
+  const GamepadCapture({
+    super.key,
+    required this.onBack,
+    this.onConfirm,
+    required this.child,
+  });
 
   final VoidCallback onBack;
+
+  /// What A does, when the highlight has nothing to press.
+  final VoidCallback? onConfirm;
   final Widget child;
 
   @override
@@ -15,8 +23,12 @@ class GamepadCapture extends StatefulWidget {
 }
 
 class _GamepadCaptureState extends State<GamepadCapture> {
-  List<PadCaptureEntry>? _captures;
-  late final _entry = PadCaptureEntry(widget.onBack);
+  PadCaptures? _captures;
+  late final _entry = PadCaptureEntry(
+    context,
+    widget.onBack,
+    onConfirm: widget.onConfirm,
+  );
 
   @override
   void didChangeDependencies() {
@@ -30,7 +42,9 @@ class _GamepadCaptureState extends State<GamepadCapture> {
   @override
   void didUpdateWidget(GamepadCapture oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _entry.onBack = widget.onBack;
+    _entry
+      ..onBack = widget.onBack
+      ..onConfirm = widget.onConfirm;
   }
 
   @override

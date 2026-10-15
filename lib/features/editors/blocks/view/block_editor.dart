@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cobalagi/core/gamepad/gamepad_scope.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:cobalagi/core/widgets/focus_tap.dart';
 
 import '../../../../app/l10n/app_localizations.dart';
@@ -78,10 +81,122 @@ class _BlockEditorState extends State<BlockEditor> {
   final _firstBlock = GlobalKey();
   final _program = GlobalKey();
 
+  /// The picked block's focus: the highlight follows it when it moves, so
+  /// a block carried with a controller keeps the highlight.
+  final _pickedFocus = FocusNode();
+
+  /// The program and star rows: A on a row picks it, then the highlight
+  /// steps onto its first block.
+  final _mainRowFocus = FocusNode();
+  final _starRowFocus = FocusNode();
+  GamepadScope? _pad;
+  PadCaptureEntry? _carry;
+  BlockProgram? _shown;
+
+  /// The block [_pickedFocus] belongs to: the last one picked, kept after
+  /// it is unpicked, so the highlight stays on it.
+  String? _focusId;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _pad = GamepadScope.maybeOf(context);
+    // Touching the screen while carrying puts the block down.
+    if (!(_pad?.active ?? false)) {
+      final cubit = context.read<BlocksCubit>();
+      if (cubit.state.carrying) cubit.dropCarried();
+    }
+  }
+
+  @override
+  void dispose() {
+    _endCarry();
+    _pickedFocus.dispose();
+    _mainRowFocus.dispose();
+    _starRowFocus.dispose();
+    super.dispose();
+  }
+
+  /// While a block is carried, the d-pad moves it, A puts it down and B
+  /// puts it back.
+  void _followCarry(BlocksCubit cubit) {
+    final pad = _pad;
+    if (pad == null) return;
+    if (cubit.state.carrying && _carry == null) {
+      _carry = PadCaptureEntry(
+        context,
+        cubit.cancelCarry,
+        onMove: (direction) => cubit.carryBy(
+          direction == PadDirection.left || direction == PadDirection.up
+              ? -1
+              : 1,
+        ),
+        onConfirm: cubit.dropCarried,
+        // Letting go of R2 puts the block down.
+        onRelease: (_) => cubit.dropCarried(),
+        // The stick drags it freely instead, as a finger: a moved block is
+        // put down first, else it goes back to where it was picked up.
+        onFreeDrag: () {
+          final moved = cubit.carryMoved;
+          moved ? cubit.dropCarried() : cubit.cancelCarry();
+          return moved;
+        },
+      );
+      pad.captures.add(_carry!);
+    } else if (!cubit.state.carrying) {
+      _endCarry();
+    }
+    // A picked block moved to another row is a new widget: give it the
+    // highlight back.
+    final state = cubit.state;
+    final picked =
+        state.pickedBlock ??
+        state.selectedContainer?.replaceAll(BlocksCubit.otherwiseRow, '');
+    if (picked != null) _focusId = picked;
+    if (pad.active &&
+        !identical(state, _shown) &&
+        (state.pickedBlock ?? state.selectedContainer) != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _pickedFocus.context != null) {
+          _pickedFocus.requestFocus();
+        }
+      });
+    }
+    _shown = state;
+  }
+
+  /// Picks a row, then moves focus inside it: with a controller, the
+  /// highlight steps onto the row's first block.
+  void _pickRow(BlocksCubit cubit, {required bool star}) {
+    cubit.pickRow(star: star);
+    // Harmless on touch, where focus shows nothing.
+    final row = star ? _starRowFocus : _mainRowFocus;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // The first in reading order: the top line, then the left.
+      final blocks = [
+        for (final n in row.descendants)
+          if (n.canRequestFocus && !n.skipTraversal && n.context != null) n,
+      ];
+      if (blocks.isEmpty) return;
+      blocks.sort(
+        (a, b) => (a.rect.top - b.rect.top).abs() > 8
+            ? a.rect.top.compareTo(b.rect.top)
+            : a.rect.left.compareTo(b.rect.left),
+      );
+      blocks.first.requestFocus();
+    });
+  }
+
+  void _endCarry() {
+    if (_carry != null) _pad?.captures.remove(_carry!);
+    _carry = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final cubit = context.watch<BlocksCubit>();
+    _followCarry(cubit);
     final blocks = cubit.state.main;
     final scheme = Theme.of(context).colorScheme;
     final types = [
@@ -99,6 +214,8 @@ class _BlockEditorState extends State<BlockEditor> {
       fromHint: widget.fromHint,
       issueBlockIds: widget.issueBlockIds,
       stepValues: _stepValues(blocks),
+      pickedFocus: _pickedFocus,
+      focusId: _focusId,
     );
 
     // [starMax]: on a tablet the star row may take this much height at most
@@ -110,7 +227,11 @@ class _BlockEditorState extends State<BlockEditor> {
           onAcceptWithDetails: (d) => cubit.remove(d.data.id),
           builder: (context, candidates, _) => GlassSurface(
             padding: EdgeInsets.all(gap),
-            tint: candidates.isEmpty ? null : scheme.errorContainer,
+            // Red while a block (dragged, or carried with a controller) would
+            // be deleted here.
+            tint: candidates.isEmpty && !cubit.state.overPalette
+                ? null
+                : scheme.errorContainer,
             child: Wrap(
               alignment: WrapAlignment.center,
               spacing: gap,
@@ -130,6 +251,7 @@ class _BlockEditorState extends State<BlockEditor> {
                           (!cubit.isFull || cubit.state.pickedBlock != null),
                       pointed: type == widget.pointAt,
                       onTap: () => cubit.tap(type),
+                      onGrab: () => cubit.grabNew(type),
                     ),
                   ),
               ],
@@ -148,7 +270,8 @@ class _BlockEditorState extends State<BlockEditor> {
           constraints: BoxConstraints(maxHeight: starMax ?? double.infinity),
           child: SingleChildScrollView(
             child: FocusTap(
-              onTap: () => cubit.pickRow(star: true),
+              focusNode: _starRowFocus,
+              onTap: () => _pickRow(cubit, star: true),
               child: _StarRow(
                 blocks: cubit.state.star,
                 style: style,
@@ -162,7 +285,8 @@ class _BlockEditorState extends State<BlockEditor> {
     ];
     final program = FocusTap(
       key: widget.programKey,
-      onTap: () => cubit.pickRow(star: false),
+      focusNode: _mainRowFocus,
+      onTap: () => _pickRow(cubit, star: false),
       child: _BlockRow(
         parentId: null,
         blocks: blocks,
@@ -215,20 +339,33 @@ class _BlockEditorState extends State<BlockEditor> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                IconButton.filledTonal(
-                  tooltip: l10n.undo,
+                // L1 and R1, as undo and redo sit: left, then right.
+                GamepadShortcut(
+                  button: PadButton.leftBumper,
                   onPressed: widget.enabled && cubit.canUndo
                       ? cubit.undo
                       : null,
-                  icon: const Icon(Icons.undo_rounded),
+                  child: IconButton.filledTonal(
+                    tooltip: l10n.undo,
+                    onPressed: widget.enabled && cubit.canUndo
+                        ? cubit.undo
+                        : null,
+                    icon: const Icon(Icons.undo_rounded),
+                  ),
                 ),
                 SizedBox(width: gap),
-                IconButton.filledTonal(
-                  tooltip: l10n.redo,
+                GamepadShortcut(
+                  button: PadButton.rightBumper,
                   onPressed: widget.enabled && cubit.canRedo
                       ? cubit.redo
                       : null,
-                  icon: const Icon(Icons.redo_rounded),
+                  child: IconButton.filledTonal(
+                    tooltip: l10n.redo,
+                    onPressed: widget.enabled && cubit.canRedo
+                        ? cubit.redo
+                        : null,
+                    icon: const Icon(Icons.redo_rounded),
+                  ),
                 ),
                 SizedBox(width: gap),
                 IconButton.filledTonal(
@@ -328,6 +465,8 @@ final class _BlockStyle {
     this.fromHint = false,
     required this.issueBlockIds,
     this.stepValues = const {},
+    required this.pickedFocus,
+    this.focusId,
   });
 
   final double size;
@@ -340,6 +479,15 @@ final class _BlockStyle {
 
   /// The Step Box number each "use steps" block will use, by block id.
   final Map<String, String> stepValues;
+
+  /// Focus for the picked block or row ([_BlockEditorState._pickedFocus]).
+  final FocusNode pickedFocus;
+
+  /// The block that uses [pickedFocus].
+  final String? focusId;
+
+  FocusNode? focusFor(String blockId) =>
+      blockId == focusId ? pickedFocus : null;
 }
 
 /// Walks the main row in order, like a run: each "save steps" sets the
@@ -631,6 +779,7 @@ class _PaletteBlock extends StatelessWidget {
     required this.size,
     required this.enabled,
     required this.onTap,
+    required this.onGrab,
     this.pointed = false,
   });
 
@@ -638,6 +787,9 @@ class _PaletteBlock extends StatelessWidget {
   final double size;
   final bool enabled;
   final VoidCallback onTap;
+
+  /// R2 held: drag a new block out, as a finger does.
+  final VoidCallback onGrab;
   final bool pointed;
 
   @override
@@ -674,7 +826,7 @@ class _PaletteBlock extends StatelessWidget {
       type: type,
       size: size,
       childWhenDragging: Opacity(opacity: 0.5, child: tile),
-      child: FocusTap(onTap: onTap, child: tile),
+      child: FocusTap(onTap: onTap, onGrab: onGrab, child: tile),
     );
   }
 }
@@ -711,24 +863,32 @@ class _PlacedBlock extends StatelessWidget {
     final picked = context.select<BlocksCubit, bool>(
       (c) => c.state.pickedBlock == block.id,
     );
-    // A tap picks a single block to fix: a ring shows which one.
+    final carried = picked && cubit.state.carrying;
+    // A tap picks a single block to fix: a ring shows which one. With a
+    // controller, holding R2 on it carries it somewhere else.
     final Widget body = container
         ? plain
         : Semantics(
             selected: picked,
             child: FocusTap(
+              focusNode: style.focusFor(block.id),
               onTap: () => cubit.pickBlock(block.id),
-              child: Container(
-                foregroundDecoration: picked
-                    ? BoxDecoration(
-                        borderRadius: BorderRadius.circular(size * 0.26),
-                        border: Border.all(
-                          color: const Color(0xFFFFC83D),
-                          width: 5,
-                        ),
-                      )
-                    : null,
-                child: plain,
+              onGrab: () => cubit.carry(block.id),
+              child: _Lifted(
+                lifted: carried,
+                size: size,
+                child: Container(
+                  foregroundDecoration: picked
+                      ? BoxDecoration(
+                          borderRadius: BorderRadius.circular(size * 0.26),
+                          border: Border.all(
+                            color: const Color(0xFFFFC83D),
+                            width: 5,
+                          ),
+                        )
+                      : null,
+                  child: plain,
+                ),
               ),
             ),
           );
@@ -820,13 +980,17 @@ class _ContainerBlock extends StatelessWidget {
         semanticLabel: AppLocalizations.of(context).dropBlocksHere,
       ),
     );
+    final carried = cubit.state.carrying && cubit.state.pickedBlock == block.id;
     final header = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         // The controller picks the block here: the whole block holds other
         // blocks, which the highlight must reach too.
+        // With a controller, holding R2 here carries the whole block.
         FocusTap(
+          focusNode: style.focusFor(block.id),
           onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
+          onGrab: style.enabled ? () => cubit.carry(block.id) : null,
           child: BlockTile(type: block.type, size: size * 0.8),
         ),
         if (counted) ...[
@@ -916,55 +1080,59 @@ class _ContainerBlock extends StatelessWidget {
     }
     return GestureDetector(
       onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
-      child: AnimatedContainer(
-        key: ValueKey(block.id),
-        duration: const Duration(milliseconds: 150),
-        padding: EdgeInsets.all(style.gap * 0.6),
-        decoration: BoxDecoration(
-          color: color.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(size * 0.28),
-          border: Border.all(
-            width: cubit.state.selectedContainer == block.id
-                ? size * 0.1
-                : size * 0.07,
-            color: hasIssue
-                ? const Color(0xFFE53935)
-                : active
-                ? const Color(0xFFFFD54F)
-                : color,
+      child: _Lifted(
+        lifted: carried,
+        size: size,
+        child: AnimatedContainer(
+          key: ValueKey(block.id),
+          duration: const Duration(milliseconds: 150),
+          padding: EdgeInsets.all(style.gap * 0.6),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(size * 0.28),
+            border: Border.all(
+              width: cubit.state.selectedContainer == block.id
+                  ? size * 0.1
+                  : size * 0.07,
+              color: hasIssue
+                  ? const Color(0xFFE53935)
+                  : active
+                  ? const Color(0xFFFFD54F)
+                  : color,
+            ),
           ),
-        ),
-        // Stack the header over the body when the room this block gets
-        // (not the screen) is too narrow for them side by side.
-        child: LayoutBuilder(
-          builder: (context, box) {
-            final nested = block.children.any((b) => b.type.isCondition);
-            // Count buttons, then a condition holding a block.
-            final sideBySide =
-                (counted ? 64 * 2 + size * 0.5 : size * 0.8) +
-                style.gap +
-                (nested ? size * 3.4 : size * 1.6) +
-                (twoRows ? size * 0.6 : 0);
-            final stacked = box.maxWidth < sideBySide;
-            return stacked
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      header,
-                      SizedBox(height: style.gap),
-                      body,
-                    ],
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      header,
-                      SizedBox(width: style.gap),
-                      Flexible(child: body),
-                    ],
-                  );
-          },
+          // Stack the header over the body when the room this block gets
+          // (not the screen) is too narrow for them side by side.
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final nested = block.children.any((b) => b.type.isCondition);
+              // Count buttons, then a condition holding a block.
+              final sideBySide =
+                  (counted ? 64 * 2 + size * 0.5 : size * 0.8) +
+                  style.gap +
+                  (nested ? size * 3.4 : size * 1.6) +
+                  (twoRows ? size * 0.6 : 0);
+              final stacked = box.maxWidth < sideBySide;
+              return stacked
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        header,
+                        SizedBox(height: style.gap),
+                        body,
+                      ],
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        header,
+                        SizedBox(width: style.gap),
+                        Flexible(child: body),
+                      ],
+                    );
+            },
+          ),
         ),
       ),
     );
@@ -1200,5 +1368,38 @@ class _HowToHandState extends State<_HowToHand>
         ],
       );
     },
+  );
+}
+
+/// A block carried with a controller floats up with a shadow, like a block
+/// held by a finger.
+class _Lifted extends StatelessWidget {
+  const _Lifted({
+    required this.lifted,
+    required this.size,
+    required this.child,
+  });
+
+  final bool lifted;
+  final double size;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => AnimatedContainer(
+    duration: const Duration(milliseconds: 150),
+    transform: Matrix4.translationValues(0, lifted ? -size * 0.12 : 0, 0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(size * 0.26),
+      boxShadow: lifted
+          ? const [
+              BoxShadow(
+                blurRadius: 14,
+                offset: Offset(0, 8),
+                color: Color(0x66000000),
+              ),
+            ]
+          : const [],
+    ),
+    child: child,
   );
 }

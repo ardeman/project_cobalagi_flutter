@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../app/l10n/app_localizations.dart';
@@ -320,12 +323,16 @@ class _Prompt extends StatelessWidget {
   Widget build(BuildContext context) => Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      IconButton.filled(
-        key: listenKey,
-        tooltip: AppLocalizations.of(context).listenAgain,
-        iconSize: 40,
+      GamepadShortcut(
+        button: PadButton.menu,
         onPressed: onListen,
-        icon: const Icon(Icons.volume_up_rounded),
+        child: IconButton.filled(
+          key: listenKey,
+          tooltip: AppLocalizations.of(context).listenAgain,
+          iconSize: 40,
+          onPressed: onListen,
+          icon: const Icon(Icons.volume_up_rounded),
+        ),
       ),
       const SizedBox(width: 16),
       Flexible(

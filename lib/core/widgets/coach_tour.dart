@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:cobalagi/core/gamepad/gamepad_capture.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 
 import '../../app/l10n/app_localizations.dart';
 import '../audio/audio_service.dart';
@@ -113,10 +115,11 @@ class _CoachTourState extends State<CoachTour> {
     final step = widget.steps[_index];
     final window = hole.inflate(10);
     return Positioned.fill(
-      // With a controller, the highlight stays in the bubble, starting on
-      // Next, and B skips the tour.
+      // With a controller, the bubble's buttons have their own: X (like Go)
+      // or A goes on, B skips, the speaker's button listens again.
       child: GamepadCapture(
         onBack: widget.onDone,
+        onConfirm: _next,
         child: LayoutBuilder(
           builder: (context, box) {
             final screen = box.biggest;
@@ -276,29 +279,41 @@ class _Bubble extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      IconButton.filledTonal(
-                        tooltip: AppLocalizations.of(context).listenAgain,
+                      GamepadShortcut(
+                        button: PadButton.menu,
                         onPressed: onListen,
-                        icon: const Icon(Icons.volume_up_rounded),
+                        child: IconButton.filledTonal(
+                          tooltip: AppLocalizations.of(context).listenAgain,
+                          onPressed: onListen,
+                          icon: const Icon(Icons.volume_up_rounded),
+                        ),
                       ),
                       const SizedBox(width: 4),
                       // Skipping is the quiet choice.
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          minimumSize: const Size(64, 64),
-                          padding: const EdgeInsets.symmetric(horizontal: 12),
-                          textStyle: theme.textTheme.labelLarge,
-                        ),
+                      GamepadShortcut(
+                        button: PadButton.b,
                         onPressed: onSkip,
-                        child: Text(skip),
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            minimumSize: const Size(64, 64),
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            textStyle: theme.textTheme.labelLarge,
+                          ),
+                          onPressed: onSkip,
+                          child: Text(skip),
+                        ),
                       ),
                     ],
                   ),
-                  FilledButton.icon(
-                    autofocus: true,
+                  GamepadShortcut(
+                    button: PadButton.x,
                     onPressed: onNext,
-                    icon: const Icon(Icons.arrow_forward_rounded),
-                    label: Text(next),
+                    child: FilledButton.icon(
+                      autofocus: true,
+                      onPressed: onNext,
+                      icon: const Icon(Icons.arrow_forward_rounded),
+                      label: Text(next),
+                    ),
                   ),
                 ],
               ),

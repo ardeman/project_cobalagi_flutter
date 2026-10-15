@@ -7,7 +7,8 @@ import 'package:cobalagi/core/gamepad/pad_input.dart';
 /// Lets a controller [button] press this control directly, and pins that
 /// button's badge to its corner while a controller is in use, so the child
 /// sees which button does what. Pass the control's own callback as
-/// [onPressed]; null (a disabled control) hides the badge.
+/// [onPressed]; null (a disabled control) hides the badge. The highlight
+/// skips the control, since its button already presses it.
 class GamepadShortcut extends StatefulWidget {
   const GamepadShortcut({
     super.key,
@@ -15,6 +16,7 @@ class GamepadShortcut extends StatefulWidget {
     required this.onPressed,
     required this.child,
     this.badgeOnLeft = false,
+    this.keepFocusable = false,
   });
 
   final PadButton button;
@@ -22,6 +24,10 @@ class GamepadShortcut extends StatefulWidget {
   /// Puts the badge on the top left corner, when the top right one already
   /// carries a badge of its own (the hint bulb's).
   final bool badgeOnLeft;
+
+  /// Lets the highlight still reach the control, when the button is an
+  /// extra action on something the child also picks (L1 on a block).
+  final bool keepFocusable;
   final VoidCallback? onPressed;
   final Widget child;
 
@@ -42,7 +48,9 @@ class _GamepadShortcutState extends State<GamepadShortcut> {
       return;
     }
     _unregister();
+    _scope?.captures.removeListener(_rebuild);
     _scope = scope;
+    scope?.captures.addListener(_rebuild);
     if (scope != null) {
       _entry = PadShortcutEntry(widget.button, context, widget.onPressed);
       scope.shortcuts.add(_entry!);
@@ -63,8 +71,11 @@ class _GamepadShortcutState extends State<GamepadShortcut> {
     }
   }
 
+  void _rebuild() => setState(() {});
+
   @override
   void dispose() {
+    _scope?.captures.removeListener(_rebuild);
     _unregister();
     super.dispose();
   }
@@ -78,13 +89,23 @@ class _GamepadShortcutState extends State<GamepadShortcut> {
   Widget build(BuildContext context) {
     final scope = _scope;
     if (scope == null) return widget.child;
-    final show = scope.active && widget.onPressed != null;
+    // A paused shortcut (the screen's, under a tour) hides its badge.
+    final show =
+        scope.active &&
+        widget.onPressed != null &&
+        (_entry == null || scope.captures.allows(_entry!));
     // Always a Stack, so the control keeps its state when the badge comes
     // and goes.
+    // Passthrough: the control is laid out exactly as without the badge (a
+    // button in an Expanded stays stretched).
     return Stack(
+      fit: StackFit.passthrough,
       clipBehavior: Clip.none,
       children: [
-        widget.child,
+        if (widget.keepFocusable)
+          widget.child
+        else
+          ExcludeFocus(child: widget.child),
         if (show)
           Positioned(
             top: -8,

@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -114,30 +116,59 @@ class IslandScreen extends StatelessWidget {
                     spacing: 16,
                     runSpacing: 16,
                     children: [
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.ondemand_video_rounded),
-                        label: Text(l10n.watchHow),
+                      // The planet's explanation, like "?" on a puzzle.
+                      GamepadShortcut(
+                        button: PadButton.view,
                         onPressed: () =>
                             context.go('/child/$profileId/tutorial/$conceptId'),
+                        child: OutlinedButton.icon(
+                          icon: const Icon(Icons.ondemand_video_rounded),
+                          label: Text(l10n.watchHow),
+                          onPressed: () => context.go(
+                            '/child/$profileId/tutorial/$conceptId',
+                          ),
+                        ),
                       ),
                       // Lessons left here: playing them comes first, the
                       // adventure (on another island) second.
                       if (next != null) ...[
-                        OutlinedButton.icon(
-                          icon: const Icon(Icons.explore_rounded),
-                          label: Text(l10n.continueAdventure),
+                        // X plays the level beside it; alone (below), the
+                        // adventure takes X.
+                        GamepadShortcut(
+                          button: PadButton.y,
                           onPressed: () => context.go('/child/$profileId/play'),
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.explore_rounded),
+                            label: Text(l10n.continueAdventure),
+                            onPressed: () =>
+                                context.go('/child/$profileId/play'),
+                          ),
                         ),
-                        FilledButton.icon(
-                          icon: const Icon(Icons.play_arrow_rounded, size: 40),
-                          label: Text(l10n.playLevel(next + 1)),
+                        GamepadShortcut(
+                          button: PadButton.x,
                           onPressed: () => play(next),
+                          child: FilledButton.icon(
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 40,
+                            ),
+                            label: Text(l10n.playLevel(next + 1)),
+                            onPressed: () => play(next),
+                          ),
                         ),
                       ] else
-                        FilledButton.icon(
-                          icon: const Icon(Icons.play_arrow_rounded, size: 40),
-                          label: Text(l10n.continueAdventure),
+                        GamepadShortcut(
+                          button: PadButton.x,
                           onPressed: () => context.go('/child/$profileId/play'),
+                          child: FilledButton.icon(
+                            icon: const Icon(
+                              Icons.play_arrow_rounded,
+                              size: 40,
+                            ),
+                            label: Text(l10n.continueAdventure),
+                            onPressed: () =>
+                                context.go('/child/$profileId/play'),
+                          ),
                         ),
                     ],
                   ),

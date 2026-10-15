@@ -185,10 +185,14 @@ class _TutorialViewState extends State<TutorialView> {
           ),
         ),
         const SizedBox(width: 8),
-        IconButton.filledTonal(
-          tooltip: l10n.listenAgain,
+        GamepadShortcut(
+          button: PadButton.menu,
           onPressed: _say,
-          icon: const Icon(Icons.volume_up_rounded),
+          child: IconButton.filledTonal(
+            tooltip: l10n.listenAgain,
+            onPressed: _say,
+            icon: const Icon(Icons.volume_up_rounded),
+          ),
         ),
       ],
     );
@@ -245,17 +249,27 @@ class _TutorialViewState extends State<TutorialView> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          OutlinedButton.icon(
-            onPressed: _start,
-            icon: const Icon(Icons.replay_rounded),
-            label: Text(l10n.tutorialWatchAgain),
+          // ⧉, like "Watch how" that opened the demo.
+          GamepadShortcut(
+            button: PadButton.view,
+            // Hidden until the demo ends, and so is its button.
+            onPressed: _finished ? _start : null,
+            child: OutlinedButton.icon(
+              onPressed: _start,
+              icon: const Icon(Icons.replay_rounded),
+              label: Text(l10n.tutorialWatchAgain),
+            ),
           ),
           const SizedBox(width: 12),
-          FilledButton.icon(
-            autofocus: true,
-            onPressed: widget.onDone,
-            icon: const Icon(Icons.arrow_forward_rounded),
-            label: Text(widget.doneLabel ?? l10n.tutorialLetsPlay),
+          // Goes on like the tour's Next: X, as Go.
+          GamepadShortcut(
+            button: PadButton.x,
+            onPressed: _finished ? widget.onDone : null,
+            child: FilledButton.icon(
+              onPressed: widget.onDone,
+              icon: const Icon(Icons.arrow_forward_rounded),
+              label: Text(widget.doneLabel ?? l10n.tutorialLetsPlay),
+            ),
           ),
         ],
       ),

@@ -66,10 +66,23 @@ Future<StreamController<PadCommand>> pumpPad(
                     child: GamepadCapture(
                       onBack: () => log.add('skip'),
                       child: Center(
-                        child: FilledButton(
-                          autofocus: true,
-                          onPressed: () => log.add('next'),
-                          child: const Text('next'),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FilledButton(
+                              autofocus: true,
+                              onPressed: () => log.add('next'),
+                              child: const Text('next'),
+                            ),
+                            GamepadShortcut(
+                              button: PadButton.menu,
+                              onPressed: () => log.add('listen'),
+                              child: IconButton(
+                                onPressed: () => log.add('listen'),
+                                icon: const Icon(Icons.volume_up),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -106,6 +119,13 @@ void main() {
     await send(tester, pad, const PadMove(PadDirection.up));
     await send(tester, pad, const PadPress(PadButton.a));
     expect(log, ['top', 'bottom', 'top']);
+
+    // Go has its own button (X), so the highlight skips it.
+    await send(tester, pad, const PadMove(PadDirection.down));
+    await send(tester, pad, const PadMove(PadDirection.down));
+    await send(tester, pad, const PadPress(PadButton.a));
+    expect(log, ['top', 'bottom', 'top'], reason: 'it opened the dialog');
+    expect(find.text('dialog'), findsOneWidget);
   });
 
   testWidgets('a shortcut presses its control and shows its badge', (
@@ -149,10 +169,51 @@ void main() {
     final pad = await pumpPad(tester, log: log, capture: true);
     await send(tester, pad, const PadPress(PadButton.x));
     expect(log, isEmpty, reason: 'shortcuts wait during the tour');
+    expect(find.text('X'), findsNothing, reason: 'a paused badge hides');
+    expect(find.byType(PadBadge), findsOneWidget, reason: "the tour's own");
     await send(tester, pad, const PadMove(PadDirection.up));
     await send(tester, pad, const PadPress(PadButton.a));
     expect(log, ['next'], reason: 'the highlight stays on the tour');
+    // Its own shortcuts work.
+    await send(tester, pad, const PadPress(PadButton.menu));
+    expect(log, ['next', 'listen']);
     await send(tester, pad, const PadPress(PadButton.b));
-    expect(log, ['next', 'skip']);
+    expect(log, ['next', 'listen', 'skip']);
+  });
+
+  testWidgets('the right stick scrolls the list the highlight is in', (
+    tester,
+  ) async {
+    final pad = StreamController<PadCommand>();
+    addTearDown(pad.close);
+    final controller = ScrollController();
+    addTearDown(controller.dispose);
+    await tester.pumpWidget(
+      BlocProvider(
+        create: (_) => GamepadCubit(),
+        child: MaterialApp(
+          builder: (context, child) =>
+              GamepadNavigator(commands: pad.stream, child: child!),
+          home: Scaffold(
+            body: ListView(
+              controller: controller,
+              children: [
+                for (var i = 0; i < 40; i++)
+                  TextButton(onPressed: () {}, child: Text('item $i')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    pad.add(const PadScroll(1));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    final scrolled = controller.offset;
+    expect(scrolled, greaterThan(300));
+    pad.add(const PadScroll(0));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(controller.offset, scrolled, reason: 'it stops when let go');
   });
 }
