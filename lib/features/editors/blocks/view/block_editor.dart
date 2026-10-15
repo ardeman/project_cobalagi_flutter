@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -98,8 +97,6 @@ class _BlockEditorState extends State<BlockEditor> {
       fromHint: widget.fromHint,
       issueBlockIds: widget.issueBlockIds,
       stepValues: _stepValues(blocks),
-      // Placed blocks sit in rows that scroll, on tablets too.
-      holdToDrag: true,
     );
 
     // [starMax]: on a tablet the star row may take this much height at most
@@ -129,7 +126,6 @@ class _BlockEditorState extends State<BlockEditor> {
                       enabled:
                           widget.enabled &&
                           (!cubit.isFull || cubit.state.pickedBlock != null),
-                      hold: widget.fitContent,
                       pointed: type == widget.pointAt,
                       onTap: () => cubit.tap(type),
                     ),
@@ -162,18 +158,17 @@ class _BlockEditorState extends State<BlockEditor> {
         SizedBox(height: gap),
       ],
     ];
-    final row = _BlockRow(parentId: null, blocks: blocks, style: style);
     final program = GestureDetector(
       key: widget.programKey,
       onTap: () => cubit.pickRow(star: false),
-      child: DragTarget<Object>(
-        onWillAcceptWithDetails: (d) =>
-            widget.enabled && (d.data is Block || !cubit.isFull),
-        onAcceptWithDetails: (d) => cubit.drop(d.data, index: blocks.length),
-        builder: (context, candidates, _) => GlassSurface(
+      child: _BlockRow(
+        parentId: null,
+        blocks: blocks,
+        style: style,
+        frame: (row, hovered) => GlassSurface(
           padding: EdgeInsets.all(gap),
-          tint: candidates.isEmpty ? null : scheme.primaryContainer,
-          borderColor: candidates.isNotEmpty
+          tint: hovered ? scheme.primaryContainer : null,
+          borderColor: hovered
               ? scheme.primary
               : showStar && !cubit.state.tapToStar
               ? scheme.primary.withValues(alpha: 0.6)
@@ -330,7 +325,6 @@ final class _BlockStyle {
     this.lookHere = const {},
     this.fromHint = false,
     required this.issueBlockIds,
-    this.holdToDrag = false,
     this.stepValues = const {},
   });
 
@@ -341,9 +335,6 @@ final class _BlockStyle {
   final Set<String> lookHere;
   final bool fromHint;
   final Set<String> issueBlockIds;
-
-  /// See [_dragSource].
-  final bool holdToDrag;
 
   /// The Step Box number each "use steps" block will use, by block id.
   final Map<String, String> stepValues;
@@ -369,124 +360,266 @@ Map<String, String> _stepValues(List<Block> main) {
   return values;
 }
 
-/// How long a finger rests on a block before it lifts where its row
-/// scrolls; a swipe that moves sooner scrolls instead.
-const _holdToDrag = Duration(milliseconds: 200);
+/// A dragged block is drawn this much bigger than [_BlockStyle.size].
+const _lift = 1.1;
 
-/// A block that can be dragged. Where its row scrolls ([hold]), a finger
-/// lifts it only after a short hold, so swiping across wide blocks scrolls
-/// instead; a mouse, which scrolls with its wheel, still drags at once.
-Widget _dragSource<T extends Object>({
-  required bool hold,
-  required T data,
-  required Widget feedback,
-  required Widget childWhenDragging,
-  required Widget child,
-}) {
-  if (!hold) {
+/// The finger holds a dragged block this far down it, so the block floats
+/// just above the finger and the spot it will land on stays in sight.
+const _hold = 0.85;
+
+/// The dragged block's centre, which decides where it lands (see
+/// [_BlockDraggable]).
+Offset _centreOf(DragTargetDetails<Object> details, double size) =>
+    details.offset + Offset(size * _lift / 2, size * _lift / 2);
+
+/// A block that drags as soon as a finger or mouse moves it: touching a
+/// block always drags it, and a swipe on the space around blocks scrolls.
+/// It is shown [_lift] times [size] just above the finger, so even a wide
+/// repeat lifts as a tile right where it's held. The block's centre, not
+/// the finger, picks where it lands: where a child puts the block is where
+/// it goes. Held near the top or bottom of an area that scrolls, it scrolls
+/// that area, so the child can reach any spot without letting go.
+class _BlockDraggable<T extends Object> extends StatefulWidget {
+  const _BlockDraggable({
+    required this.data,
+    required this.type,
+    required this.size,
+    required this.childWhenDragging,
+    required this.child,
+  });
+
+  final T data;
+  final BlockType type;
+  final double size;
+  final Widget childWhenDragging;
+  final Widget child;
+
+  @override
+  State<_BlockDraggable<T>> createState() => _BlockDraggableState<T>();
+}
+
+class _BlockDraggableState<T extends Object> extends State<_BlockDraggable<T>> {
+  EdgeDraggingAutoScroller? _scroller;
+
+  /// The nearest area around this block that can scroll up or down.
+  ScrollableState? _scrollable() {
+    var scrollable = Scrollable.maybeOf(context);
+    while (scrollable != null) {
+      final position = scrollable.position;
+      if (scrollable.axisDirection == AxisDirection.down &&
+          position.hasContentDimensions &&
+          position.maxScrollExtent > position.minScrollExtent) {
+        return scrollable;
+      }
+      scrollable = Scrollable.maybeOf(scrollable.context);
+    }
+    return null;
+  }
+
+  void _stop() {
+    _scroller?.stopAutoScroll();
+    _scroller = null;
+  }
+
+  @override
+  void dispose() {
+    _stop();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lifted = widget.size * _lift;
+    final anchor = Offset(lifted / 2, lifted * _hold);
     return Draggable<T>(
-      data: data,
-      feedback: feedback,
-      childWhenDragging: childWhenDragging,
-      child: child,
+      data: widget.data,
+      feedback: Material(
+        type: MaterialType.transparency,
+        child: BlockTile(type: widget.type, size: lifted),
+      ),
+      dragAnchorStrategy: (_, _, _) => anchor,
+      feedbackOffset: Offset(0, lifted / 2 - anchor.dy),
+      onDragStarted: () {
+        HapticFeedback.selectionClick();
+        if (_scrollable() case final scrollable?) {
+          _scroller = EdgeDraggingAutoScroller(scrollable, velocityScalar: 50);
+        }
+      },
+      onDragUpdate: (details) => _scroller?.startAutoScrollIfNecessary(
+        (details.globalPosition - anchor) & Size.square(lifted),
+      ),
+      onDragEnd: (_) => _stop(),
+      childWhenDragging: widget.childWhenDragging,
+      child: widget.child,
     );
   }
-  return _MouseDraggable<T>(
-    data: data,
-    feedback: feedback,
-    childWhenDragging: childWhenDragging,
-    child: _HoldDraggable<T>(
-      data: data,
-      feedback: feedback,
-      childWhenDragging: childWhenDragging,
-      child: child,
-    ),
-  );
 }
 
-/// Drags at once, but only with a mouse or trackpad.
-class _MouseDraggable<T extends Object> extends Draggable<T> {
-  const _MouseDraggable({
-    required super.data,
-    required super.feedback,
-    required super.childWhenDragging,
-    required super.child,
-  });
+/// A see-through copy of the dragged block where it will land.
+class _DropGhost extends StatelessWidget {
+  const _DropGhost({required this.data, required this.size});
+
+  /// The dragged palette [BlockType] or placed [Block].
+  final Object? data;
+  final double size;
 
   @override
-  MultiDragGestureRecognizer createRecognizer(
-    GestureMultiDragStartCallback onStart,
-  ) => ImmediateMultiDragGestureRecognizer(
-    supportedDevices: const {
-      PointerDeviceKind.mouse,
-      PointerDeviceKind.trackpad,
-    },
-  )..onStart = onStart;
+  Widget build(BuildContext context) {
+    final type = switch (data) {
+      final Block block => block.type,
+      final BlockType type => type,
+      _ => null,
+    };
+    if (type == null) return const SizedBox.shrink();
+    return IgnorePointer(
+      child: Opacity(
+        key: const ValueKey('dropGhost'),
+        opacity: 0.4,
+        child: BlockTile(type: type, size: size),
+      ),
+    );
+  }
 }
 
-/// Drags after [_holdToDrag] with a finger or stylus, with a small click.
-class _HoldDraggable<T extends Object> extends Draggable<T> {
-  const _HoldDraggable({
-    required super.data,
-    required super.feedback,
-    required super.childWhenDragging,
-    required super.child,
-  });
-
-  @override
-  MultiDragGestureRecognizer createRecognizer(
-    GestureMultiDragStartCallback onStart,
-  ) =>
-      DelayedMultiDragGestureRecognizer(
-          delay: _holdToDrag,
-          supportedDevices: const {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.stylus,
-            PointerDeviceKind.invertedStylus,
-            PointerDeviceKind.unknown,
-          },
-        )
-        ..onStart = (position) {
-          final drag = onStart(position);
-          if (drag != null) HapticFeedback.selectionClick();
-          return drag;
-        };
-}
-
-class _BlockRow extends StatelessWidget {
+/// A row of placed blocks that takes drops anywhere in its [frame]. The
+/// dragged block lands next to the nearest block, before or after it by
+/// which half its centre is over (top or bottom half of a wide repeat), and
+/// a see-through copy shows the spot. The copy stays while the block is
+/// over it, so the row can't jump back and forth; spots that would leave a
+/// moved block where it is show nothing.
+class _BlockRow extends StatefulWidget {
   const _BlockRow({
     required this.parentId,
     required this.blocks,
     required this.style,
-    this.trailing,
+    required this.frame,
+    this.idle,
   });
 
   final String? parentId;
   final List<Block> blocks;
   final _BlockStyle style;
 
-  /// Shown after the last block, e.g. a drop spot for adding at the end.
-  final Widget? trailing;
+  /// The row's box around [blocks]; [hovered] while a drop spot shows.
+  final Widget Function(Widget blocks, bool hovered) frame;
+
+  /// Shown after the last block while no drop spot shows, e.g. a "+".
+  final Widget? idle;
 
   @override
-  Widget build(BuildContext context) => Wrap(
-    spacing: style.gap,
-    runSpacing: style.gap,
-    crossAxisAlignment: WrapCrossAlignment.center,
-    children: [
-      for (var i = 0; i < blocks.length; i++)
-        _PlacedBlock(
-          block: blocks[i],
-          style: style,
-          onDrop: (data) => context.read<BlocksCubit>().drop(
-            data,
-            parentId: parentId,
-            index: i,
+  State<_BlockRow> createState() => _BlockRowState();
+}
+
+class _BlockRowState extends State<_BlockRow> {
+  final _keys = <String, GlobalKey>{};
+  final _ghost = GlobalKey();
+
+  /// Where a drop would land, or null where it changes nothing.
+  int? _slot;
+
+  static Rect? _rectOf(GlobalKey key) {
+    final box = key.currentContext?.findRenderObject();
+    if (box is! RenderBox || !box.attached || !box.hasSize) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
+  int? _slotFor(Object data, Offset at) {
+    final style = widget.style;
+    final blocks = widget.blocks;
+    if (_slot != null &&
+        (_rectOf(_ghost)?.inflate(style.gap / 2).contains(at) ?? false)) {
+      return _slot;
+    }
+    final rects = [for (final b in blocks) _rectOf(_keys[b.id] ?? _ghost)];
+    var slot = blocks.length;
+    // Below every block means the end; otherwise next to the nearest one,
+    // looking along its line first.
+    if (rects.isNotEmpty &&
+        rects.every((r) => r != null) &&
+        at.dy <= rects.map((r) => r!.bottom).reduce(max) + style.gap / 2) {
+      var best = 0;
+      var bestDistance = double.infinity;
+      for (var i = 0; i < rects.length; i++) {
+        final r = rects[i]!;
+        final dx = max(0.0, max(r.left - at.dx, at.dx - r.right));
+        final dy = max(0.0, max(r.top - at.dy, at.dy - r.bottom));
+        final distance = dx * dx + 4 * dy * dy;
+        if (distance < bestDistance) {
+          best = i;
+          bestDistance = distance;
+        }
+      }
+      final r = rects[best]!;
+      final after = r.width >= style.size * 3
+          ? at.dy > r.center.dy
+          : at.dx > r.center.dx;
+      slot = best + (after ? 1 : 0);
+    }
+    if (data is Block) {
+      final from = blocks.indexWhere((b) => b.id == data.id);
+      if (from >= 0 && (slot == from || slot == from + 1)) return null;
+    }
+    return slot;
+  }
+
+  void _show(int? slot) {
+    if (slot != _slot) setState(() => _slot = slot);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final style = widget.style;
+    final blocks = widget.blocks;
+    final cubit = context.read<BlocksCubit>();
+    _keys.removeWhere((id, _) => !blocks.any((b) => b.id == id));
+    return DragTarget<Object>(
+      // A moved block's own row takes it too, so lifting a block shows no
+      // drop spot elsewhere.
+      onWillAcceptWithDetails: (d) =>
+          style.enabled &&
+          (cubit.canDrop(d.data, widget.parentId) ||
+              blocks.any((b) => b == d.data)),
+      onMove: (d) => _show(_slotFor(d.data, _centreOf(d, style.size))),
+      onLeave: (_) => _show(null),
+      onAcceptWithDetails: (d) {
+        final slot = _slot;
+        _show(null);
+        if (slot == null) return;
+        cubit.drop(d.data, parentId: widget.parentId, index: slot);
+      },
+      builder: (context, candidates, _) {
+        final data = candidates.firstOrNull;
+        final slot = data == null ? null : _slot;
+        final children = <Widget>[
+          for (final block in blocks)
+            KeyedSubtree(
+              key: _keys.putIfAbsent(block.id, GlobalKey.new),
+              child: _PlacedBlock(block: block, style: style),
+            ),
+        ];
+        if (slot != null) {
+          children.insert(
+            min(slot, children.length),
+            KeyedSubtree(
+              key: _ghost,
+              child: _DropGhost(data: data, size: style.size),
+            ),
+          );
+        } else if (widget.idle case final idle?) {
+          children.add(idle);
+        }
+        return widget.frame(
+          Wrap(
+            spacing: style.gap,
+            runSpacing: style.gap,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: children,
           ),
-        ),
-      ?trailing,
-    ],
-  );
+          slot != null,
+        );
+      },
+    );
+  }
 }
 
 class _PaletteBlock extends StatelessWidget {
@@ -496,7 +629,6 @@ class _PaletteBlock extends StatelessWidget {
     required this.size,
     required this.enabled,
     required this.onTap,
-    this.hold = false,
     this.pointed = false,
   });
 
@@ -504,7 +636,6 @@ class _PaletteBlock extends StatelessWidget {
   final double size;
   final bool enabled;
   final VoidCallback onTap;
-  final bool hold;
   final bool pointed;
 
   @override
@@ -536,13 +667,10 @@ class _PaletteBlock extends StatelessWidget {
       );
     }
     if (!enabled) return Opacity(opacity: 0.4, child: tile);
-    return _dragSource<BlockType>(
-      hold: hold,
+    return _BlockDraggable<BlockType>(
       data: type,
-      feedback: Material(
-        type: MaterialType.transparency,
-        child: BlockTile(type: type, size: size * 1.1),
-      ),
+      type: type,
+      size: size,
       childWhenDragging: Opacity(opacity: 0.5, child: tile),
       child: GestureDetector(onTap: onTap, child: tile),
     );
@@ -550,17 +678,10 @@ class _PaletteBlock extends StatelessWidget {
 }
 
 class _PlacedBlock extends StatelessWidget {
-  const _PlacedBlock({
-    required this.block,
-    required this.style,
-    required this.onDrop,
-  });
+  const _PlacedBlock({required this.block, required this.style});
 
   final Block block;
   final _BlockStyle style;
-
-  /// Something was dropped on this block: insert it before this block.
-  final void Function(Object data) onDrop;
 
   @override
   Widget build(BuildContext context) {
@@ -609,33 +730,12 @@ class _PlacedBlock extends StatelessWidget {
               ),
             ),
           );
-    return DragTarget<Object>(
-      onWillAcceptWithDetails: (d) => d.data != block,
-      onAcceptWithDetails: (d) => onDrop(d.data),
-      builder: (context, candidates, _) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Shows where a dropped block will land.
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 120),
-            width: candidates.isEmpty ? 0 : size * 0.5,
-            height: size,
-          ),
-          // Flexible keeps a wide repeat block within the row, so it wraps.
-          Flexible(
-            child: _dragSource<Block>(
-              hold: style.holdToDrag,
-              data: block,
-              feedback: Material(
-                type: MaterialType.transparency,
-                child: BlockTile(type: block.type, size: size * 1.1),
-              ),
-              childWhenDragging: Opacity(opacity: 0.3, child: body),
-              child: body,
-            ),
-          ),
-        ],
-      ),
+    return _BlockDraggable<Block>(
+      data: block,
+      type: block.type,
+      size: size,
+      childWhenDragging: Opacity(opacity: 0.3, child: body),
+      child: body,
     );
   }
 }
@@ -700,7 +800,6 @@ class _ContainerBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final cubit = context.watch<BlocksCubit>();
     final size = style.size;
-    final conditional = block.type.isCondition;
     // An "otherwise" block holds two rows: clear, and blocked.
     final twoRows = block.type == BlockType.ifElse;
     // Only a repeat carries a count.
@@ -737,40 +836,28 @@ class _ContainerBlock extends StatelessWidget {
       ],
     );
     // A drop row: the block's own row, or an "otherwise" block's second.
-    Widget dropRow(String parentId, List<Block> blocks) => DragTarget<Object>(
-      onWillAcceptWithDetails: (d) =>
-          style.enabled &&
-          d.data != block &&
-          d.data != BlockType.repeat &&
-          d.data != BlockType.untilGoal &&
-          (!conditional ||
-              !(d.data is BlockType && (d.data as BlockType).isCondition)) &&
-          (d.data is Block || !cubit.isFull),
-      onAcceptWithDetails: (d) =>
-          cubit.drop(d.data, parentId: parentId, index: blocks.length),
-      builder: (context, candidates, _) => Container(
+    Widget dropRow(String parentId, List<Block> blocks) => _BlockRow(
+      parentId: parentId,
+      blocks: blocks,
+      style: style,
+      idle: style.enabled && blocks.isNotEmpty ? addSpot : null,
+      frame: (row, hovered) => Container(
         constraints: BoxConstraints(
           minWidth: size * 1.4,
           minHeight: size * 1.2,
         ),
         padding: EdgeInsets.all(style.gap * 0.5),
         decoration: BoxDecoration(
-          color: candidates.isEmpty
-              ? Colors.white.withValues(alpha: 0.6)
-              : color.withValues(alpha: 0.25),
+          color: hovered
+              ? color.withValues(alpha: 0.25)
+              : Colors.white.withValues(alpha: 0.6),
           borderRadius: BorderRadius.circular(size * 0.2),
           border: cubit.state.selectedContainer == parentId && twoRows
               ? Border.all(color: color, width: 3)
               : null,
         ),
-        child: blocks.isEmpty
-            ? addSpot
-            : _BlockRow(
-                parentId: parentId,
-                blocks: blocks,
-                style: style,
-                trailing: style.enabled ? addSpot : null,
-              ),
+        // An empty row shows a "+" in its middle.
+        child: blocks.isEmpty && !hovered ? addSpot : row,
       ),
     );
     final Widget body;
@@ -889,7 +976,6 @@ class _StarRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<BlocksCubit>();
     final size = style.size;
     final color = BlockType.star.color;
     final addSpot = Icon(
@@ -898,24 +984,18 @@ class _StarRow extends StatelessWidget {
       color: color.withValues(alpha: 0.6),
       semanticLabel: AppLocalizations.of(context).dropBlocksHere,
     );
-    return DragTarget<Object>(
-      onWillAcceptWithDetails: (d) =>
-          style.enabled &&
-          d.data != BlockType.star &&
-          (d.data is! Block || (d.data as Block).type != BlockType.star) &&
-          (d.data is Block || !cubit.isFull),
-      onAcceptWithDetails: (d) => cubit.drop(
-        d.data,
-        parentId: BlocksCubit.starRow,
-        index: blocks.length,
-      ),
-      builder: (context, candidates, _) => AnimatedContainer(
+    return _BlockRow(
+      parentId: BlocksCubit.starRow,
+      blocks: blocks,
+      style: style,
+      idle: style.enabled || blocks.isEmpty ? addSpot : null,
+      frame: (row, hovered) => AnimatedContainer(
         duration: const Duration(milliseconds: 150),
         padding: EdgeInsets.all(style.gap),
         decoration: BoxDecoration(
-          color: candidates.isEmpty
-              ? color.withValues(alpha: 0.08)
-              : color.withValues(alpha: 0.22),
+          color: hovered
+              ? color.withValues(alpha: 0.22)
+              : color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
             width: picked ? 5 : 3,
@@ -933,14 +1013,7 @@ class _StarRow extends StatelessWidget {
                 color: color,
               ),
             ),
-            Expanded(
-              child: _BlockRow(
-                parentId: BlocksCubit.starRow,
-                blocks: blocks,
-                style: style,
-                trailing: style.enabled || blocks.isEmpty ? addSpot : null,
-              ),
-            ),
+            Expanded(child: row),
           ],
         ),
       ),

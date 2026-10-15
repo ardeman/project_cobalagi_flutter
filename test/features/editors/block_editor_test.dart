@@ -51,6 +51,10 @@ Future<BlocksCubit> pumpEditor(
 
 Finder paletteBlock(IconData icon) => find.byIcon(icon).first;
 
+/// Where to hold a dragged block so its centre, which picks the drop spot,
+/// is at [spot]: the block floats just above the finger.
+Offset holdFor(Offset spot) => spot + const Offset(0, 64 * 1.1 * 0.35);
+
 void main() {
   testWidgets('a full star row leaves the main program room on a tablet', (
     tester,
@@ -191,7 +195,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('in a scrolling page, a swipe on a block scrolls; a hold drags', (
+  testWidgets('in a scrolling page, space scrolls; a block drags at once', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(400, 500);
@@ -247,20 +251,29 @@ void main() {
     await tester.pumpAndSettle();
     final start = scroll.offset;
     expect(start, greaterThan(0));
-    await tester.dragFrom(tester.getCenter(repeat), const Offset(0, 120));
+    // A swipe beside the blocks scrolls the page.
+    final beside = Offset(397, tester.getCenter(repeat).dy);
+    await tester.dragFrom(beside, const Offset(0, 120));
     await tester.pumpAndSettle();
     expect(scroll.offset, lessThan(start));
     expect(cubit.state.main, program.main);
 
-    // Hold, then drag the last block onto the palette to remove it.
+    // A block drags at once, and held near the top it scrolls the page up
+    // to the palette, where it is removed.
     final last = find.byKey(ValueKey(cubit.state.main.last.id));
     await tester.ensureVisible(last);
     await tester.pumpAndSettle();
+    final before = scroll.offset;
     final gesture = await tester.startGesture(tester.getCenter(last));
-    await tester.pump(const Duration(milliseconds: 300));
+    await gesture.moveBy(const Offset(0, -20));
+    await gesture.moveTo(const Offset(200, 40));
+    for (var i = 0; i < 30; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    expect(scroll.offset, lessThan(before), reason: 'scrolls at the edge');
     await tester.ensureVisible(find.byIcon(Icons.arrow_upward_rounded).first);
     await gesture.moveTo(
-      tester.getCenter(find.byIcon(Icons.arrow_upward_rounded).first),
+      holdFor(tester.getCenter(find.byIcon(Icons.arrow_upward_rounded).first)),
     );
     await tester.pump();
     await gesture.up();
@@ -529,10 +542,6 @@ void main() {
         tester.getCenter(placed),
         kind: kind,
       );
-      // A finger holds first, since the program row can scroll.
-      if (kind == PointerDeviceKind.touch) {
-        await tester.pump(const Duration(milliseconds: 300));
-      }
       await gesture.moveBy(const Offset(0, -20));
       await gesture.moveTo(
         tester.getCenter(paletteBlock(Icons.arrow_upward_rounded)),
@@ -543,7 +552,7 @@ void main() {
     });
   }
 
-  testWidgets('on a tablet, a swipe on a placed block scrolls the program', (
+  testWidgets('on a tablet, a swipe beside the blocks scrolls the program', (
     tester,
   ) async {
     final cubit = await pumpEditor(tester);
@@ -561,9 +570,10 @@ void main() {
       find.byType(Scrollable).last,
     );
     expect(scrollable.position.maxScrollExtent, greaterThan(0));
-    // Swipe up from the wide repeat, as a finger would.
+    // Swipe up in the space at the end of a line of blocks.
+    final area = tester.getRect(find.byType(SingleChildScrollView).last);
     await tester.dragFrom(
-      tester.getCenter(find.byKey(ValueKey(loop))),
+      area.centerRight - const Offset(10, 0),
       const Offset(0, -120),
     );
     await tester.pumpAndSettle();
@@ -648,6 +658,136 @@ void main() {
       reason: 'nothing added outside the loop',
     );
     expect(cubit.state.main.single.children.map((b) => b.type), [
+      BlockType.forward,
+      BlockType.turnLeft,
+    ]);
+  });
+
+  testWidgets('a see-through copy shows where a dragged block will land', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester)
+      ..add(BlockType.forward)
+      ..add(BlockType.turnRight);
+    await tester.pump();
+    final forward = find.byIcon(Icons.arrow_upward_rounded).last;
+    final start = tester.getCenter(paletteBlock(Icons.turn_left_rounded));
+    final gesture = await tester.startGesture(start);
+    await gesture.moveBy(const Offset(0, 30));
+    expect(find.byKey(const ValueKey('dropGhost')), findsNothing);
+    // The right half of a block: the new one goes after it.
+    await gesture.moveTo(
+      holdFor(tester.getCenter(forward) + const Offset(20, 0)),
+    );
+    await tester.pump();
+    final ghost = find.byKey(const ValueKey('dropGhost'));
+    expect(ghost, findsOneWidget);
+    expect(
+      tester.getCenter(ghost).dx,
+      greaterThan(tester.getCenter(forward).dx),
+    );
+    await gesture.up();
+    await tester.pump();
+    expect(cubit.state.main.map((b) => b.type), [
+      BlockType.forward,
+      BlockType.turnLeft,
+      BlockType.turnRight,
+    ]);
+    expect(find.byKey(const ValueKey('dropGhost')), findsNothing);
+  });
+
+  for (final above in [true, false]) {
+    testWidgets('a block drops ${above ? 'before' : 'after'} a wide repeat', (
+      tester,
+    ) async {
+      final cubit = await pumpEditor(tester)
+        ..add(BlockType.repeat);
+      final loop = cubit.state.main.single.id;
+      cubit.add(BlockType.forward, parentId: loop);
+      await tester.pump();
+      final box = tester.getRect(find.byKey(ValueKey(loop)));
+      final start = tester.getCenter(paletteBlock(Icons.turn_left_rounded));
+      final gesture = await tester.startGesture(start);
+      await gesture.moveBy(const Offset(0, 30));
+      // The repeat's edge, outside the row that holds its own blocks.
+      await gesture.moveTo(
+        holdFor(
+          above
+              ? box.topLeft + const Offset(40, 4)
+              : box.bottomLeft + const Offset(40, -4),
+        ),
+      );
+      await tester.pump();
+      final ghost = tester.getRect(find.byKey(const ValueKey('dropGhost')));
+      final moved = tester.getRect(find.byKey(ValueKey(loop)));
+      // The copy comes before or after the repeat, in reading order.
+      if (above) {
+        expect(ghost.right <= moved.left || ghost.bottom <= moved.top, isTrue);
+      } else {
+        expect(ghost.left >= moved.right || ghost.top >= moved.bottom, isTrue);
+      }
+      expect(moved.width, box.width, reason: 'not squeezed by the ghost');
+      await gesture.up();
+      await tester.pump();
+      expect(cubit.state.main.map((b) => b.type), [
+        if (above) BlockType.turnLeft,
+        BlockType.repeat,
+        if (!above) BlockType.turnLeft,
+      ]);
+      expect(cubit.state.main[above ? 1 : 0].children, hasLength(1));
+    });
+  }
+
+  testWidgets('a gap between blocks drops there, and the copy holds still', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester)
+      ..add(BlockType.forward)
+      ..add(BlockType.turnRight)
+      ..add(BlockType.forward);
+    await tester.pump();
+    final first = tester.getRect(find.byIcon(Icons.arrow_upward_rounded).at(1));
+    final gesture = await tester.startGesture(
+      tester.getCenter(paletteBlock(Icons.turn_left_rounded)),
+    );
+    await gesture.moveBy(const Offset(0, 30));
+    // Just right of the first block, in the gap: not the end of the program.
+    await gesture.moveTo(holdFor(first.centerRight + const Offset(4, 0)));
+    await tester.pump();
+    final ghost = find.byKey(const ValueKey('dropGhost'));
+    final spot = tester.getRect(ghost);
+    // Resting on the copy keeps it where it is.
+    await gesture.moveTo(holdFor(spot.center));
+    await tester.pump();
+    expect(tester.getRect(ghost), spot);
+    await gesture.up();
+    await tester.pump();
+    expect(cubit.state.main.map((b) => b.type), [
+      BlockType.forward,
+      BlockType.turnLeft,
+      BlockType.turnRight,
+      BlockType.forward,
+    ]);
+  });
+
+  testWidgets('lifting a placed block shows no drop spot until it moves', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester)
+      ..add(BlockType.forward)
+      ..add(BlockType.turnLeft);
+    await tester.pump();
+    final placed = find.byIcon(Icons.arrow_upward_rounded).last;
+    final gesture = await tester.startGesture(
+      tester.getCenter(placed),
+      kind: PointerDeviceKind.mouse,
+    );
+    await gesture.moveBy(const Offset(5, 0));
+    await tester.pump();
+    expect(find.byKey(const ValueKey('dropGhost')), findsNothing);
+    await gesture.up();
+    await tester.pump();
+    expect(cubit.state.main.map((b) => b.type), [
       BlockType.forward,
       BlockType.turnLeft,
     ]);

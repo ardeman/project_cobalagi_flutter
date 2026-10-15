@@ -177,16 +177,26 @@ class BlocksCubit extends Cubit<BlockProgram> {
   /// Moves block [id] into [parentId] before the block now at [index].
   void move(String id, {String? parentId, required int index}) {
     final block = _find(id);
-    if (block == null || !_fits(block.type, parentId)) return;
-    // A container cannot be moved into itself or one of its descendants.
-    final target = parentId == null ? null : _rowOf(parentId).$1;
-    if (block.selfAndDescendants.any((b) => b.id == target)) return;
+    if (block == null || !canDrop(block, parentId)) return;
     final (oldParent, oldIndex) = _locate(id)!;
     final adjusted = oldParent == parentId && oldIndex < index
         ? index - 1
         : index;
     emit(_insert(_removed(id), parentId, adjusted, block));
   }
+
+  /// Whether [data], a palette block or a placed one, may land in
+  /// [parentId], so the editor shows a drop spot only where [drop] works.
+  bool canDrop(Object data, String? parentId) => switch (data) {
+    BlockType type => !isFull && _fits(type, parentId),
+    // A container cannot be moved into itself or one of its descendants.
+    Block block =>
+      _fits(block.type, parentId) &&
+          !block.selfAndDescendants.any(
+            (b) => b.id == (parentId == null ? null : _rowOf(parentId).$1),
+          ),
+    _ => false,
+  };
 
   /// Adds a palette block or moves a placed one, depending on [data].
   void drop(Object data, {String? parentId, required int index}) {

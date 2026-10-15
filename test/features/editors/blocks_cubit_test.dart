@@ -122,6 +122,22 @@ void main() {
     expect(c.blockCount, 3);
   });
 
+  test('canDrop says where a drop works, before the child lets go', () {
+    final c = BlocksCubit(maxBlocks: 3)..add(BlockType.repeat);
+    final loop = c.state.main.single;
+    c.add(BlockType.forward, parentId: loop.id);
+    final inner = c.state.main.single.children.single;
+    expect(c.canDrop(BlockType.turnLeft, loop.id), isTrue);
+    expect(c.canDrop(BlockType.repeat, loop.id), isFalse);
+    expect(c.canDrop(BlockType.untilGoal, BlocksCubit.starRow), isFalse);
+    // A repeat can't go into its own row.
+    expect(c.canDrop(c.state.main.single, loop.id), isFalse);
+    expect(c.canDrop(inner, null), isTrue);
+    c.add(BlockType.turnLeft);
+    expect(c.canDrop(BlockType.turnLeft, null), isFalse, reason: 'full');
+    expect(c.canDrop(inner, null), isTrue, reason: 'moving keeps the count');
+  });
+
   test('blocks move into and out of a repeat', () {
     final c = BlocksCubit()
       ..add(BlockType.forward)
