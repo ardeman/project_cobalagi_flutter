@@ -7,6 +7,7 @@ import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 import 'app/app.dart';
 import 'core/audio/audio_service.dart';
 import 'core/entitlement/entitlement_factory.dart';
+import 'core/gamepad/gamepad_navigator.dart';
 import 'core/entitlement/unlock_code.dart';
 import 'core/settings/settings_repository.dart';
 import 'core/storage/app_database.dart';
@@ -41,6 +42,7 @@ Future<void> main() async {
       audio: AudioplayersAudioService(),
       curriculum: CurriculumRepository(),
       progress: ProgressRepository(db),
+      padCommands: controllerCommands(),
       updates: createAppUpdateService(),
     ),
   );

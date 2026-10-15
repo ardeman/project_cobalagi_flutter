@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
+
 import 'glass_bar.dart';
 
 /// An app bar that content scrolls under, frosted while it does. Use it with
@@ -26,6 +29,7 @@ class GlassAppBar extends StatefulWidget implements PreferredSizeWidget {
 class _GlassAppBarState extends State<GlassAppBar> {
   ScrollNotificationObserverState? _observer;
   var _under = false;
+  final _leading = FocusNode(skipTraversal: true, canRequestFocus: false);
 
   @override
   void didChangeDependencies() {
@@ -35,9 +39,15 @@ class _GlassAppBarState extends State<GlassAppBar> {
     _observer?.addListener(_onScroll);
   }
 
+  void _pressLeading() {
+    final button = _leading.descendants.firstOrNull?.context;
+    if (button != null) Actions.maybeInvoke(button, const ActivateIntent());
+  }
+
   @override
   void dispose() {
     _observer?.removeListener(_onScroll);
+    _leading.dispose();
     super.dispose();
   }
 
@@ -62,7 +72,15 @@ class _GlassAppBarState extends State<GlassAppBar> {
           ? null
           : Padding(
               padding: const EdgeInsets.only(left: 16, right: 8),
-              child: Center(child: widget.leading),
+              // The leading button is the way back: the controller's B
+              // presses it.
+              child: Center(
+                child: GamepadShortcut(
+                  button: PadButton.b,
+                  onPressed: _pressLeading,
+                  child: Focus(focusNode: _leading, child: widget.leading!),
+                ),
+              ),
             ),
       titleSpacing: widget.leading == null ? 16 : 8,
       title: widget.title,

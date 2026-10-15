@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import 'profile_avatar.dart';
+import 'package:cobalagi/core/widgets/focus_tap.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
 import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
@@ -70,7 +71,7 @@ class _AddProfileDialogState extends State<_AddProfileDialog> {
             runSpacing: 12,
             children: [
               for (var i = 0; i < avatarStyles.length; i++)
-                GestureDetector(
+                FocusTap(
                   onTap: () => setState(() => _avatar = i),
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 150),

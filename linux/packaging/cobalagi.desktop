@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Coba Lagi
+Comment=Coding puzzles for children
+Comment[id]=Teka-teki coding untuk anak
+Exec=cobalagi
+Icon=cobalagi
+Categories=Education;Game;KidsGame;
+StartupWMClass=com.ardeman.cobalagi

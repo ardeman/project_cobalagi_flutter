@@ -27,6 +27,7 @@ dependencies:
   package_info_plus: ^10.2.2
   in_app_update: ^4.2.5
   liquid_glass_easy: 4.3.4
+  gamepads: ^0.1.12
 
 dev_dependencies:
   flutter_test:

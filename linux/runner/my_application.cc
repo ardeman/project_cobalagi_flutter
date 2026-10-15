@@ -45,14 +45,17 @@ static void my_application_activate(GApplication* application) {
   if (use_header_bar) {
     GtkHeaderBar* header_bar = GTK_HEADER_BAR(gtk_header_bar_new());
     gtk_widget_show(GTK_WIDGET(header_bar));
-    gtk_header_bar_set_title(header_bar, "cobalagi");
+    gtk_header_bar_set_title(header_bar, "Coba Lagi");
     gtk_header_bar_set_show_close_button(header_bar, TRUE);
     gtk_window_set_titlebar(window, GTK_WIDGET(header_bar));
   } else {
-    gtk_window_set_title(window, "cobalagi");
+    gtk_window_set_title(window, "Coba Lagi");
   }
 
-  gtk_window_set_default_size(window, 1280, 720);
+  // The Steam Deck's screen size; the layout needs at least 960 × 600, as on
+  // macOS.
+  gtk_window_set_default_size(window, 1280, 800);
+  gtk_widget_set_size_request(GTK_WIDGET(window), 960, 600);
 
   g_autoptr(FlDartProject) project = fl_dart_project_new();
   fl_dart_project_set_dart_entrypoint_arguments(

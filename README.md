@@ -109,7 +109,8 @@ flutter run            # choose a device; or: flutter run -d chrome
 | Enable commit-message hook (once per clone) | `git config --local core.hooksPath .githooks` |
 | Release build | `flutter build <apk\|appbundle\|ipa\|web\|macos\|linux\|windows>` |
 | Installable Android APKs (one per architecture) | `flutter build apk --release --split-per-abi` |
-| Publish the APKs as a GitHub Release by hand (`--dry-run` to only build; `--latest` for a full release). Pushing a version bump to `master` does this automatically (`.github/workflows/release-apks.yml`). | `tool/release_apks.sh` |
+| Publish the APKs (and the AppImage, if built) as a GitHub Release by hand (`--dry-run` to only build; `--latest` for a full release). Pushing a version bump to `master` does this automatically (`.github/workflows/release-apks.yml`). | `tool/release_apks.sh` |
+| Linux and Steam Deck AppImage (x86_64 Linux only; CI builds it for every release) | `tool/build_appimage.sh` |
 
 **Checks** — run all three before every commit. They must pass with no errors or warnings:
 
@@ -232,7 +233,7 @@ After adding or replacing clips, Android builds may keep using an old asset list
 5. **Drop render noise.** The solved and warm-up screens pick a random cheer and confetti, so they change on every render. If their screen didn't change, restore them: `git checkout -- 'store/*/6-solved.png' website/screenshots/solved*.png website/screenshots/phone-solved*.png website/screenshots/warm-up-pattern*.png website/screenshots/phone-warm-up*.png website/screenshots/warm-up-colors*.png website/screenshots/phone-warm-up-colors*.png`. Look at every other changed slide before keeping it.
 6. **Checks and builds.** Run the Checks, then `flutter build appbundle --release` (for Play) and `flutter build apk --release --split-per-abi`.
 7. **Tell the user what to upload:** the bundle path, the release notes, and which listing items changed since the listing on Play (Store listing → Updating the Play listing), naming the Play Console field for each and marking slides that only changed slightly as optional. When the user says the listing is uploaded, mark that build `"listing": true` in `store/releases.json`.
-8. **Commit and push only when asked**, as two commits: the feature work (`feat:`/`fix:`), then `build: bump version to <name>+<build>` with `pubspec.yaml`, `store/` and `website/`. Pushing the version change publishes the APKs to GitHub Releases; watch it with `gh run watch $(gh run list --workflow release-apks.yml --limit 1 --json databaseId --jq '.[0].databaseId') --exit-status`.
+8. **Commit and push only when asked**, as two commits: the feature work (`feat:`/`fix:`), then `build: bump version to <name>+<build>` with `pubspec.yaml`, `store/` and `website/`. Pushing the version change publishes the APKs and the Linux AppImage to GitHub Releases; watch it with `gh run watch $(gh run list --workflow release-apks.yml --limit 1 --json databaseId --jq '.[0].databaseId') --exit-status`.
 
 ### Checking UI changes
 
@@ -270,6 +271,17 @@ flutter build macos --release   # → build/macos/Build/Products/Release/Coba La
 - **Apple Silicon only (`ARCHS = arm64`).** Xcode 27's `lipo -verify_arch` accepts one architecture per call, which breaks Flutter 3.41's universal-build check. Remove `ARCHS = arm64` from `macos/Runner.xcodeproj` once Flutter handles it, to bring back Intel Macs.
 - **Not distributed for now:** developers build and run it themselves (`open "build/macos/Build/Products/Release/Coba Lagi.app"`). The build is ad-hoc signed, so it runs only on the Mac that built it. Distributing it later needs an Apple Developer account (Developer ID signing and notarization, or the Mac App Store); see Roadmap → Next: more platforms.
 - Donations are off on macOS (free plan only); the store is wired up for Android and iOS.
+
+## Linux and Steam Deck
+
+```sh
+tool/build_appimage.sh   # → build/release/cobalagi-<name>-build<build>-x86_64.AppImage
+```
+
+- One x86_64 AppImage for Linux PCs and the Steam Deck: SteamOS's system is read-only, so the AppImage bundles GTK and GStreamer (audio, MP3 through `gstreamer1.0-plugins-good`) and takes only glibc and the graphics drivers from the system. CI builds it on Ubuntu 22.04, the oldest glibc it supports, and adds it to each GitHub Release next to the APKs (`.github/workflows/release-apks.yml`); the release notes say how to run it and add it to Steam as a non-Steam game.
+- It builds only on x86_64 Linux; on a Mac, push a version bump and let CI build it. The tools (linuxdeploy and its GTK and GStreamer plugins) are pinned in the script. The desktop entry and icon are in `linux/packaging/` (the icon comes from `branding/render.sh`).
+- **Controllers:** the Deck's controls (and any Xbox, PlayStation or other pad, on every platform) work without touching the screen: the d-pad or left stick moves a glowing highlight, A presses, B goes back, and on the play screen X is Go, Y the hint, R1 turns the map and ☰ (menu) shows the tour; each control shows its button while a controller is in use. In Steam, keep the non-Steam game's controller layout on "Gamepad". Code: `lib/core/gamepad/` (AGENTS.md → Conventions).
+- The window opens at 1280 × 800 (the Deck's screen) and can't shrink below 960 × 600, as on macOS. Progress is saved in the user's home folder. Free plan only (no store billing); unlock codes still work.
 
 ## Character
 
@@ -447,7 +459,7 @@ Steps, one small change each:
 4. **App Store listing:** Kids Category with an age band, privacy label "Data Not Collected", age rating, text within Apple's limits (subtitle 30, keywords 100, promo text 170 characters) in `store/` with a limits test, and iPhone 6.9″ and iPad 13″ screenshots from `store/render.sh`.
 5. **macOS on GitHub:** Developer ID signing and notarization in CI (needs the Apple account; secrets set with the user's approval).
 6. **Windows on GitHub:** a zip or installer built in CI. Unsigned builds show a SmartScreen warning until there is a code-signing certificate.
-7. **Linux and Steam Deck on GitHub:** an x86_64 AppImage built in CI, so it runs on SteamOS's read-only system without installing packages; add it to Steam as a non-Steam game. Check on the Deck that touch, the 1280 × 800 screen, audio (GStreamer) and Game Mode work.
+7. **Linux and Steam Deck on GitHub:** an x86_64 AppImage built in CI (done: see Linux and Steam Deck). Still to check on the Deck once a release carries it: touch, the controls, the 1280 × 800 screen, audio (GStreamer) and Game Mode.
 8. **Docs:** update AGENTS.md (build platforms, "Google Play only" decision), the intro and status above, the website and `privacy.html` where they name only Google Play.
 
 Windows, Linux and GitHub macOS builds have no store billing, so they stay on the free plan; unlock codes still unlock sponsor features.

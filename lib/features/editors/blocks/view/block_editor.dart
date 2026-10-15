@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cobalagi/core/widgets/focus_tap.dart';
+
 import '../../../../app/l10n/app_localizations.dart';
 import '../../../../engine/program/instruction.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
@@ -145,7 +147,7 @@ class _BlockEditorState extends State<BlockEditor> {
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: starMax ?? double.infinity),
           child: SingleChildScrollView(
-            child: GestureDetector(
+            child: FocusTap(
               onTap: () => cubit.pickRow(star: true),
               child: _StarRow(
                 blocks: cubit.state.star,
@@ -158,7 +160,7 @@ class _BlockEditorState extends State<BlockEditor> {
         SizedBox(height: gap),
       ],
     ];
-    final program = GestureDetector(
+    final program = FocusTap(
       key: widget.programKey,
       onTap: () => cubit.pickRow(star: false),
       child: _BlockRow(
@@ -672,7 +674,7 @@ class _PaletteBlock extends StatelessWidget {
       type: type,
       size: size,
       childWhenDragging: Opacity(opacity: 0.5, child: tile),
-      child: GestureDetector(onTap: onTap, child: tile),
+      child: FocusTap(onTap: onTap, child: tile),
     );
   }
 }
@@ -714,7 +716,7 @@ class _PlacedBlock extends StatelessWidget {
         ? plain
         : Semantics(
             selected: picked,
-            child: GestureDetector(
+            child: FocusTap(
               onTap: () => cubit.pickBlock(block.id),
               child: Container(
                 foregroundDecoration: picked
@@ -821,7 +823,12 @@ class _ContainerBlock extends StatelessWidget {
     final header = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        BlockTile(type: block.type, size: size * 0.8),
+        // The controller picks the block here: the whole block holds other
+        // blocks, which the highlight must reach too.
+        FocusTap(
+          onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
+          child: BlockTile(type: block.type, size: size * 0.8),
+        ),
         if (counted) ...[
           SizedBox(height: style.gap * 0.5),
           _CountStepper(
@@ -871,16 +878,21 @@ class _ContainerBlock extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Tooltip(
-                message: clear
-                    ? l10n.otherwiseRowClear
-                    : l10n.otherwiseRowBlocked,
-                child: Icon(
-                  clear ? Icons.check_circle_rounded : Icons.block_rounded,
-                  size: size * 0.45,
-                  color: clear
-                      ? const Color(0xFF43A047)
-                      : const Color(0xFFE53935),
+              FocusTap(
+                onTap: style.enabled
+                    ? () => cubit.pickContainer(parentId)
+                    : null,
+                child: Tooltip(
+                  message: clear
+                      ? l10n.otherwiseRowClear
+                      : l10n.otherwiseRowBlocked,
+                  child: Icon(
+                    clear ? Icons.check_circle_rounded : Icons.block_rounded,
+                    size: size * 0.45,
+                    color: clear
+                        ? const Color(0xFF43A047)
+                        : const Color(0xFFE53935),
+                  ),
                 ),
               ),
               SizedBox(width: style.gap * 0.5),

@@ -4,6 +4,9 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
+
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/audio/audio_service.dart';
 import '../../../core/audio/sound_effects.dart';
@@ -172,9 +175,13 @@ class _TutorialViewState extends State<TutorialView> {
           maintainState: true,
           maintainAnimation: true,
           maintainSize: true,
-          child: TextButton(
-            onPressed: widget.onDone,
-            child: Text(l10n.tutorialSkip),
+          child: GamepadShortcut(
+            button: PadButton.b,
+            onPressed: _finished ? null : widget.onDone,
+            child: TextButton(
+              onPressed: widget.onDone,
+              child: Text(l10n.tutorialSkip),
+            ),
           ),
         ),
         const SizedBox(width: 8),
@@ -187,7 +194,9 @@ class _TutorialViewState extends State<TutorialView> {
     );
     final world = ClipRRect(
       borderRadius: BorderRadius.circular(24),
-      child: GameWidget(key: ValueKey(_game), game: _game),
+      child: ExcludeFocus(
+        child: GameWidget(key: ValueKey(_game), game: _game),
+      ),
     );
     final go = Stack(
       clipBehavior: Clip.none,
@@ -243,6 +252,7 @@ class _TutorialViewState extends State<TutorialView> {
           ),
           const SizedBox(width: 12),
           FilledButton.icon(
+            autofocus: true,
             onPressed: widget.onDone,
             icon: const Icon(Icons.arrow_forward_rounded),
             label: Text(widget.doneLabel ?? l10n.tutorialLetsPlay),

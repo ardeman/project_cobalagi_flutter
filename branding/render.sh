@@ -23,6 +23,7 @@ render branding/icon.svg "#background{display:none}" branding/icon_foreground.pn
 render branding/icon.svg "#foreground{display:none}" branding/icon_background.png
 render branding/icon_monochrome.svg "" branding/icon_monochrome.png
 sips -Z 512 branding/icon.png --out branding/play_store_icon.png >/dev/null
+sips -Z 256 branding/icon.png --out linux/packaging/cobalagi.png >/dev/null
 
 dart run flutter_launcher_icons
 # flutter_launcher_icons 0.14.4 also rewrites an unrelated Xcode build setting

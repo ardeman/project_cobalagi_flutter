@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Builds the release APKs (one per Android architecture, plus a universal
-# one that runs on every device) and publishes them
-# as a GitHub Release, tagged v<name>+<build> from pubspec.yaml, with the
-# build's release notes from store/<locale>/changelogs/<build>.txt.
+# one that runs on every device) and publishes them, with the Linux AppImage
+# when tool/build_appimage.sh has built it, as a GitHub Release, tagged
+# v<name>+<build> from pubspec.yaml, with the build's release notes from
+# store/<locale>/changelogs/<build>.txt.
 #
 #   tool/release_apks.sh            # build, then publish as a pre-release
 #   tool/release_apks.sh --dry-run  # build and show what would be published
@@ -73,8 +74,18 @@ for abi in arm64-v8a armeabi-v7a x86_64; do
 done
 cp build/app/outputs/flutter-apk/app-release.apk \
   "$out/cobalagi-$name-build$build-universal.apk"
+# Built on Linux (in CI, by another job), so it is optional here.
+appimage="cobalagi-$name-build$build-x86_64.AppImage"
+if [ -f "build/release/$appimage" ]; then
+  cp "build/release/$appimage" "$out/"
+else
+  appimage=""
+fi
+files=("$out"/*.apk)
+if [ -n "$appimage" ]; then files+=("$out/$appimage"); fi
 
-(cd "$out" && shasum -a 256 ./*.apk | sed 's| \./| |' > SHA256SUMS.txt)
+(cd "$out" && shasum -a 256 ./*.apk ${appimage:+"./$appimage"} |
+  sed 's| \./| |' > SHA256SUMS.txt)
 
 notes="$out/notes.md"
 # One line per paragraph: GitHub keeps every line break in release notes.
@@ -95,11 +106,18 @@ notes="$out/notes.md"
   echo "| \`cobalagi-$name-build$build-arm64-v8a.apk\` | Most phones and tablets |"
   echo "| \`cobalagi-$name-build$build-armeabi-v7a.apk\` | Older 32-bit devices |"
   echo "| \`cobalagi-$name-build$build-x86_64.apk\` | Emulators and Chromebooks |"
+  if [ -n "$appimage" ]; then
+    echo "| \`$appimage\` | Linux PCs and the Steam Deck |"
+  fi
   echo
   echo "## Before you install"
   echo
   echo "- **No automatic updates:** this copy doesn't update itself. For automatic updates, install Coba Lagi from Google Play instead."
   echo "- **Google Play copies:** these APKs are signed with the upload key, not Google Play's key, so they can't update a copy installed from Google Play (or the other way round). Uninstall first, which removes the players' progress."
+  if [ -n "$appimage" ]; then
+    echo "- **Linux:** make the AppImage executable (\`chmod +x $appimage\`, or Properties → Permissions) and open it. It needs no installing and keeps progress in your home folder."
+    echo "- **Steam Deck:** in Desktop Mode, download the AppImage, make it executable as above, then in Steam choose Add a Game → Add a Non-Steam Game and pick it. It then plays in Game Mode too, by touch."
+  fi
   echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"
 
@@ -116,7 +134,7 @@ fi
 
 flags=()
 if $prerelease; then flags+=(--prerelease); else flags+=(--latest); fi
-gh release create "$tag" "$out"/*.apk "$out/SHA256SUMS.txt" \
+gh release create "$tag" "${files[@]}" "$out/SHA256SUMS.txt" \
   --target "$(git rev-parse HEAD)" \
   --title "Coba Lagi $name (build $build)" \
   --notes-file "$notes" \

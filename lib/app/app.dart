@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cobalagi/core/gamepad/gamepad_cubit.dart';
+import 'package:cobalagi/core/gamepad/gamepad_navigator.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:cobalagi/core/widgets/glass_background.dart';
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/data/app_update_service.dart';
@@ -33,6 +36,7 @@ class CobaLagiApp extends StatefulWidget {
     required this.curriculum,
     required this.progress,
     this.updates = const NoAppUpdateService(),
+    this.padCommands,
   });
 
   final ProfileRepository profiles;
@@ -42,6 +46,9 @@ class CobaLagiApp extends StatefulWidget {
   final CurriculumRepository curriculum;
   final ProgressRepository progress;
   final AppUpdateService updates;
+
+  /// Controller input ([controllerCommands]); null in tests.
+  final Stream<PadCommand>? padCommands;
 
   @override
   State<CobaLagiApp> createState() => _CobaLagiAppState();
@@ -110,6 +117,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           create: (_) => BreakReminderCubit(widget.settings)..load(),
         ),
         BlocProvider(create: (_) => HintArrowsCubit(widget.settings)..load()),
+        BlocProvider(create: (_) => GamepadCubit()),
         BlocProvider(
           create: (_) => EntitlementCubit(widget.entitlement)..load(),
         ),
@@ -124,7 +132,10 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
-          builder: (context, child) => GlassBackground(child: child!),
+          builder: (context, child) => GamepadNavigator(
+            commands: widget.padCommands,
+            child: GlassBackground(child: child!),
+          ),
           // null follows the device; languages other than id/en fall back to English.
           locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,

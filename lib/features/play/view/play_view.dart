@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:cobalagi/core/widgets/coach_tour.dart';
@@ -535,15 +537,25 @@ class _PlayViewState extends State<PlayView> {
                               child: Stack(
                                 children: [
                                   Positioned.fill(
-                                    child: GameWidget(game: _game),
+                                    // The world takes no input, so the
+                                    // controller's highlight skips it.
+                                    child: ExcludeFocus(
+                                      child: GameWidget(game: _game),
+                                    ),
                                   ),
                                   Positioned(
                                     top: 8,
                                     right: 8,
-                                    child: _TurnMapButton(
-                                      key: _touring ? _tour.turn : null,
-                                      quarterTurns: _game.quarterTurns,
+                                    child: GamepadShortcut(
+                                      button: PadButton.rightBumper,
                                       onPressed: _turnMap,
+                                      // Inside the world's edge.
+                                      badgeOnLeft: true,
+                                      child: _TurnMapButton(
+                                        key: _touring ? _tour.turn : null,
+                                        quarterTurns: _game.quarterTurns,
+                                        onPressed: _turnMap,
+                                      ),
                                     ),
                                   ),
                                   // Solved: nothing left to explain.
@@ -551,24 +563,32 @@ class _PlayViewState extends State<PlayView> {
                                     Positioned(
                                       top: 8,
                                       left: 8,
-                                      child: IconButton.filledTonal(
-                                        tooltip: AppLocalizations.of(
-                                          context,
-                                        ).tourHelp,
-                                        style: IconButton.styleFrom(
-                                          backgroundColor: Colors.white
-                                              .withValues(alpha: 0.85),
-                                          foregroundColor: const Color(
-                                            0xFF263238,
-                                          ),
-                                        ),
+                                      child: GamepadShortcut(
+                                        button: PadButton.menu,
                                         onPressed: _touring
                                             ? null
                                             : () => setState(
                                                 () => _touring = true,
                                               ),
-                                        icon: const Icon(
-                                          Icons.question_mark_rounded,
+                                        child: IconButton.filledTonal(
+                                          tooltip: AppLocalizations.of(
+                                            context,
+                                          ).tourHelp,
+                                          style: IconButton.styleFrom(
+                                            backgroundColor: Colors.white
+                                                .withValues(alpha: 0.85),
+                                            foregroundColor: const Color(
+                                              0xFF263238,
+                                            ),
+                                          ),
+                                          onPressed: _touring
+                                              ? null
+                                              : () => setState(
+                                                  () => _touring = true,
+                                                ),
+                                          icon: const Icon(
+                                            Icons.question_mark_rounded,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -933,10 +953,14 @@ class _TopBar extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Row(
       children: [
-        IconButton.filledTonal(
-          tooltip: l10n.home,
+        GamepadShortcut(
+          button: PadButton.b,
           onPressed: () => context.go(homePath),
-          icon: const Icon(Icons.home_rounded),
+          child: IconButton.filledTonal(
+            tooltip: l10n.home,
+            onPressed: () => context.go(homePath),
+            icon: const Icon(Icons.home_rounded),
+          ),
         ),
         const SizedBox(width: 16),
         Tooltip(
@@ -1270,33 +1294,37 @@ class _RunControls extends StatelessWidget {
             _Pulse(
               key: tour?.go,
               active: howTo && hasBlocks && play.runs == 0 && !running,
-              child: iconOnly
-                  ? Tooltip(
-                      message: l10n.run,
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: GamepadShortcut(
+                button: PadButton.x,
+                onPressed: onGo,
+                child: iconOnly
+                    ? Tooltip(
+                        message: l10n.run,
+                        child: FilledButton(
+                          style: FilledButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                          ),
+                          onPressed: onGo,
+                          child: Icon(
+                            Icons.play_arrow_rounded,
+                            size: 40,
+                            semanticLabel: l10n.run,
+                          ),
                         ),
+                      )
+                    : FilledButton.icon(
+                        style: compact
+                            ? FilledButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 18,
+                                ),
+                              )
+                            : null,
                         onPressed: onGo,
-                        child: Icon(
-                          Icons.play_arrow_rounded,
-                          size: 40,
-                          semanticLabel: l10n.run,
-                        ),
+                        icon: const Icon(Icons.play_arrow_rounded, size: 40),
+                        label: Text(l10n.run),
                       ),
-                    )
-                  : FilledButton.icon(
-                      style: compact
-                          ? FilledButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 18,
-                              ),
-                            )
-                          : null,
-                      onPressed: onGo,
-                      icon: const Icon(Icons.play_arrow_rounded, size: 40),
-                      label: Text(l10n.run),
-                    ),
+              ),
             ),
             SizedBox(width: gap),
             IconButton.filledTonal(
@@ -1326,20 +1354,25 @@ class _RunControls extends StatelessWidget {
               child: _HintBadge(
                 key: tour?.hint,
                 next: available ? next : null,
-                child: IconButton.filledTonal(
-                  tooltip: switch (next) {
-                    _Hint.route => l10n.hint,
-                    _Hint.pattern => l10n.hintNextPattern,
-                    _Hint.ring => l10n.hintNextRing,
-                  },
-                  style: calling
-                      ? IconButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFC83D),
-                          foregroundColor: const Color(0xFF3E2723),
-                        )
-                      : null,
+                child: GamepadShortcut(
+                  button: PadButton.y,
                   onPressed: available ? onHint : null,
-                  icon: const Icon(Icons.lightbulb_rounded),
+                  badgeOnLeft: true,
+                  child: IconButton.filledTonal(
+                    tooltip: switch (next) {
+                      _Hint.route => l10n.hint,
+                      _Hint.pattern => l10n.hintNextPattern,
+                      _Hint.ring => l10n.hintNextRing,
+                    },
+                    style: calling
+                        ? IconButton.styleFrom(
+                            backgroundColor: const Color(0xFFFFC83D),
+                            foregroundColor: const Color(0xFF3E2723),
+                          )
+                        : null,
+                    onPressed: available ? onHint : null,
+                    icon: const Icon(Icons.lightbulb_rounded),
+                  ),
                 ),
               ),
             ),

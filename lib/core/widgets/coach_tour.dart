@@ -3,6 +3,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cobalagi/core/gamepad/gamepad_capture.dart';
+
 import '../../app/l10n/app_localizations.dart';
 import '../audio/audio_service.dart';
 
@@ -111,58 +113,65 @@ class _CoachTourState extends State<CoachTour> {
     final step = widget.steps[_index];
     final window = hole.inflate(10);
     return Positioned.fill(
-      child: LayoutBuilder(
-        builder: (context, box) {
-          final screen = box.biggest;
-          // The bubble goes below the control if it fits, else above it,
-          // else (a tall control) over the control's lower part.
-          const room = 170.0;
-          final spaceBelow = screen.height - window.bottom - 12;
-          final spaceAbove = window.top - 12;
-          final below = spaceBelow >= room || spaceBelow >= spaceAbove;
-          final inside = spaceBelow < room && spaceAbove < room;
-          final width = min(420.0, screen.width - 32);
-          final left = (window.center.dx - width / 2)
-              .clamp(16.0, max(16.0, screen.width - width - 16))
-              .toDouble();
-          return Stack(
-            children: [
-              Positioned.fill(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: _next,
-                  child: CustomPaint(painter: _Dim(window)),
-                ),
-              ),
-              Positioned(
-                left: left,
-                width: width,
-                top: inside
-                    ? null
-                    : below
-                    ? window.bottom + 12
-                    : null,
-                bottom: inside
-                    ? max(16, screen.height - window.bottom + 16)
-                    : below
-                    ? null
-                    : screen.height - window.top + 12,
-                child: _Bubble(
-                  key: ValueKey(_index),
-                  text: step.text,
-                  next: _last ? l10n.tourDone : l10n.tourNext,
-                  skip: l10n.tutorialSkip,
-                  onNext: _next,
-                  onSkip: widget.onDone,
-                  onListen: () => context.read<AudioService>().playVoice(
-                    step.clip,
-                    languageCode: Localizations.localeOf(context).languageCode,
+      // With a controller, the highlight stays in the bubble, starting on
+      // Next, and B skips the tour.
+      child: GamepadCapture(
+        onBack: widget.onDone,
+        child: LayoutBuilder(
+          builder: (context, box) {
+            final screen = box.biggest;
+            // The bubble goes below the control if it fits, else above it,
+            // else (a tall control) over the control's lower part.
+            const room = 170.0;
+            final spaceBelow = screen.height - window.bottom - 12;
+            final spaceAbove = window.top - 12;
+            final below = spaceBelow >= room || spaceBelow >= spaceAbove;
+            final inside = spaceBelow < room && spaceAbove < room;
+            final width = min(420.0, screen.width - 32);
+            final left = (window.center.dx - width / 2)
+                .clamp(16.0, max(16.0, screen.width - width - 16))
+                .toDouble();
+            return Stack(
+              children: [
+                Positioned.fill(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _next,
+                    child: CustomPaint(painter: _Dim(window)),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+                Positioned(
+                  left: left,
+                  width: width,
+                  top: inside
+                      ? null
+                      : below
+                      ? window.bottom + 12
+                      : null,
+                  bottom: inside
+                      ? max(16, screen.height - window.bottom + 16)
+                      : below
+                      ? null
+                      : screen.height - window.top + 12,
+                  child: _Bubble(
+                    key: ValueKey(_index),
+                    text: step.text,
+                    next: _last ? l10n.tourDone : l10n.tourNext,
+                    skip: l10n.tutorialSkip,
+                    onNext: _next,
+                    onSkip: widget.onDone,
+                    onListen: () => context.read<AudioService>().playVoice(
+                      step.clip,
+                      languageCode: Localizations.localeOf(
+                        context,
+                      ).languageCode,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -286,6 +295,7 @@ class _Bubble extends StatelessWidget {
                     ],
                   ),
                   FilledButton.icon(
+                    autofocus: true,
                     onPressed: onNext,
                     icon: const Icon(Icons.arrow_forward_rounded),
                     label: Text(next),

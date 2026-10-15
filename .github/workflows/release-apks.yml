@@ -1,5 +1,7 @@
-# Builds the Android APKs and publishes them as a GitHub Release whenever
-# the version in pubspec.yaml changes on master (tool/release_apks.sh).
+# Builds the Android APKs and the Linux AppImage (also for the Steam Deck)
+# and publishes them as one GitHub Release whenever the version in
+# pubspec.yaml changes on master (tool/release_apks.sh,
+# tool/build_appimage.sh).
 # Needs these repository secrets, from the upload key:
 #   ANDROID_KEYSTORE_BASE64  the .jks file, base64-encoded
 #   ANDROID_STORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
@@ -24,20 +26,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  # pubspec.yaml also changes for dependencies: release only versions
+  # that have no release yet.
+  version:
     runs-on: ubuntu-latest
+    outputs:
+      new: ${{ steps.version.outputs.new }}
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
 
-      # pubspec.yaml also changes for dependencies: release only versions
-      # that have no release yet.
       - name: Check for a new version
         id: version
         run: |
           version="$(sed -n 's/^version: *//p' pubspec.yaml)"
-          echo "tag=v$version" >> "$GITHUB_OUTPUT"
           if gh release view "v$version" >/dev/null 2>&1; then
             echo "v$version is already released; nothing to do."
             echo "new=false" >> "$GITHUB_OUTPUT"
@@ -45,21 +48,63 @@ jobs:
             echo "new=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - if: steps.version.outputs.new == 'true'
-        uses: actions/setup-java@v5
+  # The oldest supported Ubuntu, so the AppImage runs on older glibc too.
+  linux:
+    needs: version
+    if: needs.version.outputs.new == 'true'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install the Linux build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang cmake ninja-build pkg-config \
+            libgtk-3-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
+            gstreamer1.0-plugins-base gstreamer1.0-plugins-good patchelf file
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.1'
+          channel: stable
+          cache: true
+
+      - name: Build the AppImage
+        run: |
+          flutter pub get
+          tool/build_appimage.sh
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: appimage
+          path: build/release/*.AppImage
+          if-no-files-found: error
+
+  release:
+    needs: [version, linux]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: appimage
+          path: build/release
+
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - if: steps.version.outputs.new == 'true'
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.41.1'
           channel: stable
           cache: true
 
       - name: Run the checks
-        if: steps.version.outputs.new == 'true'
         run: |
           flutter pub get
           dart format --set-exit-if-changed .
@@ -67,7 +112,6 @@ jobs:
           flutter test
 
       - name: Set up the upload key
-        if: steps.version.outputs.new == 'true'
         env:
           KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           STORE_PASSWORD: ${{ secrets.ANDROID_STORE_PASSWORD }}
@@ -87,7 +131,6 @@ jobs:
           } > android/key.properties
 
       - name: Build and publish
-        if: steps.version.outputs.new == 'true'
         run: |
           if [ "${{ inputs.latest }}" = "true" ]; then
             tool/release_apks.sh --latest
