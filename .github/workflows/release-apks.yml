@@ -57,8 +57,11 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Install the Linux build tools
+        # The runner's LLVM brings libunwind-14-dev, which blocks
+        # libunwind-dev, a dependency of GStreamer's headers.
         run: |
           sudo apt-get update
+          sudo apt-get remove -y libunwind-14-dev
           sudo apt-get install -y clang cmake ninja-build pkg-config \
             libgtk-3-dev libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev \
             gstreamer1.0-plugins-base gstreamer1.0-plugins-good patchelf file
