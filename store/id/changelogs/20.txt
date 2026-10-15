@@ -1,0 +1,4 @@
+- Main dengan stik game: joystick kiri memindahkan sorotan, joystick kanan menggulir, A menekan, B kembali atau menutup pesan.
+- Untuk menyeret blok, tahan R2 di atasnya, geser dengan joystick atau tombol panah, lalu lepaskan. Taruh di deretan blok di atas untuk menghapusnya.
+- X bermain dan menjalankan, Y memutar peta atau membuka stiker, L1 dan R1 membatalkan dan mengulang, dan menekan joystick kiri memberi petunjuk.
+- Versi untuk komputer Linux dan Steam Deck kini ada di GitHub.

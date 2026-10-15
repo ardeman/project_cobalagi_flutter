@@ -1,0 +1,4 @@
+- Play with a game controller: the left joystick moves a highlight, the right one scrolls, A presses, B goes back or closes a message.
+- To drag a block, hold R2 on it and move it with the joystick or arrows, then let go. Drop it on the blocks above to remove it.
+- X plays and runs, Y turns the map or opens stickers, L1 and R1 undo and redo, and pressing the left joystick gives a hint.
+- A version for Linux computers and the Steam Deck is now on GitHub.
