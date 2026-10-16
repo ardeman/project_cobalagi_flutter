@@ -12,6 +12,22 @@ const limits = {
 };
 const releaseNotesLimit = 500;
 
+/// The App Store's limits, in characters.
+const appStoreLimits = {
+  'name.txt': 30,
+  'subtitle.txt': 30,
+  'keywords.txt': 100,
+  'promotional_text.txt': 170,
+  'description.txt': 4000,
+};
+
+/// Words Apple rejects in its listing: other platforms (guideline 2.3.10)
+/// and donations, which only nonprofits may take (3.2.2).
+final appStoreBanned = RegExp(
+  r'google|android|donasi|donation',
+  caseSensitive: false,
+);
+
 int length(File file) => file.readAsStringSync().trim().runes.length;
 
 void main() {
@@ -45,6 +61,18 @@ void main() {
       final name = file.uri.pathSegments.last;
       test('$locale/changelogs/$name fits $releaseNotesLimit characters', () {
         expect(length(File(file.path)), lessThanOrEqualTo(releaseNotesLimit));
+      });
+    }
+  }
+
+  for (final locale in locales) {
+    for (final MapEntry(key: name, value: max) in appStoreLimits.entries) {
+      final file = File('store/app_store/$locale/$name');
+      test('app_store/$locale/$name fits $max characters', () {
+        expect(length(file), lessThanOrEqualTo(max));
+      });
+      test('app_store/$locale/$name names no other store or donations', () {
+        expect(file.readAsStringSync(), isNot(contains(appStoreBanned)));
       });
     }
   }

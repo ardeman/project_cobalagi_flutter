@@ -5,6 +5,10 @@
 #   store/<locale>/screenshots/*.png     1920 x 1080 (16:9, tablets)
 #   store/<locale>/phone_screenshots/*.png 1080 x 1920 (9:16, phones), from the
 #     phone-*.png renders of tool/screenshots
+# and the App Store screenshots, from the 2x renders in tool/screenshots/out/:
+#   store/app_store/<locale>/screenshots/iphone/*.jpg 1320 x 2868 (iPhone 6.9")
+#   store/app_store/<locale>/screenshots/ipad/*.jpg   2752 x 2064 (iPad 13")
+#   store/app_store/<locale>/screenshots/mac/*.jpg    2880 x 1800
 # Run from the project root: store/render.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -120,44 +124,93 @@ render_locale() { # locale suffix tagline captions...
   pair_slide "parent-placement$s.png" "parent-progress$s.png" "$8" "store/$locale/screenshots/8-parents.png"
 }
 
-render_locale id "-id" "Belajar coding sambil bermain" \
-  "Jelajahi planet-planet coding" \
-  "Blok bergambar, tanpa perlu membaca" \
-  "Sudah bisa membaca? Ketik kode sungguhan" \
-  "Buat blok sendiri, pakai berkali-kali" \
-  "Temukan blok yang belum pas, lalu betulkan" \
-  "Setiap percobaan disambut dengan semangat" \
-  "Ulangi terus sampai bendera, tanpa menghitung" \
+CAPTIONS_ID=(
+  "Jelajahi planet-planet coding"
+  "Blok bergambar, tanpa perlu membaca"
+  "Sudah bisa membaca? Ketik kode sungguhan"
+  "Buat blok sendiri, pakai berkali-kali"
+  "Temukan blok yang belum pas, lalu betulkan"
+  "Setiap percobaan disambut dengan semangat"
+  "Ulangi terus sampai bendera, tanpa menghitung"
   "Orang tua memilih titik awal; sponsor melihat laporan"
-
-render_locale en-US "" "Learn to code through play" \
-  "Explore the coding planets" \
-  "Picture blocks, no reading needed" \
-  "Reading already? Type real code" \
-  "Build your own block, use it again and again" \
-  "Find the block that isn't quite right, and fix it" \
-  "Every try is met with encouragement" \
-  "Repeat until the flag, no counting needed" \
+)
+CAPTIONS_EN=(
+  "Explore the coding planets"
+  "Picture blocks, no reading needed"
+  "Reading already? Type real code"
+  "Build your own block, use it again and again"
+  "Find the block that isn't quite right, and fix it"
+  "Every try is met with encouragement"
+  "Repeat until the flag, no counting needed"
   "Parents set the start; sponsors see progress"
+)
 
-render_phone id "-id" \
-  "Jelajahi planet-planet coding" \
-  "Blok bergambar, tanpa perlu membaca" \
-  "Sudah bisa membaca? Ketik kode sungguhan" \
-  "Buat blok sendiri, pakai berkali-kali" \
-  "Temukan blok yang belum pas, lalu betulkan" \
-  "Setiap percobaan disambut dengan semangat" \
-  "Ulangi terus sampai bendera, tanpa menghitung" \
-  "Orang tua memilih titik awal; sponsor melihat laporan"
+render_locale id "-id" "Belajar coding sambil bermain" "${CAPTIONS_ID[@]}"
+render_locale en-US "" "Learn to code through play" "${CAPTIONS_EN[@]}"
+render_phone id "-id" "${CAPTIONS_ID[@]}"
+render_phone en-US "" "${CAPTIONS_EN[@]}"
 
-render_phone en-US "" \
-  "Explore the coding planets" \
-  "Picture blocks, no reading needed" \
-  "Reading already? Type real code" \
-  "Build your own block, use it again and again" \
-  "Find the block that isn't quite right, and fix it" \
-  "Every try is met with encouragement" \
-  "Repeat until the flag, no counting needed" \
-  "Parents set the start; sponsors see progress"
+# The App Store's sets use the 2x renders, which are sharp at its sizes.
+OUT="$ROOT/tool/screenshots/out"
+if [ ! -f "$OUT/adventure-map.png" ]; then
+  echo "Missing $OUT: run flutter test tool/screenshots --update-goldens first." >&2
+  exit 1
+fi
+
+# big_slide <w> <h> <image width> <font size> <image> <caption> <out>:
+# caption above one framed screenshot from $OUT.
+big_slide() {
+  shot "$1" "$2" "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:$(($4 * 2 / 3))px;height:$2px\">
+      <h1 style=\"font-size:$4px;max-width:$(($1 * 9 / 10))px;text-align:center;line-height:1.1\">$6</h1>
+      <div class=\"tablet\" style=\"padding:$(($3 / 60))px;border-radius:$(($3 / 25))px\"><img src=\"file://$OUT/$5\" style=\"width:$3px;border-radius:$(($3 / 40))px\"></div>
+    </div>" "$7"
+}
+
+# big_pair_slide <w> <h> <image width> <font size> <image> <image> <caption>
+# <out>: two framed screenshots from $OUT, overlapping, for related screens.
+big_pair_slide() {
+  local pad=$(($3 / 80))
+  # Overlap just enough that the pair fills 92% of the width.
+  local overlap=$((2 * $3 + 4 * pad - $1 * 92 / 100))
+  local frame="padding:${pad}px;border-radius:$(($3 / 25))px"
+  local img="width:$3px;display:block;border-radius:$(($3 / 33))px"
+  shot "$1" "$2" "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:$(($4 * 2 / 3))px;height:$2px\">
+      <h1 style=\"font-size:$4px;max-width:$(($1 * 9 / 10))px;text-align:center;line-height:1.1\">$7</h1>
+      <div style=\"display:flex;align-items:flex-start\">
+        <div class=\"tablet\" style=\"$frame;transform:rotate(-2deg)\"><img src=\"file://$OUT/$5\" style=\"$img\"></div>
+        <div class=\"tablet\" style=\"$frame;transform:rotate(2deg);margin-left:-${overlap}px;margin-top:$(($3 / 5))px\"><img src=\"file://$OUT/$6\" style=\"$img\"></div>
+      </div>
+    </div>" "$8"
+}
+
+# render_apple <locale> <suffix> <set> <w> <h> <image prefix> <image width>
+# <pair image width> <font size> captions...
+render_apple() {
+  local locale="$1" s="$2" set="$3" w="$4" h="$5" p="$6" iw="$7" pw="$8" f="$9"
+  shift 9
+  local dir="store/app_store/$locale/screenshots/$set"
+  mkdir -p "$dir"
+  rm -f "$dir/"*.png "$dir/"*.jpg
+  big_slide "$w" "$h" "$iw" "$f" "${p}adventure-map$s.png"  "$1" "$dir/1-adventure-map.png"
+  big_slide "$w" "$h" "$iw" "$f" "${p}play-loops$s.png"     "$2" "$dir/2-play-loops.png"
+  big_slide "$w" "$h" "$iw" "$f" "${p}play-code$s.png"      "$3" "$dir/3-code.png"
+  big_slide "$w" "$h" "$iw" "$f" "${p}play-functions$s.png" "$4" "$dir/4-play-functions.png"
+  big_slide "$w" "$h" "$iw" "$f" "${p}play-debugging$s.png" "$5" "$dir/5-fix-it.png"
+  big_slide "$w" "$h" "$iw" "$f" "${p}solved$s.png"         "$6" "$dir/6-solved.png"
+  big_slide "$w" "$h" "$iw" "$f" "${p}play-until$s.png"     "$7" "$dir/7-until.png"
+  big_pair_slide "$w" "$h" "$pw" "$f" "${p}parent-placement$s.png" "${p}parent-progress$s.png" "$8" "$dir/8-parents.png"
+  # JPEG halves the size, and the App Store takes it.
+  for png in "$dir/"*.png; do
+    sips -s format jpeg -s formatOptions 90 "$png" --out "${png%.png}.jpg" >/dev/null
+    rm "$png"
+  done
+}
+
+render_apple id -id iphone 1320 2868 phone- 1100 640 96 "${CAPTIONS_ID[@]}"
+render_apple id -id ipad 2752 2064 "" 2300 1500 110 "${CAPTIONS_ID[@]}"
+render_apple id -id mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_ID[@]}"
+render_apple en-US "" iphone 1320 2868 phone- 1100 640 96 "${CAPTIONS_EN[@]}"
+render_apple en-US "" ipad 2752 2064 "" 2300 1500 110 "${CAPTIONS_EN[@]}"
+render_apple en-US "" mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_EN[@]}"
 
 echo "Store graphics rendered."
