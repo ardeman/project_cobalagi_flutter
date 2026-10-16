@@ -1,34 +1,67 @@
 #!/usr/bin/env bash
 # Adds Coba Lagi to Steam as a non-Steam game, with its library artwork, so
-# it plays from Game Mode on the Steam Deck. Run it in Desktop Mode from the
-# folder it was unzipped to, with CobaLagi-x86_64.AppImage downloaded:
+# it plays from Game Mode on the Steam Deck. Run it in Desktop Mode:
 #   ./add_to_steam.sh [path/to/CobaLagi-x86_64.AppImage]
-# Without a path it looks next to itself, one folder up, in ~/Downloads and
-# in ~/Applications. It moves the AppImage to ~/Applications (so the shortcut
-# never breaks), closes Steam while it edits each Steam user's shortcuts.vdf
-# (keeping a .bak copy), and starts Steam again. Running it again updates
-# the shortcut and artwork instead of adding a second one; to update the
-# game itself, run it again with the new AppImage.
+# Without a path it downloads the newest AppImage from the GitHub release
+# into ~/Applications (if that fails, it looks next to itself, one folder
+# up, in ~/Downloads and in ~/Applications); with a path it moves that file
+# there, so the shortcut never breaks. It closes Steam while it edits each
+# Steam user's shortcuts.vdf (keeping a .bak copy), and starts Steam again.
+# Running it again updates the game, the shortcut and the artwork instead
+# of adding a second one.
 # STEAM_DIR overrides where Steam lives (for testing).
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
 name="CobaLagi-x86_64.AppImage"
 apps="$HOME/Applications"
 
+repo="ardeman/project_cobalagi_flutter"
+mkdir -p "$apps"
+
+# The newest release's AppImage link, test releases (pre-releases) too,
+# which GitHub's "latest" link leaves out.
+newest_url() {
+  curl -fsSL "https://api.github.com/repos/$repo/releases?per_page=10" |
+    python3 -c '
+import json, sys
+for release in json.load(sys.stdin):
+    for asset in release["assets"]:
+        if asset["name"] == sys.argv[1]:
+            print(asset["browser_download_url"]); sys.exit()
+sys.exit(1)' "$name"
+}
+
+# Downloads the newest AppImage into ~/Applications; false if it can't.
+download() {
+  local url part="$apps/$name.part"
+  command -v curl >/dev/null || return 1
+  url="$(newest_url)" || return 1
+  echo "Downloading ${url##*/download/}..."
+  curl -fL --progress-bar -o "$part" "$url" || { rm -f "$part"; return 1; }
+  mv -f "$part" "$apps/$name"
+}
+
 appimage=""
-for candidate in "${1:-}" "$here/$name" "$here/../$name" \
-    "$HOME/Downloads/$name" "$apps/$name"; do
-  if [ -n "$candidate" ] && [ -f "$candidate" ]; then
+if [ -n "${1:-}" ]; then
+  candidates=("$1")
+elif download; then
+  candidates=("$apps/$name")
+else
+  echo "Couldn't download it; looking for a downloaded copy instead." >&2
+  candidates=("$here/$name" "$here/../$name" "$HOME/Downloads/$name" \
+    "$apps/$name")
+fi
+for candidate in "${candidates[@]}"; do
+  if [ -f "$candidate" ]; then
     appimage="$(cd "$(dirname "$candidate")" && pwd)/$(basename "$candidate")"
     break
   fi
 done
 if [ -z "$appimage" ]; then
-  echo "Can't find $name. Download it from the same release, then run this again." >&2
+  echo "Can't find $name. Download it from the latest release, then run this again." >&2
   exit 1
 fi
 
-mkdir -p "$apps"
 if [ "$appimage" != "$apps/$name" ]; then
   mv -f "$appimage" "$apps/$name"
 fi
