@@ -445,7 +445,7 @@ when the program is edited. Both editors compile to shared `SetSteps` and
 
 ### Next: more platforms
 
-Planned on 2026-10-15. Apple's stores wait for an Apple Developer account (not yet).
+Planned on 2026-10-15. The Apple Developer account is active since 2026-10-16.
 
 | Where | Platforms | Built by |
 | --- | --- | --- |
