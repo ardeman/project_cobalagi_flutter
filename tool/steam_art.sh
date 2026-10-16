@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Renders Coba Lagi's Steam library artwork with headless Chrome, into
-# linux/steam/artwork/ (linux/steam/add_to_steam.sh installs it):
+# linux/steam/artwork/ (linux/steam/CobaLagi-Steam-Installer.sh installs it):
 #   capsule.png  600 x 900    library grid
 #   wide.png     920 x 430    recent games on the home screen
 #   hero.png     1920 x 620   banner on the game's page (no text: Steam

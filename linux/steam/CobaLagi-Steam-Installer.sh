@@ -2,7 +2,7 @@
 # Adds Coba Lagi to Steam as a non-Steam game, with its library artwork, so
 # it plays from Game Mode on the Steam Deck. It is one file, attached to
 # each GitHub release; run it in Desktop Mode, in Konsole:
-#   bash add_to_steam.sh [path/to/CobaLagi-x86_64.AppImage]
+#   bash CobaLagi-Steam-Installer.sh [path/to/CobaLagi-x86_64.AppImage]
 # Without a path it downloads the newest AppImage from the GitHub release
 # into ~/Applications (if that fails, it looks next to itself, one folder
 # up, in ~/Downloads and in ~/Applications); with a path it moves that file
@@ -12,7 +12,7 @@
 # of adding a second one. The library pictures come from artwork/ next to
 # it (in the repo), else from GitHub (the newest on master).
 # It also adds "Uninstall Coba Lagi" to the Desktop Mode menu, which runs
-#   bash add_to_steam.sh --uninstall
+#   bash CobaLagi-Steam-Installer.sh --uninstall
 # to take the game, its Steam shortcut and pictures away again (asking
 # before it deletes the players' progress).
 # STEAM_DIR overrides where Steam lives (for testing).
@@ -291,17 +291,18 @@ if [ "$mode" = remove ]; then
 else
   mkdir -p "$keep" "$(dirname "$menu")"
   script="${BASH_SOURCE[0]}"
-  if [ -f "$script" ] && [ "$script" -ef "$keep/add_to_steam.sh" ]; then :
-  elif [ -f "$script" ]; then cp -f "$script" "$keep/add_to_steam.sh"
+  if [ -f "$script" ] && [ "$script" -ef "$keep/CobaLagi-Steam-Installer.sh" ]; then :
+  elif [ -f "$script" ]; then cp -f "$script" "$keep/CobaLagi-Steam-Installer.sh"
   fi
+  rm -f "$keep/add_to_steam.sh" # Its old name.
   [ -f "$art/icon.png" ] && cp -f "$art/icon.png" "$keep/icon.png"
-  if [ -f "$keep/add_to_steam.sh" ]; then
+  if [ -f "$keep/CobaLagi-Steam-Installer.sh" ]; then
     cat >"$menu" <<DESKTOP
 [Desktop Entry]
 Type=Application
 Name=Uninstall Coba Lagi
 Comment=Removes Coba Lagi and its Steam shortcut
-Exec=bash "$keep/add_to_steam.sh" --uninstall
+Exec=bash "$keep/CobaLagi-Steam-Installer.sh" --uninstall
 Icon=$keep/icon.png
 Terminal=true
 Categories=Game;

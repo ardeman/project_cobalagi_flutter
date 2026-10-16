@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Builds the release APKs (one per Android architecture, plus a universal
 # one that runs on every device) and publishes them, with the Linux AppImage
-# when tool/build_appimage.sh has built it (and add_to_steam.sh, which
+# when tool/build_appimage.sh has built it (and CobaLagi-Steam-Installer.sh, which
 # adds it to Steam: linux/steam/), as a GitHub Release, tagged
 # v<name>+<build> from pubspec.yaml, with the build's release notes from
 # store/<locale>/changelogs/<build>.txt.
@@ -95,7 +95,7 @@ cp build/app/outputs/flutter-apk/app-release.apk \
 appimage="CobaLagi-x86_64.AppImage"
 # The Steam script is one small file: it downloads the AppImage and the
 # library pictures itself.
-steam_script="add_to_steam.sh"
+steam_script="CobaLagi-Steam-Installer.sh"
 if [ -f "build/release/$appimage" ]; then
   cp "build/release/$appimage" "$out/"
   cp "linux/steam/$steam_script" "$out/"
