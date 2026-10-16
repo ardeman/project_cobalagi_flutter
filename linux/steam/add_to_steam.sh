@@ -49,9 +49,21 @@ fi
 
 # Steam rewrites shortcuts.vdf when it closes, so it must not be running.
 restart=""
+steam_args=()
 if [ -z "${STEAM_DIR:-}" ] && pgrep -x steam >/dev/null; then
   echo "Closing Steam for a moment..."
   restart=1
+  # Start it again with the options it runs with now: on the Steam Deck a
+  # plain `steam` opens Big Picture, even in Desktop Mode.
+  pid="$(pgrep -o -x steam)"
+  { IFS= read -r -d '' _ || true  # the program itself
+    while IFS= read -r -d '' arg; do
+      case "$arg" in
+        -srt-logger-opened) ;;
+        -*) steam_args+=("$arg") ;;
+      esac
+    done
+  } 2>/dev/null < "/proc/$pid/cmdline" || true
   steam -shutdown >/dev/null 2>&1 || true
   for _ in $(seq 60); do
     pgrep -x steam >/dev/null || break
@@ -177,6 +189,6 @@ PY
 
 if [ -n "$restart" ]; then
   echo "Starting Steam again..."
-  (setsid steam >/dev/null 2>&1 &)
+  (setsid steam ${steam_args[@]+"${steam_args[@]}"} >/dev/null 2>&1 &)
 fi
 echo "Done. Coba Lagi is in your Steam library, also in Game Mode."
