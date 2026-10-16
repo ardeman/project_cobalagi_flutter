@@ -22,4 +22,11 @@ class StoreRules {
 
   /// Whether "Have a code?" may unlock the sponsor plan.
   bool get allowsUnlockCodes => !appStore;
+
+  /// Whether purchases go through store billing on [platform]: Google Play
+  /// on Android, and the App Store on iOS and in Mac App Store builds. Other
+  /// builds (GitHub's macOS, Windows and Linux, the web) have no store, so
+  /// they stay on the free plan unless a code unlocks it.
+  bool storeBilling(TargetPlatform platform) =>
+      !kIsWeb && (platform == TargetPlatform.android || appStore);
 }

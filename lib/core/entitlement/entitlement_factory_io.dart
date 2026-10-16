@@ -1,10 +1,11 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 import '../settings/settings_repository.dart';
 import 'donation_entitlement_service.dart';
 import 'entitlement_service.dart';
 import 'in_app_purchase_store.dart';
 import 'purchase_store.dart';
+import 'store_rules.dart';
 import 'unlock_code.dart';
 
 EntitlementService create({
@@ -13,7 +14,7 @@ EntitlementService create({
   required SettingsRepository settings,
 }) => DonationEntitlementService(
   productIds: productIds,
-  store: Platform.isAndroid || Platform.isIOS
+  store: StoreRules.current().storeBilling(defaultTargetPlatform)
       ? InAppPurchaseStore()
       : const NoPurchaseStore(),
   settings: settings,

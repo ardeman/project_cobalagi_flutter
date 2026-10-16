@@ -70,4 +70,15 @@ void main() {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     expect(StoreRules.current().allowsUnlockCodes, isTrue);
   });
+
+  test('store billing: Google Play and the App Stores only', () {
+    const github = StoreRules(appStore: false);
+    const appStore = StoreRules(appStore: true);
+    expect(github.storeBilling(TargetPlatform.android), isTrue);
+    expect(github.storeBilling(TargetPlatform.macOS), isFalse);
+    expect(github.storeBilling(TargetPlatform.windows), isFalse);
+    expect(github.storeBilling(TargetPlatform.linux), isFalse);
+    expect(appStore.storeBilling(TargetPlatform.iOS), isTrue);
+    expect(appStore.storeBilling(TargetPlatform.macOS), isTrue);
+  });
 }
