@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 # Adds Coba Lagi to Steam as a non-Steam game, with its library artwork, so
-# it plays from Game Mode on the Steam Deck. Run it in Desktop Mode:
-#   ./add_to_steam.sh [path/to/CobaLagi-x86_64.AppImage]
+# it plays from Game Mode on the Steam Deck. It is one file, attached to
+# each GitHub release; run it in Desktop Mode, in Konsole:
+#   bash add_to_steam.sh [path/to/CobaLagi-x86_64.AppImage]
 # Without a path it downloads the newest AppImage from the GitHub release
 # into ~/Applications (if that fails, it looks next to itself, one folder
 # up, in ~/Downloads and in ~/Applications); with a path it moves that file
 # there, so the shortcut never breaks. It closes Steam while it edits each
 # Steam user's shortcuts.vdf (keeping a .bak copy), and starts Steam again.
 # Running it again updates the game, the shortcut and the artwork instead
-# of adding a second one.
+# of adding a second one. The library pictures come from artwork/ next to
+# it (in the repo), else from GitHub (the newest on master).
 # STEAM_DIR overrides where Steam lives (for testing).
 set -euo pipefail
 here="$(cd "$(dirname "$0")" && pwd)"
@@ -68,6 +70,18 @@ fi
 appimage="$apps/$name"
 chmod +x "$appimage"
 
+art="$here/artwork"
+if [ ! -f "$art/capsule.png" ]; then
+  art="$(mktemp -d)"
+  trap 'rm -rf "$art"' EXIT
+  echo "Downloading the library pictures..."
+  for picture in capsule wide hero logo icon; do
+    curl -fsSL -o "$art/$picture.png" \
+      "https://raw.githubusercontent.com/$repo/master/linux/steam/artwork/$picture.png" ||
+      echo "Couldn't download $picture.png; Steam shows its own picture there." >&2
+  done
+fi
+
 steam_dir="${STEAM_DIR:-}"
 if [ -z "$steam_dir" ]; then
   for candidate in "$HOME/.local/share/Steam" "$HOME/.steam/steam" \
@@ -108,7 +122,7 @@ if [ -z "${STEAM_DIR:-}" ] && pgrep -x steam >/dev/null; then
   fi
 fi
 
-python3 - "$steam_dir" "$appimage" "$here/artwork" <<'PY'
+python3 - "$steam_dir" "$appimage" "$art" <<'PY'
 import glob, json, os, shutil, struct, sys, zlib
 
 steam_dir, appimage, art = sys.argv[1:4]
@@ -204,9 +218,11 @@ for user in users:
     for src, dst in [("capsule", f"{appid}p"), ("wide", f"{appid}"),
                      ("hero", f"{appid}_hero"), ("logo", f"{appid}_logo"),
                      ("icon", f"{appid}_icon")]:
+        picture = os.path.join(art, src + ".png")
+        if not os.path.isfile(picture): continue  # Not downloaded: keep any old one.
         for old in glob.glob(os.path.join(grid, dst + ".*")):
             if not old.endswith(".json"): os.remove(old)
-        shutil.copyfile(os.path.join(art, src + ".png"), os.path.join(grid, dst + ".png"))
+        shutil.copyfile(picture, os.path.join(grid, dst + ".png"))
     with open(os.path.join(grid, f"{appid}.json"), "w") as f:
         json.dump({"nVersion": 1, "logoPosition": {"pinnedPosition": "BottomLeft",
                    "nWidthPct": 50, "nHeightPct": 50}}, f)
