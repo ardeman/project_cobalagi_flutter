@@ -253,7 +253,13 @@ for user in users:
         if appid:
             for old in glob.glob(os.path.join(config, "grid", f"{appid[2]}*")):
                 os.remove(old)
+            # What Steam made for the shortcut while it played.
+            for cache in ("shadercache", "compatdata"):
+                shutil.rmtree(os.path.join(steam_dir, "steamapps", cache,
+                                           str(appid[2])), ignore_errors=True)
         with open(path, "wb") as f: f.write(write_map(root))
+        # Written well, so the backup (which still lists it) can go too.
+        os.remove(path + ".bak")
         print(f"Removed Coba Lagi for Steam user {os.path.basename(user)}.")
         continue
     if entry is None:
@@ -305,8 +311,12 @@ keep="$HOME/.local/share/cobalagi-steam"
 menu="$HOME/.local/share/applications/cobalagi-uninstall.desktop"
 if [ "$mode" = remove ]; then
   step "Deleting the game"
-  rm -f "$appimage" "$menu"
+  # The game, the uninstaller (this script's copy), its icon and its menu
+  # entry; ~/Applications too, if nothing else is in it.
+  rm -f "$appimage" "$apps/$name.part" "$menu" /tmp/CobaLagi-Steam-Installer.sh
   rm -rf "$keep"
+  rmdir "$apps" 2>/dev/null || true
+  echo "Removed the game and the \"Uninstall Coba Lagi\" menu entry."
   # path_provider's folder: the app id, or the program's name.
   data=()
   for folder in "$HOME/.local/share/com.ardeman.cobalagi" \
