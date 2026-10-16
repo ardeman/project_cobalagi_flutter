@@ -333,8 +333,13 @@ if [ "$mode" = remove ]; then
     esac
   fi
   echo; echo "Done. Coba Lagi is uninstalled."
-  # Opened from the menu, the window would close before it can be read.
-  read -r -p "Press Enter to close. " 2>/dev/null </dev/tty || true
+  # Opened from the menu, the window closes when this ends: a moment to read
+  # the last line, or any key to close it at once.
+  if [ -t 1 ]; then
+    printf 'This window closes in 5 seconds, or press any key. '
+    read -r -s -n 1 -t 5 _ </dev/tty 2>/dev/null || true
+    echo
+  fi
 else
   step "Adding \"Uninstall Coba Lagi\" to the app menu"
   mkdir -p "$keep" "$(dirname "$menu")"
