@@ -1,5 +1,5 @@
-# Builds the Android APKs, the Linux AppImage (also for the Steam Deck) and
-# the Windows zip, and publishes them as one GitHub Release whenever the version in
+# Builds the Android APKs, the Linux AppImage (also for the Steam Deck), the
+# Windows zip and the notarized macOS zip, and publishes them as one GitHub Release whenever the version in
 # pubspec.yaml changes on master (tool/release_apks.sh,
 # tool/build_appimage.sh).
 # Needs these repository secrets, from the upload key:
@@ -89,6 +89,13 @@ jobs:
     if: needs.version.outputs.new == 'true'
     uses: ./.github/workflows/windows.yml
 
+  # The notarized macOS zip (macos.yml); skipped while its secrets are unset.
+  macos:
+    needs: version
+    if: needs.version.outputs.new == 'true'
+    uses: ./.github/workflows/macos.yml
+    secrets: inherit
+
   # The checks, the APKs, the AppImage and the zip build side by side; the
   # release waits for all of them.
   checks:
@@ -165,7 +172,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    needs: [version, checks, android, linux, windows]
+    needs: [version, checks, android, linux, windows, macos]
     runs-on: ubuntu-latest
     env:
       GH_TOKEN: ${{ github.token }}
@@ -180,6 +187,13 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           name: windows
+          path: build/release
+
+      - uses: actions/download-artifact@v8
+        # Missing while the macOS signing secrets are unset.
+        continue-on-error: true
+        with:
+          name: macos
           path: build/release
 
       - uses: actions/download-artifact@v8

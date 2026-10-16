@@ -1,0 +1,132 @@
+# Builds the macOS zip for GitHub Releases: the app signed with the
+# Developer ID certificate and notarized by Apple, so it opens without a
+# warning (not the Mac App Store build: this one keeps unlock codes and has
+# no store billing). The release workflow calls it (release-apks.yml); it
+# also runs on its own when the macOS runner or the dependencies change, so
+# a broken build shows before a version bump.
+# Needs these repository secrets; without them it skips with a warning:
+#   MACOS_CERTIFICATE_P12_BASE64  the Developer ID Application .p12, base64
+#   MACOS_CERTIFICATE_PASSWORD    its export password
+#   APPLE_API_KEY_P8              the App Store Connect API key (.p8) text
+name: macOS build
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'macos/**'
+      - 'pubspec.lock'
+      - '.github/workflows/macos.yml'
+  workflow_call:
+
+env:
+  SIGN_IDENTITY: 'Developer ID Application: ARDEMAN ARDEMAN (B36A8H9S8E)'
+  # App Store Connect API key for notarization; the ids aren't secret.
+  APPLE_API_KEY_ID: 26MP65J65M
+  APPLE_API_ISSUER_ID: 8b1a6f85-5c99-4278-a50a-6d1882483eca
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Check for the signing secrets
+        id: secrets
+        env:
+          CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          API_KEY: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: |
+          if [ -z "$CERTIFICATE" ] || [ -z "$API_KEY" ]; then
+            echo "::warning::The macOS signing secrets are not set; skipping the macOS build."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v7
+        if: steps.secrets.outputs.ok == 'true'
+
+      - uses: subosito/flutter-action@v2
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          flutter-version: '3.41.1'
+          channel: stable
+          cache: true
+
+      - name: Set up the signing keychain
+        if: steps.secrets.outputs.ok == 'true'
+        env:
+          CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          API_KEY: ${{ secrets.APPLE_API_KEY_P8 }}
+        run: |
+          keychain="$RUNNER_TEMP/signing.keychain-db"
+          keychain_password="$(uuidgen)"
+          echo "$CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/developer_id.p12"
+          security create-keychain -p "$keychain_password" "$keychain"
+          security set-keychain-settings -lut 3600 "$keychain"
+          security unlock-keychain -p "$keychain_password" "$keychain"
+          security import "$RUNNER_TEMP/developer_id.p12" -k "$keychain" \
+            -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: \
+            -k "$keychain_password" "$keychain" >/dev/null
+          security list-keychains -d user -s "$keychain" \
+            $(security list-keychains -d user | tr -d '"')
+          rm "$RUNNER_TEMP/developer_id.p12"
+          printf '%s\n' "$API_KEY" > "$RUNNER_TEMP/api_key.p8"
+
+      - name: Build
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          # The project signs automatically as Apple Development (for the
+          # Mac App Store); build unsigned here and sign below.
+          echo 'CODE_SIGNING_ALLOWED = NO' > "$RUNNER_TEMP/unsigned.xcconfig"
+          export XCODE_XCCONFIG_FILE="$RUNNER_TEMP/unsigned.xcconfig"
+          flutter pub get
+          flutter build macos --release
+
+      - name: Sign, notarize and zip
+        if: steps.secrets.outputs.ok == 'true'
+        run: |
+          app="build/macos/Build/Products/Release/Coba Lagi.app"
+          sign() {
+            codesign --force --timestamp --options runtime \
+              --sign "$SIGN_IDENTITY" "$@"
+          }
+          # Inside out: frameworks and libraries first, then the app.
+          find "$app/Contents/Frameworks" -depth \
+            \( -name '*.framework' -o -name '*.dylib' \) -print0 |
+            while IFS= read -r -d '' item; do sign "$item"; done
+          sign --entitlements macos/Runner/Release.entitlements "$app"
+          codesign --verify --strict --deep --verbose=2 "$app"
+
+          mkdir -p build/release
+          ditto -c -k --keepParent "$app" "$RUNNER_TEMP/notarize.zip"
+          xcrun notarytool submit "$RUNNER_TEMP/notarize.zip" \
+            --key "$RUNNER_TEMP/api_key.p8" --key-id "$APPLE_API_KEY_ID" \
+            --issuer "$APPLE_API_ISSUER_ID" --wait --output-format json \
+            > "$RUNNER_TEMP/notarize.json"
+          cat "$RUNNER_TEMP/notarize.json"
+          if [ "$(plutil -extract status raw "$RUNNER_TEMP/notarize.json")" != "Accepted" ]; then
+            xcrun notarytool log "$(plutil -extract id raw "$RUNNER_TEMP/notarize.json")" \
+              --key "$RUNNER_TEMP/api_key.p8" --key-id "$APPLE_API_KEY_ID" \
+              --issuer "$APPLE_API_ISSUER_ID"
+            echo "::error::Apple did not accept the app for notarization."
+            exit 1
+          fi
+          xcrun stapler staple "$app"
+          spctl --assess --type execute --verbose "$app"
+          ditto -c -k --keepParent "$app" build/release/CobaLagi-macOS.zip
+
+      - name: Remove the signing keychain
+        if: always() && steps.secrets.outputs.ok == 'true'
+        run: |
+          security delete-keychain "$RUNNER_TEMP/signing.keychain-db" || true
+          rm -f "$RUNNER_TEMP/api_key.p8"
+
+      - uses: actions/upload-artifact@v7
+        if: steps.secrets.outputs.ok == 'true'
+        with:
+          name: macos
+          path: build/release/*.zip
+          if-no-files-found: error
+          retention-days: 7

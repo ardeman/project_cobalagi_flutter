@@ -2,7 +2,8 @@
 # Builds the release APKs (one per Android architecture, plus a universal
 # one that runs on every device) and publishes them, with the Linux AppImage
 # when tool/build_appimage.sh has built it (and CobaLagi-Steam-Installer.sh, which
-# adds it to Steam: linux/steam/) and the Windows zip when CI has built it,
+# adds it to Steam: linux/steam/) and the Windows and macOS zips when CI has
+# built them,
 # as a GitHub Release, tagged
 # v<name>+<build> from pubspec.yaml, with the build's release notes from
 # store/<locale>/changelogs/<build>.txt.
@@ -112,12 +113,20 @@ if [ -f "build/release/$windows_zip" ]; then
 else
   windows_zip=""
 fi
+# Signed and notarized in CI (macos.yml), so it is optional too.
+macos_zip="CobaLagi-macOS.zip"
+if [ -f "build/release/$macos_zip" ]; then
+  cp "build/release/$macos_zip" "$out/"
+else
+  macos_zip=""
+fi
 files=("$out"/*.apk)
 if [ -n "$appimage" ]; then files+=("$out/$appimage" "$out/$steam_script"); fi
 if [ -n "$windows_zip" ]; then files+=("$out/$windows_zip"); fi
+if [ -n "$macos_zip" ]; then files+=("$out/$macos_zip"); fi
 
 (cd "$out" && shasum -a 256 ./*.apk ${appimage:+"./$appimage"} ${steam_script:+"./$steam_script"} \
-  ${windows_zip:+"./$windows_zip"} |
+  ${windows_zip:+"./$windows_zip"} ${macos_zip:+"./$macos_zip"} |
   sed 's| \./| |' > SHA256SUMS.txt)
 
 notes="$out/notes.md"
@@ -146,6 +155,9 @@ notes="$out/notes.md"
   if [ -n "$windows_zip" ]; then
     echo "| \`$windows_zip\` | Windows 10 and 11 PCs (64-bit) |"
   fi
+  if [ -n "$macos_zip" ]; then
+    echo "| \`$macos_zip\` | Macs with Apple silicon (M1 or newer), macOS 12 or later |"
+  fi
   echo
   echo "## Before you install"
   echo
@@ -158,6 +170,9 @@ notes="$out/notes.md"
   fi
   if [ -n "$windows_zip" ]; then
     echo "- **Windows:** extract the zip (right-click → Extract All) and open \`cobalagi.exe\` in the \"Coba Lagi\" folder. It needs no installing and keeps progress in your user folder (AppData). The app isn't code-signed yet, so the first time Windows may say it protected your PC: choose More info → Run anyway. To update, replace the old folder with the new one: progress stays."
+  fi
+  if [ -n "$macos_zip" ]; then
+    echo "- **Mac:** open the zip and drag \"Coba Lagi\" into Applications. It is signed and checked by Apple, so it opens without a warning. To update, replace it with the new one: progress stays. The Mac App Store version updates itself and shares progress with this one."
   fi
   echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"
