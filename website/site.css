@@ -158,6 +158,7 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.15; margin: 0 0 12p
 }
 .card h3 { margin: 14px 0 6px; font-size: 1.2rem; }
 .card p { margin: 0; color: var(--muted); }
+.card p + p { margin-top: 12px; }
 .icon {
   width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center;
 }
