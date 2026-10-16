@@ -257,6 +257,7 @@ class _GamepadNavigatorState extends State<GamepadNavigator>
       }
       return;
     }
+    final carried = capture!.carriedRect;
     final moved = freeDrag();
     void press(Offset at) {
       if (_grabbedFrom == null || _finger.value != null) return;
@@ -278,7 +279,7 @@ class _GamepadNavigatorState extends State<GamepadNavigator>
     } else {
       // The block lands first; press it once it is laid out there.
       WidgetsBinding.instance.addPostFrameCallback(
-        (_) => press((_focusedRect() ?? from).center),
+        (_) => press((carried?.call() ?? _focusedRect() ?? from).center),
       );
     }
   }

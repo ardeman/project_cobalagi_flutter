@@ -141,6 +141,14 @@ class _BlockEditorState extends State<BlockEditor> {
           moved ? cubit.dropCarried() : cubit.cancelCarry();
           return moved;
         },
+        // The block stays picked once put down, so its focus node is on it:
+        // a new block drags on from the code area, not the palette.
+        carriedRect: () {
+          final box = _pickedFocus.context?.findRenderObject();
+          return box is RenderBox && box.attached && box.hasSize
+              ? box.localToGlobal(Offset.zero) & box.size
+              : null;
+        },
       );
       pad.captures.add(_carry!);
     } else if (!cubit.state.carrying) {

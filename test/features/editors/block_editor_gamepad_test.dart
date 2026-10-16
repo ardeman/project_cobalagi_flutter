@@ -279,5 +279,20 @@ void main() {
     pad.add(const PadRelease(PadButton.rightTrigger));
     await tester.pumpAndSettle();
     expect(cubit.state.main, hasLength(4));
+
+    // A new block drags on from where it showed up in the program, even
+    // with the highlight left on the palette: never a second new block.
+    final paletteBlock = find.byIcon(Icons.turn_right_rounded).first;
+    Focus.of(tester.element(paletteBlock)).requestFocus();
+    await tester.pump();
+    pad.add(const PadPress(PadButton.rightTrigger));
+    await tester.pump(frame);
+    expect(cubit.state.main, hasLength(5));
+    Focus.of(tester.element(paletteBlock)).requestFocus();
+    await tester.pump();
+    await hold(const Offset(-1, 0), const Duration(milliseconds: 200));
+    pad.add(const PadRelease(PadButton.rightTrigger));
+    await tester.pumpAndSettle();
+    expect(cubit.state.main, hasLength(5));
   });
 }

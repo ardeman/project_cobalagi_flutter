@@ -42,6 +42,7 @@ final class PadCaptureEntry {
     this.onConfirm,
     this.onRelease,
     this.onFreeDrag,
+    this.carriedRect,
   });
 
   final BuildContext context;
@@ -60,6 +61,11 @@ final class PadCaptureEntry {
   /// ends its carry, and says whether the block moved (then the finger
   /// starts on it where it now is; else where R2 was pressed).
   bool Function()? onFreeDrag;
+
+  /// Where the carried block is on screen, asked once a moved block is put
+  /// down, so the finger presses it there even if the highlight isn't on
+  /// it; null (or no answer) presses the highlighted control.
+  Rect? Function()? carriedRect;
 }
 
 /// Held R2 on the highlighted control: a block takes it to start being
