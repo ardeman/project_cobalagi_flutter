@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/services.dart';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/app/theme/app_theme.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
@@ -22,6 +19,8 @@ import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../helpers/real_fonts.dart';
 
 final _level = Level.fromRows(
   id: 'phone',
@@ -678,10 +677,8 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  // The test font draws every letter as a square, far wider than real
-  // words, so these load the Roboto that ships with the Flutter SDK.
   group('with real fonts', () {
-    setUpAll(_loadRoboto);
+    setUpAll(loadRealFonts);
 
     for (final language in ['en', 'id']) {
       testWidgets('phones from 320 dp up fit the bars in $language', (
@@ -713,9 +710,9 @@ void main() {
     testWidgets('folding or unfolding a phone mid-puzzle keeps the puzzle', (
       tester,
     ) async {
-      // The iPhone Duo folded (5.4 inch) and unfolded (7.6 inch, a tablet
-      // layout), and an iPad in split view.
-      await _pumpPhone(tester, size: const Size(375, 812));
+      // The iPhone Duo closed (466 × 678 points) and open (669 × 951, a
+      // tablet layout), turned sideways, and an iPad in split view.
+      await _pumpPhone(tester, size: const Size(466, 678));
       final cubit = tester
           .element(find.byType(BlockEditor))
           .read<BlocksCubit>();
@@ -726,9 +723,11 @@ void main() {
       final program = cubit.state.main;
 
       for (final size in const [
-        Size(840, 760),
+        Size(669, 951),
+        Size(951, 669),
+        Size(678, 466),
         Size(320, 900),
-        Size(375, 812),
+        Size(466, 678),
       ]) {
         tester.view.physicalSize = size;
         await _pumpScroll(tester);
@@ -747,25 +746,4 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   });
-}
-
-Future<void> _loadRoboto() async {
-  final flutter = Platform.resolvedExecutable;
-  final fonts =
-      '${flutter.substring(0, flutter.indexOf('/bin/cache/'))}'
-      '/bin/cache/artifacts/material_fonts';
-  for (final (family, files) in const [
-    ('Roboto', ['Roboto-Regular.ttf', 'Roboto-Medium.ttf', 'Roboto-Bold.ttf']),
-    ('MaterialIcons', ['MaterialIcons-Regular.otf']),
-  ]) {
-    final loader = FontLoader(family);
-    for (final file in files) {
-      loader.addFont(
-        Future.value(
-          ByteData.sublistView(File('$fonts/$file').readAsBytesSync()),
-        ),
-      );
-    }
-    await loader.load();
-  }
 }

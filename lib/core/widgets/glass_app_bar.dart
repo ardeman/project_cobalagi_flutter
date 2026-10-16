@@ -104,9 +104,9 @@ class _GlassAppBarState extends State<GlassAppBar> {
 }
 
 /// [padding] plus the space a [GlassAppBar] and the system bars take, for a
-/// scroll view whose content passes under them. [context] must be below the
+/// scroll view whose content passes under them, and the screen's side
+/// insets (a notch, or the iPhone Duo's status bar on its side edge), which
+/// a scroll view leaves to its padding. [context] must be below the
 /// Scaffold (use a Builder), or the app bar's height is missing.
-EdgeInsets belowBars(BuildContext context, EdgeInsets padding) {
-  final insets = MediaQuery.paddingOf(context);
-  return padding + EdgeInsets.only(top: insets.top, bottom: insets.bottom);
-}
+EdgeInsets belowBars(BuildContext context, EdgeInsets padding) =>
+    padding + MediaQuery.paddingOf(context);

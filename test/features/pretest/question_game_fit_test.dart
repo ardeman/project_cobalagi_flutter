@@ -14,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../helpers/real_fonts.dart';
+
 /// One question that stays on screen.
 class _OneQuestion implements QuestionRound {
   _OneQuestion(this.current);
@@ -50,9 +52,15 @@ const _screens = [
   Size(1024, 600),
   Size(1280, 800),
   Size(800, 1280),
+  // The iPhone Duo closed and open, either way up.
+  Size(466, 678),
+  Size(678, 466),
+  Size(669, 951),
+  Size(951, 669),
 ];
 
 void main() {
+  setUpAll(loadRealFonts);
   // Every Warm-up game, plus reading (only in the first warm-up).
   final games = <String, PretestQuestion Function(PretestGenerator, int)>{
     for (final game in WarmUpGame.values) game.name: game.question,
