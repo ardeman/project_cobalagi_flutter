@@ -140,7 +140,7 @@ notes="$out/notes.md"
   echo "- **Google Play copies:** these APKs are signed with the upload key, not Google Play's key, so they can't update a copy installed from Google Play (or the other way round). Uninstall first, which removes the players' progress."
   if [ -n "$appimage" ]; then
     echo "- **Linux:** make the AppImage executable (\`chmod +x $appimage\`, or Properties → Permissions) and open it. It needs no installing and keeps progress in your home folder. To update, replace the old file with the new one (same name): progress stays."
-    echo "- **Steam Deck:** in Desktop Mode, download \`$steam_script\` (to Downloads), open Konsole and run \`bash ~/Downloads/$steam_script\`. It downloads the newest AppImage into the Applications folder in your home folder, adds Coba Lagi to Steam with its pictures, and restarts Steam; it then plays in Game Mode too, by touch or with the Deck's controls. To update, run it again: progress stays."
+    echo "- **Steam Deck:** in Desktop Mode, download \`$steam_script\` (to Downloads), open Konsole and run \`bash ~/Downloads/$steam_script\`. It downloads the newest AppImage into the Applications folder in your home folder, adds Coba Lagi to Steam with its pictures, and restarts Steam; it then plays in Game Mode too, by touch or with the Deck's controls. To update, run it again: progress stays. To remove it, open \"Uninstall Coba Lagi\" from the app menu in Desktop Mode."
   fi
   echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"
