@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Adds Coba Lagi to Steam as a non-Steam game, with its library artwork, so
-# it plays from Game Mode on the Steam Deck. It is one file, attached to
-# each GitHub release; run it in Desktop Mode, in Konsole:
+# it plays from Game Mode on the Steam Deck. CobaLagi-Steam-Installer.desktop,
+# attached to each GitHub release, downloads it from master and runs it;
+# it also runs on its own in Desktop Mode, in Konsole:
 #   bash CobaLagi-Steam-Installer.sh [path/to/CobaLagi-x86_64.AppImage]
 # Without a path it downloads the newest AppImage from the GitHub release
 # into ~/Applications (if that fails, it looks next to itself, one folder

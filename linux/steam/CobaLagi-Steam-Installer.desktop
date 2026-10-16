@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=Install Coba Lagi
+Comment=Downloads Coba Lagi and adds it to Steam, with its pictures
+Exec=bash -c "curl -fsSL -o /tmp/CobaLagi-Steam-Installer.sh https://raw.githubusercontent.com/ardeman/project_cobalagi_flutter/master/linux/steam/CobaLagi-Steam-Installer.sh && bash /tmp/CobaLagi-Steam-Installer.sh || echo 'Something went wrong. Check the internet connection, then try again.'; read -r -p 'Press Enter to close. '"
+Icon=steamdeck-gaming-return
+Terminal=true
+StartupNotify=false

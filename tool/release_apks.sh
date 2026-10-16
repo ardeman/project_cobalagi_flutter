@@ -93,9 +93,10 @@ cp build/app/outputs/flutter-apk/app-release.apk \
   "$out/cobalagi-$name-build$build-universal.apk"
 # Built on Linux (in CI, by another job), so it is optional here.
 appimage="CobaLagi-x86_64.AppImage"
-# The Steam script is one small file: it downloads the AppImage and the
-# library pictures itself.
-steam_script="CobaLagi-Steam-Installer.sh"
+# The Steam installer is a launcher, like Decky's: double-clicked, it runs
+# the newest CobaLagi-Steam-Installer.sh from master, which downloads the
+# AppImage and the library pictures itself.
+steam_script="CobaLagi-Steam-Installer.desktop"
 if [ -f "build/release/$appimage" ]; then
   cp "build/release/$appimage" "$out/"
   cp "linux/steam/$steam_script" "$out/"
@@ -130,7 +131,7 @@ notes="$out/notes.md"
   echo "| \`cobalagi-$name-build$build-x86_64.apk\` | Emulators and Chromebooks |"
   if [ -n "$appimage" ]; then
     echo "| \`$appimage\` | Linux PCs and the Steam Deck |"
-    echo "| \`$steam_script\` | Downloads the newest AppImage and adds it to Steam, with its artwork (Steam Deck) |"
+    echo "| \`$steam_script\` | Installs the newest Coba Lagi on the Steam Deck and adds it to Steam, with its pictures |"
   fi
   echo
   echo "## Before you install"
@@ -140,7 +141,7 @@ notes="$out/notes.md"
   echo "- **Google Play copies:** these APKs are signed with the upload key, not Google Play's key, so they can't update a copy installed from Google Play (or the other way round). Uninstall first, which removes the players' progress."
   if [ -n "$appimage" ]; then
     echo "- **Linux:** make the AppImage executable (\`chmod +x $appimage\`, or Properties → Permissions) and open it. It needs no installing and keeps progress in your home folder. To update, replace the old file with the new one (same name): progress stays."
-    echo "- **Steam Deck:** in Desktop Mode, download \`$steam_script\` (to Downloads), open Konsole and run \`bash ~/Downloads/$steam_script\`. It downloads the newest AppImage into the Applications folder in your home folder, adds Coba Lagi to Steam with its pictures, and restarts Steam; it then plays in Game Mode too, by touch or with the Deck's controls. To update, run it again: progress stays. To remove it, open \"Uninstall Coba Lagi\" from the app menu in Desktop Mode."
+    echo "- **Steam Deck:** in Desktop Mode, download \`$steam_script\` and double-click it (if asked, choose Continue or Execute). It downloads the newest Coba Lagi into the Applications folder in your home folder, adds it to Steam with its pictures, and restarts Steam, showing each step as it goes; Coba Lagi then plays in Game Mode too, by touch or with the Deck's controls. To update, run it again: progress stays. To remove it, open \"Uninstall Coba Lagi\" from the app menu in Desktop Mode."
   fi
   echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"
