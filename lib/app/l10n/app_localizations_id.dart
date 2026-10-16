@@ -428,6 +428,16 @@ class AppLocalizationsId extends AppLocalizations {
   String get restoreDonation => 'Pulihkan donasi sebelumnya';
 
   @override
+  String get tipExplainer =>
+      'Coba Lagi gratis. Tip berapa pun membuka fitur sponsor untuk keluargamu dan membantu kami membuat lebih banyak petualangan.';
+
+  @override
+  String get tipsUnavailable => 'Tip tidak tersedia di perangkat ini.';
+
+  @override
+  String get restorePurchases => 'Pulihkan pembelian';
+
+  @override
   String get haveUnlockCode => 'Punya kode?';
 
   @override

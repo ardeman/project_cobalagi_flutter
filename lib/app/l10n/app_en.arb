@@ -227,6 +227,12 @@
   "donateExplainer": "Coba Lagi is free. A donation of any size unlocks sponsor features for your family and helps us build more adventures.",
   "donateUnavailable": "Donations aren't available on this device.",
   "restoreDonation": "Restore an earlier donation",
+  "tipExplainer": "Coba Lagi is free. A tip of any size unlocks sponsor features for your family and helps us build more adventures.",
+  "@tipExplainer": {
+    "description": "Shown instead of donateExplainer in App Store builds, where only nonprofits may take donations."
+  },
+  "tipsUnavailable": "Tips aren't available on this device.",
+  "restorePurchases": "Restore purchases",
   "haveUnlockCode": "Have a code?",
   "@haveUnlockCode": {
     "description": "Opens a field for a code that unlocks the sponsor plan without a donation."

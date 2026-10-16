@@ -455,7 +455,7 @@ Planned on 2026-10-15. The Apple Developer account is active since 2026-10-16.
 
 Steps, one small change each:
 
-1. **App Store rules:** hide unlock codes in App Store builds (guideline 3.1.1 bans unlocking outside in-app purchase) and call the purchases support or tips there, not donations (only nonprofits may take donations). GitHub builds keep unlock codes.
+1. **App Store rules:** hide unlock codes in App Store builds (guideline 3.1.1 bans unlocking outside in-app purchase) and call the purchases support or tips there, not donations (only nonprofits may take donations). GitHub builds keep unlock codes. Done: `StoreRules` (`lib/core/entitlement/store_rules.dart`) treats every iOS build as an App Store build; build for the Mac App Store with `flutter build macos --release --dart-define=APP_STORE=true`.
 2. **iOS and iPadOS config:** privacy manifest (`PrivacyInfo.xcprivacy`), `ITSAppUsesNonExemptEncryption = NO`, all orientations and resizing (no `UIRequiresFullScreen`), so iPad split view and the iPhone Duo's fold work. Folding or unfolding mid-puzzle keeps the puzzle. Check that music mixes with other audio as on Android.
 3. **Mac App Store:** app sandbox and in-app purchase on macOS (donations are off there now).
 4. **App Store listing:** Kids Category with an age band, privacy label "Data Not Collected", age rating, text within Apple's limits (subtitle 30, keywords 100, promo text 170 characters) in `store/` with a limits test, and iPhone 6.9″ and iPad 13″ screenshots from `store/render.sh`.

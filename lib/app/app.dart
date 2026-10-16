@@ -16,6 +16,7 @@ import '../core/audio/music_cubit.dart';
 import '../core/audio/sound_effects_cubit.dart';
 import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
+import '../core/entitlement/store_rules.dart';
 import '../core/settings/hint_arrows_cubit.dart';
 import '../core/settings/settings_cubit.dart';
 import '../core/settings/settings_repository.dart';
@@ -37,6 +38,7 @@ class CobaLagiApp extends StatefulWidget {
     required this.curriculum,
     required this.progress,
     this.updates = const NoAppUpdateService(),
+    this.storeRules = const StoreRules(appStore: false),
     this.padCommands,
     this.keyboard,
   });
@@ -48,6 +50,9 @@ class CobaLagiApp extends StatefulWidget {
   final CurriculumRepository curriculum;
   final ProgressRepository progress;
   final AppUpdateService updates;
+
+  /// What the store this build is sold through allows ([StoreRules.current]).
+  final StoreRules storeRules;
 
   /// Controller input ([controllerCommands]); null in tests.
   final Stream<PadCommand>? padCommands;
@@ -101,6 +106,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
       RepositoryProvider.value(value: widget.curriculum),
       RepositoryProvider.value(value: widget.progress),
       RepositoryProvider.value(value: widget.updates),
+      RepositoryProvider.value(value: widget.storeRules),
       RepositoryProvider.value(value: _playClock),
     ],
     child: MultiBlocProvider(

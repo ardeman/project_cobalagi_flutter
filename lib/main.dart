@@ -9,6 +9,7 @@ import 'core/audio/audio_service.dart';
 import 'core/entitlement/entitlement_factory.dart';
 import 'core/gamepad/gamepad_navigator.dart';
 import 'core/gamepad/screen_keyboard.dart';
+import 'core/entitlement/store_rules.dart';
 import 'core/entitlement/unlock_code.dart';
 import 'core/settings/settings_repository.dart';
 import 'core/storage/app_database.dart';
@@ -29,6 +30,7 @@ Future<void> main() async {
   final donations =
       jsonDecode(await rootBundle.loadString('assets/config/donations.json'))
           as Map<String, Object?>;
+  final storeRules = StoreRules.current();
   runApp(
     CobaLagiApp(
       profiles: ProfileRepository(db),
@@ -36,7 +38,8 @@ Future<void> main() async {
       entitlement: createEntitlementService(
         productIds: {...(donations['products']! as List).cast<String>()},
         unlockCodes: UnlockCodes({
-          ...(donations['unlock_code_sha256']! as List).cast<String>(),
+          if (storeRules.allowsUnlockCodes)
+            ...(donations['unlock_code_sha256']! as List).cast<String>(),
         }),
         settings: settings,
       ),
@@ -46,6 +49,7 @@ Future<void> main() async {
       padCommands: controllerCommands(),
       keyboard: steamKeyboard(),
       updates: createAppUpdateService(),
+      storeRules: storeRules,
     ),
   );
 }

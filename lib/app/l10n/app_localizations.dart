@@ -878,6 +878,24 @@ abstract class AppLocalizations {
   /// **'Restore an earlier donation'**
   String get restoreDonation;
 
+  /// Shown instead of donateExplainer in App Store builds, where only nonprofits may take donations.
+  ///
+  /// In en, this message translates to:
+  /// **'Coba Lagi is free. A tip of any size unlocks sponsor features for your family and helps us build more adventures.'**
+  String get tipExplainer;
+
+  /// No description provided for @tipsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Tips aren\'t available on this device.'**
+  String get tipsUnavailable;
+
+  /// No description provided for @restorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get restorePurchases;
+
   /// Opens a field for a code that unlocks the sponsor plan without a donation.
   ///
   /// In en, this message translates to:

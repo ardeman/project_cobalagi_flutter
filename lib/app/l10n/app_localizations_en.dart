@@ -441,6 +441,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get restoreDonation => 'Restore an earlier donation';
 
   @override
+  String get tipExplainer =>
+      'Coba Lagi is free. A tip of any size unlocks sponsor features for your family and helps us build more adventures.';
+
+  @override
+  String get tipsUnavailable => 'Tips aren\'t available on this device.';
+
+  @override
+  String get restorePurchases => 'Restore purchases';
+
+  @override
   String get haveUnlockCode => 'Have a code?';
 
   @override

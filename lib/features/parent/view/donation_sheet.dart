@@ -5,22 +5,26 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/entitlement_service.dart';
 import '../../../core/entitlement/plan.dart';
+import '../../../core/entitlement/store_rules.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
 import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
 /// Donation choices from the store. Shown only in the parent area, behind the
-/// parent gate, as Google Play Families requires.
+/// parent gate, as Google Play Families requires. App Store builds call them
+/// tips and offer no unlock code ([StoreRules]).
 Future<void> showDonationSheet(BuildContext context) => showGlassSheet(
   context: context,
   showDragHandle: true,
   builder: (_) => BlocProvider.value(
     value: context.read<EntitlementCubit>(),
-    child: const _DonationSheet(),
+    child: _DonationSheet(rules: context.read<StoreRules>()),
   ),
 );
 
 class _DonationSheet extends StatefulWidget {
-  const _DonationSheet();
+  const _DonationSheet({required this.rules});
+
+  final StoreRules rules;
 
   @override
   State<_DonationSheet> createState() => _DonationSheetState();
@@ -37,6 +41,7 @@ class _DonationSheetState extends State<_DonationSheet> {
     final l10n = AppLocalizations.of(context);
     final service = context.read<EntitlementCubit>().service;
     final plan = context.watch<EntitlementCubit>().state;
+    final rules = widget.rules;
     // Scrolls when the sheet is short, as on a phone held sideways.
     return SafeArea(
       child: SingleChildScrollView(
@@ -53,7 +58,11 @@ class _DonationSheetState extends State<_DonationSheet> {
             ),
             const SizedBox(height: 12),
             Text(
-              plan == Plan.full ? l10n.thanksForSupport : l10n.donateExplainer,
+              plan == Plan.full
+                  ? l10n.thanksForSupport
+                  : rules.appStore
+                  ? l10n.tipExplainer
+                  : l10n.donateExplainer,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
             ),
@@ -66,7 +75,13 @@ class _DonationSheetState extends State<_DonationSheet> {
                   if (options == null) {
                     return const CircularProgressIndicator();
                   }
-                  if (options.isEmpty) return Text(l10n.donateUnavailable);
+                  if (options.isEmpty) {
+                    return Text(
+                      rules.appStore
+                          ? l10n.tipsUnavailable
+                          : l10n.donateUnavailable,
+                    );
+                  }
                   return Wrap(
                     spacing: 12,
                     runSpacing: 12,
@@ -89,18 +104,23 @@ class _DonationSheetState extends State<_DonationSheet> {
                 children: [
                   TextButton(
                     onPressed: service.restore,
-                    child: Text(l10n.restoreDonation),
-                  ),
-                  TextButton(
-                    onPressed: () => showGlassDialog<void>(
-                      context: context,
-                      builder: (_) => BlocProvider.value(
-                        value: context.read<EntitlementCubit>(),
-                        child: const _UnlockCodeDialog(),
-                      ),
+                    child: Text(
+                      rules.appStore
+                          ? l10n.restorePurchases
+                          : l10n.restoreDonation,
                     ),
-                    child: Text(l10n.haveUnlockCode),
                   ),
+                  if (rules.allowsUnlockCodes)
+                    TextButton(
+                      onPressed: () => showGlassDialog<void>(
+                        context: context,
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<EntitlementCubit>(),
+                          child: const _UnlockCodeDialog(),
+                        ),
+                      ),
+                      child: Text(l10n.haveUnlockCode),
+                    ),
                 ],
               ),
           ],
