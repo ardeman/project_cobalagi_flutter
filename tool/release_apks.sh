@@ -2,7 +2,8 @@
 # Builds the release APKs (one per Android architecture, plus a universal
 # one that runs on every device) and publishes them, with the Linux AppImage
 # when tool/build_appimage.sh has built it (and CobaLagi-Steam-Installer.sh, which
-# adds it to Steam: linux/steam/), as a GitHub Release, tagged
+# adds it to Steam: linux/steam/) and the Windows zip when CI has built it,
+# as a GitHub Release, tagged
 # v<name>+<build> from pubspec.yaml, with the build's release notes from
 # store/<locale>/changelogs/<build>.txt.
 #
@@ -104,10 +105,19 @@ else
   appimage=""
   steam_script=""
 fi
+# Built on Windows (in CI, by another job), so it is optional too.
+windows_zip="CobaLagi-Windows-x64.zip"
+if [ -f "build/release/$windows_zip" ]; then
+  cp "build/release/$windows_zip" "$out/"
+else
+  windows_zip=""
+fi
 files=("$out"/*.apk)
 if [ -n "$appimage" ]; then files+=("$out/$appimage" "$out/$steam_script"); fi
+if [ -n "$windows_zip" ]; then files+=("$out/$windows_zip"); fi
 
-(cd "$out" && shasum -a 256 ./*.apk ${appimage:+"./$appimage"} ${steam_script:+"./$steam_script"} |
+(cd "$out" && shasum -a 256 ./*.apk ${appimage:+"./$appimage"} ${steam_script:+"./$steam_script"} \
+  ${windows_zip:+"./$windows_zip"} |
   sed 's| \./| |' > SHA256SUMS.txt)
 
 notes="$out/notes.md"
@@ -133,6 +143,9 @@ notes="$out/notes.md"
     echo "| \`$appimage\` | Linux PCs and the Steam Deck |"
     echo "| \`$steam_script\` | Installs the newest Coba Lagi on the Steam Deck and adds it to Steam, with its pictures |"
   fi
+  if [ -n "$windows_zip" ]; then
+    echo "| \`$windows_zip\` | Windows 10 and 11 PCs (64-bit) |"
+  fi
   echo
   echo "## Before you install"
   echo
@@ -142,6 +155,9 @@ notes="$out/notes.md"
   if [ -n "$appimage" ]; then
     echo "- **Linux:** make the AppImage executable (\`chmod +x $appimage\`, or Properties → Permissions) and open it. It needs no installing and keeps progress in your home folder. To update, replace the old file with the new one (same name): progress stays."
     echo "- **Steam Deck:** in Desktop Mode, download \`$steam_script\` and double-click it (if asked, choose Continue or Execute). It downloads the newest Coba Lagi into the Applications folder in your home folder, adds it to Steam with its pictures, and restarts Steam, showing each step as it goes; Coba Lagi then plays in Game Mode too, by touch or with the Deck's controls. To update, run it again: progress stays. To remove it, open \"Uninstall Coba Lagi\" from the app menu in Desktop Mode."
+  fi
+  if [ -n "$windows_zip" ]; then
+    echo "- **Windows:** extract the zip (right-click → Extract All) and open \`cobalagi.exe\` in the \"Coba Lagi\" folder. It needs no installing and keeps progress in your user folder (AppData). The app isn't code-signed yet, so the first time Windows may say it protected your PC: choose More info → Run anyway. To update, replace the old folder with the new one: progress stays."
   fi
   echo "- **Checksums:** \`SHA256SUMS.txt\` lists each file's SHA-256."
 } > "$notes"

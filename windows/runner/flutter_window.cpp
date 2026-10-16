@@ -65,6 +65,17 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
     case WM_FONTCHANGE:
       flutter_controller_->engine()->ReloadSystemFonts();
       break;
+    case WM_GETMINMAXINFO: {
+      // The layout needs at least 960 x 600, as on macOS and Linux.
+      const UINT dpi = GetDpiForWindow(hwnd);
+      RECT frame = {0, 0, MulDiv(960, dpi, 96), MulDiv(600, dpi, 96)};
+      AdjustWindowRectExForDpi(&frame, GetWindowLong(hwnd, GWL_STYLE), FALSE,
+                               GetWindowLong(hwnd, GWL_EXSTYLE), dpi);
+      auto* info = reinterpret_cast<MINMAXINFO*>(lparam);
+      info->ptMinTrackSize.x = frame.right - frame.left;
+      info->ptMinTrackSize.y = frame.bottom - frame.top;
+      return 0;
+    }
   }
 
   return Win32Window::MessageHandler(hwnd, message, wparam, lparam);

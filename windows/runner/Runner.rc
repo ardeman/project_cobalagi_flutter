@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.ardeman" "\0"
-            VALUE "FileDescription", "cobalagi" "\0"
+            VALUE "FileDescription", "Coba Lagi" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "cobalagi" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.ardeman. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 Ardeman" "\0"
             VALUE "OriginalFilename", "cobalagi.exe" "\0"
-            VALUE "ProductName", "cobalagi" "\0"
+            VALUE "ProductName", "Coba Lagi" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
