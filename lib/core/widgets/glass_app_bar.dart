@@ -62,36 +62,45 @@ class _GlassAppBarState extends State<GlassAppBar> {
   }
 
   @override
-  Widget build(BuildContext context) => GlassBar(
-    under: _under,
-    edge: GlassEdge.top,
-    child: AppBar(
-      toolbarHeight: GlassAppBar.height,
-      leadingWidth: 64 + 16 + 8,
-      leading: widget.leading == null
-          ? null
-          : Padding(
-              padding: const EdgeInsets.only(left: 16, right: 8),
-              // The leading button is the way back: the controller's B
-              // presses it.
-              child: Center(
-                child: GamepadShortcut(
-                  button: PadButton.b,
-                  onPressed: _pressLeading,
-                  child: Focus(focusNode: _leading, child: widget.leading!),
+  Widget build(BuildContext context) {
+    // Like AppBar's own back arrow, made here so B presses it too.
+    final leading =
+        widget.leading ??
+        (ModalRoute.of(context)?.impliesAppBarDismissal ?? false
+            ? const BackButton()
+            : null);
+    return GlassBar(
+      under: _under,
+      edge: GlassEdge.top,
+      child: AppBar(
+        toolbarHeight: GlassAppBar.height,
+        leadingWidth: 64 + 16 + 8,
+        automaticallyImplyLeading: false,
+        leading: leading == null
+            ? null
+            : Padding(
+                padding: const EdgeInsets.only(left: 16, right: 8),
+                // The leading button is the way back: the controller's B
+                // presses it.
+                child: Center(
+                  child: GamepadShortcut(
+                    button: PadButton.b,
+                    onPressed: _pressLeading,
+                    child: Focus(focusNode: _leading, child: leading),
+                  ),
                 ),
               ),
-            ),
-      titleSpacing: widget.leading == null ? 16 : 8,
-      title: widget.title,
-      // The same 16 dp from the edge as the leading button.
-      actions: [...?widget.actions, const SizedBox(width: 16)],
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      scrolledUnderElevation: 0,
-      elevation: 0,
-    ),
-  );
+        titleSpacing: leading == null ? 16 : 8,
+        title: widget.title,
+        // The same 16 dp from the edge as the leading button.
+        actions: [...?widget.actions, const SizedBox(width: 16)],
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+      ),
+    );
+  }
 }
 
 /// [padding] plus the space a [GlassAppBar] and the system bars take, for a

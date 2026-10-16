@@ -6,6 +6,7 @@ import 'package:cobalagi/core/gamepad/gamepad_navigator.dart';
 import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
 import 'package:cobalagi/core/gamepad/pad_badge.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
+import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -160,6 +161,42 @@ void main() {
     expect(find.text('dialog'), findsNothing);
     await send(tester, pad, const PadPress(PadButton.x));
     expect(log, ['go']);
+  });
+
+  testWidgets('the back arrow an app bar adds by itself is on B', (
+    tester,
+  ) async {
+    final pad = StreamController<PadCommand>();
+    addTearDown(pad.close);
+    final navigator = GlobalKey<NavigatorState>();
+    await tester.pumpWidget(
+      BlocProvider(
+        create: (_) => GamepadCubit(),
+        child: MaterialApp(
+          navigatorKey: navigator,
+          builder: (context, child) =>
+              GamepadNavigator(commands: pad.stream, child: child!),
+          home: const Scaffold(body: Text('home')),
+        ),
+      ),
+    );
+    navigator.currentState!.push(
+      MaterialPageRoute<void>(
+        builder: (_) =>
+            const Scaffold(appBar: GlassAppBar(title: Text('parent area'))),
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Any controller input shows the badges.
+    await send(tester, pad, const PadMove(PadDirection.down));
+    expect(
+      find.descendant(of: find.byType(AppBar), matching: find.byType(PadBadge)),
+      findsOneWidget,
+    );
+    expect(find.text('B'), findsOneWidget);
+    await send(tester, pad, const PadPress(PadButton.b));
+    expect(find.text('parent area'), findsNothing);
+    expect(find.text('home'), findsOneWidget);
   });
 
   testWidgets('a capture (a tour) keeps the highlight and B skips it', (
