@@ -333,15 +333,7 @@ class _GamepadNavigatorState extends State<GamepadNavigator>
     _track();
   }
 
-  Rect? _focusedRect() {
-    final node = FocusManager.instance.primaryFocus;
-    final box = node is FocusScopeNode
-        ? null
-        : node?.context?.findRenderObject();
-    return box is RenderBox && box.attached && box.hasSize
-        ? box.localToGlobal(Offset.zero) & box.size
-        : null;
-  }
+  Rect? _focusedRect() => _ringRect(FocusManager.instance.primaryFocus);
 
   /// Scrolls the list or page the highlight is in, else the screen's.
   void _scroll(Duration elapsed) {
@@ -423,12 +415,7 @@ class _GamepadNavigatorState extends State<GamepadNavigator>
       return;
     }
     final node = FocusManager.instance.primaryFocus;
-    final box = node is FocusScopeNode
-        ? null
-        : node?.context?.findRenderObject();
-    final rect = box is RenderBox && box.attached && box.hasSize
-        ? box.localToGlobal(Offset.zero) & box.size
-        : null;
+    final rect = _ringRect(node);
     if (rect != _ring.value) _ring.value = rect;
     final context = node?.context;
     final grab =
@@ -519,6 +506,28 @@ class _GamepadNavigatorState extends State<GamepadNavigator>
       ),
     ),
   );
+}
+
+/// Where the highlight goes for [node]: around its control, or around a
+/// whole text field (label and counter too), since the field's focus is on
+/// its typing line only and the ring would cover the label above it.
+Rect? _ringRect(FocusNode? node) {
+  final context = node is FocusScopeNode ? null : node?.context;
+  if (context == null || !context.mounted) return null;
+  RenderObject? box = context.findRenderObject();
+  context.visitAncestorElements((element) {
+    if (element.widget is InputDecorator) {
+      box = element.findRenderObject();
+      return false;
+    }
+    // A field's decorator sits just above its typing line; stop at the
+    // field itself.
+    return element.widget is! TextField;
+  });
+  final found = box;
+  return found is RenderBox && found.attached && found.hasSize
+      ? found.localToGlobal(Offset.zero) & found.size
+      : null;
 }
 
 /// A thick glowing ring around the focused control, easy to spot from the
