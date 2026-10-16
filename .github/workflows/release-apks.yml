@@ -83,39 +83,11 @@ jobs:
           path: build/release/*.AppImage
           if-no-files-found: error
 
-  # A zip of the app's folder, with the Visual C++ runtime next to the .exe
-  # so it runs on PCs that don't have it. Unsigned: SmartScreen warns once.
+  # The Windows zip (windows.yml, which also runs on its own).
   windows:
     needs: version
     if: needs.version.outputs.new == 'true'
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.41.1'
-          channel: stable
-          cache: true
-
-      - name: Build the zip
-        shell: pwsh
-        run: |
-          flutter pub get
-          flutter build windows --release
-          $app = 'build\release\Coba Lagi'
-          New-Item -ItemType Directory -Force -Path $app | Out-Null
-          Copy-Item -Recurse 'build\windows\x64\runner\Release\*' $app
-          foreach ($dll in 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll') {
-            Copy-Item "$env:WINDIR\System32\$dll" $app
-          }
-          Compress-Archive -Path $app -DestinationPath 'build\release\CobaLagi-Windows-x64.zip'
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: windows
-          path: build/release/*.zip
-          if-no-files-found: error
+    uses: ./.github/workflows/windows.yml
 
   # The checks, the APKs, the AppImage and the zip build side by side; the
   # release waits for all of them.

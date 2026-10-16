@@ -1,0 +1,47 @@
+# Builds the Windows zip: a "Coba Lagi" folder with the app and the Visual
+# C++ runtime next to the .exe, so it runs on PCs that don't have it.
+# Unsigned: SmartScreen warns once. The release workflow calls it
+# (release-apks.yml); it also runs on its own when the Windows runner or the
+# dependencies change, so a broken build shows before a version bump.
+name: Windows build
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'windows/**'
+      - 'pubspec.lock'
+      - '.github/workflows/windows.yml'
+  workflow_call:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.1'
+          channel: stable
+          cache: true
+
+      - name: Build the zip
+        shell: pwsh
+        run: |
+          flutter pub get
+          flutter build windows --release
+          $app = 'build\release\Coba Lagi'
+          New-Item -ItemType Directory -Force -Path $app | Out-Null
+          Copy-Item -Recurse 'build\windows\x64\runner\Release\*' $app
+          foreach ($dll in 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll') {
+            Copy-Item "$env:WINDIR\System32\$dll" $app
+          }
+          Compress-Archive -Path $app -DestinationPath 'build\release\CobaLagi-Windows-x64.zip'
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: windows
+          path: build/release/*.zip
+          if-no-files-found: error
+          retention-days: 7

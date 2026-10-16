@@ -292,7 +292,7 @@ tool/build_appimage.sh   # → build/release/CobaLagi-x86_64.AppImage
 flutter build windows --release   # → build/windows/x64/runner/Release/cobalagi.exe
 ```
 
-- Builds only on Windows; CI builds it on every version bump and adds `CobaLagi-Windows-x64.zip` to the GitHub Release (`.github/workflows/release-apks.yml`). The zip holds a "Coba Lagi" folder with `cobalagi.exe` and the Visual C++ runtime DLLs, so it runs without installing anything.
+- Builds only on Windows; CI builds it (`.github/workflows/windows.yml`) whenever `windows/` or `pubspec.lock` changes on `master`, so a broken build shows before a release, and on every version bump, when it adds `CobaLagi-Windows-x64.zip` to the GitHub Release (`.github/workflows/release-apks.yml`). The zip holds a "Coba Lagi" folder with `cobalagi.exe` and the Visual C++ runtime DLLs, so it runs without installing anything.
 - Not code-signed yet, so SmartScreen warns on the first run (More info → Run anyway) until there is a code-signing certificate.
 - The window opens at 1280 × 800 and can't shrink below 960 × 600, as on macOS and Linux (`windows/runner/`). Progress is saved in `%APPDATA%\com.ardeman\Coba Lagi` (from the company and product names in `windows/runner/Runner.rc`; changing them loses saved progress). Free plan only (no store billing); unlock codes still work. Controllers work as on the Steam Deck (Linux and Steam Deck → Controllers).
 
