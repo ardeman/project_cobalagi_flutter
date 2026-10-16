@@ -336,9 +336,10 @@ App Store Connect → the app, once per language for the text and screenshots:
 
 | Setting | Value |
 | --- | --- |
-| Category | Education, Kids Category, age band 6–8 |
+| Category | Education |
+| Content Rights | No third-party content (the art, voices and music are the app's own) |
 | App Privacy | Data Not Collected; privacy policy `https://cobalagi.ardeman.com/privacy.html` |
-| Age rating | None for every content question; in-app purchases yes, parental controls yes (the parent gate), unrestricted web access no, user-generated content and messaging no, advertising no (gives 4+) |
+| Age rating | Parental controls yes (the parent area), age assurance no, every capability (web access, user-generated content, social media, messaging, advertising) no, and None or No for every content question, which gives 4+; then Made for Kids, ages 6–8, which puts the app in the Kids Category (it then can't be offered on visionOS) |
 | Support URL | `https://cobalagi.ardeman.com` |
 | Text and screenshots | `store/app_store/<locale>/` as above; upload slides in order, 1 to 8 (Apple takes up to 10) |
 
