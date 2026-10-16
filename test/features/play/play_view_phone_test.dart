@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/app/theme/app_theme.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
@@ -39,6 +42,7 @@ Future<void> _pumpPhone(
   AudioService audio = const SilentAudioService(),
   bool showTour = false,
   VoidCallback? onTourDone,
+  Locale? locale,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -46,6 +50,7 @@ Future<void> _pumpPhone(
   await tester.pumpWidget(
     MaterialApp(
       theme: AppTheme.light(),
+      locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: RepositoryProvider<AudioService>.value(
@@ -672,4 +677,95 @@ void main() {
     expect(find.textContaining('These are your blocks'), findsNothing);
     expect(tester.takeException(), isNull);
   });
+
+  // The test font draws every letter as a square, far wider than real
+  // words, so these load the Roboto that ships with the Flutter SDK.
+  group('with real fonts', () {
+    setUpAll(_loadRoboto);
+
+    for (final language in ['en', 'id']) {
+      testWidgets('phones from 320 dp up fit the bars in $language', (
+        tester,
+      ) async {
+        // The smallest phones, iPhone mini and SE, common Androids, and
+        // iPhones up to Pro Max.
+        for (final width in const <double>[
+          320,
+          360,
+          375,
+          384,
+          393,
+          402,
+          412,
+          440,
+        ]) {
+          await _pumpPhone(
+            tester,
+            size: Size(width, 812),
+            locale: Locale(language),
+          );
+          await _pumpScroll(tester);
+          expect(tester.takeException(), isNull, reason: '$width dp');
+        }
+      });
+    }
+
+    testWidgets('folding or unfolding a phone mid-puzzle keeps the puzzle', (
+      tester,
+    ) async {
+      // The iPhone Duo folded (5.4 inch) and unfolded (7.6 inch, a tablet
+      // layout), and an iPad in split view.
+      await _pumpPhone(tester, size: const Size(375, 812));
+      final cubit = tester
+          .element(find.byType(BlockEditor))
+          .read<BlocksCubit>();
+      for (var i = 0; i < 4; i++) {
+        cubit.add(BlockType.forward);
+      }
+      await _pumpScroll(tester);
+      final program = cubit.state.main;
+
+      for (final size in const [
+        Size(840, 760),
+        Size(320, 900),
+        Size(375, 812),
+      ]) {
+        tester.view.physicalSize = size;
+        await _pumpScroll(tester);
+        final now = tester
+            .element(find.byType(BlockEditor))
+            .read<BlocksCubit>();
+        expect(now, same(cubit));
+        expect(now.state.main, program);
+        expect(find.byType(BlockTile), findsWidgets);
+        expect(
+          find.byWidgetPredicate((widget) => widget is GameWidget),
+          findsOneWidget,
+          reason: '$size',
+        );
+      }
+      expect(tester.takeException(), isNull);
+    });
+  });
+}
+
+Future<void> _loadRoboto() async {
+  final flutter = Platform.resolvedExecutable;
+  final fonts =
+      '${flutter.substring(0, flutter.indexOf('/bin/cache/'))}'
+      '/bin/cache/artifacts/material_fonts';
+  for (final (family, files) in const [
+    ('Roboto', ['Roboto-Regular.ttf', 'Roboto-Medium.ttf', 'Roboto-Bold.ttf']),
+    ('MaterialIcons', ['MaterialIcons-Regular.otf']),
+  ]) {
+    final loader = FontLoader(family);
+    for (final file in files) {
+      loader.addFont(
+        Future.value(
+          ByteData.sublistView(File('$fonts/$file').readAsBytesSync()),
+        ),
+      );
+    }
+    await loader.load();
+  }
 }

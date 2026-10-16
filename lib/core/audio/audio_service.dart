@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'music.dart';
@@ -95,6 +96,12 @@ class AudioplayersAudioService implements AudioService {
     if (_contextsSet) return;
     _contextsSet = true;
     try {
+      // iOS has one audio session for the whole app, so there everything
+      // mixes, voices too: the app never stops music a parent is playing.
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        await AudioPlayer.global.setAudioContext(_mixing);
+        return;
+      }
       for (final player in [..._effects, _music]) {
         await player.setAudioContext(_mixing);
       }
@@ -196,6 +203,7 @@ class AudioplayersAudioService implements AudioService {
     _playing = true;
     _duck(underVoice: true);
     try {
+      await _setContexts();
       await _voice.stop();
       await _voice.play(AssetSource(path));
     } on Object {

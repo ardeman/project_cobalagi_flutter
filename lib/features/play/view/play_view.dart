@@ -958,18 +958,32 @@ class _TopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Row(
-      children: [
-        GamepadShortcut(
-          button: PadButton.b,
+    return LayoutBuilder(
+      builder: (context, box) =>
+          Row(children: _children(context, l10n, box.maxWidth)),
+    );
+  }
+
+  List<Widget> _children(
+    BuildContext context,
+    AppLocalizations l10n,
+    double width,
+  ) {
+    // Narrow phones (under about 360 dp) with the Code switch drop the
+    // emblem, so the buttons keep full tap size; the goal is still spoken.
+    final emblem = !compact || editorSwitch == null || width >= 324;
+    return [
+      GamepadShortcut(
+        button: PadButton.b,
+        onPressed: () => context.go(homePath),
+        child: IconButton.filledTonal(
+          tooltip: l10n.home,
           onPressed: () => context.go(homePath),
-          child: IconButton.filledTonal(
-            tooltip: l10n.home,
-            onPressed: () => context.go(homePath),
-            icon: const Icon(Icons.home_rounded),
-          ),
+          icon: const Icon(Icons.home_rounded),
         ),
-        const SizedBox(width: 16),
+      ),
+      SizedBox(width: compact ? 8 : 16),
+      if (emblem) ...[
         Tooltip(
           message: conceptName(l10n, plan.conceptId),
           child: Icon(
@@ -980,60 +994,57 @@ class _TopBar extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        if (compact)
-          const Spacer()
-        else
-          Expanded(
-            child: Text(
-              conceptName(l10n, plan.conceptId),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-        if (plan.mode == ExerciseMode.review) ...[
-          const SizedBox(width: 8),
-          if (compact)
-            Tooltip(
-              message: l10n.bonusAdventure,
-              child: Icon(
-                Icons.diamond_rounded,
-                color: const Color(0xFF26C6DA),
-                size: 32,
-                semanticLabel: l10n.bonusAdventure,
-              ),
-            )
-          else
-            Flexible(
-              child: Chip(
-                avatar: const Icon(
-                  Icons.diamond_rounded,
-                  color: Color(0xFF26C6DA),
-                ),
-                label: Text(
-                  l10n.bonusAdventure,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ),
-          const SizedBox(width: 8),
-        ],
-        if (editorSwitch case final editorSwitch?) ...[
-          editorSwitch,
-          const SizedBox(width: 8),
-        ],
-        GamepadShortcut(
-          button: PadButton.menu,
-          onPressed: onListen,
-          child: IconButton.filledTonal(
-            key: listenKey,
-            tooltip: '${l10n.listenAgain}: $goal',
-            onPressed: onListen,
-            icon: const Icon(Icons.volume_up_rounded),
+      ],
+      if (compact)
+        const Spacer()
+      else
+        Expanded(
+          child: Text(
+            conceptName(l10n, plan.conceptId),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
+      if (plan.mode == ExerciseMode.review) ...[
+        const SizedBox(width: 8),
+        if (compact)
+          Tooltip(
+            message: l10n.bonusAdventure,
+            child: Icon(
+              Icons.diamond_rounded,
+              color: const Color(0xFF26C6DA),
+              size: 32,
+              semanticLabel: l10n.bonusAdventure,
+            ),
+          )
+        else
+          Flexible(
+            child: Chip(
+              avatar: const Icon(
+                Icons.diamond_rounded,
+                color: Color(0xFF26C6DA),
+              ),
+              label: Text(l10n.bonusAdventure, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+        const SizedBox(width: 8),
       ],
-    );
+      if (editorSwitch case final editorSwitch?) ...[
+        editorSwitch,
+        const SizedBox(width: 8),
+      ],
+      GamepadShortcut(
+        button: PadButton.menu,
+        onPressed: onListen,
+        child: IconButton.filledTonal(
+          key: listenKey,
+          tooltip: '${l10n.listenAgain}: $goal',
+          onPressed: onListen,
+          icon: const Icon(Icons.volume_up_rounded),
+        ),
+      ),
+    ];
   }
 }
 
@@ -1269,6 +1280,10 @@ class _RunControls extends StatelessWidget {
   /// Marks the buttons while the guided tour shows.
   final _TourKeys? tour;
 
+  /// The compact row's width besides Go's word: its icon and padding, the
+  /// other three buttons and the gaps.
+  static const _labelledGoRest = 300.0;
+
   /// Narrow screens (phones): tighter spacing so all four buttons fit.
   final bool compact;
   final bool codeMode;
@@ -1300,9 +1315,22 @@ class _RunControls extends StatelessWidget {
         : null;
     return LayoutBuilder(
       builder: (context, box) {
-        // Small phones: Go keeps only its play picture, so all four
-        // buttons fit at full tap size.
-        final iconOnly = box.maxWidth < 340;
+        // Small phones: Go keeps only its play picture when its word
+        // doesn't fit, so all four buttons keep full tap size. Words differ
+        // by language ("Jalan!" is twice as wide as "Go!"), so measure it.
+        final label = TextPainter(
+          text: TextSpan(
+            text: l10n.run,
+            style: Theme.of(
+              context,
+            ).filledButtonTheme.style?.textStyle?.resolve({}),
+          ),
+          textDirection: Directionality.of(context),
+          textScaler: MediaQuery.textScalerOf(context),
+          maxLines: 1,
+        )..layout();
+        final iconOnly = box.maxWidth < _labelledGoRest + label.width;
+        label.dispose();
         // The unused hint calls out a few tries after it turns on.
         final calling =
             !running &&
@@ -1324,7 +1352,7 @@ class _RunControls extends StatelessWidget {
                         message: l10n.run,
                         child: FilledButton(
                           style: FilledButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                           ),
                           onPressed: onGo,
                           child: Icon(
