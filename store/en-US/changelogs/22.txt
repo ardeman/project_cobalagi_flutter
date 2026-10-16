@@ -1,0 +1,3 @@
+- Steam Deck: the Steam file now downloads the newest Coba Lagi by itself, and "Uninstall Coba Lagi" in the Desktop Mode menu removes it.
+- Steam Deck: the on-screen keyboard opens when typing a name or a code, and Steam no longer reopens in Big Picture after adding the game.
+- Controllers: typing windows, the warm-up's "?" and "Let's go!" have their own buttons, and dragging a new block with R2 no longer adds a second one.

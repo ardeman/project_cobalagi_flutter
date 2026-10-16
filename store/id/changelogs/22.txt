@@ -1,0 +1,3 @@
+- Steam Deck: berkas Steam kini mengunduh Coba Lagi terbaru sendiri, dan "Uninstall Coba Lagi" di menu Desktop Mode menghapusnya.
+- Steam Deck: keyboard layar muncul saat mengetik nama atau kode, dan Steam tidak lagi terbuka di Big Picture setelah game ditambahkan.
+- Kontroler: jendela isian, tombol "?" dan "Ayo!" di pemanasan punya tombolnya sendiri, dan menyeret balok baru dengan R2 tidak lagi menambah balok kedua.
