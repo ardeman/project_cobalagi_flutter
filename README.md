@@ -7,9 +7,9 @@ A coding-learning app for children of all ages, in Bahasa Indonesia and English.
 
 Blocks and code drive the same game world. A short, voice-led placement game picks each child's starting point, and the app then chooses to advance, practise or review after every lesson.
 
-Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, but only Android is released for now: on Google Play, and as APKs on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
+Primary target: Android tablets in landscape. The code stays compatible with iOS, web and desktop, Released on Google Play (Android) and coming to the App Store (iPhone, iPad and Mac); GitHub [Releases](https://github.com/ardeman/project_cobalagi_flutter/releases) carry Android APKs and a Linux AppImage (also for the Steam Deck). See Roadmap → Next: more platforms.
 
-> **Status:** in Google Play's closed test (version 2.5.0, build 19): Koba the robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations. Still to come: the public release after the closed test; see the roadmap.
+> **Status:** in Google Play's closed test, and on the Mac in TestFlight (version 2.6.1, build 23): Koba the robot exploring the Warm-up planet and nine coding planets, picture blocks and typed code, voice-over in Indonesian and English, stickers, and the parent area with donations (tips on the App Store). Still to come: the public release after the closed test, App Store review and an iOS build; see the roadmap.
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -270,7 +270,7 @@ flutter build macos --release   # → build/macos/Build/Products/Release/Coba La
 
 - Needs macOS 12 or later, Xcode and CocoaPods. The window opens at 1280 × 800 and can't shrink below 960 × 600.
 - **Apple Silicon only (`ARCHS = arm64`).** Xcode 27's `lipo -verify_arch` accepts one architecture per call, which breaks Flutter 3.41's universal-build check. Remove `ARCHS = arm64` from `macos/Runner.xcodeproj` once Flutter handles it, to bring back Intel Macs.
-- **Not distributed for now:** developers build and run it themselves (`open "build/macos/Build/Products/Release/Coba Lagi.app"`). The build is ad-hoc signed, so it runs only on the Mac that built it. Distributing it later needs an Apple Developer account (Developer ID signing and notarization, or the Mac App Store); see Roadmap → Next: more platforms.
+- **Plain builds aren't distributed:** developers build and run them themselves (`open "build/macos/Build/Products/Release/Coba Lagi.app"`). They are ad-hoc signed, so they run only on the Mac that built them. Macs get the app from the Mac App Store (below); a Developer ID build for GitHub is Roadmap → Next: more platforms, step 5.
 - **Mac App Store build:** `flutter build macos --release --dart-define=APP_STORE=true`. It sells tips through the App Store (the same products as iOS) and has no unlock codes (`StoreRules`). To upload, run that command first (Xcode's archive reuses its `--dart-define`s from `macos/Flutter/ephemeral/Flutter-Generated.xcconfig`), then in Xcode (`macos/Runner.xcworkspace`) choose Product → Archive and Distribute App → App Store Connect. Signing is automatic with the developer's team. Other macOS builds have no store billing, so they stay on the free plan; unlock codes still work.
 - Release builds run in the app sandbox (`macos/Runner/Release.entitlements`, no network) and save progress in the app's container (`~/Library/Containers/com.ardeman.cobalagi`). `macos/Runner/PrivacyInfo.xcprivacy` says the app tracks and collects nothing, and `Info.plist` sets the Education category and `ITSAppUsesNonExemptEncryption = NO`.
 
@@ -478,7 +478,7 @@ Steps, one small change each:
 5. **macOS on GitHub:** Developer ID signing and notarization in CI (needs the Apple account; secrets set with the user's approval).
 6. **Windows on GitHub:** a zip or installer built in CI. Unsigned builds show a SmartScreen warning until there is a code-signing certificate.
 7. **Linux and Steam Deck on GitHub:** an x86_64 AppImage built in CI (done: see Linux and Steam Deck). Still to check on the Deck once a release carries it: touch, the controls, the 1280 × 800 screen, audio (GStreamer) and Game Mode.
-8. **Docs:** update AGENTS.md (build platforms, "Google Play only" decision), the intro and status above, the website and `privacy.html` where they name only Google Play.
+8. **Docs:** update AGENTS.md (build platforms, "Google Play only" decision), the intro and status above, the website and `privacy.html` where they name only Google Play. Done: `privacy.html` (dated 16 October 2026) covers App Store tips and updates and the Mac's missing network access, and the landing page names the App Store.
 
 Windows, Linux and GitHub macOS builds have no store billing, so they stay on the free plan; unlock codes still unlock sponsor features.
 
