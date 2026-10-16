@@ -27,7 +27,11 @@ Future<StreamController<PadCommand>> pumpDialog(
         builder: (context, child) => GamepadNavigator(
           commands: pad.stream,
           child: ScreenKeyboardOnFocus(
-            show: () => log.add('keyboard'),
+            keyboard: ScreenKeyboard(
+              show: () => log.add('keyboard'),
+              hide: () => log.add('keyboard closed'),
+              covers: 0.5,
+            ),
             child: child!,
           ),
         ),
@@ -68,5 +72,29 @@ void main() {
     await tester.tap(find.byType(TextField));
     await tester.pump();
     expect(log, ['keyboard']);
+  });
+
+  testWidgets('leaving the text field closes the keyboard', (tester) async {
+    final log = <String>[];
+    await pumpDialog(tester, log);
+    await tester.tap(find.byType(TextField));
+    await tester.pump();
+    FocusManager.instance.primaryFocus!.unfocus();
+    await tester.pump();
+    expect(log, ['keyboard', 'keyboard closed']);
+  });
+
+  testWidgets('the dialog moves above the keyboard while it shows', (
+    tester,
+  ) async {
+    await pumpDialog(tester, []);
+    final height =
+        tester.view.physicalSize.height / tester.view.devicePixelRatio;
+    await tester.tap(find.byType(TextField));
+    await tester.pumpAndSettle();
+    expect(tester.getRect(find.text('Save')).bottom, lessThan(height / 2));
+    FocusManager.instance.primaryFocus!.unfocus();
+    await tester.pumpAndSettle();
+    expect(tester.getRect(find.text('Save')).bottom, greaterThan(height / 2));
   });
 }

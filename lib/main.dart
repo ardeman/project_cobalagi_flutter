@@ -44,7 +44,7 @@ Future<void> main() async {
       curriculum: CurriculumRepository(),
       progress: ProgressRepository(db),
       padCommands: controllerCommands(),
-      showKeyboard: steamKeyboard(),
+      keyboard: steamKeyboard(),
       updates: createAppUpdateService(),
     ),
   );
