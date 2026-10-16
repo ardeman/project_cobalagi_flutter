@@ -19,6 +19,19 @@
 set -euo pipefail
 mode=add
 if [ "${1:-}" = "--uninstall" ]; then mode=remove; shift; fi
+
+# Shows which step it is on, bold when it runs in a terminal.
+steps=6
+[ "$mode" = remove ] && steps=4
+done_steps=0
+step() {
+  done_steps=$((done_steps + 1))
+  if [ -t 1 ]; then
+    printf '\n\033[1m[%d/%d] %s\033[0m\n' "$done_steps" "$steps" "$1"
+  else
+    printf '\n[%d/%d] %s\n' "$done_steps" "$steps" "$1"
+  fi
+}
 here="$(cd "$(dirname "$0")" && pwd)"
 name="CobaLagi-x86_64.AppImage"
 apps="$HOME/Applications"
@@ -44,7 +57,11 @@ download() {
   local url part="$apps/$name.part"
   command -v curl >/dev/null || return 1
   url="$(newest_url)" || return 1
-  echo "Downloading ${url##*/download/}..."
+  # .../download/v2.6.1%2B22/<name>: say which version it is.
+  local tag="${url%/*}"
+  tag="${tag##*/v}"
+  tag="${tag/\%2B/ (build }"
+  echo "Version ${tag}$([[ $tag == *build* ]] && echo ")")"
   curl -fL --progress-bar -o "$part" "$url" || { rm -f "$part"; return 1; }
   mv -f "$part" "$apps/$name"
 }
@@ -54,7 +71,9 @@ appimage="$apps/$name"
 art=""
 if [ "$mode" = add ]; then
   appimage=""
+  step "Getting the game"
   if [ -n "${1:-}" ]; then
+    echo "Using $1"
     candidates=("$1")
   elif download; then
     candidates=("$apps/$name")
@@ -84,13 +103,18 @@ if [ "$mode" = add ]; then
   if [ ! -f "$art/capsule.png" ]; then
     art="$(mktemp -d)"
     trap 'rm -rf "$art"' EXIT
-    echo "Downloading the library pictures..."
-    for picture in capsule wide hero logo icon; do
-      curl -fsSL -o "$art/$picture.png" \
-        "https://raw.githubusercontent.com/$repo/master/linux/steam/artwork/$picture.png" ||
-        echo "Couldn't download $picture.png; Steam shows its own picture there." >&2
-    done
   fi
+  step "Getting the pictures for the Steam library"
+  for picture in capsule wide hero logo icon; do
+    if [ "$art" = "$here/artwork" ] && [ -f "$art/$picture.png" ]; then
+      echo "  $picture: from the folder next to this script"
+    elif curl -fsSL -o "$art/$picture.png" \
+        "https://raw.githubusercontent.com/$repo/master/linux/steam/artwork/$picture.png"; then
+      echo "  $picture: downloaded"
+    else
+      echo "  $picture: couldn't download it; Steam shows its own picture there." >&2
+    fi
+  done
 fi
 
 steam_dir="${STEAM_DIR:-}"
@@ -108,8 +132,11 @@ fi
 # Steam rewrites shortcuts.vdf when it closes, so it must not be running.
 restart=""
 steam_args=()
-if [ -z "${STEAM_DIR:-}" ] && pgrep -x steam >/dev/null; then
-  echo "Closing Steam for a moment..."
+step "Closing Steam for a moment"
+if [ -n "${STEAM_DIR:-}" ] || ! pgrep -x steam >/dev/null; then
+  echo "Steam isn't running."
+else
+  echo "Waiting for Steam to close..."
   restart=1
   # Start it again with the options it runs with now: on the Steam Deck a
   # plain `steam` opens Big Picture, even in Desktop Mode.
@@ -133,6 +160,11 @@ if [ -z "${STEAM_DIR:-}" ] && pgrep -x steam >/dev/null; then
   fi
 fi
 
+if [ "$mode" = add ]; then
+  step "Adding Coba Lagi to Steam"
+else
+  step "Removing Coba Lagi from Steam"
+fi
 python3 - "$steam_dir" "$appimage" "$art" "$mode" <<'PY'
 import glob, json, os, shutil, struct, sys, zlib
 
@@ -260,14 +292,18 @@ for user in users:
     print(f"Added Coba Lagi for Steam user {os.path.basename(user)}.")
 PY
 
+step "Starting Steam again"
 if [ -n "$restart" ]; then
-  echo "Starting Steam again..."
   (setsid steam ${steam_args[@]+"${steam_args[@]}"} >/dev/null 2>&1 &)
+  echo "Steam is starting."
+else
+  echo "Steam wasn't running; the change shows the next time it opens."
 fi
 # The uninstaller: a copy of this script, and its entry in the menu.
 keep="$HOME/.local/share/cobalagi-steam"
 menu="$HOME/.local/share/applications/cobalagi-uninstall.desktop"
 if [ "$mode" = remove ]; then
+  step "Deleting the game"
   rm -f "$appimage" "$menu"
   rm -rf "$keep"
   # path_provider's folder: the app id, or the program's name.
@@ -285,10 +321,11 @@ if [ "$mode" = remove ]; then
       *) echo "Progress kept: installing Coba Lagi again brings it back." ;;
     esac
   fi
-  echo "Done. Coba Lagi is uninstalled."
+  echo; echo "Done. Coba Lagi is uninstalled."
   # Opened from the menu, the window would close before it can be read.
   read -r -p "Press Enter to close. " 2>/dev/null </dev/tty || true
 else
+  step "Adding \"Uninstall Coba Lagi\" to the app menu"
   mkdir -p "$keep" "$(dirname "$menu")"
   script="${BASH_SOURCE[0]}"
   if [ -f "$script" ] && [ "$script" -ef "$keep/CobaLagi-Steam-Installer.sh" ]; then :
@@ -308,6 +345,6 @@ Terminal=true
 Categories=Game;
 DESKTOP
   fi
-  echo "Done. Coba Lagi is in your Steam library, also in Game Mode."
+  echo; echo "Done. Coba Lagi is in your Steam library, also in Game Mode."
   echo "To remove it, open \"Uninstall Coba Lagi\" from the app menu."
 fi
