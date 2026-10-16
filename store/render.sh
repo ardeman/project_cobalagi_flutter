@@ -7,6 +7,8 @@
 #     phone-*.png renders of tool/screenshots
 # and the App Store screenshots, from the 2x renders in tool/screenshots/out/:
 #   store/app_store/<locale>/screenshots/iphone/*.jpg 1320 x 2868 (iPhone 6.9")
+#   store/app_store/<locale>/screenshots/iphone_6.3/*.jpg 1206 x 2622 (iPhone 6.3",
+#     the size App Store Connect requires; scaled from the 6.9" set)
 #   store/app_store/<locale>/screenshots/ipad/*.jpg   2752 x 2064 (iPad 13")
 #   store/app_store/<locale>/screenshots/mac/*.jpg    2880 x 1800
 # Run from the project root: store/render.sh
@@ -212,5 +214,16 @@ render_apple id -id mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_ID[@]}"
 render_apple en-US "" iphone 1320 2868 phone- 1100 640 96 "${CAPTIONS_EN[@]}"
 render_apple en-US "" ipad 2752 2064 "" 2300 1500 110 "${CAPTIONS_EN[@]}"
 render_apple en-US "" mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_EN[@]}"
+
+# iPhone 6.3": the 6.9" slides scaled down (same shape to 0.1%).
+for locale in id en-US; do
+  src="store/app_store/$locale/screenshots/iphone"
+  dir="store/app_store/$locale/screenshots/iphone_6.3"
+  mkdir -p "$dir"
+  rm -f "${dir:?}/"*.jpg
+  for jpg in "$src/"*.jpg; do
+    sips -z 2622 1206 -s formatOptions 90 "$jpg" --out "$dir/$(basename "$jpg")" >/dev/null
+  done
+done
 
 echo "Store graphics rendered."
