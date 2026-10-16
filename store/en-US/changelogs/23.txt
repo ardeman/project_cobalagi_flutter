@@ -1,0 +1,3 @@
+- Steam Deck: the on-screen keyboard now closes after you save or cancel, and typing windows move up so the keyboard no longer hides their buttons.
+- Controllers: the highlight on a text box no longer covers its label.
+- Steam Deck: the installer now starts with a double-click, and uninstalling removes everything it added.
