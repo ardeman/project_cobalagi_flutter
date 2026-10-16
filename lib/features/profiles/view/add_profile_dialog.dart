@@ -92,13 +92,9 @@ class _AddProfileDialogState extends State<_AddProfileDialog> {
           ),
         ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(onPressed: _submit, child: Text(l10n.save)),
-      ],
+      confirmLabel: l10n.save,
+      onConfirm: _submit,
+      onCancel: () => Navigator.pop(context),
     );
   }
 }

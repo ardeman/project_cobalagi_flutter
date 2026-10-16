@@ -64,13 +64,9 @@ class _ParentGateDialogState extends State<_ParentGateDialog> {
         ),
         onSubmitted: (_) => _check(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(onPressed: _check, child: Text(l10n.ok)),
-      ],
+      confirmLabel: l10n.ok,
+      onConfirm: _check,
+      onCancel: () => Navigator.pop(context, false),
     );
   }
 }

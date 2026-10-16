@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/gamepad/gamepad_cubit.dart';
 import 'package:cobalagi/core/gamepad/gamepad_navigator.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
+import 'package:cobalagi/core/gamepad/screen_keyboard.dart';
 import 'package:cobalagi/core/widgets/glass_background.dart';
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/data/app_update_service.dart';
@@ -37,6 +38,7 @@ class CobaLagiApp extends StatefulWidget {
     required this.progress,
     this.updates = const NoAppUpdateService(),
     this.padCommands,
+    this.showKeyboard,
   });
 
   final ProfileRepository profiles;
@@ -49,6 +51,10 @@ class CobaLagiApp extends StatefulWidget {
 
   /// Controller input ([controllerCommands]); null in tests.
   final Stream<PadCommand>? padCommands;
+
+  /// Opens an on-screen keyboard for text fields ([steamKeyboard]); null
+  /// where the system opens its own.
+  final ShowScreenKeyboard? showKeyboard;
 
   @override
   State<CobaLagiApp> createState() => _CobaLagiAppState();
@@ -134,7 +140,10 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           darkTheme: AppTheme.dark(),
           builder: (context, child) => GamepadNavigator(
             commands: widget.padCommands,
-            child: GlassBackground(child: child!),
+            child: ScreenKeyboardOnFocus(
+              show: widget.showKeyboard,
+              child: GlassBackground(child: child!),
+            ),
           ),
           // null follows the device; languages other than id/en fall back to English.
           locale: locale,

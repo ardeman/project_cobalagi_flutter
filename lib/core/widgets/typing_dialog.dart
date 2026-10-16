@@ -1,23 +1,47 @@
 import 'package:flutter/material.dart';
 
+import 'package:cobalagi/app/l10n/app_localizations.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
+
 /// A dialog with a text field. On a phone held sideways the keyboard leaves
 /// little height, so the title, the content and the
 /// buttons scroll together and the field being typed in scrolls into view;
-/// otherwise it is a plain [AlertDialog].
+/// otherwise it is a plain [AlertDialog]. Its buttons are Cancel (B on a
+/// controller) and [confirmLabel] (X).
 class TypingDialog extends StatelessWidget {
   const TypingDialog({
     super.key,
     required this.title,
     required this.content,
-    required this.actions,
+    required this.confirmLabel,
+    required this.onConfirm,
+    required this.onCancel,
   });
 
   final Widget title;
   final Widget content;
-  final List<Widget> actions;
+  final String confirmLabel;
+  final VoidCallback onConfirm;
+  final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
+    final actions = [
+      GamepadShortcut(
+        button: PadButton.b,
+        onPressed: onCancel,
+        child: TextButton(
+          onPressed: onCancel,
+          child: Text(AppLocalizations.of(context).cancel),
+        ),
+      ),
+      GamepadShortcut(
+        button: PadButton.x,
+        onPressed: onConfirm,
+        child: FilledButton(onPressed: onConfirm, child: Text(confirmLabel)),
+      ),
+    ];
     // By screen height, not room above the keyboard, so the layout doesn't
     // switch while the keyboard opens or closes.
     final short = MediaQuery.sizeOf(context).height < 500;

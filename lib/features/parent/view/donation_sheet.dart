@@ -157,13 +157,9 @@ class _UnlockCodeDialogState extends State<_UnlockCodeDialog> {
         },
         onSubmitted: (_) => _submit(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text(l10n.cancel),
-        ),
-        FilledButton(onPressed: _submit, child: Text(l10n.useUnlockCode)),
-      ],
+      confirmLabel: l10n.useUnlockCode,
+      onConfirm: _submit,
+      onCancel: () => Navigator.pop(context),
     );
   }
 }

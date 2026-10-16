@@ -165,12 +165,18 @@ class _QuestionGameState extends State<QuestionGame> {
           ),
         ),
         actions: [
-          IconButton.filledTonal(
-            tooltip: l10n.tourHelp,
+          GamepadShortcut(
+            button: PadButton.view,
             onPressed: _touring || question == null
                 ? null
                 : () => setState(() => _touring = true),
-            icon: const Icon(Icons.question_mark_rounded),
+            child: IconButton.filledTonal(
+              tooltip: l10n.tourHelp,
+              onPressed: _touring || question == null
+                  ? null
+                  : () => setState(() => _touring = true),
+              icon: const Icon(Icons.question_mark_rounded),
+            ),
           ),
         ],
       ),

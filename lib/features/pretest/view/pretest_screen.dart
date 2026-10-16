@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
+import 'package:cobalagi/core/gamepad/pad_input.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../learning/placement/pretest_session.dart';
 import '../../learning/cubit/learning_cubit.dart';
@@ -68,10 +70,14 @@ class _Done extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 32),
-        FilledButton.icon(
+        GamepadShortcut(
+          button: PadButton.x,
           onPressed: onGo,
-          icon: const Icon(Icons.arrow_forward_rounded),
-          label: Text(l10n.startAdventure),
+          child: FilledButton.icon(
+            onPressed: onGo,
+            icon: const Icon(Icons.arrow_forward_rounded),
+            label: Text(l10n.startAdventure),
+          ),
         ),
       ],
     );
