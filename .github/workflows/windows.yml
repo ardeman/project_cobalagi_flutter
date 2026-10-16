@@ -29,6 +29,9 @@ jobs:
       - name: Build the zip
         shell: pwsh
         run: |
+          # Stop at the first failing command, flutter's included.
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $true
           flutter pub get
           flutter build windows --release
           $app = 'build\release\Coba Lagi'
