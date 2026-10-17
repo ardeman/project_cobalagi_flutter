@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'dart:math';
+import 'dart:ui' show Image;
 
 import 'package:flame/camera.dart' show MaxViewport;
 import 'package:flame/components.dart';
@@ -39,6 +40,7 @@ class WorldGame extends FlameGame {
   Sprite? _robot;
   Sprite? _robotBack;
   Sprite? _robotFront;
+  Image? _robotTurn;
   final _stars = <GridPoint, StarComponent>{};
   PlayState? _pending;
 
@@ -52,8 +54,17 @@ class WorldGame extends FlameGame {
   /// they can look at it from the robot's side.
   var quarterTurns = 0;
 
-  static const _moveTime = 0.35;
-  static const _turnTime = 0.25;
+  /// Seconds per tile while Koba rolls on through several steps; starting
+  /// and stopping take [_rollTime] for their tile, and a single step
+  /// [_stepTime].
+  static const _cruiseTime = 0.3;
+  static const _rollTime = _cruiseTime * 1.5;
+  static const _stepTime = 0.4;
+  static const _turnTime = 0.35;
+
+  /// Whether the last step rolled on at speed, so the next one starts
+  /// rolling instead of from a stop.
+  var _rollingOn = false;
 
   /// This island's look: its background, path, obstacles and finish.
   late final worldTheme = WorldTheme.forConcept(level.concept);
@@ -77,6 +88,12 @@ class WorldGame extends FlameGame {
         Sprite.load('robot_back.png').then((back) {
           _robotBack = back;
           _actor.backSprite = back;
+        }, onError: (Object _) {}),
+      );
+      unawaited(
+        images.load('robot_turn.webp').then((frames) {
+          _robotTurn = frames;
+          _actor.turnFrames = frames;
         }, onError: (Object _) {}),
       );
       unawaited(
@@ -111,9 +128,10 @@ class WorldGame extends FlameGame {
         sprite: _robot,
         backSprite: _robotBack,
         frontSprite: _robotFront,
-      ),
+      )..turnFrames = _robotTurn,
     );
     _dirty = false;
+    _rollingOn = false;
   }
 
   /// The board with the planet's ground around it.
@@ -178,7 +196,7 @@ class WorldGame extends FlameGame {
         if (event != null && _animating != key) {
           _animating = key;
           _dirty = true;
-          _animate(event, () {
+          _animate(event, rollOn: _movesNext(state), () {
             if (_animating == key) onEventShown();
           });
         }
@@ -262,7 +280,21 @@ class WorldGame extends FlameGame {
   /// How long a hint stays after its last block appears, in seconds.
   static const _hintVisible = 5.0;
 
-  void _animate(RunEvent event, void Function() done) {
+  /// Whether Koba's next move after the event being shown is another step,
+  /// past any stars it picks up on the way, and plays on without a pause
+  /// (not in step mode): then it rolls on into it without stopping.
+  static bool _movesNext(PlayState state) {
+    final events = state.result?.events;
+    if (state.stepping || events == null) return false;
+    for (final event in events.skip(state.cursor + 1)) {
+      if (event is! Collected) return event is Moved;
+    }
+    return false;
+  }
+
+  void _animate(RunEvent event, void Function() done, {bool rollOn = false}) {
+    final rollIn = _rollingOn;
+    if (event is! Collected) _rollingOn = event is Moved && rollOn;
     switch (event) {
       case StepsStored():
         // The number is displayed by PlayView from the same event stream.
@@ -284,12 +316,21 @@ class WorldGame extends FlameGame {
       case Moved(:final to):
         onSound(SoundEffect.step);
         _actor.rolling = true;
+        // Like a robot on wheels: it speeds up from a stop, rolls on at a
+        // steady speed through steps in a row and brakes at the last one,
+        // the speeds matching where steps meet.
+        final (duration, curve) = switch ((rollIn, rollOn)) {
+          (false, false) => (_stepTime, Curves.easeInOut),
+          (false, true) => (_rollTime, _speedUp),
+          (true, true) => (_cruiseTime, Curves.linear),
+          (true, false) => (_rollTime, _speedUp.flipped),
+        };
         _actor.add(
           MoveToEffect(
             tileCenter(to),
-            EffectController(duration: _moveTime, curve: Curves.easeInOut),
+            EffectController(duration: duration, curve: curve),
             onComplete: () {
-              _actor.rolling = false;
+              if (!rollOn) _actor.rolling = false;
               done();
             },
           ),
@@ -304,7 +345,8 @@ class WorldGame extends FlameGame {
           ),
         );
       case Bumped(:final facing):
-        onSound(SoundEffect.bump);
+        // It bumps into the planet's obstacles, or the edge beside them.
+        onSound(worldTheme.obstacle.bumpSound);
         _actor.face = RobotFace.dizzy;
         _actor.add(
           TimerComponent(
@@ -325,18 +367,16 @@ class WorldGame extends FlameGame {
         );
       case Collected(:final star):
         onSound(SoundEffect.star);
+        // The star shrinks away on its own while Koba rolls on.
         final component = _stars.remove(star);
-        if (component == null) return done();
-        component.add(
+        component?.add(
           ScaleEffect.to(
             Vector2.zero(),
             EffectController(duration: 0.2),
-            onComplete: () {
-              component.removeFromParent();
-              done();
-            },
+            onComplete: () => component.removeFromParent(),
           ),
         );
+        done();
       case PathChecked(:final ahead, :final clear):
         // Green or orange ring shows the check without moving the actor.
         // The result comes from the interpreter, never from this world.
@@ -361,6 +401,18 @@ class WorldGame extends FlameGame {
         );
     }
   }
+}
+
+/// Speeding up from a stop to rolling speed: still at the start, and at
+/// the end 1.5 times as fast as on average, so a step [WorldGame._rollTime]
+/// long ends at the speed of a step [WorldGame._cruiseTime] long.
+const _speedUp = _SpeedUp();
+
+class _SpeedUp extends Curve {
+  const _SpeedUp();
+
+  @override
+  double transformInternal(double t) => 1.5 * t * t - 0.5 * t * t * t;
 }
 
 /// Whether assets can load: false in plain tests without Flutter's bindings.

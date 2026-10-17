@@ -23,6 +23,9 @@ final _line = Paint()
 /// (the robot facing the child), straight; that picture's screen is already
 /// clear (`tool/robot/front.html` erases the face and prints where the
 /// screen is).
+/// With [at] it sits on a clear screen centred there instead, as seen
+/// [squash] as wide (the screen turned away from straight on), as on the
+/// 3D robot's frames turning (`assets/images/robot_turn.webp`).
 /// The game and the splash screen share it, so the robot looks the same.
 void paintRobotFace(
   Canvas canvas,
@@ -30,12 +33,18 @@ void paintRobotFace(
   required double time,
   Offset gaze = Offset.zero,
   bool front = false,
+  Offset? at,
+  double squash = 1,
 }) {
   // Blinks for a moment every few seconds.
   final blinking = (time % 3.6) > 3.45;
   canvas.save();
   // The screen tilts a little, like the picture's.
-  if (front) {
+  if (at != null) {
+    canvas
+      ..translate(at.dx, at.dy)
+      ..scale(squash, 1);
+  } else if (front) {
     canvas.translate(265, 219);
   } else {
     canvas
@@ -43,7 +52,7 @@ void paintRobotFace(
       ..rotate(-0.17);
   }
   // Paints over the picture's own face.
-  if (!front) {
+  if (!front && at == null) {
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         const Rect.fromLTRB(-96, -72, 96, 72),

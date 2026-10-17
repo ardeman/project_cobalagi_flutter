@@ -8,8 +8,19 @@ enum SoundEffect {
   /// The actor turns on the spot.
   turn,
 
-  /// The actor walks into a tree or the edge.
-  bump,
+  /// The actor bumps into a rock, moon rock or asteroid (or the edge of a
+  /// planet with those). Each bump sound matches what the obstacles are
+  /// made of (`Obstacle.bumpSound`).
+  bumpRock,
+
+  /// The actor bumps into a plant, hedge or cactus.
+  bumpPlant,
+
+  /// The actor bumps into a crystal or an ice spike.
+  bumpCrystal,
+
+  /// The actor bumps into a wooden crate.
+  bumpWood,
 
   /// The actor picks up a star.
   star,

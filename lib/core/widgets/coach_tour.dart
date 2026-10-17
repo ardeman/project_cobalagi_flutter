@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cobalagi/core/character/koba_head.dart';
 import 'package:cobalagi/core/gamepad/gamepad_capture.dart';
 import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
@@ -49,6 +51,31 @@ class _CoachTourState extends State<CoachTour> {
 
   /// No step after this one has its control on the screen.
   var _last = false;
+
+  /// Where the child last touched, for a moment, for Koba to look at.
+  Offset? _finger;
+  Timer? _fingerGone;
+
+  @override
+  void dispose() {
+    _fingerGone?.cancel();
+    super.dispose();
+  }
+
+  void _touched(PointerEvent event) {
+    _fingerGone?.cancel();
+    _fingerGone = Timer(const Duration(milliseconds: 1500), () {
+      if (mounted) setState(() => _finger = null);
+    });
+    setState(() => _finger = event.position);
+  }
+
+  /// The middle of the control being explained, on the screen.
+  Offset? _targetCentre() {
+    final box = widget.steps[_index].target.currentContext?.findRenderObject();
+    if (box is! RenderBox || !box.hasSize || !box.attached) return null;
+    return box.localToGlobal(box.size.center(Offset.zero));
+  }
 
   @override
   void initState() {
@@ -120,60 +147,66 @@ class _CoachTourState extends State<CoachTour> {
       child: GamepadCapture(
         onBack: widget.onDone,
         onConfirm: _next,
-        child: LayoutBuilder(
-          builder: (context, box) {
-            final screen = box.biggest;
-            // The bubble goes below the control if it fits, else above it,
-            // else (a tall control) over the control's lower part.
-            const room = 170.0;
-            final spaceBelow = screen.height - window.bottom - 12;
-            final spaceAbove = window.top - 12;
-            final below = spaceBelow >= room || spaceBelow >= spaceAbove;
-            final inside = spaceBelow < room && spaceAbove < room;
-            final width = min(420.0, screen.width - 32);
-            final left = (window.center.dx - width / 2)
-                .clamp(16.0, max(16.0, screen.width - width - 16))
-                .toDouble();
-            return Stack(
-              children: [
-                Positioned.fill(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: _next,
-                    child: CustomPaint(painter: _Dim(window)),
-                  ),
-                ),
-                Positioned(
-                  left: left,
-                  width: width,
-                  top: inside
-                      ? null
-                      : below
-                      ? window.bottom + 12
-                      : null,
-                  bottom: inside
-                      ? max(16, screen.height - window.bottom + 16)
-                      : below
-                      ? null
-                      : screen.height - window.top + 12,
-                  child: _Bubble(
-                    key: ValueKey(_index),
-                    text: step.text,
-                    next: _last ? l10n.tourDone : l10n.tourNext,
-                    skip: l10n.tutorialSkip,
-                    onNext: _next,
-                    onSkip: widget.onDone,
-                    onListen: () => context.read<AudioService>().playVoice(
-                      step.clip,
-                      languageCode: Localizations.localeOf(
-                        context,
-                      ).languageCode,
+        // Koba looks at the control it explains, or where the child touches.
+        child: Listener(
+          onPointerDown: _touched,
+          onPointerMove: _touched,
+          child: LayoutBuilder(
+            builder: (context, box) {
+              final screen = box.biggest;
+              // The bubble goes below the control if it fits, else above it,
+              // else (a tall control) over the control's lower part.
+              const room = 170.0;
+              final spaceBelow = screen.height - window.bottom - 12;
+              final spaceAbove = window.top - 12;
+              final below = spaceBelow >= room || spaceBelow >= spaceAbove;
+              final inside = spaceBelow < room && spaceAbove < room;
+              final width = min(420.0, screen.width - 32);
+              final left = (window.center.dx - width / 2)
+                  .clamp(16.0, max(16.0, screen.width - width - 16))
+                  .toDouble();
+              return Stack(
+                children: [
+                  Positioned.fill(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: _next,
+                      child: CustomPaint(painter: _Dim(window)),
                     ),
                   ),
-                ),
-              ],
-            );
-          },
+                  Positioned(
+                    left: left,
+                    width: width,
+                    top: inside
+                        ? null
+                        : below
+                        ? window.bottom + 12
+                        : null,
+                    bottom: inside
+                        ? max(16, screen.height - window.bottom + 16)
+                        : below
+                        ? null
+                        : screen.height - window.top + 12,
+                    child: _Bubble(
+                      key: ValueKey(_index),
+                      text: step.text,
+                      lookAt: _finger ?? _targetCentre(),
+                      next: _last ? l10n.tourDone : l10n.tourNext,
+                      skip: l10n.tutorialSkip,
+                      onNext: _next,
+                      onSkip: widget.onDone,
+                      onListen: () => context.read<AudioService>().playVoice(
+                        step.clip,
+                        languageCode: Localizations.localeOf(
+                          context,
+                        ).languageCode,
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -215,6 +248,7 @@ class _Bubble extends StatelessWidget {
   const _Bubble({
     super.key,
     required this.text,
+    required this.lookAt,
     required this.next,
     required this.skip,
     required this.onNext,
@@ -223,6 +257,7 @@ class _Bubble extends StatelessWidget {
   });
 
   final String text;
+  final Offset? lookAt;
   final String next;
   final String skip;
   final VoidCallback onNext;
@@ -257,12 +292,7 @@ class _Bubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Koba, who explains.
-                  Image.asset(
-                    'assets/images/robot_head.png',
-                    width: 56,
-                    height: 56,
-                    errorBuilder: (_, _, _) => const SizedBox(width: 56),
-                  ),
+                  KobaHead(size: 56, lookAt: lookAt),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(text, style: theme.textTheme.titleMedium),

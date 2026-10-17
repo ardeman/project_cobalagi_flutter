@@ -20,6 +20,11 @@
 #   blender -b -P tool/robot/build_model.py -- build/robot3d/koba
 #   blender -b build/robot3d/koba/koba.blend -P tool/robot/render_body.py \
 #     -- branding/robot_body_three_quarter.png 310 16
+# The game turns Koba with the 3D robot's frames turning on the spot
+# (assets/images/robot_turn.webp; ActorComponent finds its screen in each),
+# also rendered by Blender:
+#   blender -b build/robot3d/koba/koba.blend -P tool/robot/render_turn.py \
+#     -- build/robot3d/robot_turn && cp build/robot3d/robot_turn.webp assets/images/
 # Run from the project root:
 #   branding/robot.sh
 set -euo pipefail

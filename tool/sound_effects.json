@@ -11,9 +11,21 @@
       "seconds": 0.5,
       "text": "a little cartoon robot turning on the spot, a quick soft wheel swivel with a tiny servo whirr, cute, for a children's game"
     },
-    "bump": {
+    "bumpRock": {
       "seconds": 0.6,
-      "text": "a little cartoon robot gently bonking into a rock, a soft hollow bonk with a tiny wobble, funny not scary, for a children's game"
+      "text": "a small hard plastic toy robot on little rubber wheels rolling into a stone and stopping, one dull solid knock of plastic against rock with a short rattle of its little parts, realistic close foley, dry, no reverb, funny not scary, no music, no voice"
+    },
+    "bumpPlant": {
+      "seconds": 0.6,
+      "text": "a small hard plastic toy robot on little rubber wheels rolling into a leafy bush and stopping, a soft springy rustle and swish of leaves and twigs pushing back, realistic close foley, dry, no reverb, funny not scary, no music, no voice"
+    },
+    "bumpCrystal": {
+      "seconds": 0.6,
+      "text": "a small hard plastic toy robot on little rubber wheels rolling into a big glass crystal and stopping, a light bright glassy clink that rings for a moment, realistic close foley, dry, no reverb, funny not scary, no music, no voice"
+    },
+    "bumpWood": {
+      "seconds": 0.6,
+      "text": "a small hard plastic toy robot on little rubber wheels rolling into a wooden crate and stopping, one hollow wooden knock with a short rattle of its little parts, realistic close foley, dry, no reverb, funny not scary, no music, no voice"
     },
     "star": {
       "seconds": 0.8,

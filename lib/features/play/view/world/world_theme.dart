@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'dart:ui';
 
+import '../../../../core/audio/sound_effects.dart';
+
 /// What blocks the way on a planet.
 enum Obstacle {
   moonRock,
@@ -11,7 +13,15 @@ enum Obstacle {
   cactus,
   crate,
   asteroid,
-  hedge,
+  hedge;
+
+  /// The sound of Koba bumping into it, by what it is made of.
+  SoundEffect get bumpSound => switch (this) {
+    moonRock || rock || asteroid => SoundEffect.bumpRock,
+    alienPlant || cactus || hedge => SoundEffect.bumpPlant,
+    crystal || iceSpike => SoundEffect.bumpCrystal,
+    crate => SoundEffect.bumpWood,
+  };
 }
 
 /// What lies about on a planet's ground between its obstacles, so the ground

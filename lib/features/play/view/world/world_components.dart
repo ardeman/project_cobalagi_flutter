@@ -367,6 +367,15 @@ class ActorComponent extends PositionComponent {
   /// The robot facing the child, for facing down the board.
   Sprite? frontSprite;
 
+  /// The 3D robot turning on the spot (`assets/images/robot_turn.webp`, made
+  /// by `tool/robot/render_turn.py`), shown part way round a turn so it
+  /// turns round instead of switching pictures: [turnFrameCount] frames of
+  /// 256 pixels, six to a row, each turned a step further from facing the
+  /// child towards its right, the wheels rolling opposite ways.
+  Image? turnFrames;
+
+  static const turnFrameCount = 24;
+
   /// Set while it moves between tiles: it stays on the ground then, instead
   /// of bobbing.
   var rolling = false;
@@ -383,12 +392,22 @@ class ActorComponent extends PositionComponent {
   /// How far it has travelled, in tiles, which turns its wheels.
   var _travelled = 0.0;
   Vector2? _last;
+  final _velocity = Vector2.zero();
+
+  /// How far it leans forward (radians), on its suspension: back as it
+  /// speeds up, forward as it brakes, settling with a little bounce.
+  var _pitch = 0.0;
+  var _pitchSpeed = 0.0;
+
+  /// How far it leans forward now, in radians (back when below 0).
+  double get lean => _pitch;
 
   static final _body = Paint()..color = const Color(0xFFFF7A59);
   static final _belly = Paint()..color = const Color(0xFFFFB199);
   static final _eye = Paint()..color = const Color(0xFFFFFFFF);
   static final _pupil = Paint()..color = const Color(0xFF263238);
   static final _shadow = Paint()..color = const Color(0x33000000);
+  static final _smooth = Paint()..filterQuality = FilterQuality.medium;
 
   /// A soft cone of light from the robot over the next tile, facing up
   /// (the component's turn points it).
@@ -420,6 +439,37 @@ class ActorComponent extends PositionComponent {
     final last = _last;
     if (last != null) _travelled += position.distanceTo(last);
     _last = position.clone();
+    if (dt <= 0) return;
+    // Its speed along the way it faces, and how fast that changes.
+    final velocity = last == null ? Vector2.zero() : (position - last)
+      ..scale(1 / dt);
+    final speedUp =
+        (velocity - _velocity).dot(Vector2(sin(angle), -cos(angle))) / dt;
+    _velocity.setFrom(velocity);
+    // A damped spring pulls the lean towards what the speeding up asks for.
+    final lean = (-speedUp * 0.008).clamp(-0.14, 0.14);
+    for (var left = min(dt, 0.1); left > 0; left -= 1 / 60) {
+      final step = min(left, 1 / 60);
+      _pitchSpeed += (-220 * (_pitch - lean) - 9 * _pitchSpeed) * step;
+      _pitch += _pitchSpeed * step;
+    }
+  }
+
+  /// The turning frame to show for a facing [angle] on the screen, or null
+  /// when it faces along the board: the drawn pictures show then.
+  int? _turnFrame(double angle) {
+    if (turnFrames == null) return null;
+    final quarters = angle / (pi / 2);
+    if ((quarters - quarters.roundToDouble()).abs() < 0.04) return null;
+    // The drawn pictures as turns of the 3D robot, in degrees, clockwise
+    // on the screen from facing up: its back, the three-quarter picture
+    // (facing right), its front, the three-quarter picture mirrored, its
+    // back again. In between, it turns evenly.
+    const pictures = [180.0, 310.0, 360.0, 410.0, 540.0];
+    final at = quarters % 4;
+    final i = at.floor();
+    final degrees = pictures[i] + (pictures[i + 1] - pictures[i]) * (at - i);
+    return (degrees * turnFrameCount / 360).round() % turnFrameCount;
   }
 
   @override
@@ -427,6 +477,7 @@ class ActorComponent extends PositionComponent {
     if (sprite == null) return _renderPlain(canvas);
     // Its facing as seen on the screen, which may be turned with it.
     final angle = this.angle - viewAngle;
+    final turnFrame = _turnFrame(angle);
     // Facing up the board, it walks away: its back shows. Its faces
     // (dizzy, cheering) always turn to the child.
     final away = face == RobotFace.normal && cos(angle) > 0.7;
@@ -455,11 +506,22 @@ class ActorComponent extends PositionComponent {
       ..rotate(-angle);
     // Standing up on the tilted board, its wheels on the ground.
     standUp(canvas, const Offset(0, 0.28));
+    final mirrored = turnFrame == null && sideways < -0.3;
     canvas
       ..translate(0, bounce)
-      // Mirrored to face left. It doesn't lean: the marks under its wheels
-      // stay flat and its width true in every facing.
-      ..scale(sideways < -0.3 ? -1 : 1, 1);
+      // Rocking on its wheels: seen from the side it tips about them, seen
+      // from the front or back it dips.
+      ..translate(0, 0.28)
+      ..rotate(_pitch * sideways)
+      ..scale(1, 1 - _pitch.abs() * cos(angle).abs() * 0.5)
+      ..translate(0, -0.28)
+      // Mirrored to face left. Its shadow and the marks under its wheels
+      // stay flat, and its width true in every facing.
+      ..scale(mirrored ? -1 : 1, 1);
+    if (turnFrame != null) {
+      _renderTurning(canvas, turnFrame);
+      return canvas.restore();
+    }
     robot.render(
       canvas,
       // A little taller than its tile, as board-game pieces are.
@@ -495,6 +557,34 @@ class ActorComponent extends PositionComponent {
       );
     }
     canvas.restore();
+  }
+
+  /// Turning frame [frame], in the drawn pictures' place, with its face on
+  /// its screen while that shows.
+  void _renderTurning(Canvas canvas, int frame) {
+    canvas
+      ..drawImageRect(
+        turnFrames!,
+        Rect.fromLTWH(frame % 6 * 256, frame ~/ 6 * 256, 256, 256),
+        const Rect.fromLTWH(-0.55, -0.82, 1.1, 1.1),
+        _smooth,
+      )
+      ..translate(-0.55, -0.82)
+      ..scale(1.1 / 512);
+    // How far the frame is turned, and where the middle of its screen shows
+    // then, in the 512 pixels of the drawn pictures: measured on the frames,
+    // as the curved screen's front (render_turn.py's numbers) swings
+    // further round than the part that shows.
+    final turned = frame * 2 * pi / turnFrameCount;
+    if (cos(turned) < 0.2) return;
+    paintRobotFace(
+      canvas,
+      face,
+      time: _time,
+      gaze: Offset(-sin(turned) * 14, 0),
+      at: Offset(256 - 75 * sin(turned), 194),
+      squash: cos(turned),
+    );
   }
 
   static final _navy = Paint()
