@@ -357,7 +357,7 @@ App Store Connect → the app, once per language for the text and screenshots:
 
 ### Promo videos
 
-Promo videos show real gameplay from the "Watch me!" demos. They are made in the separate `../ai-generated-content` repo (`cobalagi/`; its `README.md` has the commands, the formats and how to upload them to YouTube), like other generated media, so this repo holds no promo scripts or videos. What stays here is recording the gameplay frames they use (about 15 minutes, again whenever the demos look different): `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, into `tool/screenshots/out/video/`. The videos also use `website/screenshots/`, the voice clips and music in `assets/audio/`, the ARB words and the version in `pubspec.yaml`.
+Promo videos show real gameplay from the "Watch me!" demos. They are made in the separate `../../assets/ai-generated-content` repo (`cobalagi/`; its `README.md` has the commands, the formats and how to upload them to YouTube), like other generated media, so this repo holds no promo scripts or videos. What stays here is recording the gameplay frames they use (about 15 minutes, again whenever the demos look different): `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, into `tool/screenshots/out/video/`. The videos also use `website/screenshots/`, the voice clips and music in `assets/audio/`, the ARB words and the version in `pubspec.yaml`.
 
 ## Roadmap (MVP)
 
@@ -521,7 +521,7 @@ Each topic has one home. Update that file instead of copying its content somewhe
 | `LICENSE` | Everyone | Terms for using the code (GPL-3.0) |
 | `NOTICE.md` | Everyone | Copyright, and the separate terms for sounds, art and the name |
 | `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots (also used by this README) |
-| `../ai-generated-content/README.md` (separate repo) | Whoever makes or uploads the promo videos | The promo video scripts, their YouTube text and how to upload them |
+| `../../assets/ai-generated-content/README.md` (separate repo) | Whoever makes or uploads the promo videos | The promo video scripts, their YouTube text and how to upload them |
 
 Codex, Cursor, GitHub Copilot, Windsurf, Jules, Aider, Zed and other agents that follow the [AGENTS.md](https://agents.md) convention read `AGENTS.md` directly.
 

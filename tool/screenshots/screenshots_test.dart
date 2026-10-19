@@ -602,7 +602,7 @@ void main() {
         });
 
         // Frames of "Watch me!" demos, 10 per second, for the promo videos
-        // (../ai-generated-content, cobalagi/). Only on request:
+        // (../../assets/ai-generated-content, cobalagi/). Only on request:
         //   VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens \
         //     --plain-name 'video frames'
         for (final (concept, frames) in [
