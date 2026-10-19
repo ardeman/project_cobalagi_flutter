@@ -334,7 +334,7 @@ Play Console → Grow → Store presence → Main store listing, once per langua
 | Phone screenshots | `store/<locale>/phone_screenshots/1-…8-*.png` |
 | 7-inch and 10-inch tablet screenshots | `store/<locale>/screenshots/1-…8-*.png` (the same set in both sections) |
 | App name, short and full description | `store/<locale>/title.txt`, `short_description.txt`, `full_description.txt` |
-| Video | The landscape promo's YouTube link (see `tool/marketing/youtube.md`) |
+| Video | The landscape promo's YouTube link (see Promo videos, below) |
 | Release notes (in the release, not the listing) | `store/<locale>/changelogs/<build>.txt` |
 
 Upload slides in order, 1 to 8; delete the old ones first, because Play takes at most eight per section. The listing on Play matches the newest build marked `"listing": true` in `store/releases.json`. To see what to re-upload, diff from that build's commit: `git diff --stat $(git log -1 --format=%h --grep 'bump version to .*+<build>$') -- store/ branding/play_store_icon.png`. Release notes and `releases.json` aren't part of the listing.
@@ -357,12 +357,7 @@ App Store Connect → the app, once per language for the text and screenshots:
 
 ### Promo videos
 
-Promo videos show real gameplay from the "Watch me!" demos. Record its frames (about 15 minutes, again whenever the demos look different) with `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`. Then, in Indonesian and English, into `build/marketing/`:
-
-- `tool/marketing/short_video.sh`: the vertical promo short (1080 × 1920, about 30 seconds) for YouTube Shorts, Instagram Reels and Stories, TikTok and WhatsApp status. Words and the phone stay clear of those apps' own buttons and captions (the top 250 px, the bottom 380 px and the right 140 px). It ends with "Coming soon to Google Play" until it is rendered with `STORE=live` once the app is public.
-- `tool/marketing/promo_video.sh`: the landscape promo (1920 × 1080, about 50 seconds) for YouTube and the Play listing, with a `thumbnail-<lang>.jpg` for YouTube.
-
-Every video comes with a subtitle file of its narration (`<video>.srt`, the ARB words at the time each clip plays; `tool/marketing/subtitles.dart`). Cards are HTML shot by headless Chrome in a taller window and cropped, because its page is now and then a little short and left a strip at the bottom. Each video also gets `<video>.youtube.txt`: its YouTube title (with the app's version), description and upload settings, from `tool/marketing/youtube.json` (see `tool/marketing/youtube.md`).
+Promo videos show real gameplay from the "Watch me!" demos. They are made in the separate `../ai-generated-content` repo (`cobalagi/`; its `README.md` has the commands, the formats and how to upload them to YouTube), like other generated media, so this repo holds no promo scripts or videos. What stays here is recording the gameplay frames they use (about 15 minutes, again whenever the demos look different): `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, into `tool/screenshots/out/video/`. The videos also use `website/screenshots/`, the voice clips and music in `assets/audio/`, the ARB words and the version in `pubspec.yaml`.
 
 ## Roadmap (MVP)
 
@@ -526,7 +521,7 @@ Each topic has one home. Update that file instead of copying its content somewhe
 | `LICENSE` | Everyone | Terms for using the code (GPL-3.0) |
 | `NOTICE.md` | Everyone | Copyright, and the separate terms for sounds, art and the name |
 | `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots (also used by this README) |
-| `tool/marketing/youtube.md` | Whoever uploads the promo videos | How the YouTube text is made; the copy itself is `tool/marketing/youtube.json` |
+| `../ai-generated-content/README.md` (separate repo) | Whoever makes or uploads the promo videos | The promo video scripts, their YouTube text and how to upload them |
 
 Codex, Cursor, GitHub Copilot, Windsurf, Jules, Aider, Zed and other agents that follow the [AGENTS.md](https://agents.md) convention read `AGENTS.md` directly.
 
