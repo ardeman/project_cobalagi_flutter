@@ -226,4 +226,35 @@ for locale in id en-US; do
   done
 done
 
+# App Store creative assets (Header and Search Results), JPEG without alpha:
+#   store/app_store/<locale>/header.jpg          3840 x 1646 (21:9, product page)
+#   store/app_store/<locale>/search_result.jpg   3840 x 2560 (3:2, search results)
+# The header is cropped on narrow screens, so Koba and the tagline sit in the
+# middle and the screenshots at the sides may be cut off.
+creative() { # locale suffix tagline
+  local dir="store/app_store/$1" s="$2" tagline="$3"
+  local tablet="padding:24px;border-radius:72px"
+  local img="width:1400px;display:block;border-radius:52px"
+  shot 3840 1646 "<div style=\"position:relative;height:1646px\">
+      <div class=\"tablet\" style=\"$tablet;position:absolute;left:-180px;top:330px;transform:rotate(-6deg)\"><img src=\"file://$OUT/adventure-map$s.png\" style=\"$img\"></div>
+      <div class=\"tablet\" style=\"$tablet;position:absolute;right:-180px;top:330px;transform:rotate(6deg)\"><img src=\"file://$OUT/play-loops$s.png\" style=\"$img\"></div>
+      <div style=\"position:absolute;left:1220px;width:1400px;top:0;height:1646px;display:flex;flex-direction:column;align-items:center;justify-content:center\">
+        <svg viewBox=\"180 190 660 670\" width=\"720\" height=\"730\">$CHARACTER</svg>
+        <h1 style=\"font-size:150px;text-align:center;line-height:1.1;margin-top:40px\">$tagline</h1>
+      </div>
+    </div>" "$TMP/header.png"
+  shot 3840 2560 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;height:2560px;gap:90px\">
+      <div style=\"display:flex;align-items:center;gap:60px\">
+        <svg viewBox=\"180 190 660 670\" width=\"420\" height=\"426\">$CHARACTER</svg>
+        <h1 style=\"font-size:170px\">$tagline</h1>
+      </div>
+      <div class=\"tablet\" style=\"padding:40px;border-radius:110px\"><img src=\"file://$OUT/play-loops$s.png\" style=\"width:2900px;display:block;border-radius:76px\"></div>
+    </div>" "$TMP/search.png"
+  sips -s format jpeg -s formatOptions 90 "$TMP/header.png" --out "$dir/header.jpg" >/dev/null
+  sips -s format jpeg -s formatOptions 90 "$TMP/search.png" --out "$dir/search_result.jpg" >/dev/null
+}
+
+creative id -id "Belajar coding sambil bermain"
+creative en-US "" "Learn to code through play"
+
 echo "Store graphics rendered."
