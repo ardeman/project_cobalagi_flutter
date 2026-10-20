@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Renders the Google Play graphics for each listing language with headless
 # Chrome, from website/screenshots/ and branding/icon.svg:
-#   store/<locale>/feature_graphic.png   1024 x 500
-#   store/<locale>/screenshots/*.png     1920 x 1080 (16:9, tablets)
-#   store/<locale>/phone_screenshots/*.png 1080 x 1920 (9:16, phones), from the
+#   store/google_play/<locale>/feature_graphic.png   1024 x 500
+#   store/google_play/<locale>/screenshots/*.png     1920 x 1080 (16:9, tablets)
+#   store/google_play/<locale>/phone_screenshots/*.png 1080 x 1920 (9:16, phones), from the
 #     phone-*.png renders of tool/screenshots
 # and the App Store screenshots, from the 2x renders in tool/screenshots/out/:
 #   store/app_store/<locale>/screenshots/iphone/*.jpg 1320 x 2868 (iPhone 6.9")
@@ -64,7 +64,7 @@ phone_pair_slide() {
 
 render_phone() { # locale suffix captions...
   local locale="$1" s="$2"; shift 2
-  local dir="store/$locale/phone_screenshots"
+  local dir="store/google_play/$locale/phone_screenshots"
   mkdir -p "$dir"
   rm -f "$dir/"*.png
   phone_slide "phone-adventure-map$s.png"   "$1" "$dir/1-adventure-map.png"
@@ -113,17 +113,17 @@ feature() {
 
 render_locale() { # locale suffix tagline captions...
   local locale="$1" s="$2" tagline="$3"; shift 3
-  mkdir -p "store/$locale/screenshots"
-  feature "$tagline" "play-loops$s.png" "store/$locale/feature_graphic.png"
-  rm -f "store/$locale/screenshots/"*.png
-  slide "adventure-map$s.png"   "$1" "store/$locale/screenshots/1-adventure-map.png"
-  slide "play-loops$s.png"      "$2" "store/$locale/screenshots/2-play-loops.png"
-  slide "play-code$s.png"       "$3" "store/$locale/screenshots/3-code.png"
-  slide "play-functions$s.png"  "$4" "store/$locale/screenshots/4-play-functions.png"
-  slide "play-debugging$s.png"  "$5" "store/$locale/screenshots/5-fix-it.png"
-  slide "solved$s.png"          "$6" "store/$locale/screenshots/6-solved.png"
-  slide "play-until$s.png"      "$7" "store/$locale/screenshots/7-until.png"
-  pair_slide "parent-placement$s.png" "parent-progress$s.png" "$8" "store/$locale/screenshots/8-parents.png"
+  mkdir -p "store/google_play/$locale/screenshots"
+  feature "$tagline" "play-loops$s.png" "store/google_play/$locale/feature_graphic.png"
+  rm -f "store/google_play/$locale/screenshots/"*.png
+  slide "adventure-map$s.png"   "$1" "store/google_play/$locale/screenshots/1-adventure-map.png"
+  slide "play-loops$s.png"      "$2" "store/google_play/$locale/screenshots/2-play-loops.png"
+  slide "play-code$s.png"       "$3" "store/google_play/$locale/screenshots/3-code.png"
+  slide "play-functions$s.png"  "$4" "store/google_play/$locale/screenshots/4-play-functions.png"
+  slide "play-debugging$s.png"  "$5" "store/google_play/$locale/screenshots/5-fix-it.png"
+  slide "solved$s.png"          "$6" "store/google_play/$locale/screenshots/6-solved.png"
+  slide "play-until$s.png"      "$7" "store/google_play/$locale/screenshots/7-until.png"
+  pair_slide "parent-placement$s.png" "parent-progress$s.png" "$8" "store/google_play/$locale/screenshots/8-parents.png"
 }
 
 CAPTIONS_ID=(

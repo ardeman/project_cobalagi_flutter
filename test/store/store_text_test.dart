@@ -34,14 +34,19 @@ void main() {
   for (final locale in locales) {
     for (final MapEntry(key: name, value: max) in limits.entries) {
       test('$locale/$name fits $max characters', () {
-        expect(length(File('store/$locale/$name')), lessThanOrEqualTo(max));
+        expect(
+          length(File('store/google_play/$locale/$name')),
+          lessThanOrEqualTo(max),
+        );
       });
     }
   }
 
   test('every build has release notes in both languages', () {
     Set<String> builds(String locale) => {
-      for (final file in Directory('store/$locale/changelogs').listSync())
+      for (final file in Directory(
+        'store/google_play/$locale/changelogs',
+      ).listSync())
         file.uri.pathSegments.last,
     };
     expect(builds('id'), builds('en-US'));
@@ -57,7 +62,9 @@ void main() {
   });
 
   for (final locale in locales) {
-    for (final file in Directory('store/$locale/changelogs').listSync()) {
+    for (final file in Directory(
+      'store/google_play/$locale/changelogs',
+    ).listSync()) {
       final name = file.uri.pathSegments.last;
       test('$locale/changelogs/$name fits $releaseNotesLimit characters', () {
         expect(length(File(file.path)), lessThanOrEqualTo(releaseNotesLimit));

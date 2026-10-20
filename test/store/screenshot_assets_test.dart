@@ -21,7 +21,7 @@ void main() {
       ('phone_screenshots', 1080, 1920),
     ]) {
       test('$locale/$folder has matching coverage and correct dimensions', () {
-        final files = Directory('store/$locale/$folder')
+        final files = Directory('store/google_play/$locale/$folder')
             .listSync()
             .whereType<File>()
             .where((file) => file.path.endsWith('.png'));
