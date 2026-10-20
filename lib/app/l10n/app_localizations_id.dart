@@ -723,6 +723,97 @@ class AppLocalizationsId extends AppLocalizations {
       'Aku nyalakan lampuku dan melihat ke depan sebelum melangkah.';
 
   @override
+  String get storyArrivalVariables =>
+      'Di planet ini, Koba menemukan kotak kecil dengan angka.';
+
+  @override
+  String get storyArrivalVariablesKoba =>
+      'Kotak ini mengingat angka! Angkanya bilang berapa langkah aku berjalan.';
+
+  @override
+  String get storyArrivalDebugging =>
+      'Ada yang meninggalkan blok di jalan, semuanya tertukar.';
+
+  @override
+  String get storyArrivalDebuggingKoba =>
+      'Blok ini belum pas. Ayo cari yang perlu dibetulkan!';
+
+  @override
+  String get storyArrivalUntil =>
+      'Jauh, jauh sekali, ada bendera di ujung jalan yang panjang.';
+
+  @override
+  String get storyArrivalUntilKoba =>
+      'Langkahnya terlalu banyak untuk dihitung! Aku jalan terus saja sampai bendera.';
+
+  @override
+  String get storyArrivalOtherwise =>
+      'Jalannya bercabang dua. Di satu jalan ada semak!';
+
+  @override
+  String get storyArrivalOtherwiseKoba =>
+      'Kalau jalannya kosong, aku maju. Kalau tidak, aku belok!';
+
+  @override
+  String get storyEnding =>
+      'Bintang terakhir terbang pulang. Tangki Koba penuh!';
+
+  @override
+  String get storyEndingKoba =>
+      'Terima kasih, Komandan! Kamu membantuku menemukan semua bintang.';
+
+  @override
+  String get storyEndingMore =>
+      'Sekarang kita bisa terbang ke mana saja. Ayo terus bermain bersama!';
+
+  @override
+  String get storyFullAgain => 'Bintang-bintang terbang pulang ke tangki.';
+
+  @override
+  String get storyNewPlanet =>
+      'Wuusss! Angin angkasa meniup beberapa bintang dari tangki, ke planet yang belum pernah ditemukan.';
+
+  @override
+  String get storyNewPlanetKoba =>
+      'Planet baru! Maukah kamu membantuku mencari bintang lagi, Komandan?';
+
+  @override
+  String get storyThanksDirections =>
+      'Penuh lagi! Terima kasih sudah mengajariku kiri dan kanan, Komandan!';
+
+  @override
+  String get storyThanksSequencing =>
+      'Penuh lagi! Terima kasih sudah mengajariku langkah berurutan, Komandan!';
+
+  @override
+  String get storyThanksLoops =>
+      'Penuh lagi! Terima kasih sudah mengajariku mengulang, Komandan!';
+
+  @override
+  String get storyThanksFunctions =>
+      'Penuh lagi! Terima kasih sudah mengajariku Blok Ajaib, Komandan!';
+
+  @override
+  String get storyThanksConditions =>
+      'Penuh lagi! Terima kasih sudah mengajariku melihat ke depan, Komandan!';
+
+  @override
+  String get storyThanksVariables =>
+      'Penuh lagi! Terima kasih sudah mengajariku Kotak Langkah, Komandan!';
+
+  @override
+  String get storyThanksDebugging =>
+      'Penuh lagi! Terima kasih sudah mengajariku membetulkan blok, Komandan!';
+
+  @override
+  String get storyThanksUntil =>
+      'Penuh lagi! Terima kasih sudah mengajariku jalan sampai bendera, Komandan!';
+
+  @override
+  String get storyThanksOtherwise =>
+      'Penuh lagi! Terima kasih sudah mengajariku apa yang dilakukan kalau tidak, Komandan!';
+
+  @override
   String get watchHow => 'Lihat caranya';
 
   @override

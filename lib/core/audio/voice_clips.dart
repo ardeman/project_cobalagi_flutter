@@ -97,18 +97,38 @@ abstract final class VoiceClips {
   /// Koba as its ship takes off from a finished planet.
   static const storyFly = 'story_fly';
 
-  /// The Star fuel story's arrival scenes, for the planets that have one:
-  /// the narrator sets the scene, then Koba says why it needs the skill.
+  /// The coding planets of the Star fuel story. Each has an arrival scene
+  /// (the narrator sets the scene, then Koba says why it needs the skill)
+  /// and a thank-you line naming its skill, for the "tank full again"
+  /// ending after it.
   static const arrivalConcepts = [
     'directions',
     'sequencing',
     'loops',
     'functions',
     'conditions',
+    'variables',
+    'debugging',
+    'until',
+    'otherwise',
   ];
   static String storyArrival(String concept) => 'story_arrival_$concept';
   static String storyArrivalKoba(String concept) =>
       'story_arrival_${concept}_koba';
+  static String storyThanks(String concept) => 'story_thanks_$concept';
+
+  /// The story's ending, when the tank is full for the first time.
+  static const storyEnding = 'story_ending';
+  static const storyEndingKoba = 'story_ending_koba';
+  static const storyEndingMore = 'story_ending_more';
+
+  /// The short ending after planets added later: the stars fly home, then
+  /// Koba's [storyThanks] for the newest planet.
+  static const storyFullAgain = 'story_full_again';
+
+  /// The space wind blows stars to a planet nobody had found yet.
+  static const storyNewPlanet = 'story_new_planet';
+  static const storyNewPlanetKoba = 'story_new_planet_koba';
 
   /// Number of phrases per cheer mood; must match the ARB keys
   /// `cheerCelebrate1..N` and `cheerEncourage1..N`.
@@ -207,7 +227,14 @@ abstract final class VoiceClips {
     for (final c in arrivalConcepts) ...{
       storyArrival(c): 'storyArrival${_capital(c)}',
       storyArrivalKoba(c): 'storyArrival${_capital(c)}Koba',
+      storyThanks(c): 'storyThanks${_capital(c)}',
     },
+    storyEnding: 'storyEnding',
+    storyEndingKoba: 'storyEndingKoba',
+    storyEndingMore: 'storyEndingMore',
+    storyFullAgain: 'storyFullAgain',
+    storyNewPlanet: 'storyNewPlanet',
+    storyNewPlanetKoba: 'storyNewPlanetKoba',
     for (var i = 1; i <= celebrateCount; i++)
       cheer('celebrate', i): 'cheerCelebrate$i',
     for (var i = 1; i <= encourageCount; i++)
@@ -241,6 +268,9 @@ abstract final class VoiceClips {
     storyIntroWind,
     storyIntroLand,
     for (final c in arrivalConcepts) storyArrival(c),
+    storyEnding,
+    storyFullAgain,
+    storyNewPlanet,
   };
 
   /// Clips Koba says.
@@ -289,7 +319,10 @@ abstract final class VoiceClips {
     storyIntroBump,
     storyIntroHelp,
     storyFly,
-    for (final c in arrivalConcepts) storyArrivalKoba(c),
+    for (final c in arrivalConcepts) ...[storyArrivalKoba(c), storyThanks(c)],
+    storyEndingKoba,
+    storyEndingMore,
+    storyNewPlanetKoba,
     for (var i = 1; i <= celebrateCount; i++) cheer('celebrate', i),
     for (var i = 1; i <= encourageCount; i++) cheer('encourage', i),
   };

@@ -31,8 +31,46 @@ abstract final class Story {
       !learner.tutorialsSeen.contains(conceptId) &&
       !learner.tutorialsSeen.contains(arrival(conceptId));
 
+  /// The ending played when the child has finished every planet, the last
+  /// being [lastPlanet]: the whole ending the first time, and a short "tank
+  /// full again" after a newer version added planets. Both save this id, so
+  /// a child never sits through the same ending twice.
+  static String fullTank(String lastPlanet) => 'story-full-$lastPlanet';
+
+  /// The scene telling a child who saw an ending that the space wind blew
+  /// stars to a planet nobody had found yet, [lastPlanet] being the newest.
+  static String newPlanet(String lastPlanet) => 'story-new-$lastPlanet';
+
+  static bool _sawEnding(LearnerState learner) =>
+      learner.tutorialsSeen.any((id) => id.startsWith('story-full-'));
+
+  /// Which ending is still to play now that the child has finished every
+  /// planet, the last being [lastPlanet]: none once it played for this map.
+  static Ending? endingDue(LearnerState learner, String lastPlanet) {
+    if (learner.tutorialsSeen.contains(fullTank(lastPlanet))) return null;
+    return _sawEnding(learner) ? Ending.fullAgain : Ending.whole;
+  }
+
+  /// Whether the "new planet" scene is still to play: the child saw an
+  /// ending, and this version has a newer last planet than any ending
+  /// played for.
+  static bool newPlanetDue(LearnerState learner, String lastPlanet) =>
+      _sawEnding(learner) &&
+      !learner.tutorialsSeen.contains(fullTank(lastPlanet)) &&
+      !learner.tutorialsSeen.contains(newPlanet(lastPlanet));
+
   /// How full Koba's tank is, 0 to 1, with [finished] of [planets] coding
   /// planets behind the child. Each finished planet's stars fly into it.
   static double tankFill({required int finished, required int planets}) =>
       planets <= 0 ? 0 : (finished / planets).clamp(0, 1).toDouble();
+}
+
+/// The ending of the Star fuel story the child gets (see [Story.endingDue]).
+enum Ending {
+  /// The tank full for the first time: "Thank you, commander!".
+  whole,
+
+  /// After planets added later are finished: the stars fly home, and Koba
+  /// thanks the commander for the newest planet's skill.
+  fullAgain,
 }

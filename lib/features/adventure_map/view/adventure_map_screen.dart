@@ -13,6 +13,7 @@ import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 import 'package:cobalagi/features/story/view/ship_flight.dart';
+import 'package:cobalagi/features/story/view/story_screen.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../app/theme/app_theme.dart';
@@ -22,6 +23,7 @@ import '../../../core/audio/voice_clips.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/progress_report.dart';
 import '../../../learning/stickers.dart';
+import '../../../learning/learning_engine.dart';
 import '../../../learning/story.dart';
 import '../../../learning/warm_up/warm_up.dart';
 import '../../learning/cubit/learning_cubit.dart';
@@ -129,9 +131,17 @@ class AdventureMapScreen extends StatelessWidget {
     return _CelebrationTrigger(
       island: cubit.state.islandToCelebrate,
       flies: flight != null && !MediaQuery.disableAnimationsOf(context),
-      // The story's intro waits for a celebration to end; it plays on the
-      // next visit to the map.
-      intro: Story.introDue(learner) ? '/child/$profileId/story/intro' : null,
+      // The story's scenes (the intro, the new planet scene and the endings)
+      // wait for a celebration to end; they play on the next visit to the
+      // map.
+      story: switch (StoryScreen.dueOnMap(
+        learner,
+        concepts.last.id,
+        mapComplete: cubit.state.lastDecision is MapComplete,
+      )) {
+        final scene? => '/child/$profileId/story/$scene',
+        null => null,
+      },
       // Space is dark: the bars, their glass and words are made for night.
       child: Theme(
         data: AppTheme.dark(),
@@ -394,18 +404,18 @@ class _BonusBanner extends StatelessWidget {
 
 /// Plays the opening of a newly reached island once: a cheer while the map
 /// animates it (after Koba's ship [flies] there), then it is marked as
-/// celebrated. Otherwise it opens the story's [intro] route, if it is due.
+/// celebrated. Otherwise it opens the [story] scene's route, if one is due.
 class _CelebrationTrigger extends StatefulWidget {
   const _CelebrationTrigger({
     required this.island,
     required this.flies,
-    required this.intro,
+    required this.story,
     required this.child,
   });
 
   final String? island;
   final bool flies;
-  final String? intro;
+  final String? story;
   final Widget child;
 
   @override
@@ -420,9 +430,9 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
   void initState() {
     super.initState();
     if (widget.island == null) {
-      if (widget.intro case final intro?) {
+      if (widget.story case final story?) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) GoRouter.maybeOf(context)?.go(intro);
+          if (mounted) GoRouter.maybeOf(context)?.go(story);
         });
       }
       return;

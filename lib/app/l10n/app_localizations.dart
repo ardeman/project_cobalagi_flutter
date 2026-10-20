@@ -1382,6 +1382,144 @@ abstract class AppLocalizations {
   /// **'I\'ll turn on my light and look ahead before each step.'**
   String get storyArrivalConditionsKoba;
 
+  /// No description provided for @storyArrivalVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'On this planet, Koba finds a little box with a number on it.'**
+  String get storyArrivalVariables;
+
+  /// No description provided for @storyArrivalVariablesKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'This box remembers a number! It tells me how many steps to take.'**
+  String get storyArrivalVariablesKoba;
+
+  /// No description provided for @storyArrivalDebugging.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone left blocks on the path, all muddled up.'**
+  String get storyArrivalDebugging;
+
+  /// No description provided for @storyArrivalDebuggingKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'These blocks aren\'t quite right. Let\'s find the one to fix!'**
+  String get storyArrivalDebuggingKoba;
+
+  /// No description provided for @storyArrivalUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Far, far away, a flag waves at the end of a long road.'**
+  String get storyArrivalUntil;
+
+  /// No description provided for @storyArrivalUntilKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s too many steps to count! I\'ll just keep going until the flag.'**
+  String get storyArrivalUntilKoba;
+
+  /// No description provided for @storyArrivalOtherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'The road splits in two. One way has a bush in it!'**
+  String get storyArrivalOtherwise;
+
+  /// No description provided for @storyArrivalOtherwiseKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'If the way is clear, I go. Otherwise, I turn!'**
+  String get storyArrivalOtherwiseKoba;
+
+  /// No description provided for @storyEnding.
+  ///
+  /// In en, this message translates to:
+  /// **'The last stars fly home. Koba\'s tank is full!'**
+  String get storyEnding;
+
+  /// No description provided for @storyEndingKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'Thank you, commander! You helped me find every star.'**
+  String get storyEndingKoba;
+
+  /// No description provided for @storyEndingMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Now we can fly anywhere. Let\'s keep playing together!'**
+  String get storyEndingMore;
+
+  /// No description provided for @storyFullAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'The stars fly home into the tank.'**
+  String get storyFullAgain;
+
+  /// No description provided for @storyNewPlanet.
+  ///
+  /// In en, this message translates to:
+  /// **'Whoosh! The space wind blew a few stars out of the tank, to a planet nobody had found yet.'**
+  String get storyNewPlanet;
+
+  /// No description provided for @storyNewPlanetKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'A new planet! Will you help me find the stars again, commander?'**
+  String get storyNewPlanetKoba;
+
+  /// No description provided for @storyThanksDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me left and right, commander!'**
+  String get storyThanksDirections;
+
+  /// No description provided for @storyThanksSequencing.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me steps in order, commander!'**
+  String get storyThanksSequencing;
+
+  /// No description provided for @storyThanksLoops.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me to repeat, commander!'**
+  String get storyThanksLoops;
+
+  /// No description provided for @storyThanksFunctions.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me the Magic Block, commander!'**
+  String get storyThanksFunctions;
+
+  /// No description provided for @storyThanksConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me to look ahead, commander!'**
+  String get storyThanksConditions;
+
+  /// No description provided for @storyThanksVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me the Step Box, commander!'**
+  String get storyThanksVariables;
+
+  /// No description provided for @storyThanksDebugging.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me to fix my blocks, commander!'**
+  String get storyThanksDebugging;
+
+  /// No description provided for @storyThanksUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me to go until the flag, commander!'**
+  String get storyThanksUntil;
+
+  /// No description provided for @storyThanksOtherwise.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me what to do otherwise, commander!'**
+  String get storyThanksOtherwise;
+
   /// No description provided for @watchHow.
   ///
   /// In en, this message translates to:

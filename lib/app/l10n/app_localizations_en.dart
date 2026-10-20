@@ -730,6 +730,96 @@ class AppLocalizationsEn extends AppLocalizations {
       'I\'ll turn on my light and look ahead before each step.';
 
   @override
+  String get storyArrivalVariables =>
+      'On this planet, Koba finds a little box with a number on it.';
+
+  @override
+  String get storyArrivalVariablesKoba =>
+      'This box remembers a number! It tells me how many steps to take.';
+
+  @override
+  String get storyArrivalDebugging =>
+      'Someone left blocks on the path, all muddled up.';
+
+  @override
+  String get storyArrivalDebuggingKoba =>
+      'These blocks aren\'t quite right. Let\'s find the one to fix!';
+
+  @override
+  String get storyArrivalUntil =>
+      'Far, far away, a flag waves at the end of a long road.';
+
+  @override
+  String get storyArrivalUntilKoba =>
+      'That\'s too many steps to count! I\'ll just keep going until the flag.';
+
+  @override
+  String get storyArrivalOtherwise =>
+      'The road splits in two. One way has a bush in it!';
+
+  @override
+  String get storyArrivalOtherwiseKoba =>
+      'If the way is clear, I go. Otherwise, I turn!';
+
+  @override
+  String get storyEnding => 'The last stars fly home. Koba\'s tank is full!';
+
+  @override
+  String get storyEndingKoba =>
+      'Thank you, commander! You helped me find every star.';
+
+  @override
+  String get storyEndingMore =>
+      'Now we can fly anywhere. Let\'s keep playing together!';
+
+  @override
+  String get storyFullAgain => 'The stars fly home into the tank.';
+
+  @override
+  String get storyNewPlanet =>
+      'Whoosh! The space wind blew a few stars out of the tank, to a planet nobody had found yet.';
+
+  @override
+  String get storyNewPlanetKoba =>
+      'A new planet! Will you help me find the stars again, commander?';
+
+  @override
+  String get storyThanksDirections =>
+      'Full again! Thank you for teaching me left and right, commander!';
+
+  @override
+  String get storyThanksSequencing =>
+      'Full again! Thank you for teaching me steps in order, commander!';
+
+  @override
+  String get storyThanksLoops =>
+      'Full again! Thank you for teaching me to repeat, commander!';
+
+  @override
+  String get storyThanksFunctions =>
+      'Full again! Thank you for teaching me the Magic Block, commander!';
+
+  @override
+  String get storyThanksConditions =>
+      'Full again! Thank you for teaching me to look ahead, commander!';
+
+  @override
+  String get storyThanksVariables =>
+      'Full again! Thank you for teaching me the Step Box, commander!';
+
+  @override
+  String get storyThanksDebugging =>
+      'Full again! Thank you for teaching me to fix my blocks, commander!';
+
+  @override
+  String get storyThanksUntil =>
+      'Full again! Thank you for teaching me to go until the flag, commander!';
+
+  @override
+  String get storyThanksOtherwise =>
+      'Full again! Thank you for teaching me what to do otherwise, commander!';
+
+  @override
   String get watchHow => 'Watch how';
 
   @override

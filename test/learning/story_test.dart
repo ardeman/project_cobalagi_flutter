@@ -80,4 +80,53 @@ void main() {
     expect(Story.tankFill(finished: 12, planets: 9), 1);
     expect(Story.tankFill(finished: 0, planets: 0), 0);
   });
+
+  group('the ending', () {
+    final learner = LearnerState(
+      currentConcept: 'otherwise',
+      placement: placed,
+    );
+
+    test('the whole ending plays once the last planet is finished', () {
+      expect(Story.endingDue(learner, 'otherwise'), Ending.whole);
+      expect(
+        Story.endingDue(
+          learner.copyWith(tutorialsSeen: {Story.fullTank('otherwise')}),
+          'otherwise',
+        ),
+        isNull,
+      );
+    });
+
+    test('a newer last planet brings the new planet scene, then the short '
+        'ending', () {
+      final sawEnding = learner.copyWith(
+        tutorialsSeen: {Story.fullTank('otherwise')},
+      );
+      expect(Story.newPlanetDue(sawEnding, 'otherwise'), isFalse);
+      expect(Story.newPlanetDue(sawEnding, 'rockets'), isTrue);
+      expect(
+        Story.newPlanetDue(
+          sawEnding.copyWith(
+            tutorialsSeen: {
+              ...sawEnding.tutorialsSeen,
+              Story.newPlanet('rockets'),
+            },
+          ),
+          'rockets',
+        ),
+        isFalse,
+      );
+      expect(Story.endingDue(sawEnding, 'rockets'), Ending.fullAgain);
+      final again = sawEnding.copyWith(
+        tutorialsSeen: {...sawEnding.tutorialsSeen, Story.fullTank('rockets')},
+      );
+      expect(Story.endingDue(again, 'rockets'), isNull);
+      expect(Story.newPlanetDue(again, 'rockets'), isFalse);
+    });
+
+    test('no new planet scene before any ending', () {
+      expect(Story.newPlanetDue(learner, 'otherwise'), isFalse);
+    });
+  });
 }

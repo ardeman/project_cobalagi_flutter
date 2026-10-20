@@ -25,6 +25,10 @@ const arrivalScenes = <String, ArrivalScene>{
   'loops': LoopsArrival(),
   'functions': FunctionsArrival(),
   'conditions': ConditionsArrival(),
+  'variables': VariablesArrival(),
+  'debugging': DebuggingArrival(),
+  'until': UntilArrival(),
+  'otherwise': OtherwiseArrival(),
 };
 
 /// A planet's arrival (about 10 seconds), played on the first visit before
@@ -45,6 +49,10 @@ abstract class ArrivalScene extends StoryScene {
   /// The narrator's line, then Koba's.
   String sceneWords(AppLocalizations l10n);
   String kobaWords(AppLocalizations l10n);
+
+  /// Koba's thanks for the planet's skill, in the "tank full again" ending
+  /// when this planet is the newest.
+  String thanksWords(AppLocalizations l10n);
 
   /// Sounds in Koba's beat, by when (0 to 1).
   List<(double, SoundEffect)> get effects => const [];
@@ -216,6 +224,9 @@ class DirectionsArrival extends ArrivalScene {
   String kobaWords(AppLocalizations l10n) => l10n.storyArrivalDirectionsKoba;
 
   @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksDirections;
+
+  @override
   void paintPlanet(ArrivalStage s) {
     paintObstacle(s.canvas, theme.obstacle, s.on(0.93), s.u * 0.2);
     paintObstacle(s.canvas, theme.obstacle, s.on(0.5), s.u * 0.12, seed: 3);
@@ -337,6 +348,9 @@ class SequencingArrival extends ArrivalScene {
   @override
   String kobaWords(AppLocalizations l10n) => l10n.storyArrivalSequencingKoba;
 
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksSequencing;
+
   /// The stones after Koba's spot: across the box, and how far in front
   /// of the hill's top (in the scene's unit), winding nearer and back.
   static const _stones = [
@@ -434,6 +448,9 @@ class LoopsArrival extends ArrivalScene {
 
   @override
   String kobaWords(AppLocalizations l10n) => l10n.storyArrivalLoopsKoba;
+
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksLoops;
 
   static const _steps = 5;
 
@@ -582,6 +599,9 @@ class FunctionsArrival extends ArrivalScene {
   @override
   String kobaWords(AppLocalizations l10n) => l10n.storyArrivalFunctionsKoba;
 
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksFunctions;
+
   static const _moves = [
     BlockType.forward,
     BlockType.turnLeft,
@@ -661,6 +681,9 @@ class ConditionsArrival extends ArrivalScene {
 
   @override
   String kobaWords(AppLocalizations l10n) => l10n.storyArrivalConditionsKoba;
+
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksConditions;
 
   /// How bright the headlight is, 0 to 1.
   double _light(ArrivalStage s) => s.frame.beat == 1
@@ -754,6 +777,618 @@ class ConditionsArrival extends ArrivalScene {
         ])
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, s.u * 0.02),
     );
+  }
+}
+
+/// Step Box: a little box on the ground holds a number; it pops out over
+/// Koba, who rolls that many steps, counting them on the tiles.
+class VariablesArrival extends ArrivalScene {
+  const VariablesArrival() : super('variables');
+
+  @override
+  String sceneWords(AppLocalizations l10n) => l10n.storyArrivalVariables;
+
+  @override
+  String kobaWords(AppLocalizations l10n) => l10n.storyArrivalVariablesKoba;
+
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksVariables;
+
+  static const _count = 3;
+
+  /// When, in Koba's beat, it starts rolling, and how long each step takes.
+  static const _go = 0.36;
+  static const _stepLength = 0.18;
+
+  /// Where step [i] ends (0 is where Koba stopped).
+  Offset _tile(ArrivalStage s, int i) => s.on(0.36 + 0.13 * i);
+
+  /// The box, past the last tile.
+  Offset _box(ArrivalStage s) => s.on(0.86);
+
+  @override
+  List<(double, SoundEffect)> get effects => [
+    (0.1, SoundEffect.drop),
+    for (var i = 1; i <= _count; i++) (_go + _stepLength * i, SoundEffect.step),
+  ];
+
+  @override
+  void paintPlanet(ArrivalStage s) {
+    paintObstacle(s.canvas, theme.obstacle, s.on(0.96), s.u * 0.2);
+    final open = s.frame.beat == 1
+        ? Curves.easeOut.transform((s.t / 0.15).clamp(0, 1))
+        : 0.0;
+    _stepBox(s, _box(s), s.u * 0.16, open);
+    final reached = s.frame.beat == 1
+        ? ((s.t - _go) / _stepLength).floor().clamp(0, _count)
+        : 0;
+    for (var i = 1; i <= _count; i++) {
+      final c = _tile(s, i);
+      final tile = Rect.fromCenter(
+        center: c,
+        width: s.u * 0.16,
+        height: s.u * 0.05,
+      );
+      s.canvas
+        ..drawOval(tile, Paint()..color = theme.floor)
+        ..drawOval(
+          tile,
+          Paint()
+            ..color = storyInk
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = max(2, s.u * 0.006),
+        );
+      // Each step counted as Koba reaches its tile.
+      if (i <= reached) {
+        paintStoryNumber(
+          s.canvas,
+          '$i',
+          c + Offset(s.u * 0.05, -s.u * 0.12),
+          s.u * 0.07,
+          BlockType.setSteps.color,
+        );
+      }
+    }
+  }
+
+  /// The Step Box at [base], [size] wide, its lid [open] (0 to 1).
+  void _stepBox(ArrivalStage s, Offset base, double size, double open) {
+    final body = Rect.fromLTWH(
+      base.dx - size / 2,
+      base.dy - size * 0.7,
+      size,
+      size * 0.7,
+    );
+    final ink = Paint()
+      ..color = storyInk
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = max(2, s.u * 0.007)
+      ..strokeJoin = StrokeJoin.round;
+    final colour = BlockType.setSteps.color;
+    final box = RRect.fromRectAndRadius(body, Radius.circular(size * 0.1));
+    s.canvas
+      ..drawRRect(box, Paint()..color = colour)
+      ..drawRRect(box, ink);
+    paintStoryNumber(
+      s.canvas,
+      '$_count',
+      body.center,
+      size * 0.45,
+      const Color(0xFFFFFFFF),
+      outline: false,
+    );
+    // The lid swings up from the back edge.
+    s.canvas
+      ..save()
+      ..translate(body.right, body.top)
+      ..rotate(1.1 * open);
+    final lid = RRect.fromRectAndRadius(
+      Rect.fromLTWH(-size * 1.04, -size * 0.14, size * 1.08, size * 0.16),
+      Radius.circular(size * 0.06),
+    );
+    s.canvas
+      ..drawRRect(
+        lid,
+        Paint()..color = Color.lerp(colour, const Color(0xFFFFFFFF), 0.2)!,
+      )
+      ..drawRRect(lid, ink)
+      ..restore();
+  }
+
+  @override
+  void paintKobaBeat(ArrivalStage s) {
+    final rolled = ((s.t - _go) / _stepLength).clamp(0.0, _count.toDouble());
+    final step = rolled.floor().clamp(0, _count - 1);
+    final p = Curves.easeInOut.transform(rolled - step);
+    final base = rolled >= _count
+        ? _tile(s, _count)
+        : Offset.lerp(_tile(s, step), _tile(s, step + 1), p)!;
+    final done = rolled >= _count;
+    s.koba(
+      base,
+      size: s.u * 0.36,
+      face: done ? RobotFace.cheer : RobotFace.normal,
+      angle: rolled > 0 && !done ? 0.05 * sin(s.time * 14) : 0,
+      gaze: s.t < _go ? const Offset(10, -10) : Offset.zero,
+    );
+    // The number flies out of the box and stays over Koba while it counts.
+    final fly = Curves.easeInOut.transform(((s.t - 0.1) / 0.24).clamp(0, 1));
+    if (fly == 0) return;
+    final box = _box(s) - Offset(0, s.u * 0.2);
+    final over = base - Offset(0, s.u * 0.42);
+    paintStoryNumber(
+      s.canvas,
+      '$_count',
+      Offset.lerp(box, over, fly)! + Offset(0, -sin(pi * fly) * s.u * 0.1),
+      s.u * 0.1,
+      BlockType.setSteps.color,
+      glow: true,
+    );
+  }
+}
+
+/// Fix it!: blocks lie muddled on the path; they line up, the one that
+/// isn't right wears the bump's orange ring, and Koba flips it to the
+/// right one.
+class DebuggingArrival extends ArrivalScene {
+  const DebuggingArrival() : super('debugging');
+
+  @override
+  String sceneWords(AppLocalizations l10n) => l10n.storyArrivalDebugging;
+
+  @override
+  String kobaWords(AppLocalizations l10n) => l10n.storyArrivalDebuggingKoba;
+
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksDebugging;
+
+  /// The blocks left behind; the middle one is the one to fix.
+  static const _left = [
+    BlockType.forward,
+    BlockType.turnLeft,
+    BlockType.forward,
+  ];
+  static const _fixed = BlockType.turnRight;
+
+  /// How each block lies muddled: turned, and how far off its spot.
+  static const _muddle = [(-0.5, -0.03), (0.7, 0.04), (-0.25, 0.02)];
+
+  @override
+  List<(double, SoundEffect)> get effects => const [
+    (0.3, SoundEffect.bumpWood),
+    (0.7, SoundEffect.drop),
+  ];
+
+  @override
+  void paintPlanet(ArrivalStage s) {
+    paintObstacle(s.canvas, theme.obstacle, s.on(0.96), s.u * 0.18);
+    final beat = s.frame.beat == 1;
+    // They line up first.
+    final tidy = beat
+        ? Curves.easeInOut.transform((s.t / 0.22).clamp(0, 1))
+        : 0.0;
+    final flip = beat ? ((s.t - 0.6) / 0.16).clamp(0.0, 1.0) : 0.0;
+    final size = s.u * 0.14;
+    for (var i = 0; i < _left.length; i++) {
+      final (turn, off) = _muddle[i];
+      final spot = s.on(0.56 + 0.15 * i) - Offset(0, size * 0.62);
+      final c = spot + Offset(0, off * s.u * (1 - tidy));
+      final wrong = i == 1;
+      var type = _left[i];
+      var width = 1.0;
+      if (wrong && flip > 0) {
+        // Flips over like a card, the right block on its other side.
+        width = (1 - 2 * flip).abs();
+        if (flip > 0.5) type = _fixed;
+      }
+      s.canvas
+        ..save()
+        ..translate(c.dx, c.dy)
+        ..rotate(turn * (1 - tidy))
+        ..scale(width, 1);
+      final ring = wrong && beat && s.t > 0.3;
+      if (ring && flip < 0.5) _ring(s, size, BlockTile.bumpedColor);
+      paintBlock(s.canvas, type, Offset.zero, size, glow: flip >= 1);
+      s.canvas.restore();
+      if (ring && flip == 0) _badge(s, c + Offset(size * 0.5, -size * 0.5));
+    }
+  }
+
+  /// The bump's orange ring round a block [size] wide, outside a white gap.
+  void _ring(ArrivalStage s, double size, Color color) {
+    final pulse = 1 + 0.04 * sin(s.time * 8);
+    RRect ring(double grow) => RRect.fromRectAndRadius(
+      Rect.fromCenter(
+        center: Offset.zero,
+        width: size * grow * pulse,
+        height: size * grow * pulse,
+      ),
+      Radius.circular(size * 0.3),
+    );
+    s.canvas
+      ..drawRRect(
+        ring(1.3),
+        Paint()
+          ..color = color
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = size * 0.1,
+      )
+      ..drawRRect(
+        ring(1.12),
+        Paint()
+          ..color = const Color(0xFFFFFFFF)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = size * 0.07,
+      );
+  }
+
+  /// The bump's "!" badge at [c].
+  void _badge(ArrivalStage s, Offset c) {
+    final r = s.u * 0.03;
+    s.canvas
+      ..drawCircle(c, r, Paint()..color = BlockTile.bumpedColor)
+      ..drawCircle(
+        c,
+        r,
+        Paint()
+          ..color = const Color(0xFFFFFFFF)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = r * 0.25,
+      );
+    paintStoryNumber(
+      s.canvas,
+      '!',
+      c,
+      r * 1.4,
+      const Color(0xFFFFFFFF),
+      outline: false,
+    );
+  }
+
+  @override
+  void paintKobaBeat(ArrivalStage s) {
+    s.koba(
+      s.kobaAt,
+      face: s.t > 0.75 ? RobotFace.cheer : RobotFace.normal,
+      gaze: const Offset(10, 4),
+    );
+  }
+}
+
+/// Until the flag: a long road runs to a flag far away; Koba starts to
+/// count the steps, gives up, and the until-the-flag block sends it
+/// rolling along without counting.
+class UntilArrival extends ArrivalScene {
+  const UntilArrival() : super('until');
+
+  @override
+  String sceneWords(AppLocalizations l10n) => l10n.storyArrivalUntil;
+
+  @override
+  String kobaWords(AppLocalizations l10n) => l10n.storyArrivalUntilKoba;
+
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksUntil;
+
+  static const _tiles = 12;
+
+  /// When, in Koba's beat, it starts to count, the block pops up and Koba
+  /// sets off.
+  static const _counted = 4;
+  static const _countStep = 0.08;
+  static const _pop = 0.5;
+  static const _go = 0.62;
+
+  @override
+  List<(double, SoundEffect)> get effects => [
+    for (var i = 1; i <= _counted; i++) (i * _countStep, SoundEffect.turn),
+    (_pop, SoundEffect.drop),
+  ];
+
+  /// Where tile [i] of the road is (0 under Koba) and how big, the road
+  /// shrinking towards the far hill.
+  (Offset, double) _tile(ArrivalStage s, double i) {
+    final p = i / _tiles;
+    final ease = 1 - pow(1 - p, 1.6).toDouble();
+    final from = s.kobaAt;
+    final to = _flag(s) + Offset(-s.u * 0.04, s.u * 0.005);
+    return (Offset.lerp(from, to, ease)!, storyLerp(1, 0.22, ease));
+  }
+
+  Offset _flag(ArrivalStage s) => s.at(0.9, 0.66);
+
+  @override
+  void paintPlanet(ArrivalStage s) {
+    final canvas = s.canvas;
+    // A far hill, with the flag on top.
+    final hill = Rect.fromCenter(
+      center: s.at(0.88, 0.7),
+      width: s.u * 0.5,
+      height: s.u * 0.14,
+    );
+    canvas
+      ..drawOval(hill, Paint()..color = theme.groundSide)
+      ..drawOval(
+        hill,
+        Paint()
+          ..color = storyInk
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = max(2, s.u * 0.005),
+      );
+    final wave = 0.04 * sin(s.time * 4);
+    final flag = s.u * 0.12;
+    canvas
+      ..save()
+      ..translate(_flag(s).dx - flag * 0.38, _flag(s).dy - flag * 0.8)
+      ..scale(flag)
+      ..rotate(wave);
+    drawFinish(canvas, Finish.flag);
+    canvas.restore();
+    paintObstacle(
+      canvas,
+      theme.obstacle,
+      s.on(0.66) + Offset(0, s.u * 0.05),
+      s.u * 0.16,
+      seed: 4,
+    );
+    // The road: tiles all the way, smaller and smaller.
+    for (var i = _tiles; i >= 1; i--) {
+      final (c, scale) = _tile(s, i.toDouble());
+      final tile = Rect.fromCenter(
+        center: c,
+        width: s.u * 0.13 * scale,
+        height: s.u * 0.04 * scale,
+      );
+      canvas
+        ..drawOval(tile, Paint()..color = theme.floor)
+        ..drawOval(
+          tile,
+          Paint()
+            ..color = theme.floorEdge
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = max(1.5, s.u * 0.005 * scale),
+        );
+    }
+    // Koba counts the first few, then gives up: too many.
+    if (s.frame.beat == 1 && s.t < _go) {
+      final shown = (s.t / _countStep).floor().clamp(0, _counted);
+      for (var i = 1; i <= shown; i++) {
+        final (c, scale) = _tile(s, i.toDouble());
+        paintStoryNumber(
+          canvas,
+          '$i',
+          c - Offset(0, s.u * 0.08 * scale),
+          s.u * 0.06 * scale,
+          storyGold,
+          opacity: s.t > _pop ? 1 - (s.t - _pop) / (_go - _pop) : 1,
+        );
+      }
+    }
+  }
+
+  @override
+  void paintKobaBeat(ArrivalStage s) {
+    final go = Curves.easeIn.transform(((s.t - _go) / (1 - _go)).clamp(0, 1));
+    final (base, scale) = _tile(s, go * 6);
+    final dizzy = s.t > _counted * _countStep + 0.05 && s.t < _pop;
+    s.koba(
+      base,
+      size: s.kobaSize * scale,
+      face: dizzy
+          ? RobotFace.dizzy
+          : s.t > _pop
+          ? RobotFace.cheer
+          : RobotFace.normal,
+      angle: go > 0 ? 0.05 * sin(s.time * 14) : 0,
+      gaze: const Offset(12, -4),
+    );
+    final pop = Curves.elasticOut.transform(((s.t - _pop) / 0.2).clamp(0, 1));
+    if (pop > 0) {
+      paintBlock(
+        s.canvas,
+        BlockType.untilGoal,
+        base - Offset(0, s.u * (0.5 * scale + 0.02 * sin(s.time * 3))),
+        s.u * 0.14 * pop * max(scale, 0.7),
+      );
+    }
+  }
+}
+
+/// Otherwise: the road forks, a bush blocks the way ahead; the two-row eye
+/// block pops up, and Koba turns and takes the clear way to a star.
+class OtherwiseArrival extends ArrivalScene {
+  const OtherwiseArrival() : super('otherwise');
+
+  @override
+  String sceneWords(AppLocalizations l10n) => l10n.storyArrivalOtherwise;
+
+  @override
+  String kobaWords(AppLocalizations l10n) => l10n.storyArrivalOtherwiseKoba;
+
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksOtherwise;
+
+  /// When, in Koba's beat, it reaches the fork, the block pops up, Koba
+  /// turns, and it reaches the star.
+  static const _atFork = 0.22;
+  static const _pop = 0.28;
+  static const _turn = 0.5;
+  static const _star = 0.92;
+
+  @override
+  List<(double, SoundEffect)> get effects => const [
+    (_pop, SoundEffect.drop),
+    (_turn, SoundEffect.turn),
+    (_star, SoundEffect.star),
+  ];
+
+  Offset _fork(ArrivalStage s) => s.on(0.56);
+
+  /// The way ahead, past the bush.
+  Offset _ahead(ArrivalStage s) => s.on(0.96);
+
+  /// The clear way's end, nearer the child than the way ahead.
+  Offset _clear(ArrivalStage s) => s.on(0.74) + Offset(0, s.u * 0.085);
+
+  /// The clear way at [p] (0 the fork, 1 its end), curving towards the
+  /// child, and how big things are there.
+  (Offset, double) _way(ArrivalStage s, double p) {
+    final a = _fork(s);
+    final b = _clear(s);
+    final bend = Offset(a.dx + s.u * 0.02, b.dy);
+    final q = 1 - p;
+    return (a * q * q + bend * 2 * q * p + b * p * p, storyLerp(1, 1.15, p));
+  }
+
+  @override
+  void paintPlanet(ArrivalStage s) {
+    final canvas = s.canvas;
+    void tiles(
+      Offset Function(double) at,
+      double Function(double) scale,
+      int count,
+    ) {
+      for (var i = count; i >= 1; i--) {
+        final p = i / count;
+        final c = at(p);
+        final k = scale(p);
+        final tile = Rect.fromCenter(
+          center: c,
+          width: s.u * 0.12 * k,
+          height: s.u * 0.04 * k,
+        );
+        canvas
+          ..drawOval(tile, Paint()..color = theme.floor)
+          ..drawOval(
+            tile,
+            Paint()
+              ..color = theme.floorEdge
+              ..style = PaintingStyle.stroke
+              ..strokeWidth = max(1.5, s.u * 0.005 * k),
+          );
+      }
+    }
+
+    // The way from Koba to the fork, and on to the bush.
+    tiles((p) => Offset.lerp(s.kobaAt, _fork(s), p)!, (_) => 1, 2);
+    tiles((p) => Offset.lerp(_fork(s), _ahead(s), p)!, (_) => 1, 3);
+    paintObstacle(canvas, theme.obstacle, s.on(0.84), s.u * 0.2, seed: 1);
+    // The clear way, nearer the child, with the star at its end.
+    tiles((p) => _way(s, p).$1, (p) => _way(s, p).$2, 4);
+    final taken = s.frame.beat == 1 ? (s.t - _star) / 0.08 : -1.0;
+    if (taken < 1) {
+      final pop = taken > 0 ? taken : 0.0;
+      paintStoryStar(
+        canvas,
+        _clear(s) -
+            Offset(0, s.u * (0.1 + 0.015 * sin(s.time * 3) + 0.08 * pop)),
+        s.u * 0.035 * (1 + pop),
+        opacity: 1 - pop,
+        turn: s.time,
+      );
+    }
+  }
+
+  @override
+  void paintKobaBeat(ArrivalStage s) {
+    final t = s.t;
+    Offset base;
+    var scale = 1.0;
+    var face = RobotFace.normal;
+    var front = false;
+    if (t < _atFork) {
+      base = Offset.lerp(
+        s.kobaAt,
+        _fork(s),
+        Curves.easeInOut.transform(t / _atFork),
+      )!;
+    } else if (t < _turn) {
+      // Looks ahead at the bush.
+      base = _fork(s);
+    } else if (t < _turn + 0.08) {
+      // Turns to the clear way.
+      base = _fork(s);
+      front = true;
+    } else {
+      final p = Curves.easeInOut.transform(
+        ((t - _turn - 0.08) / (_star - _turn - 0.08)).clamp(0, 1),
+      );
+      (base, scale) = _way(s, p);
+      face = p >= 1 ? RobotFace.cheer : RobotFace.normal;
+    }
+    s.koba(
+      base,
+      size: s.u * 0.34 * scale,
+      face: face,
+      front: front,
+      angle: t < _atFork || (t > _turn + 0.08 && t < _star)
+          ? 0.05 * sin(s.time * 14)
+          : 0,
+    );
+    // The eye block with its two rows, over Koba at the fork.
+    final pop = Curves.elasticOut.transform(((t - _pop) / 0.2).clamp(0, 1));
+    final fade = 1 - ((t - _turn - 0.1) / 0.15).clamp(0.0, 1.0);
+    if (pop > 0 && fade > 0) {
+      paintBlock(
+        s.canvas,
+        BlockType.ifElse,
+        _fork(s) - Offset(0, s.u * (0.46 + 0.02 * sin(s.time * 3))),
+        s.u * 0.14 * pop * fade,
+      );
+    }
+  }
+}
+
+/// [text] (a number or "!") centred on [c], [size] tall, in [color] with an
+/// ink outline (unless not [outline]) and with [glow] a gold shine behind.
+void paintStoryNumber(
+  Canvas canvas,
+  String text,
+  Offset c,
+  double size,
+  Color color, {
+  bool outline = true,
+  bool glow = false,
+  double opacity = 1,
+}) {
+  if (size <= 0 || opacity <= 0) return;
+  if (glow) {
+    canvas.drawCircle(
+      c,
+      size * 0.7,
+      Paint()
+        ..color = storyGold.withValues(alpha: 0.6 * opacity)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, size * 0.3),
+    );
+  }
+  TextPainter painter(Paint? stroke) => TextPainter(
+    text: TextSpan(
+      text: text,
+      style: TextStyle(
+        fontSize: size,
+        fontWeight: FontWeight.w900,
+        height: 1,
+        color: stroke == null ? color.withValues(alpha: opacity) : null,
+        foreground: stroke,
+      ),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  final layers = [
+    if (outline)
+      painter(
+        Paint()
+          ..color = storyInk.withValues(alpha: opacity)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = size * 0.14
+          ..strokeJoin = StrokeJoin.round,
+      ),
+    painter(null),
+  ];
+  for (final layer in layers) {
+    layer
+      ..paint(canvas, c - Offset(layer.width / 2, layer.height / 2))
+      ..dispose();
   }
 }
 
