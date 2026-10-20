@@ -668,11 +668,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tutorialSkip => 'Skip';
 
   @override
+  String get storyTitle => 'Koba\'s star ship';
+
+  @override
+  String get storyIntroFly => 'This is Koba\'s star ship. It flies on stars!';
+
+  @override
+  String get storyIntroWind =>
+      'Whoosh! A space wind blew the stars out of the tank, all over the planets.';
+
+  @override
+  String get storyIntroLand => 'With no stars left, the ship had to land.';
+
+  @override
+  String get storyIntroBump => 'Oops, a rock! That\'s okay. I\'ll try again!';
+
+  @override
+  String get storyIntroHelp =>
+      'Let\'s find the stars together. Will you help me, commander?';
+
+  @override
+  String get storyFly => 'More stars in my tank! Off to the next planet!';
+
+  @override
   String get watchHow => 'Watch how';
 
   @override
   String get tutorialDirections =>
-      'Tap the arrow blocks to tell Koba where to go: forward, turn left, turn right. Then press Go!';
+      'Tap the arrow blocks to tell me where to go: forward, turn left, turn right. Then press Go!';
 
   @override
   String get tutorialSequencing =>
@@ -688,7 +711,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'The eye block looks ahead. If the path is clear, Koba steps forward. If not, it waits.';
+      'The eye block looks ahead. If the path is clear, I step forward. If not, I wait.';
 
   @override
   String get tutorialVariables =>
@@ -727,17 +750,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourProgram =>
-      'Your program goes here. Koba does the blocks in order, from the first one. Tap a block to change it.';
+      'Your program goes here. I do the blocks in order, from the first one. Tap a block to change it.';
 
   @override
-  String get tourGo => 'Press Go, and Koba follows your blocks!';
+  String get tourGo => 'Press Go, and I follow your blocks!';
 
   @override
   String get tourStep =>
       'This button does one block at a time, so you can watch closely.';
 
   @override
-  String get tourReset => 'This one takes Koba back to the start.';
+  String get tourReset => 'This one takes me back to the start.';
 
   @override
   String get tourHint =>
@@ -745,7 +768,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourFollow =>
-      'This turns the map a quarter turn each time, so you can see it from Koba\'s side.';
+      'This turns the map a quarter turn each time, so you can see it from my side.';
 
   @override
   String get tourListen => 'Tap the speaker to hear what to do again.';
@@ -761,15 +784,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tourWarmUpSteps => 'The paw prints show how far you have come.';
 
   @override
-  String get tourBlockForward => 'The green arrow moves Koba one step forward.';
+  String get tourBlockForward => 'The green arrow moves me one step forward.';
 
   @override
   String get tourBlockTurnLeft =>
-      'The blue arrow turns Koba to the left, without moving.';
+      'The blue arrow turns me to the left, without moving.';
 
   @override
   String get tourBlockTurnRight =>
-      'The orange arrow turns Koba to the right, without moving.';
+      'The orange arrow turns me to the right, without moving.';
 
   @override
   String get tourBlockRepeat =>
@@ -781,7 +804,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourBlockMoveSteps =>
-      'This arrow moves Koba as many steps as the Step Box holds.';
+      'This arrow moves me as many steps as the Step Box holds.';
 
   @override
   String get tourBlockIfPathClear =>
@@ -793,7 +816,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourBlockUntilGoal =>
-      'Repeat until the flag does the blocks inside it again and again, until Koba reaches the flag.';
+      'Repeat until the flag does the blocks inside it again and again, until I reach the flag.';
 
   @override
   String get tourBlockStar =>

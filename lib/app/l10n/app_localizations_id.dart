@@ -657,11 +657,37 @@ class AppLocalizationsId extends AppLocalizations {
   String get tutorialSkip => 'Lewati';
 
   @override
+  String get storyTitle => 'Kapal bintang Koba';
+
+  @override
+  String get storyIntroFly =>
+      'Ini kapal bintang Koba. Kapal ini terbang dengan bintang!';
+
+  @override
+  String get storyIntroWind =>
+      'Wuusss! Angin angkasa meniup bintang dari tangkinya, ke semua planet.';
+
+  @override
+  String get storyIntroLand =>
+      'Bintangnya habis, jadi kapalnya harus mendarat.';
+
+  @override
+  String get storyIntroBump => 'Ups, ada batu! Tidak apa-apa. Aku coba lagi!';
+
+  @override
+  String get storyIntroHelp =>
+      'Ayo cari bintangnya bersama. Maukah kamu membantuku, Komandan?';
+
+  @override
+  String get storyFly =>
+      'Tangkiku bertambah bintang! Ayo ke planet berikutnya!';
+
+  @override
   String get watchHow => 'Lihat caranya';
 
   @override
   String get tutorialDirections =>
-      'Ketuk blok panah untuk memberi tahu Koba ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!';
+      'Ketuk blok panah untuk memberi tahu aku ke mana harus pergi: maju, belok kiri, belok kanan. Lalu tekan Jalan!';
 
   @override
   String get tutorialSequencing =>
@@ -677,7 +703,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'Blok mata melihat ke depan. Kalau jalannya kosong, Koba maju. Kalau tidak, ia menunggu.';
+      'Blok mata melihat ke depan. Kalau jalannya kosong, aku maju. Kalau tidak, aku menunggu.';
 
   @override
   String get tutorialVariables =>
@@ -715,17 +741,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tourProgram =>
-      'Programmu ada di sini. Koba menjalankan bloknya berurutan, dari yang pertama. Ketuk blok untuk menggantinya.';
+      'Programmu ada di sini. Aku menjalankan bloknya berurutan, dari yang pertama. Ketuk blok untuk menggantinya.';
 
   @override
-  String get tourGo => 'Tekan Jalan, dan Koba mengikuti blok-blokmu!';
+  String get tourGo => 'Tekan Jalan, dan aku mengikuti blok-blokmu!';
 
   @override
   String get tourStep =>
       'Tombol ini menjalankan satu blok setiap kali, jadi kamu bisa melihat dengan teliti.';
 
   @override
-  String get tourReset => 'Yang ini membawa Koba kembali ke awal.';
+  String get tourReset => 'Yang ini membawaku kembali ke awal.';
 
   @override
   String get tourHint =>
@@ -733,7 +759,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tourFollow =>
-      'Ini memutar peta seperempat putaran setiap kali, jadi kamu bisa melihatnya dari sisi Koba.';
+      'Ini memutar peta seperempat putaran setiap kali, jadi kamu bisa melihatnya dari sisiku.';
 
   @override
   String get tourListen =>
@@ -751,15 +777,15 @@ class AppLocalizationsId extends AppLocalizations {
       'Jejak kaki menunjukkan sudah sejauh mana kamu bermain.';
 
   @override
-  String get tourBlockForward => 'Panah hijau membuat Koba maju satu langkah.';
+  String get tourBlockForward => 'Panah hijau membuatku maju satu langkah.';
 
   @override
   String get tourBlockTurnLeft =>
-      'Panah biru membuat Koba belok ke kiri, tanpa berpindah.';
+      'Panah biru membuatku belok ke kiri, tanpa berpindah.';
 
   @override
   String get tourBlockTurnRight =>
-      'Panah oranye membuat Koba belok ke kanan, tanpa berpindah.';
+      'Panah oranye membuatku belok ke kanan, tanpa berpindah.';
 
   @override
   String get tourBlockRepeat =>
@@ -771,7 +797,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tourBlockMoveSteps =>
-      'Panah ini membuat Koba maju sebanyak angka di Kotak Langkah.';
+      'Panah ini membuatku maju sebanyak angka di Kotak Langkah.';
 
   @override
   String get tourBlockIfPathClear =>
@@ -783,7 +809,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tourBlockUntilGoal =>
-      'Ulangi sampai bendera menjalankan blok di dalamnya terus-menerus, sampai Koba tiba di bendera.';
+      'Ulangi sampai bendera menjalankan blok di dalamnya terus-menerus, sampai aku tiba di bendera.';
 
   @override
   String get tourBlockStar =>

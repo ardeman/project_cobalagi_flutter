@@ -12,6 +12,7 @@ import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
+import 'package:cobalagi/features/story/view/ship_flight.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../app/theme/app_theme.dart';
@@ -21,6 +22,7 @@ import '../../../core/audio/voice_clips.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../learning/progress_report.dart';
 import '../../../learning/stickers.dart';
+import '../../../learning/story.dart';
 import '../../../learning/warm_up/warm_up.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
@@ -48,8 +50,26 @@ class AdventureMapScreen extends StatelessWidget {
     final currentIndex = engine.graph.indexOf(learner.currentConcept);
 
     final lessons = cubit.curriculum.lessons;
+    // A finished planet: Koba's ship flies from it to the one opening (map
+    // index + 1, after the Warm-up planet), its stars filling the tank.
+    final opening = switch (cubit.state.islandToCelebrate) {
+      final id? => engine.graph.indexOf(id),
+      null => -1,
+    };
+    final flight = opening < 1
+        ? null
+        : MapFlight(
+            from: opening,
+            to: opening + 1,
+            fillFrom: Story.tankFill(
+              finished: opening - 1,
+              planets: concepts.length,
+            ),
+            fillTo: Story.tankFill(finished: opening, planets: concepts.length),
+          );
     SpaceMap map(EdgeInsets padding) => SpaceMap(
       padding: padding,
+      flight: flight,
       marker: GlassSurface(
         padding: const EdgeInsets.all(3),
         radius: 48,
@@ -108,6 +128,10 @@ class AdventureMapScreen extends StatelessWidget {
 
     return _CelebrationTrigger(
       island: cubit.state.islandToCelebrate,
+      flies: flight != null && !MediaQuery.disableAnimationsOf(context),
+      // The story's intro waits for a celebration to end; it plays on the
+      // next visit to the map.
+      intro: Story.introDue(learner) ? '/child/$profileId/story/intro' : null,
       // Space is dark: the bars, their glass and words are made for night.
       child: Theme(
         data: AppTheme.dark(),
@@ -117,6 +141,10 @@ class AdventureMapScreen extends StatelessWidget {
           appBar: GlassAppBar(
             leading: BackButton(onPressed: () => context.go('/')),
             actions: [
+              if (learner.placement != null)
+                _StoryButton(
+                  onPressed: () => context.go('/child/$profileId/story/intro'),
+                ),
               if (learner.placement != null)
                 _StickerButton(
                   fresh: newStickers(learner, cubit.stickers).length,
@@ -189,6 +217,33 @@ class AdventureMapScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Plays Koba's story again (⧉, like "Watch how" on a planet).
+class _StoryButton extends StatelessWidget {
+  const _StoryButton({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(right: 8),
+    child: GamepadShortcut(
+      button: PadButton.view,
+      onPressed: onPressed,
+      child: IconButton.filledTonal(
+        tooltip: AppLocalizations.of(context).storyTitle,
+        style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
+        onPressed: onPressed,
+        // Gold, like the story's stars, so it isn't taken for the stickers.
+        icon: const Icon(
+          Icons.auto_stories_rounded,
+          size: 32,
+          color: Color(0xFFFFC83D),
+        ),
+      ),
+    ),
+  );
 }
 
 /// Opens the sticker book; a badge counts stickers not seen yet.
@@ -338,11 +393,19 @@ class _BonusBanner extends StatelessWidget {
 }
 
 /// Plays the opening of a newly reached island once: a cheer while the map
-/// animates it, then it is marked as celebrated.
+/// animates it (after Koba's ship [flies] there), then it is marked as
+/// celebrated. Otherwise it opens the story's [intro] route, if it is due.
 class _CelebrationTrigger extends StatefulWidget {
-  const _CelebrationTrigger({required this.island, required this.child});
+  const _CelebrationTrigger({
+    required this.island,
+    required this.flies,
+    required this.intro,
+    required this.child,
+  });
 
   final String? island;
+  final bool flies;
+  final String? intro;
   final Widget child;
 
   @override
@@ -356,10 +419,24 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
   @override
   void initState() {
     super.initState();
-    if (widget.island == null) return;
+    if (widget.island == null) {
+      if (widget.intro case final intro?) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) GoRouter.maybeOf(context)?.go(intro);
+        });
+      }
+      return;
+    }
     _learning = context.read<LearningCubit>();
-    context.read<AudioService>().playEffect(SoundEffect.goal);
-    _done = Timer(const Duration(milliseconds: 2400), _learning.celebrated);
+    // The ship's flight has its own sounds, ending in the cheer.
+    if (!widget.flies) {
+      context.read<AudioService>().playEffect(SoundEffect.goal);
+    }
+    _done = Timer(
+      const Duration(milliseconds: 2400) +
+          (widget.flies ? ShipFlight.duration : Duration.zero),
+      _learning.celebrated,
+    );
   }
 
   @override

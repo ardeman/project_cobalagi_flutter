@@ -37,6 +37,7 @@ const _screens = [
   '/child/1/warm-up',
   '/child/1/warm-up/colors',
   '/child/1/tutorial/sequencing',
+  '/child/1/story/intro',
   '/child/1/pretest',
   '/parent',
   '/parent/progress/1',
@@ -59,8 +60,9 @@ Future<void> _pumpApp(WidgetTester tester) async {
       child.id,
       LearnerState(
         currentConcept: 'sequencing',
-        // Past the guided tours, so they don't cover the screens.
-        tutorialsSeen: const {'tour-play', 'tour-warmup'},
+        // Past the guided tours and the story's intro, so they don't cover
+        // the screens.
+        tutorialsSeen: const {'tour-play', 'tour-warmup', 'story-intro'},
         placement: Placement(
           startConcept: 'sequencing',
           levels: const {},

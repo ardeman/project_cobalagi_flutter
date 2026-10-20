@@ -6,6 +6,7 @@ import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/learning/view/concepts.dart';
 import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:cobalagi/features/adventure_map/view/map_connections.dart';
+import 'package:cobalagi/features/story/view/ship_flight.dart';
 
 /// One planet on the [SpaceMap]. (The code calls a concept's world an
 /// island, as it began; children see planets.)
@@ -33,6 +34,22 @@ final class MapIsland {
   final bool unlocking;
 }
 
+/// Koba's ship flying from the planet at index [from] to the one at [to]
+/// (the one opening), its tank filling from [fillFrom] to [fillTo].
+final class MapFlight {
+  const MapFlight({
+    required this.from,
+    required this.to,
+    required this.fillFrom,
+    required this.fillTo,
+  });
+
+  final int from;
+  final int to;
+  final double fillFrom;
+  final double fillTo;
+}
+
 /// The adventure map: planets in a starry sky, joined by a dotted flight path
 /// that winds left to right on wide screens and top to bottom (scrolling) on
 /// narrow ones. [marker] (the child's avatar) bobs above the current planet.
@@ -43,6 +60,7 @@ class SpaceMap extends StatefulWidget {
     required this.marker,
     required this.onOpen,
     this.padding = EdgeInsets.zero,
+    this.flight,
   });
 
   final List<MapIsland> islands;
@@ -54,6 +72,10 @@ class SpaceMap extends StatefulWidget {
 
   /// Opens an island's levels; never called for a locked island.
   final ValueChanged<String> onOpen;
+
+  /// Set while a finished planet is celebrated: the opening planet waits
+  /// for the ship to land before it bursts open.
+  final MapFlight? flight;
 
   @override
   State<SpaceMap> createState() => _SpaceMapState();
@@ -68,6 +90,9 @@ class _SpaceMapState extends State<SpaceMap> {
 
   /// The row's last (map width, view width), to recentre when it changes.
   (double, double)? _sideLayout;
+
+  /// Whether the ship of [SpaceMap.flight] has landed.
+  var _landed = false;
 
   @override
   void dispose() {
@@ -142,6 +167,9 @@ class _SpaceMapState extends State<SpaceMap> {
                   pad.top + size * 1.1 + i * size * _rowStep,
                 ),
       ];
+      final flight = MediaQuery.disableAnimationsOf(context)
+          ? null
+          : widget.flight;
       // The path is bright up to the furthest island the child can open.
       final reached = widget.islands.lastIndexWhere((i) => !i.locked);
 
@@ -175,6 +203,7 @@ class _SpaceMapState extends State<SpaceMap> {
                 width: size * 2,
                 child: _Celebrated(
                   active: widget.islands[i].unlocking,
+                  started: flight == null || _landed,
                   size: size,
                   child: _Island(
                     island: widget.islands[i],
@@ -209,6 +238,17 @@ class _SpaceMapState extends State<SpaceMap> {
                   ),
                 ),
             ],
+            if (flight != null)
+              Positioned.fill(
+                child: ShipFlight(
+                  from: centres[flight.from],
+                  to: centres[flight.to],
+                  islandSize: size,
+                  fillFrom: flight.fillFrom,
+                  fillTo: flight.fillTo,
+                  onLanded: () => setState(() => _landed = true),
+                ),
+              ),
           ],
         ),
       );
@@ -690,9 +730,13 @@ class _Celebrated extends StatelessWidget {
     required this.active,
     required this.size,
     required this.child,
+    this.started = true,
   });
 
   final bool active;
+
+  /// False while it waits, still locked, for Koba's ship to land.
+  final bool started;
   final double size;
   final Widget child;
 
@@ -700,7 +744,7 @@ class _Celebrated extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!active || MediaQuery.disableAnimationsOf(context)) return child;
     return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0, end: 1),
+      tween: Tween(begin: 0, end: started ? 1 : 0),
       duration: const Duration(milliseconds: 2200),
       builder: (context, t, child) {
         // The island bounces up to full size in the first half.

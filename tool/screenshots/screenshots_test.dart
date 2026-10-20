@@ -102,8 +102,9 @@ Future<Database> _seed(String language, {bool reader = false}) async {
     eclo.id,
     LearnerState(
       currentConcept: 'functions',
-      // Past the guided tours, so they don't cover the screens.
-      tutorialsSeen: const {'tour-play', 'tour-warmup'},
+      // Past the guided tours and the story's intro, so they don't cover
+      // the screens.
+      tutorialsSeen: const {'tour-play', 'tour-warmup', 'story-intro'},
       placement: Placement(
         startConcept: 'directions',
         levels: const {},

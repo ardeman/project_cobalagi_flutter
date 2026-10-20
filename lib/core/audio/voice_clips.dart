@@ -87,6 +87,16 @@ abstract final class VoiceClips {
   static const decisionReturn = 'decision_return';
   static const decisionMapComplete = 'decision_map_complete';
 
+  /// The Star fuel story's intro, line by line.
+  static const storyIntroFly = 'story_intro_fly';
+  static const storyIntroWind = 'story_intro_wind';
+  static const storyIntroLand = 'story_intro_land';
+  static const storyIntroBump = 'story_intro_bump';
+  static const storyIntroHelp = 'story_intro_help';
+
+  /// Koba as its ship takes off from a finished planet.
+  static const storyFly = 'story_fly';
+
   /// Number of phrases per cheer mood; must match the ARB keys
   /// `cheerCelebrate1..N` and `cheerEncourage1..N`.
   static const celebrateCount = 6;
@@ -175,6 +185,12 @@ abstract final class VoiceClips {
     decisionReview: 'decisionReview',
     decisionReturn: 'decisionReturn',
     decisionMapComplete: 'decisionMapComplete',
+    storyIntroFly: 'storyIntroFly',
+    storyIntroWind: 'storyIntroWind',
+    storyIntroLand: 'storyIntroLand',
+    storyIntroBump: 'storyIntroBump',
+    storyIntroHelp: 'storyIntroHelp',
+    storyFly: 'storyFly',
     for (var i = 1; i <= celebrateCount; i++)
       cheer('celebrate', i): 'cheerCelebrate$i',
     for (var i = 1; i <= encourageCount; i++)
@@ -204,6 +220,9 @@ abstract final class VoiceClips {
     decisionReview,
     decisionReturn,
     decisionMapComplete,
+    storyIntroFly,
+    storyIntroWind,
+    storyIntroLand,
   };
 
   /// Clips Koba says.
@@ -249,6 +268,9 @@ abstract final class VoiceClips {
     feedbackStoppedShort,
     feedbackMissedStars,
     feedbackTooManySteps,
+    storyIntroBump,
+    storyIntroHelp,
+    storyFly,
     for (var i = 1; i <= celebrateCount; i++) cheer('celebrate', i),
     for (var i = 1; i <= encourageCount; i++) cheer('encourage', i),
   };

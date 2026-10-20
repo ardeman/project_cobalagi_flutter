@@ -1280,6 +1280,48 @@ abstract class AppLocalizations {
   /// **'Skip'**
   String get tutorialSkip;
 
+  /// No description provided for @storyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Koba\'s star ship'**
+  String get storyTitle;
+
+  /// No description provided for @storyIntroFly.
+  ///
+  /// In en, this message translates to:
+  /// **'This is Koba\'s star ship. It flies on stars!'**
+  String get storyIntroFly;
+
+  /// No description provided for @storyIntroWind.
+  ///
+  /// In en, this message translates to:
+  /// **'Whoosh! A space wind blew the stars out of the tank, all over the planets.'**
+  String get storyIntroWind;
+
+  /// No description provided for @storyIntroLand.
+  ///
+  /// In en, this message translates to:
+  /// **'With no stars left, the ship had to land.'**
+  String get storyIntroLand;
+
+  /// No description provided for @storyIntroBump.
+  ///
+  /// In en, this message translates to:
+  /// **'Oops, a rock! That\'s okay. I\'ll try again!'**
+  String get storyIntroBump;
+
+  /// No description provided for @storyIntroHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s find the stars together. Will you help me, commander?'**
+  String get storyIntroHelp;
+
+  /// No description provided for @storyFly.
+  ///
+  /// In en, this message translates to:
+  /// **'More stars in my tank! Off to the next planet!'**
+  String get storyFly;
+
   /// No description provided for @watchHow.
   ///
   /// In en, this message translates to:
@@ -1289,7 +1331,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialDirections.
   ///
   /// In en, this message translates to:
-  /// **'Tap the arrow blocks to tell Koba where to go: forward, turn left, turn right. Then press Go!'**
+  /// **'Tap the arrow blocks to tell me where to go: forward, turn left, turn right. Then press Go!'**
   String get tutorialDirections;
 
   /// No description provided for @tutorialSequencing.
@@ -1313,7 +1355,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialConditions.
   ///
   /// In en, this message translates to:
-  /// **'The eye block looks ahead. If the path is clear, Koba steps forward. If not, it waits.'**
+  /// **'The eye block looks ahead. If the path is clear, I step forward. If not, I wait.'**
   String get tutorialConditions;
 
   /// No description provided for @tutorialVariables.
@@ -1373,13 +1415,13 @@ abstract class AppLocalizations {
   /// No description provided for @tourProgram.
   ///
   /// In en, this message translates to:
-  /// **'Your program goes here. Koba does the blocks in order, from the first one. Tap a block to change it.'**
+  /// **'Your program goes here. I do the blocks in order, from the first one. Tap a block to change it.'**
   String get tourProgram;
 
   /// No description provided for @tourGo.
   ///
   /// In en, this message translates to:
-  /// **'Press Go, and Koba follows your blocks!'**
+  /// **'Press Go, and I follow your blocks!'**
   String get tourGo;
 
   /// No description provided for @tourStep.
@@ -1391,7 +1433,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourReset.
   ///
   /// In en, this message translates to:
-  /// **'This one takes Koba back to the start.'**
+  /// **'This one takes me back to the start.'**
   String get tourReset;
 
   /// No description provided for @tourHint.
@@ -1403,7 +1445,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourFollow.
   ///
   /// In en, this message translates to:
-  /// **'This turns the map a quarter turn each time, so you can see it from Koba\'s side.'**
+  /// **'This turns the map a quarter turn each time, so you can see it from my side.'**
   String get tourFollow;
 
   /// No description provided for @tourListen.
@@ -1433,19 +1475,19 @@ abstract class AppLocalizations {
   /// No description provided for @tourBlockForward.
   ///
   /// In en, this message translates to:
-  /// **'The green arrow moves Koba one step forward.'**
+  /// **'The green arrow moves me one step forward.'**
   String get tourBlockForward;
 
   /// No description provided for @tourBlockTurnLeft.
   ///
   /// In en, this message translates to:
-  /// **'The blue arrow turns Koba to the left, without moving.'**
+  /// **'The blue arrow turns me to the left, without moving.'**
   String get tourBlockTurnLeft;
 
   /// No description provided for @tourBlockTurnRight.
   ///
   /// In en, this message translates to:
-  /// **'The orange arrow turns Koba to the right, without moving.'**
+  /// **'The orange arrow turns me to the right, without moving.'**
   String get tourBlockTurnRight;
 
   /// No description provided for @tourBlockRepeat.
@@ -1463,7 +1505,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourBlockMoveSteps.
   ///
   /// In en, this message translates to:
-  /// **'This arrow moves Koba as many steps as the Step Box holds.'**
+  /// **'This arrow moves me as many steps as the Step Box holds.'**
   String get tourBlockMoveSteps;
 
   /// No description provided for @tourBlockIfPathClear.
@@ -1481,7 +1523,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourBlockUntilGoal.
   ///
   /// In en, this message translates to:
-  /// **'Repeat until the flag does the blocks inside it again and again, until Koba reaches the flag.'**
+  /// **'Repeat until the flag does the blocks inside it again and again, until I reach the flag.'**
   String get tourBlockUntilGoal;
 
   /// No description provided for @tourBlockStar.
