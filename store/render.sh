@@ -230,25 +230,31 @@ done
 #   store/app_store/<locale>/header.jpg          3840 x 1646 (21:9, product page)
 #   store/app_store/<locale>/search_result.jpg   3840 x 2560 (3:2, search results)
 # The header is cropped on narrow screens, so Koba and the tagline sit in the
-# middle and the screenshots at the sides may be cut off.
+# middle, with a tablet and phones at the sides that may be cut off.
 creative() { # locale suffix tagline
   local dir="store/app_store/$1" s="$2" tagline="$3"
   local tablet="padding:24px;border-radius:72px"
   local img="width:1400px;display:block;border-radius:52px"
+  local phone="padding:18px;border-radius:84px"
+  local pimg="height:1100px;display:block;border-radius:68px"
   shot 3840 1646 "<div style=\"position:relative;height:1646px\">
       <div class=\"tablet\" style=\"$tablet;position:absolute;left:-180px;top:330px;transform:rotate(-6deg)\"><img src=\"file://$OUT/adventure-map$s.png\" style=\"$img\"></div>
-      <div class=\"tablet\" style=\"$tablet;position:absolute;right:-180px;top:330px;transform:rotate(6deg)\"><img src=\"file://$OUT/play-loops$s.png\" style=\"$img\"></div>
+      <div class=\"tablet\" style=\"$phone;position:absolute;left:3300px;top:300px;transform:rotate(10deg)\"><img src=\"file://$OUT/phone-play-code$s.png\" style=\"$pimg\"></div>
+      <div class=\"tablet\" style=\"$phone;position:absolute;left:2760px;top:220px;transform:rotate(4deg)\"><img src=\"file://$OUT/phone-play-loops$s.png\" style=\"$pimg\"></div>
       <div style=\"position:absolute;left:1220px;width:1400px;top:0;height:1646px;display:flex;flex-direction:column;align-items:center;justify-content:center\">
         <svg viewBox=\"180 190 660 670\" width=\"720\" height=\"730\">$CHARACTER</svg>
         <h1 style=\"font-size:150px;text-align:center;line-height:1.1;margin-top:40px\">$tagline</h1>
       </div>
     </div>" "$TMP/header.png"
-  shot 3840 2560 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;height:2560px;gap:90px\">
+  shot 3840 2560 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;height:2560px;gap:110px\">
       <div style=\"display:flex;align-items:center;gap:60px\">
         <svg viewBox=\"180 190 660 670\" width=\"420\" height=\"426\">$CHARACTER</svg>
         <h1 style=\"font-size:170px\">$tagline</h1>
       </div>
-      <div class=\"tablet\" style=\"padding:40px;border-radius:110px\"><img src=\"file://$OUT/play-loops$s.png\" style=\"width:2900px;display:block;border-radius:76px\"></div>
+      <div style=\"display:flex;align-items:flex-end\">
+        <div class=\"tablet\" style=\"padding:36px;border-radius:100px\"><img src=\"file://$OUT/play-loops$s.png\" style=\"width:2500px;display:block;border-radius:68px\"></div>
+        <div class=\"tablet\" style=\"padding:20px;border-radius:92px;margin-left:-260px;margin-bottom:-60px;transform:rotate(4deg)\"><img src=\"file://$OUT/phone-play-code$s.png\" style=\"height:1500px;display:block;border-radius:74px\"></div>
+      </div>
     </div>" "$TMP/search.png"
   sips -s format jpeg -s formatOptions 90 "$TMP/header.png" --out "$dir/header.jpg" >/dev/null
   sips -s format jpeg -s formatOptions 90 "$TMP/search.png" --out "$dir/search_result.jpg" >/dev/null
