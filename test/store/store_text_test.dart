@@ -44,9 +44,7 @@ void main() {
 
   test('every build has release notes in both languages', () {
     Set<String> builds(String locale) => {
-      for (final file in Directory(
-        'store/google_play/$locale/changelogs',
-      ).listSync())
+      for (final file in Directory('store/changelogs/$locale').listSync())
         file.uri.pathSegments.last,
     };
     expect(builds('id'), builds('en-US'));
@@ -62,9 +60,7 @@ void main() {
   });
 
   for (final locale in locales) {
-    for (final file in Directory(
-      'store/google_play/$locale/changelogs',
-    ).listSync()) {
+    for (final file in Directory('store/changelogs/$locale').listSync()) {
       final name = file.uri.pathSegments.last;
       test('$locale/changelogs/$name fits $releaseNotesLimit characters', () {
         expect(length(File(file.path)), lessThanOrEqualTo(releaseNotesLimit));

@@ -147,7 +147,7 @@ integration_test/  Tests that drive the real app on a device (e.g. warm-up voice
 .githooks/         Versioned Git hooks for commit-message validation
 tool/              Developer scripts (voice clips, screenshot renders)
 branding/          App icon source (SVG), rendered PNGs and branding/render.sh
-store/             Store listings: google_play/ and app_store/ per language (id, en-US), releases.json, render.sh
+store/             Store listings: google_play/ and app_store/ per language (id, en-US), changelogs/ per language, releases.json, render.sh
 website/           Static landing page for cobalagi.ardeman.com, plus screenshots
 assets/config/     skills.json (skill map), adaptive.json (learning thresholds),
                    pretest.json (placement rules and warm-up vocabulary)
@@ -228,7 +228,7 @@ After adding or replacing clips, Android builds may keep using an old asset list
 ### Bump and build checklist
 
 1. **Version.** Raise the build number after `+` in `pubspec.yaml` by one. Pick the name from the rules in `AGENTS.md` → Version: ask whether the previous build is already live in a Google Play track. If it isn't, keep its name (`1.4.0+11` → `1.4.0+12`); if it is, raise MINOR for new features or PATCH for fixes only.
-2. **Release notes.** Write `store/google_play/en-US/changelogs/<build>.txt` and `store/google_play/id/changelogs/<build>.txt` (one `- ` line per change, plain words for parents, at most 500 characters each, both saying the same), add `{ "build", "version", "date" }` to `store/releases.json`, then run `dart run tool/website_changelog.dart`.
+2. **Release notes.** Write `store/changelogs/en-US/<build>.txt` and `store/changelogs/id/<build>.txt` (one `- ` line per change, plain words for parents, at most 500 characters each, both saying the same), add `{ "build", "version", "date" }` to `store/releases.json`, then run `dart run tool/website_changelog.dart`.
 3. **Listing text.** If a feature changes what `store/google_play/<locale>/full_description.txt` or `website/index.html` claim, update both languages.
 4. **Screenshots.** Run `flutter test tool/screenshots --update-goldens`, `tool/screenshots/export.sh` and `store/render.sh`. Headless Chrome is sometimes killed mid-render (exit 137, slides deleted): run `store/render.sh` again until it exits 0 and `ls store/google_play/*/phone_screenshots/*.png store/google_play/*/screenshots/*.png | wc -l` gives 32.
 5. **Drop render noise.** The solved and warm-up screens pick a random cheer and confetti, so they change on every render. If their screen didn't change, restore them: `git checkout -- 'store/google_play/*/6-solved.png' website/screenshots/solved*.png website/screenshots/phone-solved*.png website/screenshots/warm-up-pattern*.png website/screenshots/phone-warm-up*.png website/screenshots/warm-up-colors*.png website/screenshots/phone-warm-up-colors*.png`. Look at every other changed slide before keeping it.
@@ -319,7 +319,7 @@ The icon (the robot's head on plain coral) is drawn in `branding/icon.svg`, with
 
 ## Store listing
 
-`store/google_play/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80), `full_description.txt` (max 4,000) and `changelogs/<versionCode>.txt` with each build's release notes (max 500), plus `feature_graphic.png` (1024 × 500), `screenshots/` (1920 × 1080, 16:9) for the 7-inch and 10-inch tablet sections and `phone_screenshots/` (1080 × 1920, 9:16) for the phone section. The app icon for the listing is `branding/play_store_icon.png`.
+`store/google_play/<locale>/` holds the Google Play listing for Indonesian (`id`) and English (`en-US`): `title.txt` (max 30 characters), `short_description.txt` (max 80), `full_description.txt` (max 4,000), plus `feature_graphic.png` (1024 × 500), `screenshots/` (1920 × 1080, 16:9) for the 7-inch and 10-inch tablet sections and `phone_screenshots/` (1080 × 1920, 9:16) for the phone section. The app icon for the listing is `branding/play_store_icon.png`. Each build's release notes (max 500 characters) are in `store/changelogs/<locale>/<versionCode>.txt`, shared by every store, GitHub Releases and the website.
 
 `flutter test tool/screenshots --update-goldens && tool/screenshots/export.sh` renders every screenshot from the real app with sample data into `website/screenshots/`, in Indonesian and English. Tablet and phone store sets each contain eight slides: the map, Loops, typed code, Magic Block, Fix it!, a solved puzzle, Until the flag, and the parent controls with the progress report. `store/render.sh` then re-renders the graphics from `website/screenshots/` and the icon art. `dart run tool/website_changelog.dart` rebuilds the website's release notes page (`website/changelog.html`) from `store/releases.json` and the store changelogs. Play doesn't allow ranking or promotional words ("best", "#1", "new", "sale"), calls to action or emoji in the listing.
 
@@ -335,7 +335,7 @@ Play Console → Grow → Store presence → Main store listing, once per langua
 | 7-inch and 10-inch tablet screenshots | `store/google_play/<locale>/screenshots/1-…8-*.png` (the same set in both sections) |
 | App name, short and full description | `store/google_play/<locale>/title.txt`, `short_description.txt`, `full_description.txt` |
 | Video | The landscape promo's YouTube link (see Promo videos, below) |
-| Release notes (in the release, not the listing) | `store/google_play/<locale>/changelogs/<build>.txt` |
+| Release notes (in the release, not the listing) | `store/changelogs/<locale>/<build>.txt` |
 
 Upload slides in order, 1 to 8; delete the old ones first, because Play takes at most eight per section. The listing on Play matches the newest build marked `"listing": true` in `store/releases.json`. To see what to re-upload, diff from that build's commit: `git diff --stat $(git log -1 --format=%h --grep 'bump version to .*+<build>$') -- store/ branding/play_store_icon.png`. Release notes and `releases.json` aren't part of the listing.
 

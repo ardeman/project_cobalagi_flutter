@@ -14,7 +14,7 @@ void main() {
   });
 
   test('every build has release notes and an entry in store/releases.json', () {
-    final notes = Directory('store/google_play/en-US/changelogs')
+    final notes = Directory('store/changelogs/en-US')
         .listSync()
         .map((f) => f.uri.pathSegments.last)
         .where((name) => name.endsWith('.txt'))

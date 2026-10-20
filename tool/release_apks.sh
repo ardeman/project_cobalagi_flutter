@@ -6,7 +6,7 @@
 # built them,
 # as a GitHub Release, tagged
 # v<name>+<build> from pubspec.yaml, with the build's release notes from
-# store/google_play/<locale>/changelogs/<build>.txt.
+# store/changelogs/<locale>/<build>.txt.
 #
 #   tool/release_apks.sh            # build, then publish as a pre-release
 #   tool/release_apks.sh --dry-run  # build and show what would be published
@@ -48,8 +48,8 @@ if $build_apks && [ ! -f android/key.properties ]; then
   exit 1
 fi
 for locale in en-US id; do
-  if [ ! -f "store/google_play/$locale/changelogs/$build.txt" ]; then
-    echo "No release notes in store/google_play/$locale/changelogs/$build.txt." >&2
+  if [ ! -f "store/changelogs/$locale/$build.txt" ]; then
+    echo "No release notes in store/changelogs/$locale/$build.txt." >&2
     exit 1
   fi
 done
@@ -134,11 +134,11 @@ notes="$out/notes.md"
 {
   echo "## What's new"
   echo
-  cat "store/google_play/en-US/changelogs/$build.txt"
+  cat "store/changelogs/en-US/$build.txt"
   echo
   echo "## Yang baru"
   echo
-  cat "store/google_play/id/changelogs/$build.txt"
+  cat "store/changelogs/id/$build.txt"
   echo
   echo "## Which file?"
   echo

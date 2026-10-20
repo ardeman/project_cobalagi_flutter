@@ -1,5 +1,5 @@
 // Writes website/changelog.html from store/releases.json and the release
-// notes in store/google_play/<locale>/changelogs/, so the website never keeps its own
+// notes in store/changelogs/<locale>/, so the website never keeps its own
 // copy of them. Run from the project root after bumping the version:
 //   dart run tool/website_changelog.dart
 // test/store/website_changelog_test.dart fails while the page is stale.
@@ -84,9 +84,8 @@ String buildChangelogPage({String root = '.'}) {
     final build = r['build'] as int;
     final version = r['version'] as String;
     final date = DateTime.parse(r['date'] as String);
-    String notes(String locale) => File(
-      '$root/store/google_play/$locale/changelogs/$build.txt',
-    ).readAsStringSync();
+    String notes(String locale) =>
+        File('$root/store/changelogs/$locale/$build.txt').readAsStringSync();
     final dateId = '${date.day} ${_monthsId[date.month - 1]} ${date.year}';
     final dateEn = '${date.day} ${_monthsEn[date.month - 1]} ${date.year}';
     entries.write('''
