@@ -128,7 +128,10 @@ h1 .accent { color: var(--coral); }
 }
 .btn-primary { background: var(--teal); color: #fff; box-shadow: var(--shadow); cursor: default; }
 .btn-primary small { font-weight: 600; opacity: 0.85; }
-a.btn-primary { cursor: pointer; }
+/* Apple's badge: shown unmodified, at least 40px tall, with clear space of a quarter of its height. */
+.store-badge { display: inline-block; padding: 14px 14px 14px 0; line-height: 0; }
+.store-badge img { height: 54px; width: auto; }
+.trademarks { margin: 28px 0 0; color: var(--muted); font-size: 0.8rem; }
 .cta-note { margin: 14px 0 0; color: var(--muted); font-size: 0.95rem; }
 .btn-ghost { color: var(--teal-deep); background: transparent; border: 2px solid var(--line); }
 .btn-ghost:hover { border-color: var(--teal); }
