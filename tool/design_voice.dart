@@ -2,7 +2,9 @@
 //
 //   dart run tool/design_voice.dart                 # previews in both languages
 //   dart run tool/design_voice.dart --lang id       # one language only
-//   dart run tool/design_voice.dart --save <generated_voice_id>
+//   dart run tool/design_voice.dart --model eleven_ttv_v3
+//                                                   # another design model
+//   dart run tool/design_voice.dart --save <generated_voice_id> --lang id
 //                                                   # keep a preview as a voice
 //
 // Previews land in build/voice_samples/koba/<lang>/ (not used by the app).
@@ -23,6 +25,15 @@ const _description =
     'light robotic shimmer, no harsh or metallic sound, easy for young '
     'children to understand. Childlike but not squeaky, never shouting.';
 
+/// How each language must sound, so Indonesian doesn't drift into Malay.
+const _accent = {
+  'id':
+      ' Speaks standard Indonesian with a natural Jakarta accent, like a '
+      "children's TV presenter in Indonesia; never a Malay or Malaysian "
+      'accent.',
+  'en': '',
+};
+
 /// Koba's own lines, long enough for Voice Design (100 characters or more).
 const _text = {
   'id':
@@ -42,22 +53,24 @@ Future<void> main(List<String> args) async {
   }
   final save = _option(args, '--save');
   if (save != null) {
+    final language = _option(args, '--lang') ?? 'en';
     final voice = await _post(key, '/text-to-voice', {
-      'voice_name': 'Koba',
-      'voice_description': _description,
+      'voice_name': language == 'en' ? 'Koba' : 'Koba ($language)',
+      'voice_description': '$_description${_accent[language]}',
       'generated_voice_id': save,
     });
     stdout.writeln('Saved Koba: voice_id ${voice['voice_id']}');
     return;
   }
+  final model = _option(args, '--model') ?? _model;
   final languages = switch (_option(args, '--lang')) {
     final String one => [one],
     null => _text.keys.toList(),
   };
   for (final language in languages) {
     final result = await _post(key, '/text-to-voice/design', {
-      'voice_description': _description,
-      'model_id': _model,
+      'voice_description': '$_description${_accent[language]}',
+      'model_id': model,
       'text': _text[language],
     });
     final dir = Directory('build/voice_samples/koba/$language')

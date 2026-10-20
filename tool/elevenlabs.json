@@ -36,7 +36,8 @@
     },
     "koba": {
       "id": {
-        "voice_id": "xtOehaJcKcV2FI6jh6qV",
+        "voice_id": "biecSiz6mhOL2jZ3xxmt",
+        "model_id": "eleven_v4",
         "settings": {
           "stability": 0.5,
           "similarity_boost": 0.75,

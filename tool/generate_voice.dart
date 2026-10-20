@@ -16,9 +16,10 @@
 //                                     # audition one clip with another model
 //
 // Each clip's speaker (VoiceClips.speakerOf) picks its voice:
-// voices.<speaker>.<lang>. A clip that needs a different model can be pinned
-// in voices.<speaker>.<lang>.clip_models (e.g. Indonesian lines that sound
-// Malay).
+// voices.<speaker>.<lang>. A voice that needs a different model sets
+// voices.<speaker>.<lang>.model_id, and a single clip can be pinned in
+// voices.<speaker>.<lang>.clip_models (e.g. Indonesian lines that sound
+// Malay: eleven_multilingual_v2 ignores language_code).
 //
 // Voices, model and settings live in tool/elevenlabs.json. Shipping the clips
 // needs an ElevenLabs plan with a commercial license (not the free plan).
@@ -103,12 +104,13 @@ Future<void> main(List<String> args) async {
 
       final text = strings[arbKey]! as String;
       // Some clips sound better on another model, e.g. when the default
-      // model drifts into Malay: voices.<lang>.clip_models.
+      // model drifts into Malay: voices.<lang>.model_id or clip_models.
       final clipModels =
           (voice!['clip_models'] as Map?)?.cast<String, String>() ?? const {};
       final model =
           _option(args, '--model') ??
           clipModels[id] ??
+          voice['model_id'] as String? ??
           config['model_id']! as String;
       final body = {
         'text': text,
