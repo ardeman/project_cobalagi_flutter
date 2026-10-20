@@ -18,8 +18,48 @@ void main() {
         await tester.pump(const Duration(milliseconds: 500));
         expect(tester.takeException(), isNull);
         expect(find.byType(KobaHead), findsOneWidget);
-        // Nothing keeps rebuilding: it only repaints while it watches.
+        // It only repaints while its eyes move: at rest nothing runs.
+        expect(tester.hasRunningAnimations, isFalse);
+      },
+    );
+  }
+
+  for (final still in [false, true]) {
+    testWidgets(
+      'Koba follows touch and the focused control${still ? ', reduced motion' : ''}',
+      (tester) async {
+        final focus = FocusNode();
+        addTearDown(focus.dispose);
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: MediaQueryData(disableAnimations: still),
+              child: Column(
+                children: [
+                  const KobaHead.follow(size: 56),
+                  Focus(focusNode: focus, child: const SizedBox(height: 64)),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.tapAt(const Offset(700, 500));
+        await tester.pump();
+        // A touch sets the eyes gliding (they jump with reduced motion).
         expect(tester.hasRunningAnimations, !still);
+        await tester.pump(const Duration(milliseconds: 500));
+        focus.requestFocus();
+        await tester.pump(const Duration(milliseconds: 500));
+        // The touch fades after a moment and Koba looks ahead again.
+        await tester.pump(const Duration(seconds: 2));
+        await tester.pumpAndSettle();
+        expect(tester.takeException(), isNull);
+        expect(tester.hasRunningAnimations, isFalse);
+        // It stops listening once gone.
+        await tester.pumpWidget(const SizedBox());
+        await tester.tapAt(const Offset(10, 10));
+        expect(tester.takeException(), isNull);
       },
     );
   }

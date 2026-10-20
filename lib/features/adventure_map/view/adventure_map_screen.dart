@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/character/koba_head.dart';
 import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
@@ -126,13 +127,16 @@ class AdventureMapScreen extends StatelessWidget {
               children: [
                 ProfileAvatar(avatar: profile.avatar, size: 44),
                 const SizedBox(width: 12),
-                Expanded(
+                Flexible(
                   child: Text(
                     l10n.greeting(profile.nickname),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                // Koba greets the child and watches where they tap.
+                const SizedBox(width: 8),
+                const KobaHead.follow(size: 44),
               ],
             ),
           ),

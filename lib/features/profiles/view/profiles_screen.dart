@@ -1,3 +1,4 @@
+import 'package:cobalagi/core/character/koba_head.dart';
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/view/app_update_notice.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +41,25 @@ class ProfilesScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: GlassAppBar(
-        title: Text(l10n.whoIsPlaying),
+        title: LayoutBuilder(
+          builder: (context, constraints) => Row(
+            children: [
+              // Koba watches who taps (or what the controller highlights),
+              // when the bar has room beside the words.
+              if (constraints.maxWidth >= 200) ...[
+                const KobaHead.follow(size: 44),
+                const SizedBox(width: 12),
+              ],
+              Expanded(
+                child: Text(
+                  l10n.whoIsPlaying,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
         actions: [
           // Labelled, so parents find it and it doesn't look like the lock
           // on a full "new player" tile.
