@@ -226,9 +226,9 @@ for locale in id en-US; do
   done
 done
 
-# App Store creative assets (Header and Search Results), JPEG without alpha:
-#   store/app_store/<locale>/header.jpg          3840 x 1646 (21:9, product page)
-#   store/app_store/<locale>/search_result.jpg   3840 x 2560 (3:2, search results)
+# App Store creative assets (Header and Search Results), PNG without alpha:
+#   store/app_store/<locale>/header.png          3840 x 1646 (21:9, product page)
+#   store/app_store/<locale>/search_result.png   3840 x 2560 (3:2, search results)
 # The header is cropped on narrow screens, so Koba and the tagline sit in the
 # middle, with a tablet and phones at the sides that may be cut off.
 creative() { # locale suffix tagline
@@ -256,8 +256,17 @@ creative() { # locale suffix tagline
         <div class=\"tablet\" style=\"padding:20px;border-radius:92px;margin-left:-260px;margin-bottom:-60px;transform:rotate(4deg)\"><img src=\"file://$OUT/phone-play-code$s.png\" style=\"height:1500px;display:block;border-radius:74px\"></div>
       </div>
     </div>" "$TMP/search.png"
-  sips -s format jpeg -s formatOptions 90 "$TMP/header.png" --out "$dir/header.jpg" >/dev/null
-  sips -s format jpeg -s formatOptions 90 "$TMP/search.png" --out "$dir/search_result.jpg" >/dev/null
+  # PNG: App Store Connect turns down .jpg here ("invalid extension"). Chrome's
+  # screenshots have an alpha channel, which Apple refuses; a pass through JPEG
+  # at full quality drops it.
+  rm -f "$dir/header.jpg" "$dir/search_result.jpg"
+  local name
+  for name in header search; do
+    sips -s format jpeg -s formatOptions 100 "$TMP/$name.png" --out "$TMP/$name.jpg" >/dev/null
+    sips -s format png "$TMP/$name.jpg" --out "$TMP/$name-opaque.png" >/dev/null
+  done
+  mv "$TMP/header-opaque.png" "$dir/header.png"
+  mv "$TMP/search-opaque.png" "$dir/search_result.png"
 }
 
 creative id -id "Belajar coding sambil bermain"
