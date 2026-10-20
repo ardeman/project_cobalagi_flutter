@@ -128,6 +128,8 @@ h1 .accent { color: var(--coral); }
 }
 .btn-primary { background: var(--teal); color: #fff; box-shadow: var(--shadow); cursor: default; }
 .btn-primary small { font-weight: 600; opacity: 0.85; }
+a.btn-primary { cursor: pointer; }
+.cta-note { margin: 14px 0 0; color: var(--muted); font-size: 0.95rem; }
 .btn-ghost { color: var(--teal-deep); background: transparent; border: 2px solid var(--line); }
 .btn-ghost:hover { border-color: var(--teal); }
 .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; padding: 0; list-style: none; }
@@ -151,6 +153,7 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.5rem); line-height: 1.15; margin: 0 0 12p
 
 .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 @media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 901px) { #download .features { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
 .card {
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
