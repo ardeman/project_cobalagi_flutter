@@ -9,12 +9,16 @@
 //   dart run tool/generate_voice.dart --force           # regenerate all clips
 //   dart run tool/generate_voice.dart --only cheer_celebrate_1,play_goal
 //   dart run tool/generate_voice.dart --lang id         # one language only
+//   dart run tool/generate_voice.dart --speaker koba --force
+//                                     # re-record one speaker's clips
 //   dart run tool/generate_voice.dart --dry-run         # show what would be sent
 //   dart run tool/generate_voice.dart --sample --only pretest_turn_left --model eleven_v4
 //                                     # audition one clip with another model
 //
-// A clip that needs a different model can be pinned in
-// voices.<lang>.clip_models (e.g. Indonesian lines that sound Malay).
+// Each clip's speaker (VoiceClips.speakerOf) picks its voice:
+// voices.<speaker>.<lang>. A clip that needs a different model can be pinned
+// in voices.<speaker>.<lang>.clip_models (e.g. Indonesian lines that sound
+// Malay).
 //
 // Voices, model and settings live in tool/elevenlabs.json. Shipping the clips
 // needs an ElevenLabs plan with a commercial license (not the free plan).
@@ -55,10 +59,14 @@ Future<void> main(List<String> args) async {
   final config =
       jsonDecode(File('tool/elevenlabs.json').readAsStringSync())
           as Map<String, Object?>;
-  final voices = config['voices']! as Map<String, Object?>;
+  final speakers = config['voices']! as Map<String, Object?>;
   final languages = switch (_option(args, '--lang')) {
     final String one => [one],
-    null => voices.keys.toList(),
+    null => ['id', 'en'],
+  };
+  final onlySpeaker = switch (_option(args, '--speaker')) {
+    final String name => Speaker.values.byName(name),
+    null => null,
   };
   final sample = args.contains('--sample');
   final only = _option(args, '--only')?.split(',').toSet();
@@ -70,21 +78,24 @@ Future<void> main(List<String> args) async {
   var made = 0;
   var failed = 0;
   for (final language in languages) {
-    final voice = voices[language] as Map<String, Object?>?;
-    final voiceId = voice?['voice_id'] as String? ?? '';
-    if (voiceId.isEmpty) {
-      stderr.writeln(
-        'No voice_id for "$language" in tool/elevenlabs.json. '
-        'Pick one with --voices.',
-      );
-      exitCode = 64;
-      return;
-    }
     final strings = loadStrings(language);
     for (final MapEntry(key: id, value: arbKey) in VoiceClips.all.entries) {
       // Samples: the given clips, or a default few.
       if (sample && only == null && !_sampleClips.contains(id)) continue;
       if (only != null && !only.contains(id)) continue;
+      final speaker = VoiceClips.speakerOf(id);
+      if (onlySpeaker != null && speaker != onlySpeaker) continue;
+      final voice =
+          (speakers[speaker.name] as Map?)?[language] as Map<String, Object?>?;
+      final voiceId = voice?['voice_id'] as String? ?? '';
+      if (voiceId.isEmpty) {
+        stderr.writeln(
+          'No voice_id for ${speaker.name}/$language in tool/elevenlabs.json. '
+          'Pick one with --voices.',
+        );
+        exitCode = 64;
+        return;
+      }
       final out = sample
           ? File('build/voice_samples/$language/$id.mp3')
           : clipFile(language, id);
@@ -110,7 +121,7 @@ Future<void> main(List<String> args) async {
           'language_code': code,
       };
       if (dryRun) {
-        stdout.writeln('$language/$id: ${jsonEncode(body)}');
+        stdout.writeln('$language/$id (${speaker.name}): ${jsonEncode(body)}');
         continue;
       }
       try {

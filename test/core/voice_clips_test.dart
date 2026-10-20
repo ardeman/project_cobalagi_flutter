@@ -20,6 +20,16 @@ void main() {
     });
   }
 
+  test('every clip names exactly one speaker', () {
+    expect(VoiceClips.kobaSays.intersection(VoiceClips.narratorSays), isEmpty);
+    expect({
+      ...VoiceClips.kobaSays,
+      ...VoiceClips.narratorSays,
+    }, VoiceClips.all.keys.toSet());
+    expect(VoiceClips.speakerOf(VoiceClips.tourGo), Speaker.koba);
+    expect(VoiceClips.speakerOf(VoiceClips.pretestReading), Speaker.narrator);
+  });
+
   test('cheer clips are all registered', () {
     final picker = CheerPicker(Random(4));
     final l10n = lookupAppLocalizations(const Locale('id'));

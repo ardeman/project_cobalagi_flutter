@@ -1,3 +1,12 @@
+/// Who says a clip, which picks its voice in `tool/elevenlabs.json`.
+enum Speaker {
+  /// Koba itself: tours, goals, hints, cheers, demos and its introduction.
+  koba,
+
+  /// The storyteller: warm-up questions, story narration and announcements.
+  narrator,
+}
+
 /// Every voice clip the app plays, mapped to the ARB key of the words to
 /// record. A clip lives at `assets/audio/<languageCode>/<id>.mp3`.
 ///
@@ -171,6 +180,85 @@ abstract final class VoiceClips {
     for (var i = 1; i <= encourageCount; i++)
       cheer('encourage', i): 'cheerEncourage$i',
   };
+
+  /// Clips the narrator says; every other clip in [all] is in [kobaSays].
+  static final Set<String> narratorSays = {
+    pretestReading,
+    pretestCounting,
+    pretestSideLeft,
+    pretestSideRight,
+    pretestTurnLeft,
+    pretestTurnRight,
+    pretestPattern,
+    pretestSequencing,
+    pretestDone,
+    pretestAnswerWas,
+    stickerBook,
+    warmUpPick,
+    warmUpDone,
+    for (final c in warmUpColors) warmUpColor(c),
+    for (final s in warmUpShapes) warmUpShape(s),
+    breakTime,
+    decisionAdvance,
+    decisionPractice,
+    decisionReview,
+    decisionReturn,
+    decisionMapComplete,
+  };
+
+  /// Clips Koba says.
+  static final Set<String> kobaSays = {
+    for (final c in tutorialConcepts) tutorial(c),
+    pretestWelcome,
+    playGoal,
+    playGoalStars,
+    playGoalLoops,
+    playGoalFunctions,
+    playGoalConditions,
+    playGoalVariables,
+    playGoalDebugging,
+    playGoalUntil,
+    playGoalOtherwise,
+    playHowTo,
+    hintPattern,
+    hintAgain,
+    hintLookHere,
+    hintLookHereMany,
+    tourPalette,
+    tourProgram,
+    tourGo,
+    tourStep,
+    tourReset,
+    tourHint,
+    tourFollow,
+    tourListen,
+    tourWarmUpListen,
+    tourWarmUpAnswer,
+    tourWarmUpSteps,
+    tourBlockForward,
+    tourBlockTurnLeft,
+    tourBlockTurnRight,
+    tourBlockRepeat,
+    tourBlockSetSteps,
+    tourBlockMoveSteps,
+    tourBlockIfPathClear,
+    tourBlockIfElse,
+    tourBlockUntilGoal,
+    tourBlockStar,
+    feedbackBumped,
+    feedbackStoppedShort,
+    feedbackMissedStars,
+    feedbackTooManySteps,
+    for (var i = 1; i <= celebrateCount; i++) cheer('celebrate', i),
+    for (var i = 1; i <= encourageCount; i++) cheer('encourage', i),
+  };
+
+  /// Who says clip [id]; every clip names its speaker in one of the sets.
+  static Speaker speakerOf(String id) => kobaSays.contains(id)
+      ? Speaker.koba
+      : narratorSays.contains(id)
+      ? Speaker.narrator
+      : throw ArgumentError.value(id, 'id', 'no speaker');
 
   static String _capital(String id) =>
       '${id[0].toUpperCase()}${id.substring(1)}';
