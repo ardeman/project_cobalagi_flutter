@@ -315,7 +315,7 @@ One-time setup (already done for this repo): Pages source **GitHub Actions**, cu
 
 ## App icon
 
-The icon (the robot's head on plain coral) is drawn in `branding/icon.svg`, with a one-colour version for Android 13 themed icons in `branding/icon_monochrome.svg`. After editing either, run `branding/render.sh`: it renders the PNGs with headless Chrome and generates every platform's icons with `flutter_launcher_icons` (config: `flutter_launcher_icons.yaml`). `branding/play_store_icon.png` is the 512 × 512 icon for the Play Console.
+The icon (the robot's head on plain coral) is drawn in `branding/icon.svg`, with a one-colour version for Android 13 themed icons in `branding/icon_monochrome.svg`. After editing either, run `branding/render.sh`: it renders the PNGs with headless Chrome and generates every platform's icons with `flutter_launcher_icons` (config: `flutter_launcher_icons.yaml`). `branding/play_store_icon.png` is the 512 × 512 icon for the Play Console. On Apple systems the icon follows the home screen's look: iOS 18+ dark and tinted versions come from the head alone (`image_path_ios_*` in `flutter_launcher_icons.yaml`), and iOS and macOS 26+ use the Liquid Glass icon `AppIcon.icon` (an Icon Composer document in `ios/Runner/` and `macos/Runner/`, written by the same script), which the system turns dark, clear or tinted. Preview one with Xcode's `ictool` (inside `Icon Composer.app/Contents/Executables/`, `--rendition Default|Dark|TintedLight|ClearLight`).
 
 ## Store listing
 

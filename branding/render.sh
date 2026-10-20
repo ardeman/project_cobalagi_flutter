@@ -29,4 +29,33 @@ dart run flutter_launcher_icons
 # flutter_launcher_icons 0.14.4 also rewrites an unrelated Xcode build setting
 # (ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS); undo that.
 git checkout -- ios/Runner.xcodeproj/project.pbxproj
+
+# Liquid Glass icon (iOS and macOS 26+), as an Icon Composer document: the
+# head as one glass layer over the sky's gradient. The system derives its
+# dark, clear and tinted looks; older systems use the AppIcon.appiconset
+# above (with dark and tinted versions from flutter_launcher_icons.yaml).
+for dir in ios/Runner macos/Runner; do
+  rm -rf "$dir/AppIcon.icon"
+  mkdir -p "$dir/AppIcon.icon/Assets"
+  cp branding/icon_foreground.png "$dir/AppIcon.icon/Assets/koba.png"
+  cat > "$dir/AppIcon.icon/icon.json" <<'JSON'
+{
+  "fill" : {
+    "linear-gradient" : [
+      "srgb:1.00000,0.60392,0.41961,1.00000",
+      "srgb:0.94118,0.38431,0.24706,1.00000"
+    ],
+    "orientation" : { "start" : { "x" : 0.5, "y" : 0 }, "stop" : { "x" : 0.5, "y" : 1 } }
+  },
+  "groups" : [
+    {
+      "layers" : [ { "image-name" : "koba.png", "name" : "koba" } ],
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "translucency" : { "enabled" : true, "value" : 0.5 }
+    }
+  ],
+  "supported-platforms" : { "squares" : "shared" }
+}
+JSON
+done
 echo "Icons generated."

@@ -12,6 +12,11 @@ flutter_launcher_icons:
   adaptive_icon_foreground_inset: 0
   ios: true
   remove_alpha_ios: true
+  # iOS 18+ dark and tinted home screens: the head alone on a clear
+  # background, so the system draws its own dark or tinted backdrop.
+  image_path_ios_dark_transparent: branding/icon_foreground.png
+  image_path_ios_tinted_grayscale: branding/icon_foreground.png
+  desaturate_tinted_to_grayscale_ios: true
   web:
     generate: true
     image_path: branding/icon.png
