@@ -1,0 +1,4 @@
+- Koba now moves like a robot on wheels: it speeds up, rolls smoothly and turns on the spot.
+- Bumping into something sounds like what Koba hit: a rock, a plant, a crystal or wood.
+- In the guided tour, Koba looks at each button it explains.
+- Buttons stay clear of the camera notch when a phone is held sideways.

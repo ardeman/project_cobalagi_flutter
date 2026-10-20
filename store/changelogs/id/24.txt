@@ -1,0 +1,4 @@
+- Koba kini bergerak seperti robot beroda: melaju perlahan, menggelinding mulus, dan berbelok di tempat.
+- Saat menabrak, bunyinya sesuai benda yang ditabrak Koba: batu, tanaman, kristal, atau kayu.
+- Dalam tur panduan, Koba melihat ke setiap tombol yang dijelaskannya.
+- Tombol tidak lagi tertutup poni kamera saat ponsel dipegang miring.
