@@ -691,6 +691,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storyFly => 'More stars in my tank! Off to the next planet!';
 
   @override
+  String get storyArrivalDirections =>
+      'The ship lands on a planet full of signposts. They point every way!';
+
+  @override
+  String get storyArrivalDirectionsKoba =>
+      'Which way do I go? Show me with arrows: forward, left or right!';
+
+  @override
+  String get storyArrivalSequencing =>
+      'Here the stars lie along a winding path.';
+
+  @override
+  String get storyArrivalSequencingKoba =>
+      'I need every step in the right order, one after another!';
+
+  @override
+  String get storyArrivalLoops =>
+      'On this planet the path goes step, turn, step, turn, again and again.';
+
+  @override
+  String get storyArrivalLoopsKoba => 'So many steps! Is there a shortcut?';
+
+  @override
+  String get storyArrivalFunctions =>
+      'Koba finds a magic block, sparkling on the ground.';
+
+  @override
+  String get storyArrivalFunctionsKoba =>
+      'It remembers my moves! Teach it once, then use it again and again.';
+
+  @override
+  String get storyArrivalConditions =>
+      'Thick fog covers this planet. Koba can\'t see the path!';
+
+  @override
+  String get storyArrivalConditionsKoba =>
+      'I\'ll turn on my light and look ahead before each step.';
+
+  @override
   String get watchHow => 'Watch how';
 
   @override

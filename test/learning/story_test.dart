@@ -1,3 +1,4 @@
+import 'package:cobalagi/learning/exercise_result.dart';
 import 'package:cobalagi/learning/learner_state.dart';
 import 'package:cobalagi/learning/placement/placement.dart';
 import 'package:cobalagi/learning/story.dart';
@@ -40,6 +41,34 @@ void main() {
         ),
         isFalse,
       );
+    });
+  });
+
+  group('Story.arrivalDue', () {
+    final learner = LearnerState(currentConcept: 'loops', placement: placed);
+
+    test('plays on the first visit to a planet', () {
+      expect(Story.arrivalDue(learner, 'loops', ExerciseMode.lesson), isTrue);
+      expect(Story.arrivalDue(learner, 'loops', ExerciseMode.practice), isTrue);
+    });
+
+    test('never in a bonus adventure or a replay', () {
+      expect(Story.arrivalDue(learner, 'loops', ExerciseMode.review), isFalse);
+      expect(Story.arrivalDue(learner, 'loops', ExerciseMode.replay), isFalse);
+    });
+
+    test('plays once, and not late for a planet already explored', () {
+      for (final seen in [Story.arrival('loops'), 'loops']) {
+        expect(
+          Story.arrivalDue(
+            learner.copyWith(tutorialsSeen: {seen}),
+            'loops',
+            ExerciseMode.lesson,
+          ),
+          isFalse,
+          reason: seen,
+        );
+      }
     });
   });
 

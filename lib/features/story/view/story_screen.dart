@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
 import 'package:cobalagi/features/story/data/story_scene.dart';
+import 'package:cobalagi/features/story/view/arrival_scenes.dart';
 import 'package:cobalagi/features/story/view/intro_scene.dart';
 import 'package:cobalagi/features/story/view/story_player.dart';
 
@@ -17,8 +18,13 @@ class StoryScreen extends StatelessWidget {
   /// A key of [scenes].
   final String scene;
 
-  /// The scenes by their route name (`/child/<id>/story/<name>`).
-  static const scenes = <String, StoryScene>{'intro': IntroScene()};
+  /// The scenes by their route name (`/child/<id>/story/<name>`): the intro
+  /// and each planet's arrival (`arrival-<concept>`).
+  static final scenes = <String, StoryScene>{
+    'intro': const IntroScene(),
+    for (final MapEntry(:key, :value) in arrivalScenes.entries)
+      'arrival-$key': value,
+  };
 
   @override
   Widget build(BuildContext context) {

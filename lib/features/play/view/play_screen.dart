@@ -3,10 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../learning/learning_engine.dart';
+import '../../../learning/story.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../play_time/cubit/break_reminder_cubit.dart';
 import '../../play_time/data/play_clock.dart';
 import '../../play_time/view/break_screen.dart';
+import '../../story/view/arrival_scenes.dart';
+import '../../story/view/story_player.dart';
 import '../../tutorial/view/tutorial_view.dart';
 import 'play_view.dart';
 
@@ -23,7 +26,8 @@ class PlayScreen extends StatefulWidget {
 class _PlayScreenState extends State<PlayScreen> {
   Exercise? _exercise;
 
-  /// Demos watched (or skipped) in this session, before the save lands.
+  /// Demos and arrival scenes watched (or skipped) in this session, before
+  /// the save lands.
   final _watched = <String>{};
 
   /// The parent's break reminder is due: a break comes before the next
@@ -43,8 +47,26 @@ class _PlayScreenState extends State<PlayScreen> {
       return BreakScreen(onContinue: () => setState(() => _onBreak = false));
     }
     final exercise = _exercise ??= learning.nextExercise();
-    // The first visit to an island starts with its "Watch me!" demo.
     final concept = exercise.plan.conceptId;
+    // The first visit to an island starts with its arrival scene of the
+    // Star fuel story, then its "Watch me!" demo.
+    final arrival = arrivalScenes[concept];
+    if (arrival != null &&
+        !_watched.contains(arrival.id) &&
+        Story.arrivalDue(
+          learning.state.learner!,
+          concept,
+          exercise.plan.mode,
+        )) {
+      return StoryPlayer(
+        key: ValueKey(arrival.id),
+        scene: arrival,
+        onDone: () {
+          setState(() => _watched.add(arrival.id));
+          learning.markTutorialSeen(arrival.id);
+        },
+      );
+    }
     final tutorial = learning.curriculum.tutorials[concept];
     if (tutorial != null &&
         !_watched.contains(concept) &&

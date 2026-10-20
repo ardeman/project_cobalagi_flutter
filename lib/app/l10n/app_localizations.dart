@@ -1322,6 +1322,66 @@ abstract class AppLocalizations {
   /// **'More stars in my tank! Off to the next planet!'**
   String get storyFly;
 
+  /// No description provided for @storyArrivalDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'The ship lands on a planet full of signposts. They point every way!'**
+  String get storyArrivalDirections;
+
+  /// No description provided for @storyArrivalDirectionsKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'Which way do I go? Show me with arrows: forward, left or right!'**
+  String get storyArrivalDirectionsKoba;
+
+  /// No description provided for @storyArrivalSequencing.
+  ///
+  /// In en, this message translates to:
+  /// **'Here the stars lie along a winding path.'**
+  String get storyArrivalSequencing;
+
+  /// No description provided for @storyArrivalSequencingKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'I need every step in the right order, one after another!'**
+  String get storyArrivalSequencingKoba;
+
+  /// No description provided for @storyArrivalLoops.
+  ///
+  /// In en, this message translates to:
+  /// **'On this planet the path goes step, turn, step, turn, again and again.'**
+  String get storyArrivalLoops;
+
+  /// No description provided for @storyArrivalLoopsKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'So many steps! Is there a shortcut?'**
+  String get storyArrivalLoopsKoba;
+
+  /// No description provided for @storyArrivalFunctions.
+  ///
+  /// In en, this message translates to:
+  /// **'Koba finds a magic block, sparkling on the ground.'**
+  String get storyArrivalFunctions;
+
+  /// No description provided for @storyArrivalFunctionsKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'It remembers my moves! Teach it once, then use it again and again.'**
+  String get storyArrivalFunctionsKoba;
+
+  /// No description provided for @storyArrivalConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Thick fog covers this planet. Koba can\'t see the path!'**
+  String get storyArrivalConditions;
+
+  /// No description provided for @storyArrivalConditionsKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ll turn on my light and look ahead before each step.'**
+  String get storyArrivalConditionsKoba;
+
   /// No description provided for @watchHow.
   ///
   /// In en, this message translates to:

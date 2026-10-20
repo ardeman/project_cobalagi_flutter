@@ -683,6 +683,46 @@ class AppLocalizationsId extends AppLocalizations {
       'Tangkiku bertambah bintang! Ayo ke planet berikutnya!';
 
   @override
+  String get storyArrivalDirections =>
+      'Kapalnya mendarat di planet penuh papan petunjuk. Arahnya ke mana-mana!';
+
+  @override
+  String get storyArrivalDirectionsKoba =>
+      'Aku harus ke mana? Tunjukkan dengan panah: maju, kiri, atau kanan!';
+
+  @override
+  String get storyArrivalSequencing =>
+      'Di sini, bintangnya ada di sepanjang jalan yang berkelok-kelok.';
+
+  @override
+  String get storyArrivalSequencingKoba =>
+      'Aku perlu semua langkahnya berurutan, satu per satu!';
+
+  @override
+  String get storyArrivalLoops =>
+      'Di planet ini, jalannya maju, belok, maju, belok, terus berulang-ulang.';
+
+  @override
+  String get storyArrivalLoopsKoba =>
+      'Banyak sekali langkahnya! Ada jalan pintas, tidak?';
+
+  @override
+  String get storyArrivalFunctions =>
+      'Koba menemukan blok ajaib yang berkilau di tanah.';
+
+  @override
+  String get storyArrivalFunctionsKoba =>
+      'Blok ini bisa mengingat gerakanku! Ajari sekali, lalu pakai berkali-kali.';
+
+  @override
+  String get storyArrivalConditions =>
+      'Kabut tebal menutupi planet ini. Koba tidak bisa melihat jalannya!';
+
+  @override
+  String get storyArrivalConditionsKoba =>
+      'Aku nyalakan lampuku dan melihat ke depan sebelum melangkah.';
+
+  @override
   String get watchHow => 'Lihat caranya';
 
   @override
