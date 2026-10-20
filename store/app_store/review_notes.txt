@@ -1,0 +1,13 @@
+Coba Lagi is a coding game for children aged 4–8. There are no accounts, no ads, and no network access; all data stays on the device.
+
+Kids Category (guideline 1.3):
+- Third-party analytics: none. The app contains no analytics, crash-reporting or tracking SDKs and makes no network requests.
+- Third-party advertising: none. The app shows no ads.
+- Data shared with third parties: none. Nothing leaves the device.
+- Other data collected: none beyond what the app needs to work, kept only on the device: a nickname and avatar for each child profile, puzzle progress and settings. It is never sent anywhere and is deleted with the app.
+- No login, chat, web views or external links for children.
+Privacy policy: https://cobalagi.ardeman.com/privacy.html
+
+Grown-up areas (Parent area, settings, tips) are behind a parent gate that asks a multiplication question, e.g. "What is 7 × 8?". The Parent area opens from the player picker.
+
+In-app purchases: Parent area → Support Coba Lagi offers three non-consumable tips, handled by Apple through StoreKit. Any one of them unlocks the sponsor features (more child profiles and the parent progress report). Restore purchases is on the same screen.

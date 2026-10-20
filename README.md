@@ -352,7 +352,7 @@ App Store Connect → the app, once per language for the text and screenshots:
 | App Privacy | Data Not Collected; privacy policy `https://cobalagi.ardeman.com/privacy.html` |
 | Age rating | Parental controls yes (the parent area), age assurance no, every capability (web access, user-generated content, social media, messaging, advertising) no, and None or No for every content question, which gives 4+; then Made for Kids, ages 6–8, which puts the app in the Kids Category (it then can't be offered on visionOS) |
 | Support URL | `https://cobalagi.ardeman.com` |
-| App Review notes | Answer the Kids Category questions (guideline 1.3) up front, or review stops with "2.1.0 App Completeness" until they are: no third-party analytics or advertising, no data shared with third parties, nothing collected beyond the nickname, avatar, progress and settings kept on the device; tips go through StoreKit behind the parent gate; no login, chat or web views; privacy policy link. After replying to such a message, open the version, press Update Review, then Resubmit to App Review |
+| App Review notes | Paste `store/app_store/review_notes.txt` (one English text for every language, iOS and macOS; keep it true when the app changes). It answers the Kids Category questions (guideline 1.3) up front, or review stops with "2.1.0 App Completeness" until they are answered. After replying to such a message, open the version, press Update Review, then Resubmit to App Review |
 | Text and screenshots | `store/app_store/<locale>/` as above; upload slides in order, 1 to 8 (Apple takes up to 10) |
 | Header and Search Results | `header.png` under Header and `search_result.png` under Search Results, per language (Product Page Information → Header and Search Results → Upload) |
 
