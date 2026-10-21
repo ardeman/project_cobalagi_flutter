@@ -1850,6 +1850,12 @@ abstract class AppLocalizations {
   /// **'Steps'**
   String get warmUpSteps;
 
+  /// No description provided for @warmUpReading.
+  ///
+  /// In en, this message translates to:
+  /// **'Reading'**
+  String get warmUpReading;
+
   /// No description provided for @warmUpPick.
   ///
   /// In en, this message translates to:

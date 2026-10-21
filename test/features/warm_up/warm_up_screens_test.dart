@@ -60,8 +60,14 @@ void main() {
       tester,
       const WarmUpIslandScreen(profileId: 1),
     );
-    expect(cubit.curriculum.warmUp.games, hasLength(6));
-    for (final name in ['Counting', 'Colours', 'Shapes', 'Patterns']) {
+    expect(cubit.curriculum.warmUp.games, hasLength(7));
+    for (final name in [
+      'Counting',
+      'Colours',
+      'Shapes',
+      'Patterns',
+      'Reading',
+    ]) {
       expect(find.text(name), findsOneWidget);
     }
     expect(find.byIcon(Icons.star_rounded), findsNothing);

@@ -1025,6 +1025,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get warmUpSteps => 'Steps';
 
   @override
+  String get warmUpReading => 'Reading';
+
+  @override
   String get warmUpPick => 'Pick a game!';
 
   @override

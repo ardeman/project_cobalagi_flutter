@@ -1020,6 +1020,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get warmUpSteps => 'Langkah';
 
   @override
+  String get warmUpReading => 'Membaca';
+
+  @override
   String get warmUpPick => 'Pilih permainan!';
 
   @override

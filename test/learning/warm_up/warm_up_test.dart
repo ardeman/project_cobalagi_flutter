@@ -26,6 +26,20 @@ void main() {
     expect(config.roundLength, greaterThan(0));
   });
 
+  test('every skill of the first warm-up is a game on the island', () {
+    final gen = generator(1);
+    final kinds = {
+      for (final game in config.games) game.question(gen, 1).runtimeType,
+    };
+    for (final skill in PretestSkill.values) {
+      expect(
+        kinds,
+        contains(gen.question(skill, 1).runtimeType),
+        reason: '$skill',
+      );
+    }
+  });
+
   group('colour questions', () {
     for (var level = 1; level <= maxSkillLevel; level++) {
       test('level $level has one right answer and a voice clip', () {

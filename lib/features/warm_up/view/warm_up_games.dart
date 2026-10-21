@@ -12,6 +12,7 @@ extension WarmUpGameLook on WarmUpGame {
     WarmUpGame.patterns => l10n.warmUpPatterns,
     WarmUpGame.sides => l10n.warmUpSides,
     WarmUpGame.steps => l10n.warmUpSteps,
+    WarmUpGame.reading => l10n.warmUpReading,
   };
 
   IconData get icon => switch (this) {
@@ -21,6 +22,7 @@ extension WarmUpGameLook on WarmUpGame {
     WarmUpGame.patterns => Icons.auto_awesome_motion_rounded,
     WarmUpGame.sides => Icons.swap_horiz_rounded,
     WarmUpGame.steps => Icons.directions_walk_rounded,
+    WarmUpGame.reading => Icons.menu_book_rounded,
   };
 
   Color get color => switch (this) {
@@ -30,5 +32,6 @@ extension WarmUpGameLook on WarmUpGame {
     WarmUpGame.patterns => const Color(0xFFAB47BC),
     WarmUpGame.sides => const Color(0xFFFFA726),
     WarmUpGame.steps => const Color(0xFF26A69A),
+    WarmUpGame.reading => const Color(0xFF5C6BC0),
   };
 }

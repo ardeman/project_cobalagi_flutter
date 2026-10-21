@@ -15,7 +15,8 @@ enum WarmUpGame {
   shapes,
   patterns,
   sides,
-  steps;
+  steps,
+  reading;
 
   /// A question of this game at [level] (1 to [maxSkillLevel]).
   PretestQuestion question(PretestGenerator generator, int level) =>
@@ -26,6 +27,7 @@ enum WarmUpGame {
         patterns => generator.question(PretestSkill.pattern, level),
         sides => generator.question(PretestSkill.direction, level),
         steps => generator.question(PretestSkill.sequencing, level),
+        reading => generator.question(PretestSkill.reading, level),
       };
 }
 
