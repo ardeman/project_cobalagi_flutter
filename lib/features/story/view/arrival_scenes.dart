@@ -9,11 +9,13 @@ import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/core/character/robot_face.dart';
+import 'package:cobalagi/engine/world/direction.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
 import 'package:cobalagi/features/play/view/world/world_theme.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/features/story/data/story_scene.dart';
+import 'package:cobalagi/features/story/view/board_arrival.dart';
 import 'package:cobalagi/features/story/view/star_ship.dart';
 import 'package:cobalagi/features/story/view/story_paint.dart';
 import 'package:cobalagi/learning/story.dart';
@@ -57,6 +59,9 @@ abstract class ArrivalScene extends StoryScene {
   /// Sounds in Koba's beat, by when (0 to 1).
   List<(double, SoundEffect)> get effects => const [];
 
+  /// How long Koba's beat's pictures take.
+  Duration get kobaLength => const Duration(milliseconds: 5500);
+
   @override
   List<StoryBeat> get beats => [
     StoryBeat(
@@ -67,7 +72,7 @@ abstract class ArrivalScene extends StoryScene {
     StoryBeat(
       clip: VoiceClips.storyArrivalKoba(concept),
       words: kobaWords,
-      length: const Duration(milliseconds: 5500),
+      length: kobaLength,
       effects: effects,
     ),
   ];
@@ -87,54 +92,75 @@ abstract class ArrivalScene extends StoryScene {
     final s = ArrivalStage(canvas, stage, frame, art);
     paintGround(canvas, s.box, s.ground, theme: theme);
     paintPlanet(s);
-    final shipX = s.x(0.14);
-    final shipGround = s.on(0.14).dy;
+    final ship = s.on(0.14);
     if (frame.beat == 0) {
-      // The ship comes down beside the planet's puzzle, and Koba rolls out.
-      final t = frame.t;
-      final down = Curves.easeOut.transform((t / 0.45).clamp(0, 1));
-      final landed = t >= 0.45;
-      final base = Offset(
-        shipX,
-        storyLerp(s.box.top - s.u * 0.2, shipGround, down),
-      );
-      if (landed) paintDust(canvas, base, s.u, ((t - 0.45) / 0.3).clamp(0, 1));
-      final out = ((t - 0.55) / 0.45).clamp(0.0, 1.0);
-      if (art != null) {
-        paintShip(
-          canvas,
-          art,
-          landed ? ShipView.landed : ShipView.landing,
-          base: base,
-          size: s.shipSize,
-          koba: out == 0,
-          time: frame.time,
-        );
-        if (out > 0) {
-          s.koba(
-            Offset(
-              storyLerp(shipX, s.kobaAt.dx, Curves.easeOut.transform(out)),
-              s.kobaAt.dy,
-            ),
-            angle: out < 1 ? 0.05 * sin(frame.time * 14) : 0,
-          );
-        }
-      }
+      paintLanding(s, ship: ship, shipSize: s.shipSize, to: s.kobaAt);
     } else {
-      if (art != null) {
-        paintShip(
-          canvas,
-          art,
-          ShipView.landed,
-          base: Offset(shipX, shipGround),
-          size: s.shipSize,
-          koba: false,
-          time: frame.time,
-        );
-      }
+      paintLanded(s, ship: ship, shipSize: s.shipSize);
       paintKobaBeat(s);
     }
     paintFront(s);
+  }
+
+  /// The scene's first beat: the ship comes down at [ship], [shipSize]
+  /// wide, beside the planet's puzzle, and Koba ([kobaSize] wide) rolls out
+  /// to [to].
+  void paintLanding(
+    ArrivalStage s, {
+    required Offset ship,
+    required double shipSize,
+    required Offset to,
+    double? kobaSize,
+  }) {
+    final art = s.art;
+    final t = s.t;
+    final down = Curves.easeOut.transform((t / 0.45).clamp(0, 1));
+    final landed = t >= 0.45;
+    final base = Offset(
+      ship.dx,
+      storyLerp(s.box.top - s.u * 0.2, ship.dy, down),
+    );
+    if (landed) paintDust(s.canvas, base, s.u, ((t - 0.45) / 0.3).clamp(0, 1));
+    final out = ((t - 0.55) / 0.45).clamp(0.0, 1.0);
+    if (art == null) return;
+    paintShip(
+      s.canvas,
+      art,
+      landed ? ShipView.landed : ShipView.landing,
+      base: base,
+      size: shipSize,
+      koba: out == 0,
+      time: s.time,
+    );
+    if (out > 0) {
+      s.koba(
+        Offset(
+          storyLerp(ship.dx, to.dx, Curves.easeOut.transform(out)),
+          storyLerp(ship.dy, to.dy, Curves.easeOut.transform(out)),
+        ),
+        size: kobaSize,
+        angle: out < 1 ? 0.05 * sin(s.time * 14) : 0,
+      );
+    }
+  }
+
+  /// The ship standing landed at [ship], after the first beat.
+  void paintLanded(
+    ArrivalStage s, {
+    required Offset ship,
+    required double shipSize,
+  }) {
+    final art = s.art;
+    if (art == null) return;
+    paintShip(
+      s.canvas,
+      art,
+      ShipView.landed,
+      base: ship,
+      size: shipSize,
+      koba: false,
+      time: s.time,
+    );
   }
 }
 
@@ -181,6 +207,7 @@ final class ArrivalStage {
     RobotFace face = RobotFace.normal,
     double? size,
     bool front = false,
+    bool back = false,
     bool mirror = false,
     double angle = 0,
     Offset gaze = Offset.zero,
@@ -195,6 +222,7 @@ final class ArrivalStage {
       face: face,
       time: time,
       front: front,
+      back: back,
       mirror: mirror,
       angle: angle,
       gaze: gaze,
@@ -327,9 +355,10 @@ class DirectionsArrival extends ArrivalScene {
   }
 }
 
-/// Step by step: stars lie on stepping stones along a winding path, and
-/// Koba hops from stone to stone in order, collecting each star.
-class SequencingArrival extends ArrivalScene {
+/// Step by step: stars lie along a winding path on the planet's board, and
+/// Koba runs the blocks one after another, collecting every star on the way
+/// to the flag.
+class SequencingArrival extends BoardArrival {
   const SequencingArrival() : super('sequencing');
 
   @override
@@ -341,91 +370,23 @@ class SequencingArrival extends ArrivalScene {
   @override
   String thanksWords(AppLocalizations l10n) => l10n.storyThanksSequencing;
 
-  /// The stones after Koba's spot: across the box, and how far in front
-  /// of the hill's top (in the scene's unit), winding nearer and back.
-  static const _stones = [
-    (0.5, 0.07),
-    (0.63, 0.015),
-    (0.76, 0.075),
-    (0.9, 0.02),
-  ];
-
-  List<Offset> _path(ArrivalStage s) => [
-    s.kobaAt,
-    for (final (fx, near) in _stones) s.on(fx) + Offset(0, near * s.u),
-  ];
-
-  /// When, in Koba's beat, each hop lands.
-  static double _landsAt(int i) => 0.2 * (i + 1);
+  @override
+  List<String> get rows => const ['##.*G', '##*##', 'S*.##'];
 
   @override
-  List<(double, SoundEffect)> get effects => [
-    for (var i = 0; i < _stones.length; i++) (_landsAt(i), SoundEffect.star),
+  Direction get facing => Direction.east;
+
+  @override
+  List<BlockType> get blocks => const [
+    BlockType.forward,
+    BlockType.forward,
+    BlockType.turnLeft,
+    BlockType.forward,
+    BlockType.forward,
+    BlockType.turnRight,
+    BlockType.forward,
+    BlockType.forward,
   ];
-
-  @override
-  void paintPlanet(ArrivalStage s) {
-    paintObstacle(s.canvas, theme.obstacle, s.on(0.97), s.u * 0.18);
-    paintObstacle(s.canvas, theme.obstacle, s.on(0.7), s.u * 0.12, seed: 5);
-    // The winding path, dotted from stone to stone.
-    final points = _path(s);
-    final dots = Paint()..color = theme.floor.withValues(alpha: 0.8);
-    for (var i = 0; i + 1 < points.length; i++) {
-      for (var k = 1; k < 6; k++) {
-        final p = k / 6;
-        final c =
-            Offset.lerp(points[i], points[i + 1], p)! +
-            Offset(0, -sin(pi * p) * s.u * 0.01);
-        s.canvas.drawCircle(c, s.u * 0.008, dots);
-      }
-    }
-    for (var i = 0; i < _stones.length; i++) {
-      final c = points[i + 1];
-      final stone = Rect.fromCenter(
-        center: c,
-        width: s.u * 0.15,
-        height: s.u * 0.05,
-      );
-      s.canvas
-        ..drawOval(stone, Paint()..color = theme.floor)
-        ..drawOval(
-          stone,
-          Paint()
-            ..color = storyInk
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = max(2, s.u * 0.006),
-        );
-      // Each star waits over its stone until Koba lands there.
-      final taken = s.frame.beat == 1 ? (s.t - _landsAt(i)) / 0.12 : -1.0;
-      if (taken >= 1) continue;
-      final pop = taken > 0 ? taken : 0.0;
-      paintStoryStar(
-        s.canvas,
-        c + Offset(0, -s.u * (0.12 + 0.02 * sin(s.time * 3 + i) + 0.1 * pop)),
-        s.u * 0.04 * (1 + pop),
-        opacity: 1 - pop,
-        turn: s.time + i,
-      );
-    }
-  }
-
-  @override
-  void paintKobaBeat(ArrivalStage s) {
-    final points = _path(s);
-    final hop = (s.t / 0.2).floor();
-    if (hop >= _stones.length) {
-      s.koba(points.last, face: RobotFace.cheer, size: s.u * 0.3);
-      return;
-    }
-    final p = Curves.easeInOut.transform(s.t / 0.2 - hop);
-    final base =
-        Offset.lerp(points[hop], points[hop + 1], p)! +
-        Offset(0, -sin(pi * p) * s.u * 0.1);
-    s.koba(
-      base,
-      size: hop == 0 ? storyLerp(s.kobaSize, s.u * 0.3, p) : s.u * 0.3,
-    );
-  }
 }
 
 /// Loops: the path climbs in steps that are all the same, and Koba climbs

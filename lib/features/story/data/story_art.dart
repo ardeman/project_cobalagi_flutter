@@ -106,7 +106,8 @@ final class StoryArt {
     this.ships,
     this.tanks,
     this.robot,
-    this.robotFront, [
+    this.robotFront,
+    this.robotBack, [
     this.emblem,
   ]);
 
@@ -115,9 +116,11 @@ final class StoryArt {
   /// White where each view's tank window shows.
   final Map<ShipView, ui.Image> tanks;
 
-  /// Koba from the side, facing right (`robot.png`), and facing the child.
+  /// Koba from the side, facing right (`robot.png`), facing the child, and
+  /// from behind (rolling up a board).
   final ui.Image robot;
   final ui.Image robotFront;
+  final ui.Image robotBack;
 
   /// The commander's emblem (their avatar's icon and colour), painted on the
   /// ship's hull: it is the child's ship too. None paints a plain hull.
@@ -126,7 +129,7 @@ final class StoryArt {
   /// The same pictures with [emblem] on the ship.
   StoryArt withEmblem((IconData, Color)? emblem) => emblem == this.emblem
       ? this
-      : StoryArt._(ships, tanks, robot, robotFront, emblem);
+      : StoryArt._(ships, tanks, robot, robotFront, robotBack, emblem);
 
   static Future<StoryArt>? _loading;
 
@@ -152,6 +155,7 @@ final class StoryArt {
       },
       await image('robot.png'),
       await image('robot_front.png'),
+      await image('robot_back.png'),
     );
   }
 }

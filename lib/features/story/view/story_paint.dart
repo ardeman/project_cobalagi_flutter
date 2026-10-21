@@ -206,7 +206,8 @@ void paintDust(Canvas canvas, Offset base, double u, double p) {
 }
 
 /// Koba from the side (facing right, or left when [mirror]ed) or, with
-/// [front], facing the child, standing at [base] in a picture [size] wide.
+/// [front], facing the child (with [back], from behind), standing at [base]
+/// in a picture [size] wide.
 void paintKoba(
   Canvas canvas,
   StoryArt art, {
@@ -215,19 +216,28 @@ void paintKoba(
   required RobotFace face,
   required double time,
   bool front = false,
+  bool back = false,
   bool mirror = false,
   double angle = 0,
   Offset gaze = Offset.zero,
 }) {
   // Where the wheels touch the ground in the 512-pixel pictures.
-  final foot = front ? const Offset(256, 500) : const Offset(270, 500);
+  final foot = front || back ? const Offset(256, 500) : const Offset(270, 500);
   canvas
     ..save()
     ..translate(base.dx, base.dy)
     ..rotate(angle)
     ..scale(mirror ? -size / 512 : size / 512, size / 512)
     ..translate(-foot.dx, -foot.dy)
-    ..drawImage(front ? art.robotFront : art.robot, Offset.zero, Paint());
-  paintRobotFace(canvas, face, time: time, front: front, gaze: gaze);
+    ..drawImage(
+      back
+          ? art.robotBack
+          : front
+          ? art.robotFront
+          : art.robot,
+      Offset.zero,
+      Paint(),
+    );
+  if (!back) paintRobotFace(canvas, face, time: time, front: front, gaze: gaze);
   canvas.restore();
 }

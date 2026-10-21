@@ -5,7 +5,9 @@ import 'dart:ui' as ui;
 import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/features/story/data/story_scene.dart';
+import 'package:cobalagi/engine/interpreter/run_event.dart';
 import 'package:cobalagi/features/story/view/arrival_scenes.dart';
+import 'package:cobalagi/features/story/view/board_arrival.dart';
 import 'package:cobalagi/features/story/view/ending_scenes.dart';
 import 'package:cobalagi/features/story/view/story_screen.dart';
 import 'package:cobalagi/learning/learner_state.dart';
@@ -23,6 +25,13 @@ void main() {
     );
     for (final fx in [0.0, 0.14, 0.36, 0.5, 0.97]) {
       expect(stage.on(fx).dy, stage.ground, reason: 'at $fx');
+    }
+  });
+
+  test("a board scene's blocks solve its own board", () {
+    for (final scene in arrivalScenes.values.whereType<BoardArrival>()) {
+      expect(scene.play.run.outcome, RunOutcome.success, reason: scene.concept);
+      expect(scene.play.steps, isNotEmpty);
     }
   });
 
