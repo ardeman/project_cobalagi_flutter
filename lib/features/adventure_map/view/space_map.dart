@@ -6,7 +6,11 @@ import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/learning/view/concepts.dart';
 import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:cobalagi/features/adventure_map/view/map_connections.dart';
+import 'package:cobalagi/features/play/view/world/ink.dart';
+import 'package:cobalagi/features/play/view/world/planet_piece.dart';
+import 'package:cobalagi/features/play/view/world/world_theme.dart';
 import 'package:cobalagi/features/story/view/ship_flight.dart';
+import 'package:cobalagi/features/story/view/story_paint.dart';
 
 /// One planet on the [SpaceMap]. (The code calls a concept's world an
 /// island, as it began; children see planets.)
@@ -448,7 +452,7 @@ class _Island extends StatelessWidget {
     final color = locked
         ? const Color(0xFF8A90B4)
         : conceptColor(island.conceptId);
-    final emblem = size * 0.8;
+    final badge = size * 0.46;
     return Semantics(
       button: !locked,
       label: conceptName(l10n, island.conceptId),
@@ -468,22 +472,25 @@ class _Island extends StatelessWidget {
                   alignment: Alignment.bottomCenter,
                   clipBehavior: Clip.none,
                   children: [
-                    // Every other planet wears a ring, its back half
-                    // behind the planet and its front half across it.
-                    if (_ringed(island.conceptId))
-                      Positioned(
-                        bottom: size * 0.22 + emblem / 2 - size * 0.2,
-                        child: CustomPaint(
-                          size: Size(size * 1.5, size * 0.4),
-                          painter: _Ring(color: color, front: false),
+                    // A piece of the planet floating in space, like its
+                    // puzzle board.
+                    Positioned(
+                      bottom: size * 0.1,
+                      child: CustomPaint(
+                        size: Size(size * 1.5, size * 0.9),
+                        painter: _PlanetPiece(
+                          concept: island.conceptId,
+                          locked: locked,
+                          current: island.current,
                         ),
                       ),
-                    // The planet, with the concept's emblem on it.
+                    ),
+                    // The concept's emblem stands on it, in its colour.
                     Positioned(
-                      bottom: size * 0.22,
+                      bottom: size * 0.36,
                       child: Container(
-                        width: emblem,
-                        height: emblem,
+                        width: badge,
+                        height: badge,
                         decoration: BoxDecoration(
                           gradient: RadialGradient(
                             center: const Alignment(-0.4, -0.45),
@@ -491,50 +498,30 @@ class _Island extends StatelessWidget {
                             colors: [
                               Color.lerp(color, Colors.white, 0.35)!,
                               color,
-                              Color.lerp(color, Colors.black, 0.35)!,
+                              Color.lerp(color, Colors.black, 0.25)!,
                             ],
                             stops: const [0, 0.55, 1],
                           ),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            width: emblem * 0.05,
+                            width: badge * 0.07,
                             color: island.current
                                 ? const Color(0xFFFFD54F)
-                                : Colors.white.withValues(alpha: 0.55),
+                                : Colors.white,
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: island.current
-                                  ? const Color(0xAAFFD54F)
-                                  : color.withValues(alpha: 0.35),
-                              blurRadius: island.current ? 22 : 14,
-                            ),
+                          boxShadow: const [
+                            BoxShadow(color: ink, spreadRadius: 1.5),
                           ],
                         ),
-                        child: CustomPaint(
-                          painter: _Craters(
-                            Color.lerp(color, Colors.black, 0.25)!,
-                          ),
-                          child: Icon(
-                            locked
-                                ? Icons.lock_rounded
-                                : conceptIcon(island.conceptId),
-                            size: emblem * 0.5,
-                            color: Colors.white,
-                          ),
+                        child: Icon(
+                          locked
+                              ? Icons.lock_rounded
+                              : conceptIcon(island.conceptId),
+                          size: badge * 0.55,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                    if (_ringed(island.conceptId))
-                      Positioned(
-                        bottom: size * 0.22 + emblem / 2 - size * 0.2,
-                        child: IgnorePointer(
-                          child: CustomPaint(
-                            size: Size(size * 1.5, size * 0.4),
-                            painter: _Ring(color: color, front: true),
-                          ),
-                        ),
-                      ),
                     // Space dust over planets the child can't reach yet.
                     if (locked)
                       Positioned(
@@ -548,7 +535,7 @@ class _Island extends StatelessWidget {
                       ),
                     if (island.current)
                       Positioned(
-                        bottom: size * 0.22 + emblem * 0.7,
+                        bottom: size * 0.36 + badge * 0.85,
                         child: _Bobbing(child: marker),
                       ),
                   ],
@@ -627,65 +614,59 @@ class _IslandLabel extends StatelessWidget {
   }
 }
 
-/// Whether a planet wears a ring: about every other one, always the same.
-bool _ringed(String conceptId) =>
-    conceptId.codeUnits.fold(0, (a, b) => a + b).isOdd;
+/// A planet on the map: a piece of its surface floating in space, as on its
+/// puzzle board, with two of its obstacles. Planets the child can't reach
+/// yet are grey; the current one glows.
+class _PlanetPiece extends CustomPainter {
+  const _PlanetPiece({
+    required this.concept,
+    required this.locked,
+    required this.current,
+  });
 
-/// A planet's ring, seen at a tilt: [front] draws the half that crosses
-/// in front of the planet, otherwise the half behind it.
-class _Ring extends CustomPainter {
-  const _Ring({required this.color, required this.front});
-
-  final Color color;
-  final bool front;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final rect = (Offset.zero & size).deflate(size.height * 0.1);
-    canvas
-      ..save()
-      ..translate(size.width / 2, size.height / 2)
-      ..rotate(-0.18)
-      ..translate(-size.width / 2, -size.height / 2)
-      ..drawArc(
-        rect,
-        front ? 0 : pi,
-        pi,
-        false,
-        Paint()
-          ..color = Color.lerp(color, Colors.white, 0.55)!
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = size.height * 0.16
-          ..strokeCap = StrokeCap.round,
-      )
-      ..restore();
-  }
-
-  @override
-  bool shouldRepaint(_Ring old) => old.color != color || old.front != front;
-}
-
-/// A few round dents on a planet's face.
-class _Craters extends CustomPainter {
-  const _Craters(this.color);
-
-  final Color color;
+  final String concept;
+  final bool locked;
+  final bool current;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = color.withValues(alpha: 0.45);
-    final d = size.shortestSide;
-    for (final (x, y, r) in const [
-      (0.72, 0.28, 0.08),
-      (0.24, 0.7, 0.07),
-      (0.68, 0.78, 0.05),
+    final theme = WorldTheme.forConcept(concept);
+    Color grey(Color c) =>
+        locked ? Color.lerp(c, const Color(0xFF8A90B4), 0.7)! : c;
+    final w = size.width;
+    final top = Rect.fromLTWH(w * 0.04, size.height * 0.3, w * 0.92, w * 0.4);
+    final unit = w * 0.16;
+    paintPlanetPiece(
+      canvas,
+      top,
+      ground: grey(theme.ground),
+      side: grey(theme.groundSide),
+      decor: theme.decor,
+      unit: unit,
+      depth: w * 0.11,
+      squash: 0.7,
+      seed: concept.codeUnits.fold(0, (a, b) => (a * 31 + b) & 0xFFFF),
+      glow: current ? const Color(0xCCFFD54F) : null,
+    );
+    if (locked) return;
+    // At the back, either side of the emblem.
+    for (final (fx, fy, scale, seed) in const [
+      (0.17, 0.42, 1.0, 1),
+      (0.84, 0.5, 0.8, 2),
     ]) {
-      canvas.drawCircle(Offset(x * d, y * d), r * d, paint);
+      paintObstacle(
+        canvas,
+        theme.obstacle,
+        Offset(top.left + top.width * fx, top.top + top.height * fy),
+        unit * 1.4 * scale,
+        seed: seed,
+      );
     }
   }
 
   @override
-  bool shouldRepaint(_Craters old) => old.color != color;
+  bool shouldRepaint(_PlanetPiece old) =>
+      old.concept != concept || old.locked != locked || old.current != current;
 }
 
 /// Gently moves [child] up and down: "you are here".

@@ -85,13 +85,7 @@ abstract class ArrivalScene extends StoryScene {
   @override
   void paint(Canvas canvas, Rect stage, StoryFrame frame, StoryArt? art) {
     final s = ArrivalStage(canvas, stage, frame, art);
-    paintGround(
-      canvas,
-      s.box,
-      s.ground,
-      color: theme.ground,
-      side: theme.groundSide,
-    );
+    paintGround(canvas, s.box, s.ground, theme: theme);
     paintPlanet(s);
     final shipX = s.x(0.14);
     final shipGround = s.on(0.14).dy;
@@ -173,13 +167,9 @@ final class ArrivalStage {
   /// Where Koba stops after rolling out of the ship.
   Offset get kobaAt => on(0.36);
 
-  /// The ground at [fx] across the box: the hill's top is at [ground], and
-  /// it curves down towards the sides.
-  Offset on(double fx) {
-    final r = box.width * 2.5;
-    final d = (fx - 0.5) * box.width;
-    return Offset(x(fx), ground + r - sqrt(r * r - d * d));
-  }
+  /// Where things stand at [fx] across the box: on the planet's flat
+  /// piece, at [ground].
+  Offset on(double fx) => Offset(x(fx), ground);
 
   double x(double fraction) => box.left + fraction * box.width;
   double y(double fraction) => box.top + fraction * box.height;

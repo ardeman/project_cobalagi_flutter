@@ -14,6 +14,18 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  test('the ship, Koba and obstacles stand on one level line', () {
+    final stage = ArrivalStage(
+      Canvas(ui.PictureRecorder()),
+      const Rect.fromLTWH(0, 0, 1600, 900),
+      const StoryFrame(beat: 0, t: 0, time: 0),
+      null,
+    );
+    for (final fx in [0.0, 0.14, 0.36, 0.5, 0.97]) {
+      expect(stage.on(fx).dy, stage.ground, reason: 'at $fx');
+    }
+  });
+
   test('every planet has an arrival scene', () {
     final skills = jsonDecode(
       File('assets/config/skills.json').readAsStringSync(),

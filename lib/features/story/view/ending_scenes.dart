@@ -62,13 +62,15 @@ class EndingScene extends StoryScene {
         final theme = WorldTheme.forConcept(lastPlanet);
         final ground = box.top + box.height * 0.9;
         final sink = Curves.easeIn.transform(((t - 0.3) / 0.7).clamp(0, 1));
-        paintGround(
-          canvas,
-          box,
-          ground + sink * u * 0.5,
-          color: theme.ground,
-          side: theme.groundSide,
-        );
+        // The planet falls away behind the ship, getting smaller.
+        final away = 1 - 0.8 * sink;
+        canvas
+          ..save()
+          ..translate(box.center.dx, ground)
+          ..scale(away)
+          ..translate(-box.center.dx, -ground);
+        paintGround(canvas, box, ground + sink * u * 0.3, theme: theme);
+        canvas.restore();
         final rise = Curves.easeInOut.transform((t / 0.8).clamp(0, 1));
         final base = Offset(
           box.center.dx,

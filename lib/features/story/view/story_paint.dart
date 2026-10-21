@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/painting.dart';
 
 import 'package:cobalagi/core/character/robot_face.dart';
+import 'package:cobalagi/features/play/view/world/planet_piece.dart';
 import 'package:cobalagi/features/play/view/world/world_theme.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/features/story/view/star_ship.dart';
@@ -43,23 +44,22 @@ void paintStoryStar(
     );
 }
 
-/// A far planet of radius [r] around [c].
+/// A far planet about [r] across each way from [c]: a small piece of its
+/// surface floating in space, like the puzzle board.
 void paintPlanet(Canvas canvas, Offset c, double r, Color color) {
-  canvas
-    ..drawCircle(c, r, Paint()..color = color)
-    ..drawCircle(
-      c + Offset(r * 0.25, r * 0.25),
-      r * 0.75,
-      Paint()..color = const Color(0x22000000),
-    )
-    ..drawCircle(
-      c,
-      r,
-      Paint()
-        ..color = storyInk
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = max(2, r * 0.08),
-    );
+  paintPlanetPiece(
+    canvas,
+    Rect.fromCenter(
+      center: c - Offset(0, r * 0.2),
+      width: r * 2.2,
+      height: r * 0.9,
+    ),
+    ground: color,
+    side: Color.lerp(color, const Color(0xFF000000), 0.3)!,
+    unit: r,
+    depth: r * 0.45,
+    seed: color.toARGB32(),
+  );
 }
 
 /// Curved streaks blowing right to left, stronger with [gust].
@@ -88,32 +88,44 @@ void paintWind(Canvas canvas, Rect box, double u, double time, double gust) {
   }
 }
 
-/// The planet's surface: a wide hill whose top is at [top], [color] on top
-/// and [side] below.
+/// The sandy planet where the ship runs out of stars in the intro.
+const introPlanet = WorldTheme(
+  background: Color(0xFF2B2468),
+  floor: Color(0xFFFFF1DC),
+  floorEdge: Color(0xFFE6C08F),
+  ground: Color(0xFFE6A15C),
+  groundSide: Color(0xFFB8733A),
+  decor: Decor.pebbles,
+  obstacle: Obstacle.rock,
+  finish: Finish.flag,
+);
+
+/// The planet's surface: a piece of it floating in space, like the puzzle
+/// board, a little wider than [box]. Things stand on the line [top] across
+/// the middle of its surface.
 void paintGround(
   Canvas canvas,
   Rect box,
   double top, {
-  Color color = const Color(0xFFE6A15C),
-  Color side = const Color(0xFFD08A4A),
+  WorldTheme theme = introPlanet,
 }) {
-  final radius = box.width * 2.5;
-  final centre = Offset(box.center.dx, top + radius);
-  canvas
-    ..drawCircle(centre, radius, Paint()..color = color)
-    ..drawCircle(
-      centre + Offset(0, box.height * 0.08),
-      radius,
-      Paint()..color = side,
-    )
-    ..drawCircle(
-      centre,
-      radius,
-      Paint()
-        ..color = storyInk
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3,
-    );
+  final u = box.height;
+  paintPlanetPiece(
+    canvas,
+    Rect.fromLTRB(
+      box.left - box.width * 0.05,
+      top - u * 0.08,
+      box.right + box.width * 0.05,
+      top + u * 0.08,
+    ),
+    ground: theme.ground,
+    side: theme.groundSide,
+    decor: theme.decor,
+    unit: u * 0.28,
+    depth: u * 0.13,
+    squash: 0.45,
+    seed: theme.ground.toARGB32(),
+  );
 }
 
 /// A rock standing on the ground at [base].

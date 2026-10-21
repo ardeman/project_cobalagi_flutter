@@ -10,6 +10,7 @@ import '../../../../engine/world/grid_point.dart';
 import '../../../../engine/world/level.dart';
 import '../../../../core/character/robot_face.dart';
 import 'ink.dart';
+import 'planet_piece.dart';
 import 'world_theme.dart';
 
 export '../../../../core/character/robot_face.dart' show RobotFace;
@@ -73,32 +74,17 @@ class BoardComponent extends PositionComponent {
 
   /// The piece's outline: the board's rectangle with rounded corners and a
   /// gently uneven edge, the same every time for a level.
-  late final Path _piece = () {
-    final random = Random(level.width * 31 + level.height);
-    final outline = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            -_margin,
-            -_margin,
-            level.width + 2 * _margin,
-            level.height + 2 * _margin,
-          ),
-          const Radius.circular(0.7),
-        ),
-      );
-    final metric = outline.computeMetrics().single;
-    final steps = (metric.length * 5).round();
-    final wobbly = Path();
-    for (var i = 0; i < steps; i++) {
-      final at = metric.getTangentForOffset(metric.length * i / steps)!;
-      // Outward is to the left of the way round (the outline runs clockwise).
-      final out = Offset(at.vector.dy, -at.vector.dx);
-      final p = at.position + out * (random.nextDouble() * 0.07);
-      i == 0 ? wobbly.moveTo(p.dx, p.dy) : wobbly.lineTo(p.dx, p.dy);
-    }
-    return wobbly..close();
-  }();
+  late final Path _piece = pieceOutline(
+    Rect.fromLTWH(
+      -_margin,
+      -_margin,
+      level.width + 2 * _margin,
+      level.height + 2 * _margin,
+    ),
+    radius: 0.7,
+    unit: 1,
+    random: Random(level.width * 31 + level.height),
+  );
 
   bool _isPath(int x, int y) =>
       x >= 0 &&
