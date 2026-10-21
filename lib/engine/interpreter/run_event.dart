@@ -72,6 +72,7 @@ final class RunResult {
   const RunResult({
     required this.outcome,
     required this.events,
+    required this.callIds,
     required this.position,
     required this.facing,
     required this.starsCollected,
@@ -80,6 +81,10 @@ final class RunResult {
 
   final RunOutcome outcome;
   final List<RunEvent> events;
+
+  /// For each of [events], the Magic Block call in the main program that it
+  /// runs inside, or null outside the Magic Block.
+  final List<String?> callIds;
   final GridPoint position;
   final Direction facing;
   final int starsCollected;

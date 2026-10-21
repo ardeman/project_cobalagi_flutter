@@ -26,6 +26,7 @@ class BlockEditor extends StatefulWidget {
     required this.palette,
     required this.blockSize,
     this.activeBlockId,
+    this.activeCallId,
     this.lookHere = const {},
     this.fromHint = false,
     this.issueBlockIds = const {},
@@ -64,6 +65,9 @@ class BlockEditor extends StatefulWidget {
   final Set<InstructionKind> palette;
   final double blockSize;
   final String? activeBlockId;
+
+  /// The Magic Block call running [activeBlockId], lit up with it.
+  final String? activeCallId;
 
   /// Blocks wearing a "look here" ring: the one that walked into a rock on
   /// the last run, or, [fromHint], the ones the hint says to change.
@@ -218,6 +222,7 @@ class _BlockEditorState extends State<BlockEditor> {
       gap: gap,
       enabled: widget.enabled,
       activeBlockId: widget.activeBlockId,
+      activeCallId: widget.activeCallId,
       lookHere: widget.lookHere,
       fromHint: widget.fromHint,
       issueBlockIds: widget.issueBlockIds,
@@ -469,6 +474,7 @@ final class _BlockStyle {
     required this.gap,
     required this.enabled,
     required this.activeBlockId,
+    this.activeCallId,
     this.lookHere = const {},
     this.fromHint = false,
     required this.issueBlockIds,
@@ -481,6 +487,7 @@ final class _BlockStyle {
   final double gap;
   final bool enabled;
   final String? activeBlockId;
+  final String? activeCallId;
   final Set<String> lookHere;
   final bool fromHint;
   final Set<String> issueBlockIds;
@@ -493,6 +500,10 @@ final class _BlockStyle {
 
   /// The block that uses [pickedFocus].
   final String? focusId;
+
+  /// Whether [blockId] is running, or is the Magic Block call running it.
+  bool isActive(String blockId) =>
+      blockId == activeBlockId || blockId == activeCallId;
 
   FocusNode? focusFor(String blockId) =>
       blockId == focusId ? pickedFocus : null;
@@ -857,7 +868,7 @@ class _PlacedBlock extends StatelessWidget {
             key: ValueKey(block.id),
             type: block.type,
             size: size,
-            highlighted: block.id == style.activeBlockId,
+            highlighted: style.isActive(block.id),
             hasIssue: style.issueBlockIds.contains(block.id),
             mark: !style.lookHere.contains(block.id)
                 ? BlockMark.none
@@ -930,7 +941,7 @@ class _SavedStepsBlock extends StatelessWidget {
           border: Border.all(
             color: style.issueBlockIds.contains(block.id)
                 ? Theme.of(context).colorScheme.error
-                : block.id == style.activeBlockId
+                : style.isActive(block.id)
                 ? const Color(0xFFFFD54F)
                 : block.type.color,
             width: 3,
@@ -975,9 +986,7 @@ class _ContainerBlock extends StatelessWidget {
     // Only a repeat carries a count.
     final counted = block.type == BlockType.repeat;
     final color = block.type.color;
-    final active = block.selfAndDescendants.any(
-      (b) => b.id == style.activeBlockId,
-    );
+    final active = block.selfAndDescendants.any((b) => style.isActive(b.id));
     final hasIssue = style.issueBlockIds.contains(block.id);
     final addSpot = Semantics(
       container: true,

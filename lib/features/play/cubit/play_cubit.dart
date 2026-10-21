@@ -68,6 +68,16 @@ class PlayState {
     return events[cursor.clamp(0, events.length - 1)].blockId;
   }
 
+  /// While the Magic Block's own blocks run: the call that runs them, so
+  /// the child sees which Magic Block is at work.
+  String? get activeCallId {
+    final calls = result?.callIds;
+    if (phase != PlayPhase.running || calls == null || calls.isEmpty) {
+      return null;
+    }
+    return calls[cursor.clamp(0, calls.length - 1)];
+  }
+
   /// After a run that walked into a rock: the block that made the move,
   /// so the child sees which one to fix. Other runs that fail are missing
   /// blocks rather than a wrong one, so they mark none.

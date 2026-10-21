@@ -17,8 +17,11 @@ Future<BlocksCubit> pumpEditor(
   bool star = false,
   bool showHowTo = false,
   bool conditions = false,
+  BlocksCubit? blocks,
+  String? activeBlockId,
+  String? activeCallId,
 }) async {
-  final cubit = BlocksCubit(maxBlocks: maxBlocks);
+  final cubit = blocks ?? BlocksCubit(maxBlocks: maxBlocks);
   addTearDown(cubit.close);
   await tester.pumpWidget(
     MaterialApp(
@@ -40,6 +43,8 @@ Future<BlocksCubit> pumpEditor(
               },
               blockSize: 64,
               showHowTo: showHowTo,
+              activeBlockId: activeBlockId,
+              activeCallId: activeCallId,
             ),
           ),
         ),
@@ -56,6 +61,38 @@ Finder paletteBlock(IconData icon) => find.byIcon(icon).first;
 Offset holdFor(Offset spot) => spot + const Offset(0, 64 * 1.1 * 0.35);
 
 void main() {
+  testWidgets('the running Magic Block call lights up with its blocks', (
+    tester,
+  ) async {
+    final cubit = BlocksCubit()
+      ..add(BlockType.forward, parentId: BlocksCubit.starRow)
+      ..add(BlockType.star)
+      ..add(BlockType.star);
+    final body = cubit.state.star.single.id;
+    final [first, second] = cubit.state.main.map((b) => b.id).toList();
+    await pumpEditor(
+      tester,
+      star: true,
+      blocks: cubit,
+      activeBlockId: body,
+      activeCallId: first,
+    );
+    bool lit(String id) => tester
+        .widget<BlockTile>(
+          find
+              .descendant(
+                of: find.byKey(ValueKey(id)),
+                matching: find.byType(BlockTile),
+                matchRoot: true,
+              )
+              .first,
+        )
+        .highlighted;
+    expect(lit(body), isTrue);
+    expect(lit(first), isTrue);
+    expect(lit(second), isFalse);
+  });
+
   testWidgets('a full star row leaves the main program room on a tablet', (
     tester,
   ) async {

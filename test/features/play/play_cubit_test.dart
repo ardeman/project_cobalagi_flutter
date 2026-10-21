@@ -40,6 +40,34 @@ void main() {
     expect(cubit.state.runs, 1);
   });
 
+  test('the Magic Block call stays lit while its own blocks run', () {
+    final magic = Level.fromRows(
+      id: 'm',
+      concept: 'procedures',
+      rows: ['S..G'],
+      startFacing: Direction.east,
+      palette: {InstructionKind.move, InstructionKind.call},
+    );
+    final cubit = PlayCubit(magic)
+      ..run(
+        const Program(
+          [Call(blockId: 'c'), Move(blockId: 'm')],
+          procedure: [
+            Move(blockId: 'p1'),
+            Move(blockId: 'p2'),
+          ],
+        ),
+      );
+    expect(cubit.state.activeBlockId, 'p1');
+    expect(cubit.state.activeCallId, 'c');
+    cubit.eventShown();
+    expect(cubit.state.activeBlockId, 'p2');
+    expect(cubit.state.activeCallId, 'c');
+    cubit.eventShown();
+    expect(cubit.state.activeBlockId, 'm');
+    expect(cubit.state.activeCallId, isNull);
+  });
+
   test('a failing run ends in failed with the outcome', () {
     final cubit = PlayCubit(level)..run(const Program([Move()]));
     playOut(cubit);

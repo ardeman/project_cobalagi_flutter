@@ -136,6 +136,22 @@ void main() {
       );
     });
 
+    test('each event names the call it runs inside', () {
+      final result = runProgram(
+        const Program([
+          Call(blockId: 'c1'),
+          Call(blockId: 'c2'),
+          Move(blockId: 'm'),
+        ], procedure: step),
+        stairs,
+      );
+      expect(result.callIds, [
+        ...List.filled(4, 'c1'),
+        ...List.filled(4, 'c2'),
+        null,
+      ]);
+    });
+
     test('blocks in the procedure count toward the limit', () {
       expect(const Program([Call(), Call()], procedure: step).blockCount, 6);
     });

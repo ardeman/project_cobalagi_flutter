@@ -59,6 +59,7 @@ RunResult runProgram(
   return RunResult(
     outcome: outcome,
     events: List.unmodifiable(run.events),
+    callIds: List.unmodifiable(run.callIds),
     position: run.position,
     facing: run.facing,
     starsCollected: run.collected.length,
@@ -83,6 +84,10 @@ final class _Run {
   final StepCheck? check;
   var _depth = 0;
   final events = <RunEvent>[];
+  final callIds = <String?>[];
+
+  /// The Magic Block call in the main program that is running, if any.
+  String? _call;
   final collected = <GridPoint>{};
   GridPoint position;
   Direction facing;
@@ -98,7 +103,7 @@ final class _Run {
         case SetSteps(:final value):
           _tick();
           _storedSteps = value;
-          events.add(StepsStored(value, instruction.blockId));
+          _emit(StepsStored(value, instruction.blockId));
         case MoveSteps():
           final value = _storedSteps;
           // Validation reports this before running; direct engine callers
@@ -123,7 +128,10 @@ final class _Run {
           if (++_depth > maxCallDepth) {
             throw const _Halt(RunOutcome.tooManySteps);
           }
+          final outer = _call;
+          _call ??= instruction.blockId;
           execute(procedure);
+          _call = outer;
           _depth--;
         case RepeatUntilGoal(:final body):
           // Stops by ending the run: on the flag, on a bump, or at the limit.
@@ -135,16 +143,21 @@ final class _Run {
           _tick();
           final ahead = position.step(facing);
           final clear = level.isOpen(ahead);
-          events.add(PathChecked(ahead, clear, instruction.blockId));
+          _emit(PathChecked(ahead, clear, instruction.blockId));
           if (clear) execute(body);
         case IfElsePathClear(:final body, :final otherwise):
           _tick();
           final ahead = position.step(facing);
           final clear = level.isOpen(ahead);
-          events.add(PathChecked(ahead, clear, instruction.blockId));
+          _emit(PathChecked(ahead, clear, instruction.blockId));
           execute(clear ? body : otherwise);
       }
     }
+  }
+
+  void _emit(RunEvent event) {
+    events.add(event);
+    callIds.add(_call);
   }
 
   void _tick() {
@@ -167,13 +180,13 @@ final class _Run {
       if (!open || allowed == null) return;
     }
     if (!level.isOpen(next)) {
-      events.add(Bumped(position, facing, source.blockId));
+      _emit(Bumped(position, facing, source.blockId));
       throw const _Halt(RunOutcome.bumped);
     }
-    events.add(Moved(position, next, source.blockId));
+    _emit(Moved(position, next, source.blockId));
     position = next;
     if (level.stars.contains(next) && collected.add(next)) {
-      events.add(Collected(next, source.blockId));
+      _emit(Collected(next, source.blockId));
     }
     if (isSolved) throw const _Halt(RunOutcome.success);
   }
@@ -192,7 +205,7 @@ final class _Run {
       if (turned == null) return;
       to = turned;
     }
-    events.add(Turned(facing, to, source.blockId));
+    _emit(Turned(facing, to, source.blockId));
     facing = to;
   }
 }

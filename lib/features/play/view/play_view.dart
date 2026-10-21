@@ -657,6 +657,7 @@ class _PlayViewState extends State<PlayView> {
                                 palette: _level.palette,
                                 blockSize: tight ? 56.0 : 72.0,
                                 activeBlockId: play.activeBlockId,
+                                activeCallId: play.activeCallId,
                                 lookHere: _lookHere,
                                 fromHint: _lookHereFromHint,
                                 paletteKey: _touring ? _tour.palette : null,
