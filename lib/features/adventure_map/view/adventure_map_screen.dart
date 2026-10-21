@@ -131,8 +131,7 @@ class AdventureMapScreen extends StatelessWidget {
       island: cubit.state.islandToCelebrate,
       flies: flight != null && !MediaQuery.disableAnimationsOf(context),
       // The story's scenes (the intro, the new planet scene and the endings)
-      // wait for a celebration to end; they play on the next visit to the
-      // map.
+      // wait for a celebration to end, and for the map to be on top.
       story: switch (StoryScreen.dueOnMap(
         learner,
         concepts.last.id,
@@ -440,7 +439,8 @@ class _BonusBanner extends StatelessWidget {
 
 /// Plays the opening of a newly reached island once: a cheer while the map
 /// animates it (after Koba's ship [flies] there), then it is marked as
-/// celebrated. Otherwise it opens the [story] scene's route, if one is due.
+/// celebrated. Otherwise it opens the [story] scene's route, if one is due,
+/// once the map is on top.
 class _CelebrationTrigger extends StatefulWidget {
   const _CelebrationTrigger({
     required this.island,
@@ -462,17 +462,13 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
   Timer? _done;
   late final LearningCubit _learning;
 
+  /// The scene this map opened, so it opens once.
+  String? _openedStory;
+
   @override
   void initState() {
     super.initState();
-    if (widget.island == null) {
-      if (widget.story case final story?) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) GoRouter.maybeOf(context)?.go(story);
-        });
-      }
-      return;
-    }
+    if (widget.island == null) return;
     _learning = context.read<LearningCubit>();
     // The ship's flight has its own sounds, ending in the cheer.
     if (!widget.flies) {
@@ -483,6 +479,33 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
           (widget.flies ? ShipFlight.duration : Duration.zero),
       _learning.celebrated,
     );
+  }
+
+  // The map is built under the screens opened from it (the first warm-up
+  // among them), so a scene can become due while it is hidden: it opens when
+  // the map is on top again.
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _openStory();
+  }
+
+  @override
+  void didUpdateWidget(_CelebrationTrigger oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _openStory();
+  }
+
+  void _openStory() {
+    final story = widget.story;
+    if (widget.island != null || story == null || story == _openedStory) {
+      return;
+    }
+    if (!(ModalRoute.of(context)?.isCurrent ?? true)) return;
+    _openedStory = story;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) GoRouter.maybeOf(context)?.go(story);
+    });
   }
 
   @override
