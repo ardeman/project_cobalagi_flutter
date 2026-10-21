@@ -20,6 +20,10 @@ class LevelFormatException implements Exception {
 ///
 /// In JSON the grid is a list of equal-length rows using these characters:
 /// `#` wall, `.` floor, `S` start, `G` goal, `*` star.
+///
+/// A level may have [moreBoards] (`moreBoards` in JSON: a list of row lists):
+/// the same program must reach the finish on each of them too, so a child
+/// can't just count the steps and has to look ahead.
 final class Level {
   Level({
     required this.id,
@@ -32,7 +36,9 @@ final class Level {
     required Set<InstructionKind> palette,
     this.maxBlocks,
     this.starter,
-  }) : tiles = List<List<Tile>>.unmodifiable([
+    List<Level> moreBoards = const [],
+  }) : moreBoards = List.unmodifiable(moreBoards),
+       tiles = List<List<Tile>>.unmodifiable([
          for (final row in tiles) List<Tile>.unmodifiable(row),
        ]),
        stars = Set.unmodifiable(stars),
@@ -47,6 +53,14 @@ final class Level {
       if (!isOpen(p)) throw LevelFormatException('$p is not on open floor');
     }
     if (palette.isEmpty) throw const LevelFormatException('palette is empty');
+    for (final board in moreBoards) {
+      if (board.width != width || board.height != height) {
+        throw const LevelFormatException('boards have different sizes');
+      }
+      if (board.start != start || board.startFacing != startFacing) {
+        throw const LevelFormatException('boards start differently');
+      }
+    }
   }
 
   factory Level.fromRows({
@@ -57,6 +71,7 @@ final class Level {
     required Set<InstructionKind> palette,
     int? maxBlocks,
     Program? starter,
+    List<List<String>> moreBoards = const [],
   }) {
     GridPoint? start;
     GridPoint? goal;
@@ -101,6 +116,18 @@ final class Level {
       palette: palette,
       maxBlocks: maxBlocks,
       starter: starter,
+      moreBoards: [
+        for (final (i, board) in moreBoards.indexed)
+          Level.fromRows(
+            id: '$id:${i + 2}',
+            concept: concept,
+            rows: board,
+            startFacing: startFacing,
+            palette: palette,
+            maxBlocks: maxBlocks,
+            starter: starter,
+          ),
+      ],
     );
   }
 
@@ -119,6 +146,10 @@ final class Level {
         starter: json.containsKey('starter')
             ? programFromJson(json['starter'])
             : null,
+        moreBoards: [
+          for (final board in (json['moreBoards'] as List?) ?? const [])
+            (board as List).cast<String>(),
+        ],
       );
     } on LevelFormatException {
       rethrow;
@@ -145,6 +176,13 @@ final class Level {
   /// with a program that has a bug for the child to find and fix.
   final Program? starter;
 
+  /// Other boards the same program must also solve (see the class comment).
+  /// Each is a plain level with the same size, start and palette.
+  final List<Level> moreBoards;
+
+  /// Every board a run must solve: this one first, then [moreBoards].
+  List<Level> get boards => [this, ...moreBoards];
+
   int get width => tiles.first.length;
 
   int get height => tiles.length;
@@ -170,7 +208,9 @@ final class Level {
   }
 
   /// Identifies the puzzle layout regardless of [id], to avoid serving repeats.
-  String get fingerprint => '${startFacing.name}|${rows.join('/')}';
+  String get fingerprint => [
+    for (final board in boards) '${startFacing.name}|${board.rows.join('/')}',
+  ].join('+');
 
   Map<String, Object?> toJson() => {
     'id': id,
@@ -180,5 +220,7 @@ final class Level {
     if (maxBlocks != null) 'maxBlocks': maxBlocks,
     if (starter != null) 'starter': programToJson(starter!),
     'rows': rows,
+    if (moreBoards.isNotEmpty)
+      'moreBoards': [for (final board in moreBoards) board.rows],
   };
 }

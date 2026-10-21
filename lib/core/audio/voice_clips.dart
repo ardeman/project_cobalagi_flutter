@@ -61,6 +61,7 @@ abstract final class VoiceClips {
   static const tourReset = 'tour_reset';
   static const tourHint = 'tour_hint';
   static const tourFollow = 'tour_follow';
+  static const tourBoards = 'tour_boards';
   static const tourListen = 'tour_listen';
   static const tourWarmUpListen = 'tour_warm_up_listen';
   static const tourWarmUpAnswer = 'tour_warm_up_answer';
@@ -78,6 +79,7 @@ abstract final class VoiceClips {
 
   static const feedbackBumped = 'feedback_bumped';
   static const feedbackStoppedShort = 'feedback_stopped_short';
+  static const feedbackOtherBoard = 'feedback_other_board';
   static const feedbackMissedStars = 'feedback_missed_stars';
   static const feedbackTooManySteps = 'feedback_too_many_steps';
 
@@ -195,6 +197,7 @@ abstract final class VoiceClips {
     tourReset: 'tourReset',
     tourHint: 'tourHint',
     tourFollow: 'tourFollow',
+    tourBoards: 'tourBoards',
     tourListen: 'tourListen',
     tourWarmUpListen: 'tourWarmUpListen',
     tourWarmUpAnswer: 'tourWarmUpAnswer',
@@ -211,6 +214,7 @@ abstract final class VoiceClips {
     tourBlockStar: 'tourBlockStar',
     feedbackBumped: 'feedbackBumped',
     feedbackStoppedShort: 'feedbackStoppedShort',
+    feedbackOtherBoard: 'feedbackOtherBoard',
     feedbackMissedStars: 'feedbackMissedStars',
     feedbackTooManySteps: 'feedbackTooManySteps',
     decisionAdvance: 'decisionAdvance',
@@ -298,6 +302,7 @@ abstract final class VoiceClips {
     tourReset,
     tourHint,
     tourFollow,
+    tourBoards,
     tourListen,
     tourWarmUpListen,
     tourWarmUpAnswer,
@@ -314,6 +319,7 @@ abstract final class VoiceClips {
     tourBlockStar,
     feedbackBumped,
     feedbackStoppedShort,
+    feedbackOtherBoard,
     feedbackMissedStars,
     feedbackTooManySteps,
     storyIntroBump,

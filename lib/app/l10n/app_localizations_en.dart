@@ -236,6 +236,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedbackStoppedShort => 'Almost! Keep going to the flag.';
 
   @override
+  String get feedbackOtherBoard =>
+      'That map worked! This map is different, so look ahead before each step.';
+
+  @override
   String get feedbackMissedStars => 'Collect all the stars first.';
 
   @override
@@ -510,7 +514,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get playGoalConditions =>
-      'Look ahead! Put a move inside the eye block. It moves only when the path is clear.';
+      'Look ahead! Put a move inside the eye block. It moves only when the path is clear. Your blocks must work on every map!';
 
   @override
   String get updateAvailableTitle => 'An update is available';
@@ -852,7 +856,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'The eye block looks ahead. If the path is clear, I step forward. If not, I wait.';
+      'The eye block looks ahead. If the path is clear, I step forward. If not, I wait. So the same blocks work on every map!';
 
   @override
   String get tutorialVariables =>
@@ -886,6 +890,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get turnMap => 'Turn the map';
 
   @override
+  String boardNumber(int number) {
+    return 'Map $number';
+  }
+
+  @override
   String get tourPalette =>
       'These are your blocks. Tap one, or drag it into your program.';
 
@@ -910,6 +919,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tourFollow =>
       'This turns the map a quarter turn each time, so you can see it from my side.';
+
+  @override
+  String get tourBoards =>
+      'There are more maps here. Tap a dot to see each one. Your blocks must take me to the flag on every map!';
 
   @override
   String get tourListen => 'Tap the speaker to hear what to do again.';

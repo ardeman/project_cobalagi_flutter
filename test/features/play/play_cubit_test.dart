@@ -29,6 +29,48 @@ void playOut(PlayCubit cubit) {
 }
 
 void main() {
+  group('several maps', () {
+    test('a run goes on to the next map once it solves one', () {
+      final cubit = PlayCubit(maps)..run(solved);
+      expect(cubit.state.board, 0);
+      while (cubit.state.board == 0) {
+        cubit.eventShown();
+      }
+      expect(cubit.state.phase, PlayPhase.running);
+      expect(cubit.state.runs, 1);
+      expect(cubit.state.cursor, 0);
+      expect(cubit.state.shownBoard, maps.moreBoards.single);
+      playOut(cubit);
+      expect(cubit.state.phase, PlayPhase.succeeded);
+      expect(cubit.state.runs, 1);
+      expect(cubit.state.tries, 1);
+    });
+
+    test('a run stops on the first map it does not solve', () {
+      final cubit = PlayCubit(maps)..run(const Program([Move(), Move()]));
+      playOut(cubit);
+      expect(cubit.state.phase, PlayPhase.failed);
+      expect(cubit.state.board, 1);
+      // Trying again keeps the map that went wrong in view.
+      cubit.reset();
+      expect(cubit.state.board, 1);
+      // Go always starts on the first map.
+      cubit.run(solved);
+      expect(cubit.state.board, 0);
+    });
+
+    test('peeking shows another map only while editing', () {
+      final cubit = PlayCubit(maps)..peek(1);
+      expect(cubit.state.board, 1);
+      cubit
+        ..peek(5)
+        ..run(solved);
+      expect(cubit.state.board, 0);
+      cubit.peek(1);
+      expect(cubit.state.board, 0);
+    });
+  });
+
   test('a run plays every event, highlights blocks and succeeds', () {
     final cubit = PlayCubit(level)..run(solved);
     expect(cubit.state.phase, PlayPhase.running);
@@ -130,3 +172,14 @@ void main() {
     expect(cubit.state.tries, 2, reason: 'kept across reset');
   });
 }
+
+final maps = Level.fromRows(
+  id: 'maps',
+  concept: 'conditions',
+  rows: ['S.G.'],
+  moreBoards: [
+    ['S..G'],
+  ],
+  startFacing: Direction.east,
+  palette: {InstructionKind.move, InstructionKind.ifPathClear},
+);

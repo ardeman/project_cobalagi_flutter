@@ -13,6 +13,7 @@ import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:cobalagi/core/widgets/coach_tour.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import 'board_dots.dart';
 import '../../../core/audio/audio_service.dart';
 import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
@@ -207,12 +208,40 @@ class _PlayViewState extends State<PlayView> {
       text: l10n.tourFollow,
       clip: VoiceClips.tourFollow,
     ),
+    if (_level.moreBoards.isNotEmpty)
+      CoachStep(
+        target: _tour.boards,
+        text: l10n.tourBoards,
+        clip: VoiceClips.tourBoards,
+      ),
     CoachStep(
       target: _tour.listen,
       text: l10n.tourListen,
       clip: VoiceClips.tourListen,
     ),
   ];
+
+  /// The dots for a level's maps: which one is in view and which ones the
+  /// last run solved. While editing, tapping one shows that map.
+  Widget _boardDots() => BlocBuilder<PlayCubit, PlayState>(
+    builder: (context, play) => BoardDots(
+      key: _touring ? _tour.boards : null,
+      count: _level.boards.length,
+      shown: play.board,
+      solved: switch (play.phase) {
+        PlayPhase.editing => 0,
+        PlayPhase.succeeded => _level.boards.length,
+        _ => play.board,
+      },
+      stopped: play.phase == PlayPhase.failed,
+      onPick: _finished || play.phase == PlayPhase.running
+          ? null
+          : (board) {
+              if (play.phase != PlayPhase.editing) _play.reset();
+              _play.peek(board);
+            },
+    ),
+  );
 
   /// Turns the map a quarter turn clockwise; four taps bring it back.
   void _turnMap() =>
@@ -234,9 +263,12 @@ class _PlayViewState extends State<PlayView> {
 
   /// The route hint is showing, and asking again shows the pattern.
   /// Whether the bulb has a repeating pattern to show on this level.
+  /// Never on a level with several boards: one board's repeating shape
+  /// doesn't solve the others.
   late final _hasPattern = switch (solve(_level)) {
-    final solution? => patternHintMarks(_level, solution) != null,
-    null => false,
+    final solution? when _level.moreBoards.isEmpty =>
+      patternHintMarks(_level, solution) != null,
+    _ => false,
   };
   var _finishing = false;
   final _cheers = CheerPicker();
@@ -336,13 +368,17 @@ class _PlayViewState extends State<PlayView> {
 
   void _showHint() {
     if (_play.state.phase != PlayPhase.editing) _play.reset();
-    final solution = solve(_level);
+    // On a level with several boards, the hint is about the board in view.
+    final board = _play.state.shownBoard;
+    final solution = solve(board);
     if (solution == null) return;
     setState(() => _hints++);
     final font = Theme.of(context).textTheme.titleLarge?.fontFamily;
-    final pattern = patternHintMarks(_level, solution, labelFont: font);
+    final pattern = _hasPattern
+        ? patternHintMarks(board, solution, labelFont: font)
+        : null;
     final program = _codeMode ? _typed.state.program : _blocks.program;
-    final offTrack = _offTrack(_level, program);
+    final offTrack = _offTrack(board, program);
     // One hint per press, building up, then round again: the route as the
     // level's own blocks, in their colours; on islands with a loop block,
     // the shape that repeats and the loop block that does it; then every
@@ -355,12 +391,17 @@ class _PlayViewState extends State<PlayView> {
     );
     _hintStep = (_hintStep + 1) % steps.length;
     final step = steps[_hintStep];
-    final trail = hintTrail(_level, solution);
+    final trail = hintTrail(board, solution);
     final followRoad = context.read<HintArrowsCubit?>()?.state ?? true;
     switch (step) {
       case _Hint.route:
         _game.showHint(
-          hintMarks(_level, solution, labelFont: font),
+          hintMarks(
+            board,
+            solution,
+            labelFont: font,
+            lookFirst: _level.moreBoards.isNotEmpty,
+          ),
           trail: trail,
           followRoad: followRoad,
         );
@@ -414,6 +455,8 @@ class _PlayViewState extends State<PlayView> {
     // Success: a cheer, then the decision. Failure: what went wrong.
     _say(switch (state.result!.outcome) {
       RunOutcome.success => cheer.clip,
+      // An earlier map worked, so the blocks counted rather than looked.
+      _ when state.board > 0 => VoiceClips.feedbackOtherBoard,
       RunOutcome.bumped => VoiceClips.feedbackBumped,
       RunOutcome.stoppedShort => VoiceClips.feedbackStoppedShort,
       RunOutcome.missedStars => VoiceClips.feedbackMissedStars,
@@ -575,6 +618,13 @@ class _PlayViewState extends State<PlayView> {
                                       ),
                                     ),
                                   ),
+                                  if (_level.moreBoards.isNotEmpty)
+                                    Positioned(
+                                      left: 0,
+                                      right: 0,
+                                      bottom: 0,
+                                      child: Center(child: _boardDots()),
+                                    ),
                                   // Solved: nothing left to explain.
                                   if (!_finished)
                                     Positioned(
@@ -1460,6 +1510,7 @@ final class _TourKeys {
   final reset = GlobalKey();
   final hint = GlobalKey();
   final turn = GlobalKey();
+  final boards = GlobalKey();
   final listen = GlobalKey();
   final blocks = {for (final type in BlockType.values) type: GlobalKey()};
 }

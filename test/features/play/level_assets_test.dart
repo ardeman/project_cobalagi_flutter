@@ -217,43 +217,25 @@ void main() {
       });
     }
     if (level.concept == 'conditions') {
-      test('${level.id} teaches checked steps with its own palette', () {
-        final steps = solve(level)!.body;
-        final checked = <Instruction>[];
-        // Exercise a blocked check at the start of the introductory lesson.
-        if (!level.isOpen(level.start.step(level.startFacing))) {
-          checked.add(const IfPathClear([Move()]));
-        }
-        for (var i = 0; i < steps.length;) {
-          if (steps[i] is! Move) {
-            checked.add(steps[i++]);
-            continue;
-          }
-          final start = i;
-          while (i < steps.length && steps[i] is Move) {
-            i++;
-          }
-          if (level.palette.contains(InstructionKind.repeat)) {
-            checked.add(
-              const Repeat(9, [
-                IfPathClear([Move()]),
-              ]),
-            );
-          } else {
-            checked.addAll([
-              for (var j = start; j < i; j++) const IfPathClear([Move()]),
-            ]);
-          }
-        }
-        final solution = Program(checked);
+      test('${level.id} teaches checked steps on every map', () {
+        expect(level.moreBoards, isNotEmpty, reason: 'counting would do');
+        final solution = checkedSteps(level);
         expect(validateProgram(solution, level), isEmpty);
-        final run = runProgram(solution, level);
-        expect(run.succeeded, isTrue);
-        expect(run.events.whereType<PathChecked>().any((e) => e.clear), isTrue);
-        expect(
-          run.events.whereType<PathChecked>().any((e) => !e.clear),
-          isTrue,
-        );
+        final runs = runOnBoards(solution, level);
+        expect(runs.every((run) => run.succeeded), isTrue);
+        expect(runs, hasLength(level.boards.length));
+        final checks = [
+          for (final run in runs) ...run.events.whereType<PathChecked>(),
+        ];
+        expect(checks.any((e) => e.clear), isTrue);
+        expect(checks.any((e) => !e.clear), isTrue);
+      });
+    }
+    if (level.moreBoards.isNotEmpty) {
+      test('${level.id} has no counted route that works on every map', () {
+        for (final board in level.boards) {
+          expect(solvesEveryBoard(solve(board)!, level), isFalse);
+        }
       });
     }
     test('${level.id} is solvable with its palette and block limit', () {
@@ -277,6 +259,59 @@ void main() {
       expect(runProgram(solution, level).succeeded, isTrue);
     });
   }
+}
+
+/// The Look ahead island's answer for every map of [level]: the first
+/// map's turns, with each straight stretch walked by checked steps until
+/// the way ahead is blocked (a repeat of them, or without a repeat block
+/// as many as the longest stretch on any map).
+Program checkedSteps(Level level) {
+  // The straight stretches' lengths on each map, in order.
+  List<int> stretches(Level board) {
+    final lengths = <int>[];
+    var counting = false;
+    for (final step in solve(board)!.body) {
+      if (step is Move) {
+        if (!counting) lengths.add(0);
+        lengths.last++;
+      }
+      counting = step is Move;
+    }
+    return lengths;
+  }
+
+  final longest = <int>[];
+  for (final board in level.boards) {
+    for (final (i, length) in stretches(board).indexed) {
+      if (i < longest.length) {
+        if (length > longest[i]) longest[i] = length;
+      } else {
+        longest.add(length);
+      }
+    }
+  }
+  const checked = IfPathClear([Move()]);
+  final body = <Instruction>[];
+  var stretch = 0;
+  var walking = false;
+  for (final step in solve(level)!.body) {
+    if (step is! Move) {
+      body.add(step);
+      walking = false;
+      continue;
+    }
+    if (walking) continue;
+    walking = true;
+    body.addAll(
+      level.palette.contains(InstructionKind.repeat)
+          ? [
+              const Repeat(9, [checked]),
+            ]
+          : List.filled(longest[stretch], checked),
+    );
+    stretch++;
+  }
+  return Program(body);
 }
 
 /// The Otherwise island's answer: repeat until the flag, step when the path

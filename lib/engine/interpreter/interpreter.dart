@@ -67,6 +67,27 @@ RunResult runProgram(
   );
 }
 
+/// Runs [program] on each of [level]'s boards in turn, stopping after the
+/// first one it doesn't solve: one result per board tried. It solves the
+/// level only when every board's run [RunResult.succeeded].
+List<RunResult> runOnBoards(
+  Program program,
+  Level level, {
+  int stepLimit = defaultStepLimit,
+}) {
+  final results = <RunResult>[];
+  for (final board in level.boards) {
+    final result = runProgram(program, board, stepLimit: stepLimit);
+    results.add(result);
+    if (!result.succeeded) break;
+  }
+  return results;
+}
+
+/// Whether [program] solves every one of [level]'s boards.
+bool solvesEveryBoard(Program program, Level level) =>
+    runOnBoards(program, level).every((result) => result.succeeded);
+
 final class _Halt implements Exception {
   const _Halt(this.outcome);
 

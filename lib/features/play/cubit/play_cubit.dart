@@ -19,9 +19,22 @@ class PlayState {
     this.issues = const [],
     this.runs = 0,
     this.tries = 0,
+    this.board = 0,
   });
 
   final Level level;
+
+  /// Which of [level]'s boards is shown (see [Level.boards]): the one a run
+  /// is on, or while editing the one the child peeks at. [result] is the
+  /// run on this board; a run starts on the first and goes on to the next
+  /// only once it solves one.
+  final int board;
+
+  /// The board being shown.
+  Level get shownBoard => level.boards[board];
+
+  /// Whether more boards follow this one when a run solves it.
+  bool get hasNextBoard => board + 1 < level.boards.length;
   final PlayPhase phase;
   final RunResult? result;
 
@@ -94,6 +107,7 @@ class PlayState {
     bool? stepping,
   }) => PlayState(
     level: level,
+    board: board,
     phase: phase ?? this.phase,
     result: result,
     cursor: cursor ?? this.cursor,
@@ -134,19 +148,39 @@ class PlayCubit extends Cubit<PlayState> {
     final tries = state.tries + (program.body.isEmpty ? 0 : 1);
     if (issues.isNotEmpty || program.body.isEmpty) {
       emit(
-        PlayState(level: level, issues: issues, runs: state.runs, tries: tries),
+        PlayState(
+          level: level,
+          board: state.board,
+          issues: issues,
+          runs: state.runs,
+          tries: tries,
+        ),
       );
       return;
     }
-    final result = runProgram(program, level);
+    _program = program;
+    _runBoard(0, runs: state.runs + 1, tries: tries, stepping: stepping);
+  }
+
+  /// The program being run, for the boards still to come.
+  Program? _program;
+
+  void _runBoard(
+    int board, {
+    required int runs,
+    required int tries,
+    required bool stepping,
+  }) {
+    final result = runProgram(_program!, state.level.boards[board]);
     emit(
       PlayState(
-        level: level,
+        level: state.level,
+        board: board,
         phase: PlayPhase.running,
         result: result,
-        playing: true,
+        playing: board == 0 || !stepping,
         stepping: stepping,
-        runs: state.runs + 1,
+        runs: runs,
         tries: tries,
       ),
     );
@@ -163,14 +197,48 @@ class PlayCubit extends Cubit<PlayState> {
     }
   }
 
-  void _finish() => emit(
-    state.copyWith(
-      phase: state.result!.succeeded ? PlayPhase.succeeded : PlayPhase.failed,
-      playing: false,
+  void _finish() {
+    final succeeded = state.result!.succeeded;
+    if (succeeded && state.hasNextBoard) {
+      _runBoard(
+        state.board + 1,
+        runs: state.runs,
+        tries: state.tries,
+        stepping: state.stepping,
+      );
+      return;
+    }
+    emit(
+      state.copyWith(
+        phase: succeeded ? PlayPhase.succeeded : PlayPhase.failed,
+        playing: false,
+      ),
+    );
+  }
+
+  /// Back to editing, with the world at its starting position. The board
+  /// a run stopped on stays in view, so the child sees what went wrong.
+  void reset() => emit(
+    PlayState(
+      level: state.level,
+      board: state.board,
+      runs: state.runs,
+      tries: state.tries,
     ),
   );
 
-  /// Back to editing, with the world at its starting position.
-  void reset() =>
-      emit(PlayState(level: state.level, runs: state.runs, tries: state.tries));
+  /// While editing, shows another of the level's boards.
+  void peek(int board) {
+    if (state.phase != PlayPhase.editing || board == state.board) return;
+    if (board < 0 || board >= state.level.boards.length) return;
+    emit(
+      PlayState(
+        level: state.level,
+        board: board,
+        issues: state.issues,
+        runs: state.runs,
+        tries: state.tries,
+      ),
+    );
+  }
 }

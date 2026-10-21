@@ -326,38 +326,94 @@ Program? plantBug(Program program, Random random) {
 const _conditionPalette = {..._loopPalette, InstructionKind.ifPathClear};
 
 /// Variable-length corridors: repeat a checked step, stop safely at each
-/// wall, then turn. Both clear and blocked checks occur before the goal.
+/// wall, then turn. Two or three maps share the turns and the start, but
+/// their corridors differ in length, so counting steps can't solve them
+/// all: the child has to look ahead. Both clear and blocked checks occur
+/// before the goal.
 GeneratedPuzzle _conditions(Random random, int difficulty, int seed) {
+  final count = difficulty < 3 ? 2 : 3;
   for (var attempt = 0; attempt < 200; attempt++) {
-    final route = <Instruction>[];
-    final checked = <Instruction>[];
-    for (var segment = 0; segment < difficulty + 1; segment++) {
-      if (segment > 0) {
-        final turn = _turn(random);
-        route.add(turn);
-        checked.add(turn);
-      }
-      route.addAll(_moves(2 + random.nextInt(4)));
-      checked.add(
+    final facing = Direction.values[random.nextInt(4)];
+    final turns = [for (var i = 0; i < difficulty; i++) _turn(random)];
+    final checked = <Instruction>[
+      for (var segment = 0; segment <= difficulty; segment++) ...[
+        if (segment > 0) turns[segment - 1],
         const Repeat(6, [
           IfPathClear([Move()]),
         ]),
+      ],
+    ];
+    final boards = <Level>[];
+    for (var b = 0; b < count; b++) {
+      final route = <Instruction>[
+        for (var segment = 0; segment <= difficulty; segment++) ...[
+          if (segment > 0) turns[segment - 1],
+          ..._moves(2 + random.nextInt(4)),
+        ],
+      ];
+      final puzzle = _buildPuzzle(
+        PuzzleKind.conditions,
+        Program(route),
+        facing,
+        id: 'conditions-d$difficulty-s$seed',
+        difficulty: difficulty,
       );
+      if (puzzle == null) break;
+      boards.add(puzzle.level);
     }
-    final puzzle = _buildPuzzle(
-      PuzzleKind.conditions,
-      Program(route),
-      Direction.values[random.nextInt(4)],
-      id: 'conditions-d$difficulty-s$seed',
-      difficulty: difficulty,
-    );
-    if (puzzle == null) continue;
+    if (boards.length < count) continue;
+    final level = _sameFrame(boards);
     final solution = Program(checked);
-    if (runProgram(solution, puzzle.level).succeeded) {
-      return GeneratedPuzzle(puzzle.level, solution);
+    if (!solvesEveryBoard(solution, level)) continue;
+    // Counting the steps of any one map must fail on another.
+    if (level.boards.any((board) => solvesEveryBoard(solve(board)!, level))) {
+      continue;
     }
+    return GeneratedPuzzle(level, solution);
   }
   throw StateError('no valid conditions puzzle for seed $seed');
+}
+
+/// [boards] as one level: the first with the others as its `moreBoards`,
+/// each padded with walls so all are the same size with the start in the
+/// same place.
+Level _sameFrame(List<Level> boards) {
+  final left = boards.map((b) => b.start.x).reduce(max);
+  final top = boards.map((b) => b.start.y).reduce(max);
+  final width = left + boards.map((b) => b.width - b.start.x).reduce(max);
+  final height = top + boards.map((b) => b.height - b.start.y).reduce(max);
+  Level framed(Level board, String id, {List<Level> more = const []}) {
+    final dx = left - board.start.x, dy = top - board.start.y;
+    GridPoint moved(GridPoint p) => GridPoint(p.x + dx, p.y + dy);
+    return Level(
+      id: id,
+      concept: board.concept,
+      tiles: [
+        for (var y = 0; y < height; y++)
+          [
+            for (var x = 0; x < width; x++)
+              board.isOpen(GridPoint(x - dx, y - dy)) ? Tile.floor : Tile.wall,
+          ],
+      ],
+      start: moved(board.start),
+      startFacing: board.startFacing,
+      goal: moved(board.goal),
+      stars: {for (final star in board.stars) moved(star)},
+      palette: board.palette,
+      maxBlocks: board.maxBlocks,
+      moreBoards: more,
+    );
+  }
+
+  final id = boards.first.id;
+  return framed(
+    boards.first,
+    id,
+    more: [
+      for (final (i, board) in boards.skip(1).indexed)
+        framed(board, '$id:${i + 2}'),
+    ],
+  );
 }
 
 Instruction _turn(Random random) =>

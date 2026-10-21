@@ -46,10 +46,21 @@ class WorldGame extends FlameGame {
   final _stars = <GridPoint, StarComponent>{};
   PlayState? _pending;
 
+  /// The board on show: [level] itself or one of its `moreBoards`.
+  late Level _board = level;
+
+  /// The state [apply] got last, shown once a slide to another board ends.
+  PlayState? _latest;
+
+  /// While one board slides away and the next slides in.
+  var _sliding = false;
+
   /// Changed since the last rebuild, so editing needs a fresh board.
   var _dirty = false;
-  int? _builtForRun;
-  (int, int)? _animating;
+
+  /// The run and board the world was last built for.
+  (int, int)? _builtForRun;
+  (int, int, int)? _animating;
   int? _celebrated;
 
   /// Quarter turns (0 to 3) the child has turned the map, clockwise, so
@@ -129,17 +140,18 @@ class WorldGame extends FlameGame {
   void _build() {
     world.removeAll(world.children.toList());
     _stars.clear();
+    final board = _board;
     world
-      ..add(BoardComponent(level, worldTheme))
-      ..add(GoalComponent(level.goal, worldTheme.finish));
-    for (final star in level.stars) {
+      ..add(BoardComponent(board, worldTheme))
+      ..add(GoalComponent(board.goal, worldTheme.finish));
+    for (final star in board.stars) {
       world.add(_stars[star] = StarComponent(star));
     }
     world.add(
       _actor =
           ActorComponent(
-              level.start,
-              level.startFacing,
+              board.start,
+              board.startFacing,
               sprite: _robot,
               backSprite: _robotBack,
               frontSprite: _robotFront,
@@ -258,17 +270,31 @@ class WorldGame extends FlameGame {
       _pending = state;
       return;
     }
+    _latest = state;
+    if (_sliding) return;
     switch (state.phase) {
       case PlayPhase.editing:
         _animating = null;
-        if (_dirty) _build();
+        if (_board != state.shownBoard) {
+          _slideTo(state.shownBoard);
+        } else if (_dirty) {
+          _build();
+        }
       case PlayPhase.running:
-        if (_builtForRun != state.runs) {
-          _builtForRun = state.runs;
+        final built = (state.runs, state.board);
+        if (_builtForRun != built) {
+          final goesOn = _builtForRun?.$1 == state.runs;
+          _builtForRun = built;
+          if (goesOn) {
+            // The run solved a board and goes on to the next one.
+            _slideTo(state.shownBoard, solved: true);
+            return;
+          }
+          _board = state.shownBoard;
           _build();
         }
         final event = state.currentEvent;
-        final key = (state.runs, state.cursor);
+        final key = (state.runs, state.board, state.cursor);
         if (event != null && _animating != key) {
           _animating = key;
           _dirty = true;
@@ -280,7 +306,7 @@ class WorldGame extends FlameGame {
         if (_celebrated != state.runs) {
           _celebrated = state.runs;
           onSound(SoundEffect.goal);
-          world.add(CelebrationComponent(level.goal));
+          world.add(CelebrationComponent(_board.goal));
           _actor.face = RobotFace.cheer;
           _actor.add(
             SequenceEffect([
@@ -298,6 +324,50 @@ class WorldGame extends FlameGame {
       case PlayPhase.failed:
         break;
     }
+  }
+
+  /// Slides the board on show away and [board] in from the other side.
+  /// After a [solved] board Koba cheers at its flag first. Then the latest
+  /// state is applied, so a run goes on on the new board.
+  void _slideTo(Level board, {bool solved = false}) {
+    _sliding = true;
+    final viewfinder = camera.viewfinder;
+    final middle = Vector2(level.width / 2, level.height / 2);
+    // Along the screen's width, whichever way the map is turned.
+    final angle = quarterTurns % 4 * pi / 2;
+    final away =
+        Vector2(cos(angle), sin(angle)) * (level.width + level.height + 2);
+    if (solved) {
+      onSound(SoundEffect.goal);
+      world.add(CelebrationComponent(_board.goal));
+      _actor.face = RobotFace.cheer;
+    }
+    viewfinder.add(
+      MoveEffect.to(
+        middle + away,
+        EffectController(
+          duration: 0.35,
+          startDelay: solved ? 0.7 : 0,
+          curve: Curves.easeIn,
+        ),
+        onComplete: () {
+          _board = board;
+          _build();
+          viewfinder
+            ..position = middle - away
+            ..add(
+              MoveEffect.to(
+                middle,
+                EffectController(duration: 0.35, curve: Curves.easeOut),
+                onComplete: () {
+                  _sliding = false;
+                  if (_latest case final state?) apply(state);
+                },
+              ),
+            );
+        },
+      ),
+    );
   }
 
   /// Shows a solution as small blocks on the map, one by one in the order

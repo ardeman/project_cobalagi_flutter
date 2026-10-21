@@ -19,7 +19,15 @@ import 'world/hint_mark.dart';
 ///
 /// Levels without a single-step block move with the Step Box: each straight
 /// stretch becomes one "use steps" mark carrying its length.
-List<HintMark> hintMarks(Level level, Program solution, {String? labelFont}) {
+///
+/// With [lookFirst] (a level with several boards, where counting steps
+/// can't work) every step wears the eye block's badge: look, then step.
+List<HintMark> hintMarks(
+  Level level,
+  Program solution, {
+  String? labelFont,
+  bool lookFirst = false,
+}) {
   final stepBox =
       !level.palette.contains(InstructionKind.move) &&
       level.palette.contains(InstructionKind.moveSteps);
@@ -70,6 +78,12 @@ List<HintMark> hintMarks(Level level, Program solution, {String? labelFont}) {
               at: _between(from, to),
               icon: walk.icon,
               color: walk.color,
+              badge: lookFirst
+                  ? (
+                      icon: BlockType.ifPathClear.icon,
+                      color: BlockType.ifPathClear.color,
+                    )
+                  : null,
               heading: facing,
             ),
           );

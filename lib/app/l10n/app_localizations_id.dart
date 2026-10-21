@@ -224,6 +224,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get feedbackStoppedShort => 'Hampir! Terus jalan sampai bendera.';
 
   @override
+  String get feedbackOtherBoard =>
+      'Peta itu berhasil! Peta ini berbeda, jadi lihat ke depan sebelum tiap langkah.';
+
+  @override
   String get feedbackMissedStars => 'Kumpulkan semua bintang dulu.';
 
   @override
@@ -497,7 +501,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get playGoalConditions =>
-      'Lihat ke depan! Taruh balok maju di dalam balok mata. Ia maju hanya jika jalan di depan kosong.';
+      'Lihat ke depan! Taruh balok maju di dalam balok mata. Ia maju hanya jika jalan di depan kosong. Blokmu harus berhasil di setiap peta!';
 
   @override
   String get updateAvailableTitle => 'Pembaruan tersedia';
@@ -846,7 +850,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'Blok mata melihat ke depan. Kalau jalannya kosong, aku maju. Kalau tidak, aku menunggu.';
+      'Blok mata melihat ke depan. Kalau jalannya kosong, aku maju. Kalau tidak, aku menunggu. Jadi blok yang sama berhasil di setiap peta!';
 
   @override
   String get tutorialVariables =>
@@ -879,6 +883,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get turnMap => 'Putar peta';
 
   @override
+  String boardNumber(int number) {
+    return 'Peta $number';
+  }
+
+  @override
   String get tourPalette =>
       'Ini blok-blokmu. Ketuk satu, atau seret ke programmu.';
 
@@ -903,6 +912,10 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get tourFollow =>
       'Ini memutar peta seperempat putaran setiap kali, jadi kamu bisa melihatnya dari sisiku.';
+
+  @override
+  String get tourBoards =>
+      'Di sini ada beberapa peta. Ketuk titik untuk melihat tiap peta. Blokmu harus membawaku ke bendera di setiap peta!';
 
   @override
   String get tourListen =>

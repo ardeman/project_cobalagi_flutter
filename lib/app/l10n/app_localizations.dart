@@ -482,6 +482,12 @@ abstract class AppLocalizations {
   /// **'Almost! Keep going to the flag.'**
   String get feedbackStoppedShort;
 
+  /// No description provided for @feedbackOtherBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'That map worked! This map is different, so look ahead before each step.'**
+  String get feedbackOtherBoard;
+
   /// No description provided for @feedbackMissedStars.
   ///
   /// In en, this message translates to:
@@ -1007,7 +1013,7 @@ abstract class AppLocalizations {
   /// No description provided for @playGoalConditions.
   ///
   /// In en, this message translates to:
-  /// **'Look ahead! Put a move inside the eye block. It moves only when the path is clear.'**
+  /// **'Look ahead! Put a move inside the eye block. It moves only when the path is clear. Your blocks must work on every map!'**
   String get playGoalConditions;
 
   /// No description provided for @updateAvailableTitle.
@@ -1577,7 +1583,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorialConditions.
   ///
   /// In en, this message translates to:
-  /// **'The eye block looks ahead. If the path is clear, I step forward. If not, I wait.'**
+  /// **'The eye block looks ahead. If the path is clear, I step forward. If not, I wait. So the same blocks work on every map!'**
   String get tutorialConditions;
 
   /// No description provided for @tutorialVariables.
@@ -1628,6 +1634,12 @@ abstract class AppLocalizations {
   /// **'Turn the map'**
   String get turnMap;
 
+  /// No description provided for @boardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Map {number}'**
+  String boardNumber(int number);
+
   /// No description provided for @tourPalette.
   ///
   /// In en, this message translates to:
@@ -1669,6 +1681,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This turns the map a quarter turn each time, so you can see it from my side.'**
   String get tourFollow;
+
+  /// No description provided for @tourBoards.
+  ///
+  /// In en, this message translates to:
+  /// **'There are more maps here. Tap a dot to see each one. Your blocks must take me to the flag on every map!'**
+  String get tourBoards;
 
   /// No description provided for @tourListen.
   ///

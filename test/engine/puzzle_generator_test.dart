@@ -63,6 +63,12 @@ void main() {
             expect(checks.any((check) => check.clear), isTrue);
             expect(checks.any((check) => !check.clear), isTrue);
             expect(level.palette, contains(InstructionKind.ifPathClear));
+            // Several maps, and counting one map's steps fails on another.
+            expect(level.boards, hasLength(difficulty < 3 ? 2 : 3));
+            expect(solvesEveryBoard(puzzle.solution, level), isTrue);
+            for (final board in level.boards) {
+              expect(solvesEveryBoard(solve(board)!, level), isFalse);
+            }
           } else if (kind == PuzzleKind.debugging) {
             // Steps and turns first, then routes with a repeat; the rest is
             // covered in debugging_test.dart.

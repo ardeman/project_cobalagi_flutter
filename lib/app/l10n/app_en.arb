@@ -144,6 +144,7 @@
   "tryAgain": "Try again!",
   "feedbackBumped": "Oops, something is in the way.",
   "feedbackStoppedShort": "Almost! Keep going to the flag.",
+  "feedbackOtherBoard": "That map worked! This map is different, so look ahead before each step.",
   "feedbackMissedStars": "Collect all the stars first.",
   "feedbackTooManySteps": "That's a lot of steps! Try fewer.",
   "home": "Home",
@@ -261,7 +262,7 @@
   "conceptConditions": "Look ahead",
   "blockUntilGoal": "Repeat until the flag",
   "blockIfPathClear": "If clear",
-  "playGoalConditions": "Look ahead! Put a move inside the eye block. It moves only when the path is clear.",
+  "playGoalConditions": "Look ahead! Put a move inside the eye block. It moves only when the path is clear. Your blocks must work on every map!",
   "updateAvailableTitle": "An update is available",
   "updateAvailableBody": "A newer version of Coba Lagi is ready. Ask a grown-up to help update the app.",
   "updateWithParent": "Ask a grown-up to update",
@@ -380,7 +381,7 @@
   "tutorialSequencing": "Put the steps in order, one after another, all the way to the flag.",
   "tutorialLoops": "The same steps again and again? Put them in the repeat block, and choose how many times!",
   "tutorialFunctions": "Build your own magic block in the star row. Then use the star again and again!",
-  "tutorialConditions": "The eye block looks ahead. If the path is clear, I step forward. If not, I wait.",
+  "tutorialConditions": "The eye block looks ahead. If the path is clear, I step forward. If not, I wait. So the same blocks work on every map!",
   "tutorialVariables": "Save a number in the Step Box. Then use steps to walk that many cells!",
   "tutorialDebugging": "These blocks aren't quite right. Press Go and watch. Then tap the block to fix, and tap the right one!",
   "tutorialUntil": "Repeat until the flag keeps going by itself, so you never have to count!",
@@ -389,6 +390,14 @@
   "hintLookHere": "Look at the block with the light bulb. Try changing it!",
   "hintLookHereMany": "Look at the blocks with the light bulb. Try changing them!",
   "turnMap": "Turn the map",
+  "boardNumber": "Map {number}",
+  "@boardNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
   "tourPalette": "These are your blocks. Tap one, or drag it into your program.",
   "tourProgram": "Your program goes here. I do the blocks in order, from the first one. Tap a block to change it.",
   "tourGo": "Press Go, and I follow your blocks!",
@@ -396,6 +405,7 @@
   "tourReset": "This one takes me back to the start.",
   "tourHint": "Stuck? After a few tries, the light bulb lights up. Each tap shows a little more: first the way, then which of your blocks to change. The little sign on the bulb shows what comes next.",
   "tourFollow": "This turns the map a quarter turn each time, so you can see it from my side.",
+  "tourBoards": "There are more maps here. Tap a dot to see each one. Your blocks must take me to the flag on every map!",
   "tourListen": "Tap the speaker to hear what to do again.",
   "tourWarmUpListen": "Listen to the question. Tap the speaker to hear it again.",
   "tourWarmUpAnswer": "Then tap the picture you think is right!",
