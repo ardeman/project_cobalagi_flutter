@@ -244,6 +244,9 @@ void main() {
     await waitFor(tester, find.byType(ParentScreen), step: 'parent area');
     await calm(tester);
     await shot('11_parent_area');
+    // Below the settings on a phone.
+    await tester.ensureVisible(find.text('Tester').first);
+    await calm(tester);
     await tester.tap(find.text('Tester').first);
     await waitGone(tester, find.byType(ParentScreen), step: 'progress report');
     await calm(tester);
