@@ -65,6 +65,7 @@ class SpaceMap extends StatefulWidget {
     required this.onOpen,
     this.padding = EdgeInsets.zero,
     this.flight,
+    this.shipFill = 0,
   });
 
   final List<MapIsland> islands;
@@ -80,6 +81,9 @@ class SpaceMap extends StatefulWidget {
   /// Set while a finished planet is celebrated: the opening planet waits
   /// for the ship to land before it bursts open.
   final MapFlight? flight;
+
+  /// How full the tank of Koba's ship is, landed on the current planet.
+  final double shipFill;
 
   @override
   State<SpaceMap> createState() => _SpaceMapState();
@@ -177,6 +181,7 @@ class _SpaceMapState extends State<SpaceMap> {
       // The path is bright up to the furthest island the child can open.
       final reached = widget.islands.lastIndexWhere((i) => !i.locked);
 
+      final current = widget.islands.indexWhere((i) => i.current);
       final map = SizedBox(
         width: mapWidth,
         height: height,
@@ -242,6 +247,15 @@ class _SpaceMapState extends State<SpaceMap> {
                   ),
                 ),
             ],
+            // Koba's ship, landed on the current planet once it is there.
+            if (current >= 0 && (flight == null || _landed))
+              Positioned.fill(
+                child: ParkedShip(
+                  centre: centres[current],
+                  islandSize: size,
+                  fill: widget.shipFill,
+                ),
+              ),
             if (flight != null)
               Positioned.fill(
                 child: ShipFlight(
@@ -256,7 +270,6 @@ class _SpaceMapState extends State<SpaceMap> {
           ],
         ),
       );
-      final current = widget.islands.indexWhere((i) => i.current);
       if (row || mapWidth > width) {
         // Start with the current island in the middle, and again whenever
         // the layout changes (rotating, or the first real size).
@@ -649,10 +662,11 @@ class _PlanetPiece extends CustomPainter {
       glow: current ? const Color(0xCCFFD54F) : null,
     );
     if (locked) return;
-    // At the back, either side of the emblem.
-    for (final (fx, fy, scale, seed) in const [
+    // At the back, either side of the emblem; Koba's ship stands on the
+    // right of the current planet instead.
+    for (final (fx, fy, scale, seed) in [
       (0.17, 0.42, 1.0, 1),
-      (0.84, 0.5, 0.8, 2),
+      if (!current) (0.84, 0.5, 0.8, 2),
     ]) {
       paintObstacle(
         canvas,

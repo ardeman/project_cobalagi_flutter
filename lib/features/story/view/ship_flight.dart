@@ -10,8 +10,92 @@ import 'package:cobalagi/core/character/robot_face.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/features/story/view/star_ship.dart';
 
+/// Where Koba's ship stands when landed on a planet whose map centre is
+/// [centre]: on the right of the planet's piece (see the map's `_Island`),
+/// beside the concept's emblem.
+Offset parkedShipBase(Offset centre, double islandSize) =>
+    centre + Offset(islandSize * 0.48, -islandSize * 0.1);
+
+/// How big the landed ship's picture is on the map.
+double parkedShipSize(double islandSize) => islandSize * 1.1;
+
+/// Koba's ship landed on the planet the child is on, at [centre] on the map,
+/// its tank [fill] full. Placed over the map in its coordinates, like
+/// [ShipFlight]; still, so it never repaints.
+class ParkedShip extends StatefulWidget {
+  const ParkedShip({
+    super.key,
+    required this.centre,
+    required this.islandSize,
+    required this.fill,
+  });
+
+  final Offset centre;
+  final double islandSize;
+  final double fill;
+
+  @override
+  State<ParkedShip> createState() => _ParkedShipState();
+}
+
+class _ParkedShipState extends State<ParkedShip> {
+  StoryArt? _art;
+
+  @override
+  void initState() {
+    super.initState();
+    StoryArt.load().then(
+      (art) {
+        if (mounted) setState(() => _art = art);
+      },
+      // Without its pictures the map shows no ship.
+      onError: (Object _) {},
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+    child: CustomPaint(
+      painter: _ParkedPainter(
+        art: _art,
+        base: parkedShipBase(widget.centre, widget.islandSize),
+        size: parkedShipSize(widget.islandSize),
+        fill: widget.fill,
+      ),
+    ),
+  );
+}
+
+class _ParkedPainter extends CustomPainter {
+  const _ParkedPainter({
+    required this.art,
+    required this.base,
+    required this.size,
+    required this.fill,
+  });
+
+  final StoryArt? art;
+  final Offset base;
+  final double size;
+  final double fill;
+
+  @override
+  void paint(Canvas canvas, Size _) {
+    final art = this.art;
+    if (art == null) return;
+    paintShip(canvas, art, ShipView.landed, base: base, size: size, fill: fill);
+  }
+
+  @override
+  bool shouldRepaint(_ParkedPainter old) =>
+      old.art != art ||
+      old.base != base ||
+      old.size != size ||
+      old.fill != fill;
+}
+
 /// The map's celebration of a finished planet: Koba's ship takes off from
-/// it, the planet's stars fly into its tank (from [fillFrom] to [fillTo]
+/// where it stands ([parkedShipBase]), the planet's stars fly into its tank (from [fillFrom] to [fillTo]
 /// full), and it flies along the path to the next planet and lands there,
 /// which then calls [onLanded]. Placed over the map in its coordinates;
 /// [from] and [to] are the planets' centres as the map lays them out.
@@ -138,9 +222,6 @@ class _FlightPainter extends CustomPainter {
   final double fillFrom;
   final double fillTo;
 
-  /// The top of a planet whose map centre is [c] (see the map's `_Island`).
-  Offset _top(Offset c) => c - Offset(0, size * 0.8);
-
   @override
   void paint(Canvas canvas, Size _) {
     final art = this.art;
@@ -148,8 +229,9 @@ class _FlightPainter extends CustomPainter {
     final v = progress.value;
     final picture = size * 1.6;
     final hover = size * 0.55;
-    final start = _top(from);
-    final end = _top(to);
+    final parked = parkedShipSize(size);
+    final start = parkedShipBase(from, size);
+    final end = parkedShipBase(to, size);
     final up = start - Offset(0, hover);
     final over = end - Offset(0, hover);
     double part(double a, double b) => ((v - a) / (b - a)).clamp(0.0, 1.0);
@@ -160,18 +242,20 @@ class _FlightPainter extends CustomPainter {
       // Lifts off, then hovers while the planet's stars fly into the tank.
       final lift = Curves.easeInOut.transform(part(0, 0.14));
       final base = Offset.lerp(start, up, lift)! + (lift == 1 ? bob : .zero);
+      // It grows from its size on the planet as it lifts off.
+      final big = parked + (picture - parked) * lift;
       final collect = part(0.14, 0.4);
       paintShip(
         canvas,
         art,
         ShipView.launch,
         base: base,
-        size: picture,
+        size: big,
         fill: fillFrom + (fillTo - fillFrom) * part(0.16, 0.38),
         face: collect > 0 ? RobotFace.cheer : RobotFace.normal,
         time: time,
       );
-      final tank = tankPoint(ShipView.launch, base: base, size: picture);
+      final tank = tankPoint(ShipView.launch, base: base, size: big);
       for (var i = 0; i < 8; i++) {
         final p = ((collect - i * 0.06) / 0.5).clamp(0.0, 1.0);
         if (p <= 0 || p >= 1) continue;
@@ -216,7 +300,8 @@ class _FlightPainter extends CustomPainter {
         art,
         landed ? ShipView.landed : ShipView.landing,
         base: Offset.lerp(over, end, down)!,
-        size: picture,
+        // Down to its size on the planet, where [ParkedShip] takes over.
+        size: picture + (parked - picture) * down,
         fill: fillTo,
         face: landed ? RobotFace.cheer : RobotFace.normal,
         time: time,

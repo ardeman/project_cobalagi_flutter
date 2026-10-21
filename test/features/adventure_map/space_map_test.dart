@@ -1,5 +1,6 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/adventure_map/view/space_map.dart';
+import 'package:cobalagi/features/story/view/ship_flight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,6 +54,16 @@ Future<List<String>> pumpMap(
 }
 
 void main() {
+  testWidgets('Koba\'s ship stands on the current planet', (tester) async {
+    await pumpMap(tester, const Size(1280, 740));
+    final ship = tester.widget<ParkedShip>(find.byType(ParkedShip));
+    // On the current planet, whose name sits below its centre.
+    final name = tester.getCenter(find.text('Step by step'));
+    expect(ship.centre.dx, closeTo(name.dx, 1));
+    expect(name.dy, greaterThan(ship.centre.dy));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('keyboard navigation opens only unlocked islands', (
     tester,
   ) async {

@@ -72,6 +72,10 @@ class AdventureMapScreen extends StatelessWidget {
     SpaceMap map(EdgeInsets padding) => SpaceMap(
       padding: padding,
       flight: flight,
+      shipFill: Story.tankFill(
+        finished: currentIndex,
+        planets: concepts.length,
+      ),
       marker: GlassSurface(
         padding: const EdgeInsets.all(3),
         radius: 48,
