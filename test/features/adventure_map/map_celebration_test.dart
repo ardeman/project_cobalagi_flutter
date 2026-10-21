@@ -109,6 +109,30 @@ void main() {
     await tester.pump(const Duration(seconds: 3));
     expect(learning.state.islandToCelebrate, isNull);
     expect(find.byType(ShipFlight), findsNothing);
+    expect(find.byType(ParkedShip), findsOneWidget);
+
+    // The next planet's flight: the ship flies alone again, and is parked
+    // only once it lands, even though the map stayed open under the puzzle.
+    navigator.currentState!.push(
+      MaterialPageRoute<void>(builder: (_) => const Scaffold()),
+    );
+    await tester.pumpAndSettle();
+    await tester.runAsync(() => _playUntilAdvance(learning));
+    navigator.currentState!.pop();
+    await tester.pump();
+    await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+    await tester.pump(const Duration(seconds: 3));
+    expect(find.byType(ShipFlight), findsOneWidget);
+    expect(find.byType(ParkedShip), findsNothing);
+    for (
+      var t = 0;
+      t < 70 && find.byType(ShipFlight).evaluate().isNotEmpty;
+      t++
+    ) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    await tester.pump(const Duration(seconds: 3));
+    expect(find.byType(ParkedShip), findsOneWidget);
   });
 
   testWidgets('leaving the map early still counts the new island as seen', (

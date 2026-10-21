@@ -105,6 +105,14 @@ class _SpaceMapState extends State<SpaceMap> {
   var _landed = false;
 
   @override
+  void didUpdateWidget(SpaceMap old) {
+    super.didUpdateWidget(old);
+    // The map stays open under the puzzles, so a later planet's flight must
+    // not find the last one landed: its ship would already be parked.
+    if (widget.flight?.from != old.flight?.from) _landed = false;
+  }
+
+  @override
   void dispose() {
     _scroll?.dispose();
     _sideScroll?.dispose();
