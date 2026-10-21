@@ -33,8 +33,9 @@ class KobaHead extends StatefulWidget {
 
 class _KobaHeadState extends State<KobaHead>
     with SingleTickerProviderStateMixin {
-  /// Runs only while the eyes glide, so a Koba at rest costs nothing.
-  late final Ticker _ticker = createTicker(_tick);
+  /// Runs only while the eyes glide, so a Koba at rest costs nothing; made
+  /// on the first glide, never in [dispose] (a ticker looks up [TickerMode]).
+  Ticker? _ticker;
   final _look = _Look();
   Duration _lastTick = Duration.zero;
   Timer? _blinks;
@@ -86,7 +87,7 @@ class _KobaHeadState extends State<KobaHead>
     _fingerGone?.cancel();
     _blinks?.cancel();
     _blinkEnds?.cancel();
-    _ticker.dispose();
+    _ticker?.dispose();
     _look.dispose();
     super.dispose();
   }
@@ -124,9 +125,9 @@ class _KobaHeadState extends State<KobaHead>
       final aim = _aim();
       if (_still) {
         _look.jumpTo(aim);
-      } else if (aim != _look.gaze && !_ticker.isActive) {
+      } else if (aim != _look.gaze && !(_ticker?.isActive ?? false)) {
         _lastTick = Duration.zero;
-        _ticker.start();
+        (_ticker ??= createTicker(_tick)).start();
       }
     });
     SchedulerBinding.instance.ensureVisualUpdate();
@@ -146,7 +147,7 @@ class _KobaHeadState extends State<KobaHead>
   void _tick(Duration elapsed) {
     final dt = (elapsed - _lastTick).inMicroseconds / 1e6;
     _lastTick = elapsed;
-    if (_look.glideTo(_aim(), dt: dt)) _ticker.stop();
+    if (_look.glideTo(_aim(), dt: dt)) _ticker?.stop();
   }
 
   /// Where the pupils should sit, in the picture's 512 pixels: towards

@@ -40,7 +40,7 @@ class StoryPlayer extends StatefulWidget {
 
 class _StoryPlayerState extends State<StoryPlayer>
     with SingleTickerProviderStateMixin {
-  late final Ticker _ticker = createTicker(_tick);
+  late final Ticker _ticker;
   final _frame = ValueNotifier(const StoryFrame(beat: 0, t: 0, time: 0));
   late final AudioService _audio = context.read<AudioService>();
   StoryArt? _art;
@@ -63,6 +63,7 @@ class _StoryPlayerState extends State<StoryPlayer>
   @override
   void initState() {
     super.initState();
+    _ticker = createTicker(_tick);
     StoryArt.load().then(
       (art) {
         if (mounted) setState(() => _art = art.withEmblem(widget.emblem));
