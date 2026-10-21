@@ -246,7 +246,7 @@ After adding or replacing clips, Android builds may keep using an old asset list
 
 **Play Console:**
 
-- **Donations:** create one-time in-app products whose ids match `assets/config/donations.json` (`supporter_small`, `supporter_medium`, `supporter_large`), with prices of your choice, spread out (small, medium, large). Any of them unlocks the sponsor plan, so the small one is in effect the price of the sponsor features; keep the App Store's tips at the same prices. Test with license testers.
+- **Donations:** create one-time in-app products whose ids match `assets/config/donations.json` (`supporter_small`, `supporter_medium`, `supporter_large`), with prices spread out (small, medium, large). Any of them unlocks the sponsor plan, so the small one is in effect the price of the sponsor features. Set up like the App Store's tips: each has a backwards-compatible "Buy" purchase option with a US base price of $0.99, $2.99 and $4.99, and Indonesia set by hand to Rp 5,000, 19,000 and 49,000 (done on 2026-10-21, along with the merchant account and the 15% service fee); keep both stores at the same prices. Test with license testers.
 - **Families policy:** target audience is children, with no ads and no data collection. The release build has no internet permission. Privacy policy URL: `https://cobalagi.ardeman.com/privacy.html`.
 
 ## Launch updates
