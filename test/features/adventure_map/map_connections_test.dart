@@ -43,8 +43,8 @@ void main() {
         for (var i = 0; i < paths.length; i++) {
           final path = paths[i];
           final metric = path.computeMetrics().single;
-          // Each path leaves just off one planet's edge (radius 0.4 sizes)
-          // and lands just off the next one's.
+          // Each path leaves just off one planet piece's edge and lands just
+          // off the next one's.
           final first = metric.getTangentForOffset(0)!.position;
           final last = metric.getTangentForOffset(metric.length)!.position;
           for (final (end, planet) in [

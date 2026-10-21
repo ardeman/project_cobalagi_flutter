@@ -7,6 +7,7 @@
 // Not part of the Checks: it writes images instead of testing behaviour.
 import 'dart:io';
 
+import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/app/app.dart';
 import 'package:cobalagi/features/pretest/view/question_views.dart';
 import 'package:cobalagi/learning/placement/pretest_question.dart';
@@ -448,6 +449,8 @@ void main() {
 
         testWidgets('map', (tester) async {
           await device(tester);
+          // Decode Koba's ship, which stands on the current planet.
+          await tester.runAsync(StoryArt.load);
           await _open(tester, '/child/1');
           await shoot('${prefix}adventure-map');
         });

@@ -22,18 +22,25 @@ List<Path> mapConnections({
 /// planet stands above the point, which also places its label.
 Offset planetCentre(Offset at, double size) => at - Offset(0, size * 0.42);
 
-/// Room between a planet's middle and where its path starts: its radius
-/// (0.4 sizes) and a small gap.
+/// Room between a planet's middle and where its path starts sideways: half
+/// the piece's width (0.46 sizes) and a small gap.
 const _reach = 0.5;
+
+/// On phones, paths leave a little below the piece's underside (0.31 sizes
+/// below its middle) and land a little above its top (0.2 above), off to
+/// the side of the emblem standing in its middle.
+const _below = 0.38;
+const _above = 0.3;
+const _aside = 0.32;
 
 Path _connection(Offset from, Offset to, double size, bool wide) {
   final side = (to.dx - from.dx).sign;
   final a = wide
       ? from + Offset(size * _reach, 0)
-      : from + Offset(side * size * 0.15, size * (_reach - 0.03));
+      : from + Offset(side * size * _aside, size * _below);
   final b = wide
       ? to - Offset(size * _reach, 0)
-      : to - Offset(side * size * 0.15, size * (_reach - 0.03));
+      : to - Offset(side * size * _aside, size * _above);
   final tangent = wide
       ? Offset((b.dx - a.dx) * 0.55, 0)
       : Offset(0, (b.dy - a.dy) * 0.55);
