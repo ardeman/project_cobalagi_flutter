@@ -13,7 +13,8 @@ extension BlockTypeStyle on BlockType {
     BlockType.moveSteps => Icons.arrow_upward_rounded,
     BlockType.star => Icons.star_rounded,
     BlockType.ifPathClear => Icons.visibility_rounded,
-    BlockType.ifElse => Icons.alt_route_rounded,
+    // The eye, like the plain condition; its badge shows the two ways.
+    BlockType.ifElse => Icons.visibility_rounded,
     BlockType.untilGoal => Icons.sports_score_rounded,
   };
 
@@ -92,10 +93,23 @@ class BlockTile extends StatelessWidget {
   final String? stepValue;
 
   /// "Use steps" is the forward arrow, in the forward colour, with a small
-  /// Step Box in its corner: a move whose length comes from the box.
+  /// Step Box in its corner: a move whose length comes from the box. The
+  /// two-row eye block wears a fork the same way: it looks, then goes one
+  /// of two ways.
   Widget _picture() {
     final arrow = Icon(type.icon, color: Colors.white, size: size * 0.6);
-    if (type != BlockType.moveSteps) return arrow;
+    final (badgeColor, badgeIcon) = switch (type) {
+      BlockType.moveSteps => (
+        BlockType.setSteps.color,
+        Icons.inventory_2_rounded,
+      ),
+      BlockType.ifElse => (
+        BlockType.ifPathClear.color,
+        Icons.alt_route_rounded,
+      ),
+      _ => (null, null),
+    };
+    if (badgeColor == null) return arrow;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -106,15 +120,11 @@ class BlockTile extends StatelessWidget {
           child: Container(
             padding: EdgeInsets.all(size * 0.04),
             decoration: BoxDecoration(
-              color: BlockType.setSteps.color,
+              color: badgeColor,
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 1.5),
             ),
-            child: Icon(
-              Icons.inventory_2_rounded,
-              color: Colors.white,
-              size: size * 0.22,
-            ),
+            child: Icon(badgeIcon, color: Colors.white, size: size * 0.22),
           ),
         ),
       ],
