@@ -35,6 +35,32 @@ void main() {
     }
   });
 
+  test("Fix it!'s muddled blocks bump, then the fixed ones run", () {
+    final play = arrivalScenes['debugging']! as BoardArrival;
+    final kinds = play.play.steps.map((s) => s.kind).toList();
+    expect(
+      kinds,
+      containsAllInOrder([
+        BoardStepKind.bump,
+        BoardStepKind.fix,
+        BoardStepKind.back,
+        BoardStepKind.go,
+      ]),
+    );
+    expect(
+      play.play.fixedId,
+      play.play.steps[kinds.indexOf(BoardStepKind.bump)].block,
+    );
+  });
+
+  test("the Magic Block's blocks light the call running them", () {
+    final play = (arrivalScenes['functions']! as BoardArrival).play;
+    expect(
+      [for (final step in play.steps) step.call],
+      ['m0', 'm0', 'm0', 'm1', 'm1', 'm1', null, null],
+    );
+  });
+
   test('every planet has an arrival scene', () {
     final skills = jsonDecode(
       File('assets/config/skills.json').readAsStringSync(),
