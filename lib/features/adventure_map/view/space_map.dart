@@ -259,7 +259,10 @@ class _SpaceMapState extends State<SpaceMap> {
                 ),
               ),
             if (flight != null)
+              // Keyed: the parked ship appears before it on landing, and
+              // must not take over its place and start a second flight.
               Positioned.fill(
+                key: const ValueKey('flight'),
                 child: ShipFlight(
                   from: centres[flight.from],
                   to: centres[flight.to],

@@ -52,9 +52,14 @@ class AdventureMapScreen extends StatelessWidget {
     final currentIndex = engine.graph.indexOf(learner.currentConcept);
 
     final lessons = cubit.curriculum.lessons;
+    // The map is built under the screens opened from it, so a planet opened
+    // by the puzzle just solved waits until the map is on top.
+    final celebrate = (ModalRoute.of(context)?.isCurrent ?? true)
+        ? cubit.state.islandToCelebrate
+        : null;
     // A finished planet: Koba's ship flies from it to the one opening (map
     // index + 1, after the Warm-up planet), its stars filling the tank.
-    final opening = switch (cubit.state.islandToCelebrate) {
+    final opening = switch (celebrate) {
       final id? => engine.graph.indexOf(id),
       null => -1,
     };
@@ -98,7 +103,7 @@ class AdventureMapScreen extends StatelessWidget {
                 learner.progress[concepts[i].id]?.solvedLessons.length ?? 0,
             totalLessons: lessons[concepts[i].id]?.length ?? 0,
             current: i == currentIndex,
-            unlocking: concepts[i].id == cubit.state.islandToCelebrate,
+            unlocking: concepts[i].id == celebrate,
             locked:
                 i > currentIndex &&
                 !learner.progress.containsKey(concepts[i].id),
@@ -128,7 +133,7 @@ class AdventureMapScreen extends StatelessWidget {
     };
 
     return _CelebrationTrigger(
-      island: cubit.state.islandToCelebrate,
+      island: celebrate,
       flies: flight != null && !MediaQuery.disableAnimationsOf(context),
       // The story's scenes (the intro, the new planet scene and the endings)
       // wait for a celebration to end, and for the map to be on top.
@@ -468,8 +473,13 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
   @override
   void initState() {
     super.initState();
-    if (widget.island == null) return;
     _learning = context.read<LearningCubit>();
+    _celebrate();
+  }
+
+  /// Starts the celebration of [_CelebrationTrigger.island], once it is set.
+  void _celebrate() {
+    if (widget.island == null || _done != null) return;
     // The ship's flight has its own sounds, ending in the cheer.
     if (!widget.flies) {
       context.read<AudioService>().playEffect(SoundEffect.goal);
@@ -477,7 +487,10 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
     _done = Timer(
       const Duration(milliseconds: 2400) +
           (widget.flies ? ShipFlight.duration : Duration.zero),
-      _learning.celebrated,
+      () {
+        _done = null;
+        _learning.celebrated();
+      },
     );
   }
 
@@ -493,6 +506,7 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
   @override
   void didUpdateWidget(_CelebrationTrigger oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _celebrate();
     _openStory();
   }
 
@@ -512,7 +526,7 @@ class _CelebrationTriggerState extends State<_CelebrationTrigger> {
   void dispose() {
     // Leaving the map before it ends still counts as celebrated, so the
     // next puzzle doesn't send the child back to the map.
-    if (_done?.isActive ?? false) {
+    if (_done != null) {
       _done!.cancel();
       _learning.celebrated();
     }
