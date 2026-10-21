@@ -38,6 +38,10 @@
     "drop": {
       "seconds": 0.5,
       "text": "a soft wooden block click snapping into place, satisfying, for a children's game"
+    },
+    "poke": {
+      "seconds": 0.6,
+      "text": "a cute little toy robot giving a happy two-note rising electronic beep-boop with a tiny springy bounce, cheerful and giggly, soft, no voice, no music, for a children's game"
     }
   }
 }

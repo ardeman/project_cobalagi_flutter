@@ -29,7 +29,11 @@ enum SoundEffect {
   goal,
 
   /// A block lands in the program.
-  drop;
+  drop,
+
+  /// The child touches Koba on the board, and it shakes its head with a
+  /// smile.
+  poke;
 
   String get asset => 'audio/sfx/$name.mp3';
 }

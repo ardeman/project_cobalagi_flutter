@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flame/game.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -255,9 +256,19 @@ class _PlayViewState extends State<PlayView> {
     super.initState();
     // Puzzle time counts toward the parent's break reminder.
     _playClock?.start();
+    // Koba watches the child's finger or the mouse anywhere on the screen.
+    GestureBinding.instance.pointerRouter.addGlobalRoute(_pointed);
     // With the tour, the goal is said once it is over.
     if (!_touring) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _sayGoal());
+    }
+  }
+
+  void _pointed(PointerEvent event) {
+    if (event is PointerDownEvent ||
+        event is PointerMoveEvent ||
+        event is PointerHoverEvent) {
+      _game.lookAt(event.position);
     }
   }
 
@@ -266,6 +277,7 @@ class _PlayViewState extends State<PlayView> {
 
   @override
   void dispose() {
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(_pointed);
     _playClock?.stop();
     _blocks.close();
     _typed.close();
@@ -537,10 +549,15 @@ class _PlayViewState extends State<PlayView> {
                               child: Stack(
                                 children: [
                                   Positioned.fill(
-                                    // The world takes no input, so the
+                                    // The world takes no input but a touch
+                                    // on Koba, just for fun, so the
                                     // controller's highlight skips it.
                                     child: ExcludeFocus(
-                                      child: GameWidget(game: _game),
+                                      child: Listener(
+                                        onPointerDown: (event) =>
+                                            _game.touch(event.position),
+                                        child: GameWidget(game: _game),
+                                      ),
                                     ),
                                   ),
                                   Positioned(

@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'dart:math';
-import 'dart:ui' show Image;
 
 import 'package:flame/camera.dart' show MaxViewport;
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/painting.dart';
@@ -40,6 +40,8 @@ class WorldGame extends FlameGame {
   Sprite? _robot;
   Sprite? _robotBack;
   Sprite? _robotFront;
+  Sprite? _robotHead;
+  Sprite? _robotBody;
   Image? _robotTurn;
   final _stars = <GridPoint, StarComponent>{};
   PlayState? _pending;
@@ -85,6 +87,18 @@ class WorldGame extends FlameGame {
         }, onError: (Object _) {}),
       );
       unawaited(
+        Sprite.load('robot_head.png').then((head) {
+          _robotHead = head;
+          _actor.headSprite = head;
+        }, onError: (Object _) {}),
+      );
+      unawaited(
+        Sprite.load('robot_body.png').then((body) {
+          _robotBody = body;
+          _actor.bodySprite = body;
+        }, onError: (Object _) {}),
+      );
+      unawaited(
         Sprite.load('robot_back.png').then((back) {
           _robotBack = back;
           _actor.backSprite = back;
@@ -122,13 +136,17 @@ class WorldGame extends FlameGame {
       world.add(_stars[star] = StarComponent(star));
     }
     world.add(
-      _actor = ActorComponent(
-        level.start,
-        level.startFacing,
-        sprite: _robot,
-        backSprite: _robotBack,
-        frontSprite: _robotFront,
-      )..turnFrames = _robotTurn,
+      _actor =
+          ActorComponent(
+              level.start,
+              level.startFacing,
+              sprite: _robot,
+              backSprite: _robotBack,
+              frontSprite: _robotFront,
+            )
+            ..turnFrames = _robotTurn
+            ..headSprite = _robotHead
+            ..bodySprite = _robotBody,
     );
     _dirty = false;
     _rollingOn = false;
@@ -144,7 +162,65 @@ class WorldGame extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
-    if (isLoaded) _turnView(dt);
+    if (!isLoaded) return;
+    _turnView(dt);
+    _pointerLeft -= dt;
+    final pointer = _pointer;
+    _actor.watching = pointer == null || _pointerLeft <= 0
+        ? null
+        : _gazeAt(pointer);
+  }
+
+  /// Where the child last touched or moved the mouse, in the game's pixels,
+  /// and for how many seconds more Koba watches it.
+  Vector2? _pointer;
+  var _pointerLeft = 0.0;
+
+  /// Koba's eyes follow a touch or the mouse at [global] (anywhere on the
+  /// screen, in global coordinates) for a moment, as `KobaHead.follow`
+  /// does; then they look the way it faces again.
+  void lookAt(Offset global) {
+    _pointer = convertGlobalToLocalCoordinate(global.toVector2());
+    _pointerLeft = 1.5;
+  }
+
+  /// A touch at [global] on the world: on Koba it shakes its head with a
+  /// smile and a happy beep (true), anywhere else nothing happens (false).
+  bool touch(Offset global) {
+    if (!isLoaded) return false;
+    final at = convertGlobalToLocalCoordinate(global.toVector2());
+    final middle = kobaOnScreen(up: 0.1);
+    // At least 32 pixels round, so a small board still gives a 64dp target.
+    final reach = max(32.0, 0.6 * camera.viewfinder.zoom);
+    if (at.distanceTo(middle) > reach || !_actor.poke()) return false;
+    onSound(SoundEffect.poke);
+    return true;
+  }
+
+  /// Where Koba stands on the screen, in the game's pixels: its tile's
+  /// middle on the tilted board, raised [up] tiles (its screen, where its
+  /// eyes are, is 0.4 up).
+  Vector2 kobaOnScreen({double up = 0}) {
+    final at = camera.localToGlobal(_actor.position);
+    // The viewport tilts everything around the middle of the screen.
+    final middle = camera.viewport.size.y / 2;
+    return Vector2(
+      at.x,
+      middle + (at.y - middle) * tilt - up * camera.viewfinder.zoom,
+    );
+  }
+
+  /// Where Koba's pupils go to look at [pointer], in its picture's pixels:
+  /// further off, the eyes turn further, up to the edge of the eye.
+  Offset _gazeAt(Vector2 pointer) {
+    final toward = pointer - kobaOnScreen(up: 0.4);
+    final distance = toward.length;
+    if (distance < 1) return Offset.zero;
+    final reach = min(1.0, distance / (camera.viewfinder.zoom * 3));
+    return Offset(
+      toward.x / distance * 16 * reach,
+      toward.y / distance * 24 * reach,
+    );
   }
 
   /// Eases the view round to [quarterTurns], keeps the whole board in view
