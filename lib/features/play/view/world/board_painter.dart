@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:cobalagi/engine/world/grid_point.dart';
 import 'package:cobalagi/engine/world/level.dart';
 import 'package:cobalagi/features/play/view/world/ink.dart';
 import 'package:cobalagi/features/play/view/world/planet_piece.dart';
@@ -25,13 +26,22 @@ void standUp(Canvas canvas, Offset base) => canvas
 /// One unit is one tile. The puzzle's world (`BoardComponent`) and the
 /// story's arrival scenes both paint it, so a scene shows the real board.
 class BoardPainter {
-  BoardPainter(this.level, this.theme, {this.leftRoom = 0});
+  BoardPainter(
+    this.level,
+    this.theme, {
+    this.leftRoom = 0,
+    this.bare = const {},
+  });
 
   final Level level;
   final WorldTheme theme;
 
   /// Extra ground left of the board, in tiles (where a story's ship lands).
   final double leftRoom;
+
+  /// Obstacle tiles drawn as bare ground, where a story stands its own
+  /// props.
+  final Set<GridPoint> bare;
 
   late final _floor = Paint()..color = theme.floor;
   late final _floorEdge = Paint()..color = theme.floorEdge;
@@ -147,7 +157,7 @@ class BoardPainter {
   _obstacles = [
     for (var y = 0; y < level.height; y++)
       for (var x = 0; x < level.width; x++)
-        if (level.tiles[y][x] != Tile.floor)
+        if (level.tiles[y][x] != Tile.floor && !bare.contains(GridPoint(x, y)))
           () {
             final random = Random(y * 997 + x + 5);
             // A maze's hedges are its walls: they stay lined up.

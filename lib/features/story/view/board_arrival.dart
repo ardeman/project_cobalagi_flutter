@@ -41,6 +41,9 @@ abstract class BoardArrival extends ArrivalScene {
   /// The program Koba runs.
   List<BlockType> get blocks;
 
+  /// Obstacle tiles left as bare ground for [paintProps].
+  Set<GridPoint> get bare => const {};
+
   /// The puzzle, its blocks and the run, built once.
   BoardPlay get play => _plays[concept] ??= BoardPlay(this);
 
@@ -94,6 +97,10 @@ abstract class BoardArrival extends ArrivalScene {
     (_runEnd, SoundEffect.goal),
   ];
 
+  /// Paints things standing on the ground beside the board, behind the ship
+  /// and Koba, with the block [running] (null before Go and after the run).
+  void paintProps(ArrivalStage s, BoardLayout b, BlockType? running) {}
+
   // Unused: the board scene paints itself.
   @override
   void paintPlanet(ArrivalStage s) {}
@@ -104,13 +111,20 @@ abstract class BoardArrival extends ArrivalScene {
   @override
   void paint(Canvas canvas, Rect stage, StoryFrame frame, StoryArt? art) {
     final s = ArrivalStage(canvas, stage, frame, art);
-    final b = _BoardLayout(s, play);
+    final b = BoardLayout(s, play);
     canvas
       ..save()
       ..translate(b.origin.dx, b.origin.dy)
       ..scale(b.tile, b.tile * tilt);
     play.board.paint(canvas, sky: false);
     canvas.restore();
+    paintProps(
+      s,
+      b,
+      frame.beat == 1 && s.t >= _runFrom && s.t < _runEnd
+          ? blocks[play.steps[_stepNow(s.t)].block]
+          : null,
+    );
 
     final kobaSize = b.tile * 1.1;
     final ship = b.at(-1.5, 2.2);
@@ -165,7 +179,7 @@ abstract class BoardArrival extends ArrivalScene {
 
   /// The program row over the board: each block drops into its place, then
   /// Go is pressed and the block running glows.
-  void _paintProgram(ArrivalStage s, _BoardLayout b) {
+  void _paintProgram(ArrivalStage s, BoardLayout b) {
     final canvas = s.canvas;
     final size = s.u * 0.1;
     final gap = s.u * 0.022;
@@ -245,7 +259,7 @@ abstract class BoardArrival extends ArrivalScene {
   /// growing and fading as Koba takes it.
   void _paintStars(
     ArrivalStage s,
-    _BoardLayout b,
+    BoardLayout b,
     Set<GridPoint> taken, {
     GridPoint? popping,
   }) {
@@ -269,7 +283,7 @@ abstract class BoardArrival extends ArrivalScene {
   }
 
   /// The finish on its tile, standing up as in the world.
-  void _paintFinish(ArrivalStage s, _BoardLayout b) {
+  void _paintFinish(ArrivalStage s, BoardLayout b) {
     final goal = play.level.goal;
     final pulse = 1 + 0.04 * sin(s.time * 4);
     s.canvas
@@ -289,7 +303,7 @@ abstract class BoardArrival extends ArrivalScene {
   /// side across, and the 3D robot's frames as it turns between them.
   void _paintKoba(
     ArrivalStage s,
-    _BoardLayout b,
+    BoardLayout b,
     double x,
     double y,
     double angle, {
@@ -325,8 +339,8 @@ abstract class BoardArrival extends ArrivalScene {
 /// Where a [BoardArrival]'s board lies in the scene: [tile] wide tiles from
 /// [origin], the board's top left corner, centred across the scene with
 /// room on its left for the ship.
-final class _BoardLayout {
-  _BoardLayout(ArrivalStage s, BoardPlay play)
+final class BoardLayout {
+  BoardLayout(ArrivalStage s, BoardPlay play)
     : tile = s.u * 0.16,
       origin = Offset(
         s.box.center.dx -
@@ -367,7 +381,8 @@ final class BoardPlay {
         startFacing: scene.facing,
         palette: {for (final b in scene.blocks) b.kind},
       ),
-      theme = scene.theme {
+      theme = scene.theme,
+      bare = scene.bare {
     run = runProgram(
       compileBlocks([
         for (final (i, type) in scene.blocks.indexed)
@@ -447,6 +462,7 @@ final class BoardPlay {
 
   final Level level;
   final WorldTheme theme;
+  final Set<GridPoint> bare;
   late final RunResult run;
   final steps = <BoardStep>[];
 
@@ -454,7 +470,7 @@ final class BoardPlay {
   /// run ends.
   final starts = <double>[0];
 
-  late final board = BoardPainter(level, theme, leftRoom: leftRoom);
+  late final board = BoardPainter(level, theme, leftRoom: leftRoom, bare: bare);
   late final Image finish = inkedPiece(
     (canvas) => drawFinish(canvas, theme.finish),
     bounds: finishBounds,

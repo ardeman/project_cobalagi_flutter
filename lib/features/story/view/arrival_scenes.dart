@@ -10,6 +10,7 @@ import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/core/character/robot_face.dart';
 import 'package:cobalagi/engine/world/direction.dart';
+import 'package:cobalagi/engine/world/grid_point.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/features/editors/blocks/view/block_tile.dart';
 import 'package:cobalagi/features/play/view/world/world_theme.dart';
@@ -232,9 +233,10 @@ final class ArrivalStage {
   }
 }
 
-/// Directions: signposts point every way, and Koba looks each way in turn
-/// as their arrows light up, in the colours of the arrow blocks.
-class DirectionsArrival extends ArrivalScene {
+/// Directions: Koba runs forward, left and right blocks along a path that
+/// bends both ways, past signposts whose arrows, in the colours of the arrow
+/// blocks, point every way and light up with the block running.
+class DirectionsArrival extends BoardArrival {
   const DirectionsArrival() : super('directions');
 
   @override
@@ -247,52 +249,93 @@ class DirectionsArrival extends ArrivalScene {
   String thanksWords(AppLocalizations l10n) => l10n.storyThanksDirections;
 
   @override
-  void paintPlanet(ArrivalStage s) {
-    paintObstacle(s.canvas, theme.obstacle, s.on(0.93), s.u * 0.2);
-    paintObstacle(s.canvas, theme.obstacle, s.on(0.5), s.u * 0.12, seed: 3);
-    // Which arrow is lit: right, then left, then forward.
-    final lit = s.frame.beat == 1 ? (s.t * 3).floor().clamp(0, 2) : -1;
-    final post = s.on(0.68);
-    final top = post.dy - s.u * 0.62;
+  List<String> get rows => const ['#.*G#', '#.###', 'S.###'];
+
+  @override
+  Direction get facing => Direction.east;
+
+  @override
+  List<BlockType> get blocks => const [
+    BlockType.forward,
+    BlockType.turnLeft,
+    BlockType.forward,
+    BlockType.forward,
+    BlockType.turnRight,
+    BlockType.forward,
+    BlockType.forward,
+  ];
+
+  @override
+  Set<GridPoint> get bare => {
+    const GridPoint(0, 0),
+    const GridPoint(4, 1),
+    const GridPoint(4, 2),
+  };
+
+  @override
+  void paintProps(ArrivalStage s, BoardLayout b, BlockType? running) {
+    // While the ship lands the arrows light in turn, pointing every way;
+    // in the run, the one of the block running.
+    final lit = s.frame.beat == 0
+        ? const [
+            BlockType.turnRight,
+            BlockType.turnLeft,
+            BlockType.forward,
+          ][(s.time * 1.5).floor() % 3]
+        : running;
+    _signpost(s, b.at(0.5, 0.62), b.tile * 1.5, lit);
+    _signpost(s, b.at(4.4, 2.7), b.tile * 1.9, lit);
+  }
+
+  /// A signpost standing at [foot], [k] tall in its own units, with arrows
+  /// forward, right and left, the one for [lit] glowing.
+  void _signpost(ArrivalStage s, Offset foot, double k, BlockType? lit) {
+    final top = foot.dy - k * 0.62;
     s.canvas
       ..drawLine(
-        post,
-        Offset(post.dx, top),
+        foot,
+        Offset(foot.dx, top),
         Paint()
           ..color = storyInk
-          ..strokeWidth = s.u * 0.035
+          ..strokeWidth = k * 0.035
           ..strokeCap = StrokeCap.round,
       )
       ..drawLine(
-        post,
-        Offset(post.dx, top),
+        foot,
+        Offset(foot.dx, top),
         Paint()
           ..color = const Color(0xFFB98A5E)
-          ..strokeWidth = s.u * 0.022
+          ..strokeWidth = k * 0.022
           ..strokeCap = StrokeCap.round,
       );
-    _signArrow(s, Offset(post.dx, top), 0, BlockType.forward.color, lit == 2);
-    _signArrow(
-      s,
-      Offset(post.dx, top + s.u * 0.2),
-      1,
-      BlockType.turnRight.color,
-      lit == 0,
-    );
-    _signArrow(
-      s,
-      Offset(post.dx, top + s.u * 0.33),
-      -1,
-      BlockType.turnLeft.color,
-      lit == 1,
-    );
+    for (final (dy, side, type) in const [
+      (0.0, 0, BlockType.forward),
+      (0.2, 1, BlockType.turnRight),
+      (0.33, -1, BlockType.turnLeft),
+    ]) {
+      _signArrow(
+        s,
+        Offset(foot.dx, top + k * dy),
+        k,
+        side,
+        type.color,
+        lit == type,
+      );
+    }
   }
 
   /// A board on the post at [at] pointing [side]ways (1 right, -1 left) or,
-  /// with 0, up (forward), glowing when [lit].
-  void _signArrow(ArrivalStage s, Offset at, int side, Color color, bool lit) {
-    final h = s.u * 0.1;
-    final w = s.u * 0.24;
+  /// with 0, up (forward), glowing when [lit]; [k] sizes it.
+  void _signArrow(
+    ArrivalStage s,
+    Offset at,
+    double k,
+    int side,
+    Color color,
+    bool lit,
+  ) {
+    final h = k * 0.1;
+    final w = k * 0.24;
     final path = Path();
     if (side == 0) {
       // Points up from the top of the post.
@@ -325,9 +368,9 @@ class DirectionsArrival extends ArrivalScene {
         Paint()
           ..color = storyGold.withValues(alpha: 0.8 + 0.2 * sin(s.time * 10))
           ..style = PaintingStyle.stroke
-          ..strokeWidth = s.u * 0.05
+          ..strokeWidth = k * 0.05
           ..strokeJoin = StrokeJoin.round
-          ..maskFilter = MaskFilter.blur(BlurStyle.normal, s.u * 0.015),
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, k * 0.015),
       );
     }
     s.canvas
@@ -337,23 +380,9 @@ class DirectionsArrival extends ArrivalScene {
         Paint()
           ..color = storyInk
           ..style = PaintingStyle.stroke
-          ..strokeWidth = max(2, s.u * 0.008)
+          ..strokeWidth = max(2, k * 0.008)
           ..strokeJoin = StrokeJoin.round,
       );
-  }
-
-  @override
-  void paintKobaBeat(ArrivalStage s) {
-    // Looks right, then left, then turns to the child.
-    final turn = (s.t * 3).floor().clamp(0, 2);
-    s.koba(
-      s.kobaAt,
-      front: turn == 2,
-      mirror: turn == 1,
-      face: turn == 2 ? RobotFace.cheer : RobotFace.normal,
-      size: turn == 2 ? s.u * 0.5 : null,
-      gaze: turn == 2 ? Offset.zero : const Offset(8, -10),
-    );
   }
 }
 
