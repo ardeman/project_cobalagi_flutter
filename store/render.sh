@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # Renders the Google Play graphics for each listing language with headless
 # Chrome, from website/screenshots/ and branding/icon.svg:
-#   store/google_play/<locale>/feature_graphic.png   1024 x 500
+#   store/google_play/<locale>/feature_graphic.png   1024 x 500 (tablet and phone)
 #   store/google_play/<locale>/screenshots/*.png     1920 x 1080 (16:9, tablets)
 #   store/google_play/<locale>/phone_screenshots/*.png 1080 x 1920 (9:16, phones), from the
 #     phone-*.png renders of tool/screenshots
 # and the App Store screenshots, from the 2x renders in tool/screenshots/out/:
-#   store/app_store/<locale>/screenshots/iphone/*.jpg 1320 x 2868 (iPhone 6.9")
-#   store/app_store/<locale>/screenshots/iphone_6.3/*.jpg 1206 x 2622 (iPhone 6.3",
-#     the size App Store Connect requires; scaled from the 6.9" set)
+#   store/app_store/<locale>/screenshots/iphone/*.jpg 1206 x 2622 (iPhone 6.3",
+#     the size App Store Connect requires)
 #   store/app_store/<locale>/screenshots/ipad/*.jpg   2752 x 2064 (iPad 13")
 #   store/app_store/<locale>/screenshots/mac/*.jpg    2880 x 1800
 # Run from the project root: store/render.sh
@@ -97,24 +96,30 @@ slide() {
     </div>" "$3"
 }
 
-# feature <tagline> <screenshot> <out>
+# feature <tagline> <tablet screenshot> <phone screenshot> <out>: a tablet
+# with a phone in front of its corner, like the App Store's search result.
 feature() {
   shot 1024 500 "<div style=\"display:flex;align-items:center;height:500px;padding-left:56px;gap:8px\">
-      <div style=\"width:400px;flex:none\">
+      <div style=\"width:380px;flex:none\">
         <svg viewBox=\"180 190 660 670\" width=\"138\" height=\"140\">$CHARACTER</svg>
         <h1 style=\"font-size:68px;margin-top:6px\">Coba Lagi</h1>
         <p style=\"font-size:30px;font-weight:700;margin:6px 0 0;opacity:.95\">$1</p>
       </div>
-      <div class=\"tablet\" style=\"padding:10px;border-radius:26px;transform:rotate(-4deg);margin-left:20px\">
-        <img src=\"file://$ROOT/website/screenshots/$2\" style=\"width:560px;border-radius:17px\">
+      <div style=\"position:relative;flex:none\">
+        <div class=\"tablet\" style=\"padding:10px;border-radius:26px;transform:rotate(-4deg);margin-top:-40px\">
+          <img src=\"file://$ROOT/website/screenshots/$2\" style=\"width:480px;border-radius:17px\">
+        </div>
+        <div class=\"tablet\" style=\"position:absolute;left:400px;top:0;padding:7px;border-radius:28px;transform:rotate(5deg)\">
+          <img src=\"file://$ROOT/website/screenshots/$3\" style=\"height:300px;border-radius:22px\">
+        </div>
       </div>
-    </div>" "$3"
+    </div>" "$4"
 }
 
 render_locale() { # locale suffix tagline captions...
   local locale="$1" s="$2" tagline="$3"; shift 3
   mkdir -p "store/google_play/$locale/screenshots"
-  feature "$tagline" "play-loops$s.png" "store/google_play/$locale/feature_graphic.png"
+  feature "$tagline" "play-loops$s.png" "phone-play-code$s.png" "store/google_play/$locale/feature_graphic.png"
   rm -f "store/google_play/$locale/screenshots/"*.png
   slide "adventure-map$s.png"   "$1" "store/google_play/$locale/screenshots/1-adventure-map.png"
   slide "play-loops$s.png"      "$2" "store/google_play/$locale/screenshots/2-play-loops.png"
@@ -208,23 +213,12 @@ render_apple() {
   done
 }
 
-render_apple id -id iphone 1320 2868 phone- 1100 640 96 "${CAPTIONS_ID[@]}"
+render_apple id -id iphone 1206 2622 phone- 1005 585 88 "${CAPTIONS_ID[@]}"
 render_apple id -id ipad 2752 2064 "" 2300 1500 110 "${CAPTIONS_ID[@]}"
 render_apple id -id mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_ID[@]}"
-render_apple en-US "" iphone 1320 2868 phone- 1100 640 96 "${CAPTIONS_EN[@]}"
+render_apple en-US "" iphone 1206 2622 phone- 1005 585 88 "${CAPTIONS_EN[@]}"
 render_apple en-US "" ipad 2752 2064 "" 2300 1500 110 "${CAPTIONS_EN[@]}"
 render_apple en-US "" mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_EN[@]}"
-
-# iPhone 6.3": the 6.9" slides scaled down (same shape to 0.1%).
-for locale in id en-US; do
-  src="store/app_store/$locale/screenshots/iphone"
-  dir="store/app_store/$locale/screenshots/iphone_6.3"
-  mkdir -p "$dir"
-  rm -f "${dir:?}/"*.jpg
-  for jpg in "$src/"*.jpg; do
-    sips -z 2622 1206 -s formatOptions 90 "$jpg" --out "$dir/$(basename "$jpg")" >/dev/null
-  done
-done
 
 # App Store creative assets (Header and Search Results), PNG without alpha:
 #   store/app_store/<locale>/header.png          3840 x 1646 (21:9, product page)

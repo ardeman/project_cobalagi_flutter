@@ -225,6 +225,12 @@
   var lang = document.documentElement.lang;
   document.querySelectorAll('[data-video]').forEach(function (box) {
     var poster = box.querySelector('.video-poster');
+    // A video not uploaded yet: its card says "coming soon" and links nowhere.
+    if (!box.dataset.video) {
+      box.classList.add('soon');
+      poster.removeAttribute('href');
+      return;
+    }
     var idHref = poster.getAttribute('href');
     function reset() {
       var frame = box.querySelector('iframe');

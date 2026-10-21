@@ -1,0 +1,6 @@
+- New story: Koba's star ship ran out of fuel, and your child helps collect the stars on every planet. Each planet opens with a short scene, and the book button on the map plays the story again.
+- Koba has a voice of its own, in English and Indonesian.
+- Koba's eyes follow your child on the map.
+- Planets now look like floating pieces of their surface.
+- The Magic Block stays lit while its blocks run.
+- Edit and Delete sit further apart in the parent area.

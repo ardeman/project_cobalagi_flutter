@@ -334,6 +334,23 @@ footer { padding: 40px 0 56px; color: var(--muted); font-size: 0.95rem; }
   transition: transform 0.15s;
 }
 .video-play svg { width: 40px; height: 40px; margin-left: 4px; }
+.videos {
+  /* 16:9 beside 9:16 at the same height: the short is 81/256 as wide. */
+  display: grid; grid-template-columns: 256fr 81fr; gap: 24px; max-width: 1180px; margin-inline: auto;
+}
+.videos .video { margin: 0; max-width: none; }
+.videos .video-short { aspect-ratio: 9 / 16; }
+.video.soon .video-play { display: none; }
+.video-soon {
+  position: relative; padding: 8px 18px; border-radius: 999px; background: rgba(0, 0, 0, 0.55);
+  color: #fff; font-weight: 800; display: none;
+}
+.video.soon .video-soon { display: block; }
+@media (max-width: 760px) {
+  .videos { grid-template-columns: 1fr; justify-items: center; }
+  .videos .video { width: 100%; }
+  .videos .video-short { width: min(100%, 320px); }
+}
 .video-poster:hover .video-play, .video-poster:focus-visible .video-play { transform: scale(1.08); }
 .video-poster:focus-visible { outline: 3px solid var(--teal); outline-offset: -6px; }
 .video-note { text-align: center; color: var(--muted); font-size: 0.9rem; margin: 14px 0 0; }
