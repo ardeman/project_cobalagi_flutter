@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -160,11 +161,7 @@ class _StoryPlayerState extends State<StoryPlayer>
     final l10n = AppLocalizations.of(context);
     final top = Row(
       children: [
-        const Icon(
-          Icons.auto_stories_rounded,
-          color: Color(0xFFFFC83D),
-          size: 36,
-        ),
+        const Icon(Icons.theaters_rounded, color: Color(0xFFFFC83D), size: 36),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
@@ -267,7 +264,7 @@ class _StoryPlayerState extends State<StoryPlayer>
           Positioned.fill(
             child: RepaintBoundary(
               child: CustomPaint(
-                painter: _ScenePainter(
+                painter: StoryScenePainter(
                   scene: widget.scene,
                   frame: _frame,
                   art: _art,
@@ -311,8 +308,10 @@ final _stars = () {
   ];
 }();
 
-class _ScenePainter extends CustomPainter {
-  _ScenePainter({
+/// Paints a moment of a scene over the night sky; [StoryPlayer] plays it and
+/// the story shelf shows each scene still.
+class StoryScenePainter extends CustomPainter {
+  StoryScenePainter({
     required this.scene,
     required this.frame,
     required this.art,
@@ -320,7 +319,7 @@ class _ScenePainter extends CustomPainter {
   }) : super(repaint: frame);
 
   final StoryScene scene;
-  final ValueNotifier<StoryFrame> frame;
+  final ValueListenable<StoryFrame> frame;
   final StoryArt? art;
 
   /// Kept clear of the title row and the words.
@@ -356,6 +355,6 @@ class _ScenePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_ScenePainter old) =>
+  bool shouldRepaint(StoryScenePainter old) =>
       old.scene != scene || old.art != art || old.stage != stage;
 }

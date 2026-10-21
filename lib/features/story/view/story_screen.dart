@@ -10,23 +10,55 @@ import 'package:cobalagi/features/story/view/arrival_scenes.dart';
 import 'package:cobalagi/features/story/view/ending_scenes.dart';
 import 'package:cobalagi/features/story/view/intro_scene.dart';
 import 'package:cobalagi/features/story/view/story_player.dart';
-import 'package:cobalagi/features/story/view/story_reel.dart';
 import 'package:cobalagi/learning/learner_state.dart';
 import 'package:cobalagi/learning/story.dart';
 
 /// Plays a scene of the Star fuel story, then goes back to the map. The map
-/// opens each scene once per child, and its book button plays [replay]:
-/// every scene the child has reached, as one ([StoryReel]).
+/// opens each scene once per child, and its movie button opens the story
+/// shelf (`StoryShelfScreen`), which plays any scene the child has reached
+/// again ([replay]).
 class StoryScreen extends StatelessWidget {
-  const StoryScreen({super.key, required this.profileId, required this.scene});
+  const StoryScreen({
+    super.key,
+    required this.profileId,
+    required this.scene,
+    this.replay = false,
+  });
 
   final int profileId;
 
   /// A key of [scenes].
   final String scene;
 
-  /// The route name of the story so far.
-  static const replay = 'replay';
+  /// Played again from the story shelf: it saves nothing and goes back to
+  /// the shelf.
+  final bool replay;
+
+  /// The route names of the scenes the child has reached, in story order:
+  /// the intro, then each planet's (the "new planet" scene that announced
+  /// it, its arrival, and the ending its stars completed).
+  ///
+  /// A planet counts as reached once its arrival or demo played, and also
+  /// when the child is past it on the map: the warm-up or a parent may have
+  /// started them further on, so they never saw the planets before.
+  static List<String> reached(LearnerState learner) {
+    final seen = learner.tutorialsSeen;
+    final current = arrivalScenes.keys.toList().indexOf(learner.currentConcept);
+    final names = ['intro'];
+    var sawEnding = false;
+    var i = 0;
+    for (final MapEntry(:key, :value) in arrivalScenes.entries) {
+      if (seen.contains(Story.newPlanet(key))) names.add('new-planet-$key');
+      if (i++ < current || seen.contains(value.id) || seen.contains(key)) {
+        names.add('arrival-$key');
+      }
+      if (seen.contains(Story.fullTank(key))) {
+        names.add(sawEnding ? 'full-again-$key' : 'ending-$key');
+        sawEnding = true;
+      }
+    }
+    return names;
+  }
 
   /// The scenes by their route name (`/child/<id>/story/<name>`): the
   /// intro, each planet's arrival (`arrival-<concept>`), and the endings and
@@ -64,15 +96,10 @@ class StoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final map = '/child/$profileId';
-    final story = scene == replay
-        ? switch (context.read<LearningCubit>().state.learner) {
-            final learner? => StoryReel.reached(learner),
-            null => null,
-          }
-        : scenes[scene];
+    final back = replay ? '/child/$profileId/stories' : '/child/$profileId';
+    final story = scenes[scene];
     if (story == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => context.go(map));
+      WidgetsBinding.instance.addPostFrameCallback((_) => context.go(back));
       return const Scaffold();
     }
     final profile = context.read<ProfilesCubit>().state.byId(profileId);
@@ -80,10 +107,8 @@ class StoryScreen extends StatelessWidget {
       scene: story,
       emblem: profile == null ? null : avatarEmblem(profile.avatar),
       onDone: () {
-        if (story is! StoryReel) {
-          context.read<LearningCubit>().markTutorialSeen(story.id);
-        }
-        context.go(map);
+        if (!replay) context.read<LearningCubit>().markTutorialSeen(story.id);
+        context.go(back);
       },
     );
   }

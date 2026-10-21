@@ -671,6 +671,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get storyTitle => 'Koba\'s star ship';
 
   @override
+  String get storyShelfIntro => 'The beginning';
+
+  @override
+  String get storyShelfNewPlanet => 'A new planet';
+
+  @override
+  String get storyShelfEnding => 'The tank is full!';
+
+  @override
+  String get storyShelfFullAgain => 'The tank is full again';
+
+  @override
   String get storyIntroFly => 'This is Koba\'s star ship. It flies on stars!';
 
   @override

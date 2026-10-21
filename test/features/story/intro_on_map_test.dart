@@ -8,6 +8,7 @@ import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/features/profiles/data/profile_repository.dart';
 import 'package:cobalagi/features/story/view/story_player.dart';
+import 'package:cobalagi/features/story/view/story_shelf_screen.dart';
 import 'package:cobalagi/learning/learner_state.dart';
 import 'package:cobalagi/learning/placement/placement.dart';
 import 'package:cobalagi/learning/story.dart';
@@ -80,9 +81,22 @@ void main() {
     final saved = await tester.runAsync(() => ProgressRepository(db).load(id));
     expect(saved!.tutorialsSeen, contains(Story.intro));
 
-    // The book button plays it again.
-    await tester.tap(find.byIcon(Icons.auto_stories_rounded));
+    // The movie button opens the shelf, whose card plays it again.
+    await tester.tap(find.byIcon(Icons.theaters_rounded));
+    await _settle(tester);
+    expect(find.byType(StoryShelfScreen), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.play_circle_fill_rounded).first);
     await _settle(tester);
     expect(find.byType(StoryPlayer), findsOneWidget);
+
+    // Skipping the replay goes back to the shelf.
+    await tester.tap(
+      find.descendant(
+        of: find.byType(StoryPlayer),
+        matching: find.byType(TextButton),
+      ),
+    );
+    await _settle(tester);
+    expect(find.byType(StoryShelfScreen), findsOneWidget);
   });
 }

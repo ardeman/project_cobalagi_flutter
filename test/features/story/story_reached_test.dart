@@ -1,26 +1,23 @@
 import 'package:cobalagi/features/story/view/arrival_scenes.dart';
-import 'package:cobalagi/features/story/view/ending_scenes.dart';
-import 'package:cobalagi/features/story/view/intro_scene.dart';
-import 'package:cobalagi/features/story/view/story_reel.dart';
+import 'package:cobalagi/features/story/view/story_screen.dart';
 import 'package:cobalagi/learning/learner_state.dart';
 import 'package:cobalagi/learning/story.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('StoryReel.reached', () {
-    test('plays the intro alone before any planet', () {
-      final reel = StoryReel.reached(
+  group('StoryScreen.reached', () {
+    test('has the intro alone before any planet', () {
+      final names = StoryScreen.reached(
         const LearnerState(
           currentConcept: 'directions',
           tutorialsSeen: {Story.intro},
         ),
       );
-      expect(reel.scenes.single, isA<IntroScene>());
-      expect(reel.beats, hasLength(const IntroScene().beats.length));
+      expect(names, ['intro']);
     });
 
     test('adds every planet reached in map order, demos counting too', () {
-      final reel = StoryReel.reached(
+      final names = StoryScreen.reached(
         LearnerState(
           currentConcept: 'directions',
           tutorialsSeen: {
@@ -32,22 +29,18 @@ void main() {
           },
         ),
       );
-      expect(reel.scenes.map((s) => s.id), [
-        Story.intro,
-        Story.arrival('directions'),
-        Story.arrival('sequencing'),
-        Story.arrival('loops'),
+      expect(names, [
+        'intro',
+        'arrival-directions',
+        'arrival-sequencing',
+        'arrival-loops',
       ]);
-      expect(
-        reel.beats,
-        hasLength(reel.scenes.fold<int>(0, (n, s) => n + s.beats.length)),
-      );
     });
 
     test('puts each ending after its planet, the later ones short', () {
       final first = arrivalScenes.keys.elementAt(arrivalScenes.length - 2);
       final last = arrivalScenes.keys.last;
-      final reel = StoryReel.reached(
+      final names = StoryScreen.reached(
         LearnerState(
           currentConcept: last,
           tutorialsSeen: {
@@ -59,26 +52,35 @@ void main() {
           },
         ),
       );
-      expect(reel.scenes.skip(arrivalScenes.length).map((s) => s.runtimeType), [
-        EndingScene,
-        NewPlanetScene,
-        arrivalScenes[last]!.runtimeType,
-        FullAgainScene,
+      expect(names.skip(arrivalScenes.length), [
+        'ending-$first',
+        'new-planet-$last',
+        'arrival-$last',
+        'full-again-$last',
       ]);
     });
 
     test('adds the planets the warm-up or a parent skipped', () {
-      final reel = StoryReel.reached(
+      final names = StoryScreen.reached(
         const LearnerState(
           currentConcept: 'loops',
           tutorialsSeen: {Story.intro},
         ),
       );
-      expect(reel.scenes.map((s) => s.id), [
-        Story.intro,
-        Story.arrival('directions'),
-        Story.arrival('sequencing'),
-      ]);
+      expect(names, ['intro', 'arrival-directions', 'arrival-sequencing']);
+    });
+
+    test('names only scenes the story screen can play', () {
+      final names = StoryScreen.reached(
+        LearnerState(
+          currentConcept: arrivalScenes.keys.last,
+          tutorialsSeen: {
+            Story.intro,
+            for (final c in arrivalScenes.keys) Story.fullTank(c),
+          },
+        ),
+      );
+      expect(names.where((n) => !StoryScreen.scenes.containsKey(n)), isEmpty);
     });
   });
 }

@@ -1286,6 +1286,30 @@ abstract class AppLocalizations {
   /// **'Koba\'s star ship'**
   String get storyTitle;
 
+  /// No description provided for @storyShelfIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'The beginning'**
+  String get storyShelfIntro;
+
+  /// No description provided for @storyShelfNewPlanet.
+  ///
+  /// In en, this message translates to:
+  /// **'A new planet'**
+  String get storyShelfNewPlanet;
+
+  /// No description provided for @storyShelfEnding.
+  ///
+  /// In en, this message translates to:
+  /// **'The tank is full!'**
+  String get storyShelfEnding;
+
+  /// No description provided for @storyShelfFullAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'The tank is full again'**
+  String get storyShelfFullAgain;
+
   /// No description provided for @storyIntroFly.
   ///
   /// In en, this message translates to:

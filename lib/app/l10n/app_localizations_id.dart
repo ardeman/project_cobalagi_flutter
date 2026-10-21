@@ -660,6 +660,18 @@ class AppLocalizationsId extends AppLocalizations {
   String get storyTitle => 'Kapal bintang Koba';
 
   @override
+  String get storyShelfIntro => 'Awal cerita';
+
+  @override
+  String get storyShelfNewPlanet => 'Planet baru';
+
+  @override
+  String get storyShelfEnding => 'Tangkinya penuh!';
+
+  @override
+  String get storyShelfFullAgain => 'Tangkinya penuh lagi';
+
+  @override
   String get storyIntroFly =>
       'Ini kapal bintang Koba. Kapal ini terbang dengan bintang!';
 

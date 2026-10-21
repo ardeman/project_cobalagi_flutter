@@ -156,9 +156,7 @@ class AdventureMapScreen extends StatelessWidget {
             actions: [
               if (learner.placement != null)
                 _StoryButton(
-                  onPressed: () => context.go(
-                    '/child/$profileId/story/${StoryScreen.replay}',
-                  ),
+                  onPressed: () => context.go('/child/$profileId/stories'),
                 ),
               if (learner.placement != null)
                 _StickerButton(
@@ -264,7 +262,8 @@ class _Greeting extends StatelessWidget {
   );
 }
 
-/// Plays Koba's story again (⧉, like "Watch how" on a planet).
+/// Opens the story shelf, to watch Koba's story again (⧉, like "Watch how"
+/// on a planet).
 class _StoryButton extends StatelessWidget {
   const _StoryButton({required this.onPressed});
 
@@ -282,7 +281,7 @@ class _StoryButton extends StatelessWidget {
         onPressed: onPressed,
         // Gold, like the story's stars, so it isn't taken for the stickers.
         icon: const Icon(
-          Icons.auto_stories_rounded,
+          Icons.theaters_rounded,
           size: 32,
           color: Color(0xFFFFC83D),
         ),

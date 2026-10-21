@@ -38,6 +38,7 @@ const _screens = [
   '/child/1/warm-up/colors',
   '/child/1/tutorial/sequencing',
   '/child/1/story/intro',
+  '/child/1/stories',
   '/child/1/pretest',
   '/parent',
   '/parent/progress/1',
