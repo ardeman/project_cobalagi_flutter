@@ -293,6 +293,20 @@ class _SpaceMapState extends State<SpaceMap> {
 
 /// The night sky, its stars and glowing clouds, and the dotted flight path
 /// between planets.
+/// The map's starry sky alone, with no planets or paths (the first visit's
+/// welcome).
+class SpaceSky extends StatelessWidget {
+  const SpaceSky({super.key});
+
+  @override
+  Widget build(BuildContext context) => RepaintBoundary(
+    child: CustomPaint(
+      painter: _SkyPainter(paths: const [], reached: 0),
+      size: Size.infinite,
+    ),
+  );
+}
+
 class _SkyPainter extends CustomPainter {
   _SkyPainter({required this.paths, required this.reached});
 

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../app/l10n/app_localizations.dart';
+import '../cubit/profiles_cubit.dart';
+import '../data/profile.dart';
 import 'profile_avatar.dart';
 import 'package:cobalagi/core/widgets/focus_tap.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
@@ -17,6 +20,22 @@ Future<(String, int)?> showProfileDialog(
   context: context,
   builder: (_) => _AddProfileDialog(nickname: nickname, avatar: avatar),
 );
+
+/// Lets a parent change [profile]'s nickname and avatar, and saves them.
+Future<void> editProfile(BuildContext context, Profile profile) async {
+  final result = await showProfileDialog(
+    context,
+    nickname: profile.nickname,
+    avatar: profile.avatar,
+  );
+  if (result == null || !context.mounted) return;
+  final (nickname, avatar) = result;
+  await context.read<ProfilesCubit>().edit(
+    profile.id,
+    nickname: nickname,
+    avatar: avatar,
+  );
+}
 
 class _AddProfileDialog extends StatefulWidget {
   const _AddProfileDialog({this.nickname, this.avatar});

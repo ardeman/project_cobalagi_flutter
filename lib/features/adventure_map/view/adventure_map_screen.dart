@@ -186,11 +186,18 @@ class AdventureMapScreen extends StatelessWidget {
                 WindowClass.expanded => 180.0,
               };
               if (learner.placement == null) {
-                return SafeArea(
-                  child: _Welcome(
-                    size: islandSize,
-                    onStart: () => context.go('/child/$profileId/pretest'),
-                  ),
+                // In space like the map, so the night bars and words show.
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    const SpaceSky(),
+                    SafeArea(
+                      child: _Welcome(
+                        size: islandSize,
+                        onStart: () => context.go('/child/$profileId/pretest'),
+                      ),
+                    ),
+                  ],
                 );
               }
               // The sky fills the screen on every device, under the app bar and
@@ -327,7 +334,12 @@ class _WelcomeState extends State<_Welcome> {
           Text(
             l10n.pretestWelcome,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.headlineMedium,
+            // White on the starry sky, like the planets' names.
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              shadows: const [Shadow(color: Color(0xAA0B0D2A), blurRadius: 6)],
+            ),
           ),
           const SizedBox(height: 32),
           GamepadShortcut(

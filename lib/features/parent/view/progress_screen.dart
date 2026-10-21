@@ -14,6 +14,7 @@ import '../../learning/data/parent_placement.dart';
 import '../../learning/data/progress_repository.dart';
 import '../../learning/view/concepts.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
+import '../../profiles/view/add_profile_dialog.dart';
 import '../../profiles/view/profile_avatar.dart';
 import 'donation_sheet.dart';
 import 'placement_dialog.dart';
@@ -86,12 +87,48 @@ class _ProgressScreenState extends State<ProgressScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Tapping the avatar or the name changes them.
                 ListTile(
                   contentPadding: EdgeInsets.zero,
-                  leading: ProfileAvatar(avatar: profile.avatar, size: 56),
-                  title: Text(
-                    profile.nickname,
-                    style: Theme.of(context).textTheme.titleLarge,
+                  minLeadingWidth: 64,
+                  leading: Tooltip(
+                    message: l10n.editPlayer,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => editProfile(context, profile),
+                      child: SizedBox.square(
+                        dimension: 64,
+                        child: Center(
+                          child: ProfileAvatar(
+                            avatar: profile.avatar,
+                            size: 56,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  title: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => editProfile(context, profile),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: 64),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                profile.nickname,
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(Icons.edit_outlined, size: 20),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                   subtitle: Text(
                     placementSummary(

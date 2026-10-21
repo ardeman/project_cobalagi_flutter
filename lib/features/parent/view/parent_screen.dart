@@ -53,21 +53,6 @@ class ParentScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _edit(BuildContext context, Profile profile) async {
-    final result = await showProfileDialog(
-      context,
-      nickname: profile.nickname,
-      avatar: profile.avatar,
-    );
-    if (result == null || !context.mounted) return;
-    final (nickname, avatar) = result;
-    await context.read<ProfilesCubit>().edit(
-      profile.id,
-      nickname: nickname,
-      avatar: avatar,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -196,7 +181,7 @@ class ParentScreen extends StatelessWidget {
                 _PlayerTile(
                   key: ValueKey(profile.id),
                   profile: profile,
-                  onEdit: () => _edit(context, profile),
+                  onEdit: () => editProfile(context, profile),
                   onDelete: () => _confirmDelete(context, profile),
                 ),
               const SizedBox(height: 32),
@@ -275,11 +260,16 @@ class _PlayerTileState extends State<_PlayerTile> {
         children: [
           IconButton(
             tooltip: l10n.editPlayer,
+            style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
             icon: const Icon(Icons.edit_outlined),
             onPressed: widget.onEdit,
           ),
+          // Apart from Edit, so a parent doesn't tap Delete by mistake.
+          const SizedBox(width: 24),
           IconButton(
             tooltip: l10n.delete,
+            style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
+            color: Theme.of(context).colorScheme.error,
             icon: const Icon(Icons.delete_outline),
             onPressed: widget.onDelete,
           ),
