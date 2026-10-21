@@ -1321,10 +1321,24 @@ class _HowToHand extends StatefulWidget {
 
 class _HowToHandState extends State<_HowToHand>
     with SingleTickerProviderStateMixin {
-  late final _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 2200),
-  )..repeat();
+  late final _controller =
+      AnimationController(
+          vsync: this,
+          duration: const Duration(milliseconds: 2200),
+        )
+        ..addListener(_measure)
+        ..repeat();
+
+  /// Where the drag starts and ends, measured on each tick, before the frame
+  /// builds: during a build a block's element can be on its way to a new
+  /// place in the tree and has no render box to ask.
+  Offset? _from;
+  Offset? _to;
+
+  void _measure() {
+    _from = _centre(widget.from);
+    _to = _centre(widget.to, dy: 0.3);
+  }
 
   @override
   void dispose() {
@@ -1346,8 +1360,7 @@ class _HowToHandState extends State<_HowToHand>
   Widget build(BuildContext context) => AnimatedBuilder(
     animation: _controller,
     builder: (context, _) {
-      final from = _centre(widget.from);
-      final to = _centre(widget.to, dy: 0.3);
+      final (from, to) = (_from, _to);
       if (from == null || to == null) return const SizedBox.shrink();
       // Press, drag, let go, then fade before the next round.
       final t = _controller.value;
