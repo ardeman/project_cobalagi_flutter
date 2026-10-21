@@ -28,11 +28,15 @@ class ParkedShip extends StatefulWidget {
     required this.centre,
     required this.islandSize,
     required this.fill,
+    this.emblem,
   });
 
   final Offset centre;
   final double islandSize;
   final double fill;
+
+  /// The commander's emblem on the ship's hull ([StoryArt.emblem]).
+  final (IconData, Color)? emblem;
 
   @override
   State<ParkedShip> createState() => _ParkedShipState();
@@ -46,7 +50,7 @@ class _ParkedShipState extends State<ParkedShip> {
     super.initState();
     StoryArt.load().then(
       (art) {
-        if (mounted) setState(() => _art = art);
+        if (mounted) setState(() => _art = art.withEmblem(widget.emblem));
       },
       // Without its pictures the map shows no ship.
       onError: (Object _) {},
@@ -108,6 +112,7 @@ class ShipFlight extends StatefulWidget {
     required this.fillFrom,
     required this.fillTo,
     required this.onLanded,
+    this.emblem,
   });
 
   final Offset from;
@@ -116,6 +121,9 @@ class ShipFlight extends StatefulWidget {
   final double fillFrom;
   final double fillTo;
   final VoidCallback onLanded;
+
+  /// The commander's emblem on the ship's hull ([StoryArt.emblem]).
+  final (IconData, Color)? emblem;
 
   /// How long the flight takes, from take-off to landing and fading away.
   static const duration = Duration(milliseconds: 7000);
@@ -152,7 +160,7 @@ class _ShipFlightState extends State<ShipFlight>
     StoryArt.load().then(
       (art) {
         if (!mounted) return;
-        setState(() => _art = art);
+        setState(() => _art = art.withEmblem(widget.emblem));
         context.read<AudioService>().playVoice(
           VoiceClips.storyFly,
           languageCode: Localizations.localeOf(context).languageCode,

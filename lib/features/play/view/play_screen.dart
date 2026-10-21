@@ -6,6 +6,8 @@ import '../../../learning/learning_engine.dart';
 import '../../../learning/story.dart';
 import '../../learning/cubit/learning_cubit.dart';
 import '../../play_time/cubit/break_reminder_cubit.dart';
+import '../../profiles/cubit/profiles_cubit.dart';
+import '../../profiles/view/profile_avatar.dart';
 import '../../play_time/data/play_clock.dart';
 import '../../play_time/view/break_screen.dart';
 import '../../story/view/arrival_scenes.dart';
@@ -58,9 +60,13 @@ class _PlayScreenState extends State<PlayScreen> {
           concept,
           exercise.plan.mode,
         )) {
+      final profile = context.read<ProfilesCubit>().state.byId(
+        widget.profileId,
+      );
       return StoryPlayer(
         key: ValueKey(arrival.id),
         scene: arrival,
+        emblem: profile == null ? null : avatarEmblem(profile.avatar),
         onDone: () {
           setState(() => _watched.add(arrival.id));
           learning.markTutorialSeen(arrival.id);

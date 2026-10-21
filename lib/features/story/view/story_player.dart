@@ -21,10 +21,18 @@ import 'package:cobalagi/features/story/data/story_scene.dart';
 /// With reduced motion each beat shows still, as it ends, for as long as it
 /// speaks.
 class StoryPlayer extends StatefulWidget {
-  const StoryPlayer({super.key, required this.scene, required this.onDone});
+  const StoryPlayer({
+    super.key,
+    required this.scene,
+    required this.onDone,
+    this.emblem,
+  });
 
   final StoryScene scene;
   final VoidCallback onDone;
+
+  /// The commander's emblem on the ship's hull ([StoryArt.emblem]).
+  final (IconData, Color)? emblem;
 
   @override
   State<StoryPlayer> createState() => _StoryPlayerState();
@@ -57,7 +65,7 @@ class _StoryPlayerState extends State<StoryPlayer>
     super.initState();
     StoryArt.load().then(
       (art) {
-        if (mounted) setState(() => _art = art);
+        if (mounted) setState(() => _art = art.withEmblem(widget.emblem));
       },
       // Without its pictures the scene still speaks.
       onError: (Object _) {},

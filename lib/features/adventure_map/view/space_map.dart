@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/learning/view/concepts.dart';
-import 'package:cobalagi/core/widgets/paint_transition.dart';
 import 'package:cobalagi/features/adventure_map/view/map_connections.dart';
 import 'package:cobalagi/features/play/view/world/ink.dart';
 import 'package:cobalagi/features/play/view/world/planet_piece.dart';
@@ -56,13 +55,14 @@ final class MapFlight {
 
 /// The adventure map: planets in a starry sky, joined by a dotted flight path
 /// that winds left to right on wide screens and top to bottom (scrolling) on
-/// narrow ones. [marker] (the child's avatar) bobs above the current planet.
+/// narrow ones. Koba's ship, with the child's [emblem] on it, stands on the
+/// current planet.
 class SpaceMap extends StatefulWidget {
   const SpaceMap({
     super.key,
     required this.islands,
-    required this.marker,
     required this.onOpen,
+    this.emblem,
     this.padding = EdgeInsets.zero,
     this.flight,
     this.shipFill = 0,
@@ -73,7 +73,9 @@ class SpaceMap extends StatefulWidget {
   /// Room at the top and bottom kept clear of planets, for bars that float
   /// over the map; the sky still fills it.
   final EdgeInsets padding;
-  final Widget marker;
+
+  /// The child's emblem, painted on Koba's ship ([StoryArt.emblem]).
+  final (IconData, Color)? emblem;
 
   /// Opens an island's levels; never called for a locked island.
   final ValueChanged<String> onOpen;
@@ -190,7 +192,7 @@ class _SpaceMapState extends State<SpaceMap> {
           children: [
             // Its own layer: the sky is costly (hundreds of stars, glowing
             // clouds) and must not repaint whenever something on the map
-            // animates, such as the bobbing marker.
+            // animates, such as a planet opening.
             Positioned.fill(
               child: RepaintBoundary(
                 child: CustomPaint(
@@ -217,7 +219,6 @@ class _SpaceMapState extends State<SpaceMap> {
                   child: _Island(
                     island: widget.islands[i],
                     size: size,
-                    marker: widget.marker,
                     // Phones show the label beside the island instead.
                     label: wide,
                     onTap: _open(i),
@@ -254,6 +255,7 @@ class _SpaceMapState extends State<SpaceMap> {
                   centre: centres[current],
                   islandSize: size,
                   fill: widget.shipFill,
+                  emblem: widget.emblem,
                 ),
               ),
             if (flight != null)
@@ -265,6 +267,7 @@ class _SpaceMapState extends State<SpaceMap> {
                   fillFrom: flight.fillFrom,
                   fillTo: flight.fillTo,
                   onLanded: () => setState(() => _landed = true),
+                  emblem: widget.emblem,
                 ),
               ),
           ],
@@ -444,14 +447,12 @@ class _Island extends StatelessWidget {
   const _Island({
     required this.island,
     required this.size,
-    required this.marker,
     required this.onTap,
     this.label = true,
   });
 
   final MapIsland island;
   final double size;
-  final Widget marker;
   final VoidCallback? onTap;
 
   /// Stars, name and lessons below the island; phones place an
@@ -545,11 +546,6 @@ class _Island extends StatelessWidget {
                           size: size * 0.5,
                           color: Colors.white.withValues(alpha: 0.9),
                         ),
-                      ),
-                    if (island.current)
-                      Positioned(
-                        bottom: size * 0.36 + badge * 0.85,
-                        child: _Bobbing(child: marker),
                       ),
                   ],
                 ),
@@ -681,54 +677,6 @@ class _PlanetPiece extends CustomPainter {
   @override
   bool shouldRepaint(_PlanetPiece old) =>
       old.concept != concept || old.locked != locked || old.current != current;
-}
-
-/// Gently moves [child] up and down: "you are here".
-class _Bobbing extends StatefulWidget {
-  const _Bobbing({required this.child});
-
-  final Widget child;
-
-  @override
-  State<_Bobbing> createState() => _BobbingState();
-}
-
-class _BobbingState extends State<_Bobbing>
-    with SingleTickerProviderStateMixin {
-  late final _controller = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 900),
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (MediaQuery.disableAnimationsOf(context)) {
-      _controller.stop();
-      _controller.value = 0;
-    } else {
-      _controller.repeat(reverse: true);
-    }
-  }
-
-  @override
-  void dispose() {
-    _curve.dispose();
-    _controller.dispose();
-    super.dispose();
-  }
-
-  late final _curve = CurvedAnimation(
-    parent: _controller,
-    curve: Curves.easeInOut,
-  );
-
-  @override
-  Widget build(BuildContext context) => PaintTransition(
-    animation: _curve,
-    transform: PaintTransition.translateY(-6),
-    child: widget.child,
-  );
 }
 
 /// The opening of a newly reached island: the island bounces in while its

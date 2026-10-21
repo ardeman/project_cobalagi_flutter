@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' show IconData;
 
 /// The ship's four pictures (`assets/images/ship_<view>.webp`, exported from
 /// `branding/ship/` by `tool/ship/export.sh`).
@@ -30,6 +31,8 @@ final class ShipGeometry {
     required this.tankWidth,
     required this.cockpit,
     required this.cockpitRadius,
+    required this.emblem,
+    required this.emblemRadius,
   });
 
   /// The middle of the engine, on the ground.
@@ -44,6 +47,11 @@ final class ShipGeometry {
   final Offset cockpit;
   final double cockpitRadius;
 
+  /// Where the commander's emblem is painted on the hull, beside the
+  /// windows. Picked by eye, not from `ship.json`.
+  final Offset emblem;
+  final double emblemRadius;
+
   static ShipGeometry of(ShipView view) => switch (view) {
     ShipView.landed => const ShipGeometry(
       base: Offset(256.0, 400.8),
@@ -52,6 +60,8 @@ final class ShipGeometry {
       tankWidth: 32.2,
       cockpit: Offset(234.25, 231.6),
       cockpitRadius: 22.4,
+      emblem: Offset(293, 262),
+      emblemRadius: 20,
     ),
     ShipView.launch => const ShipGeometry(
       base: Offset(256.0, 361.45),
@@ -60,6 +70,8 @@ final class ShipGeometry {
       tankWidth: 32.2,
       cockpit: Offset(234.25, 192.25),
       cockpitRadius: 22.4,
+      emblem: Offset(293, 222.65),
+      emblemRadius: 20,
     ),
     ShipView.landing => const ShipGeometry(
       base: Offset(256.0, 393.5),
@@ -68,6 +80,8 @@ final class ShipGeometry {
       tankWidth: 32.2,
       cockpit: Offset(234.25, 224.3),
       cockpitRadius: 22.4,
+      emblem: Offset(293, 254.7),
+      emblemRadius: 20,
     ),
     ShipView.flying => const ShipGeometry(
       base: Offset(145.6, 270.65),
@@ -76,6 +90,8 @@ final class ShipGeometry {
       tankWidth: 32.2,
       cockpit: Offset(313.6, 205.6),
       cockpitRadius: 22.4,
+      emblem: Offset(292, 264),
+      emblemRadius: 16,
     ),
   };
 
@@ -86,7 +102,13 @@ final class ShipGeometry {
 /// The story's pictures, decoded once and shared by every scene and the
 /// map's flight. Scenes paint without them until they are loaded.
 final class StoryArt {
-  StoryArt._(this.ships, this.tanks, this.robot, this.robotFront);
+  StoryArt._(
+    this.ships,
+    this.tanks,
+    this.robot,
+    this.robotFront, [
+    this.emblem,
+  ]);
 
   final Map<ShipView, ui.Image> ships;
 
@@ -96,6 +118,15 @@ final class StoryArt {
   /// Koba from the side, facing right (`robot.png`), and facing the child.
   final ui.Image robot;
   final ui.Image robotFront;
+
+  /// The commander's emblem (their avatar's icon and colour), painted on the
+  /// ship's hull: it is the child's ship too. None paints a plain hull.
+  final (IconData, Color)? emblem;
+
+  /// The same pictures with [emblem] on the ship.
+  StoryArt withEmblem((IconData, Color)? emblem) => emblem == this.emblem
+      ? this
+      : StoryArt._(ships, tanks, robot, robotFront, emblem);
 
   static Future<StoryArt>? _loading;
 

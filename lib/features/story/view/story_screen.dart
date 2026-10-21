@@ -3,16 +3,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:cobalagi/features/learning/cubit/learning_cubit.dart';
+import 'package:cobalagi/features/profiles/cubit/profiles_cubit.dart';
+import 'package:cobalagi/features/profiles/view/profile_avatar.dart';
 import 'package:cobalagi/features/story/data/story_scene.dart';
 import 'package:cobalagi/features/story/view/arrival_scenes.dart';
 import 'package:cobalagi/features/story/view/ending_scenes.dart';
 import 'package:cobalagi/features/story/view/intro_scene.dart';
 import 'package:cobalagi/features/story/view/story_player.dart';
+import 'package:cobalagi/features/story/view/story_reel.dart';
 import 'package:cobalagi/learning/learner_state.dart';
 import 'package:cobalagi/learning/story.dart';
 
 /// Plays a scene of the Star fuel story, then goes back to the map. The map
-/// opens it once per child, and its book button plays it again.
+/// opens each scene once per child, and its book button plays [replay]:
+/// every scene the child has reached, as one ([StoryReel]).
 class StoryScreen extends StatelessWidget {
   const StoryScreen({super.key, required this.profileId, required this.scene});
 
@@ -20,6 +24,9 @@ class StoryScreen extends StatelessWidget {
 
   /// A key of [scenes].
   final String scene;
+
+  /// The route name of the story so far.
+  static const replay = 'replay';
 
   /// The scenes by their route name (`/child/<id>/story/<name>`): the
   /// intro, each planet's arrival (`arrival-<concept>`), and the endings and
@@ -58,15 +65,24 @@ class StoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final map = '/child/$profileId';
-    final story = scenes[scene];
+    final story = scene == replay
+        ? switch (context.read<LearningCubit>().state.learner) {
+            final learner? => StoryReel.reached(learner),
+            null => null,
+          }
+        : scenes[scene];
     if (story == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => context.go(map));
       return const Scaffold();
     }
+    final profile = context.read<ProfilesCubit>().state.byId(profileId);
     return StoryPlayer(
       scene: story,
+      emblem: profile == null ? null : avatarEmblem(profile.avatar),
       onDone: () {
-        context.read<LearningCubit>().markTutorialSeen(story.id);
+        if (story is! StoryReel) {
+          context.read<LearningCubit>().markTutorialSeen(story.id);
+        }
         context.go(map);
       },
     );

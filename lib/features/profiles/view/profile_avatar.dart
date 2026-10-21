@@ -11,6 +11,11 @@ const avatarStyles = <(IconData, Color)>[
   (Icons.auto_awesome_rounded, Color(0xFF4DB6AC)),
 ];
 
+/// The icon and colour of [avatar], also painted as the child's emblem on
+/// Koba's ship.
+(IconData, Color) avatarEmblem(int avatar) =>
+    avatarStyles[avatar % avatarStyles.length];
+
 class ProfileAvatar extends StatelessWidget {
   const ProfileAvatar({super.key, required this.avatar, this.size = 96});
 
@@ -19,7 +24,7 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (icon, color) = avatarStyles[avatar % avatarStyles.length];
+    final (icon, color) = avatarEmblem(avatar);
     return Container(
       width: size,
       height: size,

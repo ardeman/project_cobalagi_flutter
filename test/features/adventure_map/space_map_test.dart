@@ -37,7 +37,6 @@ Future<List<String>> pumpMap(
       ),
       home: Scaffold(
         body: SpaceMap(
-          marker: const Icon(Icons.face, key: Key('marker')),
           islands: [
             island('directions'),
             island('sequencing', current: true),
@@ -85,26 +84,6 @@ void main() {
     expect(opened, ['directions', 'sequencing', 'directions']);
   });
 
-  testWidgets('reduced motion stops bobbing and responds to setting changes', (
-    tester,
-  ) async {
-    final marker = find.byKey(const Key('marker'));
-    await pumpMap(tester, const Size(1280, 740));
-    final start = tester.getTopLeft(marker);
-    await tester.pump(const Duration(milliseconds: 450));
-    expect(tester.getTopLeft(marker).dy, lessThan(start.dy));
-
-    await pumpMap(tester, const Size(1280, 740), disableAnimations: true);
-    final still = tester.getTopLeft(marker);
-    await tester.pump(const Duration(milliseconds: 450));
-    expect(tester.getTopLeft(marker), still);
-    expect(tester.hasRunningAnimations, isFalse);
-
-    await pumpMap(tester, const Size(1280, 740));
-    await tester.pump(const Duration(milliseconds: 450));
-    expect(tester.getTopLeft(marker).dy, lessThan(still.dy));
-  });
-
   for (final (name, size) in [
     ('tablet', const Size(1280, 740)),
     ('phone', const Size(400, 760)),
@@ -113,7 +92,8 @@ void main() {
       tester,
     ) async {
       final opened = await pumpMap(tester, size);
-      expect(find.byKey(const Key('marker')), findsOneWidget);
+      // Koba's ship stands on the current planet.
+      expect(find.byType(ParkedShip), findsOneWidget);
       expect(find.text('1/6'), findsNWidgets(4));
       // Fog on the two locked islands.
       expect(find.byIcon(Icons.cloud_rounded), findsNWidgets(2));
@@ -145,7 +125,6 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SpaceMap(
-            marker: const Icon(Icons.face, key: Key('marker')),
             islands: [
               for (final id in ids)
                 island(id, current: id == 'variables', locked: id == 'until'),
@@ -170,9 +149,9 @@ void main() {
         if (n.evaluate().isNotEmpty) tester.getTopLeft(n).dy.round(),
     };
     expect(tops, hasLength(1), reason: 'all labels on one line');
-    final marker = tester.getCenter(find.byKey(const Key('marker')));
+    final current = tester.getCenter(find.text('Step Box'));
     // The current island starts in the middle of the screen.
-    expect(marker.dx, closeTo(420, 60));
+    expect(current.dx, closeTo(420, 60));
     expect(tester.getSize(find.text('Step Box')).height, greaterThan(14));
     expect(tester.takeException(), isNull);
   });
@@ -194,7 +173,6 @@ void main() {
           ),
           home: Scaffold(
             body: SpaceMap(
-              marker: const Icon(Icons.face),
               islands: [
                 island('directions'),
                 MapIsland(
@@ -244,7 +222,6 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: SpaceMap(
-            marker: const Icon(Icons.face, key: Key('marker')),
             padding: const EdgeInsets.only(top: 96, bottom: 96),
             islands: [
               for (final id in ids)

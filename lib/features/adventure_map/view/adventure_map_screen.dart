@@ -76,12 +76,7 @@ class AdventureMapScreen extends StatelessWidget {
         finished: currentIndex,
         planets: concepts.length,
       ),
-      marker: GlassSurface(
-        padding: const EdgeInsets.all(3),
-        radius: 48,
-        blur: false,
-        child: ProfileAvatar(avatar: profile.avatar, size: 40),
-      ),
+      emblem: avatarEmblem(profile.avatar),
       islands: [
         // Picture games before the coding islands, always open.
         MapIsland(
@@ -157,7 +152,9 @@ class AdventureMapScreen extends StatelessWidget {
             actions: [
               if (learner.placement != null)
                 _StoryButton(
-                  onPressed: () => context.go('/child/$profileId/story/intro'),
+                  onPressed: () => context.go(
+                    '/child/$profileId/story/${StoryScreen.replay}',
+                  ),
                 ),
               if (learner.placement != null)
                 _StickerButton(
@@ -165,22 +162,7 @@ class AdventureMapScreen extends StatelessWidget {
                   onPressed: () => context.go('/child/$profileId/stickers'),
                 ),
             ],
-            title: Row(
-              children: [
-                ProfileAvatar(avatar: profile.avatar, size: 44),
-                const SizedBox(width: 12),
-                Flexible(
-                  child: Text(
-                    l10n.greeting(profile.nickname),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                // Koba greets the child and watches where they tap.
-                const SizedBox(width: 8),
-                const KobaHead.follow(size: 44),
-              ],
-            ),
+            title: _Greeting(words: l10n.greeting(profile.nickname)),
           ),
           body: WindowClassBuilder(
             builder: (context, windowClass) {
@@ -238,6 +220,44 @@ class AdventureMapScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Koba greeting the child, with "Hi, Arde!" when it fits whole: a bar too
+/// narrow for it (a phone, with the map's buttons) leaves Koba alone, never
+/// a cut-off "Hi...". The child's emblem is on Koba's ship, on the map.
+class _Greeting extends StatelessWidget {
+  const _Greeting({required this.words});
+
+  final String words;
+
+  /// Koba's picture has room around its head, so it is drawn bigger than
+  /// the bar's buttons' icons to look their size.
+  static const _koba = 56.0;
+  static const _gap = 12.0;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final text = TextPainter(
+        text: TextSpan(text: words, style: DefaultTextStyle.of(context).style),
+        maxLines: 1,
+        textDirection: Directionality.of(context),
+        textScaler: MediaQuery.textScalerOf(context),
+      )..layout();
+      final fits = _koba + _gap + text.width <= constraints.maxWidth;
+      text.dispose();
+      return Row(
+        children: [
+          // Koba greets the child and watches where they tap.
+          const KobaHead.follow(size: _koba),
+          if (fits) ...[
+            const SizedBox(width: _gap),
+            Flexible(child: Text(words, maxLines: 1, softWrap: false)),
+          ],
+        ],
+      );
+    },
+  );
 }
 
 /// Plays Koba's story again (⧉, like "Watch how" on a planet).

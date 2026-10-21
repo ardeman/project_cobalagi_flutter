@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/painting.dart';
+import 'package:flutter/widgets.dart' show IconData;
 
 import 'package:cobalagi/core/character/robot_face.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
@@ -12,7 +13,8 @@ final _fuelShine = Paint()..color = const Color(0xFFFFF3C4);
 /// point on [canvas], its picture [size] wide, turned by [angle] and
 /// [mirror]ed to face left. Its tank is [fill] full (0 to 1) and Koba's
 /// [face] looks out of the cockpit, unless Koba is out of the ship
-/// ([koba] false); [time] (seconds) makes it blink.
+/// ([koba] false); [time] (seconds) makes it blink. The commander's
+/// emblem ([StoryArt.emblem]) is on its hull.
 void paintShip(
   Canvas canvas,
   StoryArt art,
@@ -81,6 +83,10 @@ void paintShip(
       ..restore();
   }
 
+  if (art.emblem case final emblem?) {
+    _paintEmblem(canvas, emblem, g.emblem, g.emblemRadius, mirror: mirror);
+  }
+
   // Koba looks out of the round window.
   if (koba) {
     canvas
@@ -93,6 +99,54 @@ void paintShip(
 
   if (opacity < 1) canvas.restore();
   canvas.restore();
+}
+
+final _ink = Paint()..color = const Color(0xFF1F2340);
+final _rim = Paint()..color = const Color(0xFFFFFFFF);
+
+/// The commander's [emblem] as a round badge of radius [r] at [c], kept
+/// readable (not mirrored) when the ship faces left.
+void _paintEmblem(
+  Canvas canvas,
+  (IconData, Color) emblem,
+  Offset c,
+  double r, {
+  required bool mirror,
+}) {
+  final (icon, color) = emblem;
+  canvas
+    ..drawCircle(c, r + 2.5, _ink)
+    ..drawCircle(c, r, _rim)
+    ..drawCircle(
+      c,
+      r * 0.84,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-0.4, -0.45),
+          radius: 1.1,
+          colors: [Color.lerp(color, const Color(0xFFFFFFFF), 0.3)!, color],
+        ).createShader(Rect.fromCircle(center: c, radius: r * 0.84)),
+    );
+  final glyph = TextPainter(
+    text: TextSpan(
+      text: String.fromCharCode(icon.codePoint),
+      style: TextStyle(
+        fontFamily: icon.fontFamily,
+        package: icon.fontPackage,
+        fontSize: r * 1.1,
+        height: 1,
+        color: const Color(0xFFFFFFFF),
+      ),
+    ),
+    textDirection: TextDirection.ltr,
+  )..layout();
+  canvas
+    ..save()
+    ..translate(c.dx, c.dy)
+    ..scale(mirror ? -1 : 1, 1);
+  glyph.paint(canvas, Offset(-glyph.width / 2, -glyph.height / 2));
+  canvas.restore();
+  glyph.dispose();
 }
 
 /// A five-pointed star of radius [r] around [c], for the stars Koba collects.
