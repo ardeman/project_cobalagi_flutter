@@ -73,7 +73,7 @@ void main() {
     await calm(tester);
     await tester.tap(find.text('Tester'));
 
-    // 2. The first warm-up: one wrong answer first, then until it ends.
+    // 2. The first warm-up, to its end.
     await waitFor(tester, find.text('Start'), step: 'warm-up welcome');
     await calm(tester);
     await shot('02_warm_up_welcome');
@@ -96,9 +96,13 @@ void main() {
       await waitFor(tester, cards, step: 'question ${questions + 1}');
       await calm(tester);
       if (questions == 1) await shot('03_warm_up_question');
-      // Card 0 first, then the next card each time, so some answers are
-      // right and some are not.
-      await tester.tap(cards.at(questions % cards.evaluate().length));
+      // Always a wrong answer, so every run places the child on the first
+      // planet, whose lessons the test can solve without loops.
+      final right = tester
+          .widget<QuestionView>(find.byType(QuestionView))
+          .question
+          .correct;
+      await tester.tap(cards.at((right + 1) % cards.evaluate().length));
       await waitFor(tester, check, step: 'answer feedback');
       if (find.text('The answer is this one!').evaluate().isNotEmpty &&
           !sawTryAgain) {
@@ -135,6 +139,7 @@ void main() {
     final planet = map.read<LearningCubit>().state.learner!.currentConcept;
     final name = conceptName(AppLocalizations.of(map), planet);
     step('the child starts on $planet ($name)');
+    expect(planet, 'directions', reason: 'only wrong answers were given');
     await tester.tap(find.text(name).first);
 
     final play = find.byType(PlayScreen);
