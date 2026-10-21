@@ -33,10 +33,31 @@ import '../../profiles/view/profile_avatar.dart';
 import 'space_map.dart';
 
 /// A child's home: one island per concept, with stars for mastery.
-class AdventureMapScreen extends StatelessWidget {
-  const AdventureMapScreen({super.key, required this.profileId});
+class AdventureMapScreen extends StatefulWidget {
+  const AdventureMapScreen({
+    super.key,
+    required this.profileId,
+    this.flyHome = false,
+  });
 
   final int profileId;
+
+  /// Set by "Continue the adventure" on another planet: Koba's ship flies
+  /// back to the current planet, then the puzzle starts, as with Play.
+  final bool flyHome;
+
+  @override
+  State<AdventureMapScreen> createState() => _AdventureMapScreenState();
+}
+
+class _AdventureMapScreenState extends State<AdventureMapScreen> {
+  /// The map, so Play can fly Koba's ship back to the current planet first.
+  final _map = GlobalKey<SpaceMapState>();
+
+  int get profileId => widget.profileId;
+
+  /// Whether this visit's [AdventureMapScreen.flyHome] has started.
+  var _flyingHome = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +96,7 @@ class AdventureMapScreen extends StatelessWidget {
             fillTo: Story.tankFill(finished: opening, planets: concepts.length),
           );
     SpaceMap map(EdgeInsets padding) => SpaceMap(
+      key: _map,
       padding: padding,
       flight: flight,
       shipFill: Story.tankFill(
@@ -115,15 +137,31 @@ class AdventureMapScreen extends StatelessWidget {
             : '/child/$profileId/island/$id',
       ),
     );
+    // The ship flies back from a planet the child visited first.
+    void onPlay() {
+      void go() => context.go('/child/$profileId/play');
+      final map = _map.currentState;
+      map == null ? go() : map.flyHome(go);
+    }
+
+    if (!widget.flyHome) {
+      _flyingHome = false;
+    } else if (!_flyingHome && (ModalRoute.of(context)?.isCurrent ?? true)) {
+      _flyingHome = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) onPlay();
+      });
+    }
+
     final play = Padding(
       padding: const EdgeInsets.all(16),
       child: GamepadShortcut(
         button: PadButton.x,
-        onPressed: () => context.go('/child/$profileId/play'),
+        onPressed: onPlay,
         child: FilledButton.icon(
           icon: const Icon(Icons.play_arrow_rounded, size: 48),
           label: Text(l10n.play),
-          onPressed: () => context.go('/child/$profileId/play'),
+          onPressed: onPlay,
         ),
       ),
     );

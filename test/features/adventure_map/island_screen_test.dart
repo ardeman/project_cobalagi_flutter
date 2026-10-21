@@ -142,6 +142,10 @@ void main() {
               Text('replay ${state.pathParameters['levelId']}'),
         ),
         GoRoute(path: '/child/1/play', builder: (_, _) => const Text('play')),
+        GoRoute(
+          path: '/child/1',
+          builder: (_, state) => Text('map ${state.uri.query}'),
+        ),
       ],
     );
     await tester.pumpWidget(
@@ -162,6 +166,14 @@ void main() {
     await tester.tap(find.text('Play level 2'));
     await tester.pumpAndSettle();
     expect(find.text('replay directions-02'), findsOneWidget);
+
+    // The adventure is on another planet: the map flies Koba's ship there
+    // first.
+    router.go('/child/1/island/directions');
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue the adventure'));
+    await tester.pumpAndSettle();
+    expect(find.text('map fly=home'), findsOneWidget);
   });
 
   testWidgets('the trail shows played puzzles and the fewest left', (

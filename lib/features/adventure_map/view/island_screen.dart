@@ -50,6 +50,13 @@ class IslandScreen extends StatelessWidget {
         ? null
         : firstUnsolved;
     void play(int i) => context.go('/child/$profileId/replay/${lessons[i].id}');
+    // From another planet, the map first flies Koba's ship back to the
+    // current one (where it already stands for the current planet).
+    void adventure() => context.go(
+      current || MediaQuery.disableAnimationsOf(context)
+          ? '/child/$profileId/play'
+          : '/child/$profileId?fly=home',
+    );
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -136,12 +143,11 @@ class IslandScreen extends StatelessWidget {
                         // adventure takes X.
                         GamepadShortcut(
                           button: PadButton.y,
-                          onPressed: () => context.go('/child/$profileId/play'),
+                          onPressed: adventure,
                           child: OutlinedButton.icon(
                             icon: const Icon(Icons.explore_rounded),
                             label: Text(l10n.continueAdventure),
-                            onPressed: () =>
-                                context.go('/child/$profileId/play'),
+                            onPressed: adventure,
                           ),
                         ),
                         GamepadShortcut(
@@ -159,15 +165,14 @@ class IslandScreen extends StatelessWidget {
                       ] else
                         GamepadShortcut(
                           button: PadButton.x,
-                          onPressed: () => context.go('/child/$profileId/play'),
+                          onPressed: adventure,
                           child: FilledButton.icon(
                             icon: const Icon(
                               Icons.play_arrow_rounded,
                               size: 40,
                             ),
                             label: Text(l10n.continueAdventure),
-                            onPressed: () =>
-                                context.go('/child/$profileId/play'),
+                            onPressed: adventure,
                           ),
                         ),
                     ],

@@ -56,7 +56,8 @@ final class MapFlight {
 /// The adventure map: planets in a starry sky, joined by a dotted flight path
 /// that winds left to right on wide screens and top to bottom (scrolling) on
 /// narrow ones. Koba's ship, with the child's [emblem] on it, stands on the
-/// current planet.
+/// current planet. Opening another planet flies the ship there first, and
+/// it stays there until [SpaceMapState.flyHome] flies it back.
 class SpaceMap extends StatefulWidget {
   const SpaceMap({
     super.key,
@@ -77,7 +78,8 @@ class SpaceMap extends StatefulWidget {
   /// The child's emblem, painted on Koba's ship ([StoryArt.emblem]).
   final (IconData, Color)? emblem;
 
-  /// Opens an island's levels; never called for a locked island.
+  /// Opens an island's levels, once the ship has landed on it; never called
+  /// for a locked island.
   final ValueChanged<String> onOpen;
 
   /// Set while a finished planet is celebrated: the opening planet waits
@@ -88,10 +90,10 @@ class SpaceMap extends StatefulWidget {
   final double shipFill;
 
   @override
-  State<SpaceMap> createState() => _SpaceMapState();
+  State<SpaceMap> createState() => SpaceMapState();
 }
 
-class _SpaceMapState extends State<SpaceMap> {
+class SpaceMapState extends State<SpaceMap> {
   /// Made on the first narrow layout, scrolled to the current island.
   ScrollController? _scroll;
 
@@ -104,12 +106,55 @@ class _SpaceMapState extends State<SpaceMap> {
   /// Whether the ship of [SpaceMap.flight] has landed.
   var _landed = false;
 
+  /// The island the ship stands on, if not the current one: the last one
+  /// the child opened.
+  int? _shipAt;
+
+  /// The ship's trip to an island the child opens, or back to the current
+  /// one, then what to do once it lands.
+  ({int from, int to, VoidCallback then})? _hop;
+
+  int get _current => widget.islands.indexWhere((i) => i.current);
+
+  /// Flies the ship to island [to] (from wherever it stands), then calls
+  /// [then]; at once without animations, or when it is already there.
+  void _flyTo(int to, VoidCallback then) {
+    if (_hop != null) return;
+    final from = _shipAt ?? _current;
+    if (from == to || from < 0 || MediaQuery.disableAnimationsOf(context)) {
+      setState(() => _shipAt = to);
+      then();
+      return;
+    }
+    setState(() => _hop = (from: from, to: to, then: then));
+  }
+
+  void _hopLanded() {
+    final hop = _hop;
+    if (hop == null) return;
+    setState(() {
+      _hop = null;
+      _shipAt = hop.to;
+    });
+    hop.then();
+  }
+
+  /// Flies the ship back to the current planet from the one the child last
+  /// opened, then calls [then] (the map's Play).
+  void flyHome(VoidCallback then) =>
+      _current < 0 ? then() : _flyTo(_current, then);
+
   @override
-  void didUpdateWidget(SpaceMap old) {
-    super.didUpdateWidget(old);
+  void didUpdateWidget(SpaceMap oldWidget) {
+    super.didUpdateWidget(oldWidget);
     // The map stays open under the puzzles, so a later planet's flight must
     // not find the last one landed: its ship would already be parked.
-    if (widget.flight?.from != old.flight?.from) _landed = false;
+    if (widget.flight?.from != oldWidget.flight?.from) _landed = false;
+    // A celebration flies from the finished planet and stays on the next.
+    if (widget.flight != null && oldWidget.flight == null) {
+      _shipAt = null;
+      _hop = null;
+    }
   }
 
   @override
@@ -124,7 +169,7 @@ class _SpaceMapState extends State<SpaceMap> {
 
   VoidCallback? _open(int i) => widget.islands[i].locked
       ? null
-      : () => widget.onOpen(widget.islands[i].conceptId);
+      : () => _flyTo(i, () => widget.onOpen(widget.islands[i].conceptId));
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -192,6 +237,11 @@ class _SpaceMapState extends State<SpaceMap> {
       final reached = widget.islands.lastIndexWhere((i) => !i.locked);
 
       final current = widget.islands.indexWhere((i) => i.current);
+      final hop = flight == null ? _hop : null;
+      final shipAt = switch (_shipAt) {
+        final i? when i < n => i,
+        _ => current,
+      };
       final map = SizedBox(
         width: mapWidth,
         height: height,
@@ -256,11 +306,12 @@ class _SpaceMapState extends State<SpaceMap> {
                   ),
                 ),
             ],
-            // Koba's ship, landed on the current planet once it is there.
-            if (current >= 0 && (flight == null || _landed))
+            // Koba's ship, landed on the current planet once it is there,
+            // or on the one the child last opened.
+            if (shipAt >= 0 && hop == null && (flight == null || _landed))
               Positioned.fill(
                 child: ParkedShip(
-                  centre: centres[current],
+                  centre: centres[shipAt],
                   islandSize: size,
                   fill: widget.shipFill,
                   emblem: widget.emblem,
@@ -278,6 +329,18 @@ class _SpaceMapState extends State<SpaceMap> {
                   fillFrom: flight.fillFrom,
                   fillTo: flight.fillTo,
                   onLanded: () => setState(() => _landed = true),
+                  emblem: widget.emblem,
+                ),
+              ),
+            if (hop != null)
+              Positioned.fill(
+                key: ValueKey(('hop', hop.from, hop.to)),
+                child: ShipFlight.hop(
+                  from: centres[hop.from],
+                  to: centres[hop.to],
+                  islandSize: size,
+                  fill: widget.shipFill,
+                  onLanded: _hopLanded,
                   emblem: widget.emblem,
                 ),
               ),

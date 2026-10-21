@@ -103,6 +103,9 @@ class _ParkedPainter extends CustomPainter {
 /// full), and it flies along the path to the next planet and lands there,
 /// which then calls [onLanded]. Placed over the map in its coordinates;
 /// [from] and [to] are the planets' centres as the map lays them out.
+///
+/// [ShipFlight.hop] is the short trip to a planet the child opens, or back
+/// to the current one: no stars, no voice, and it lands as it ends.
 class ShipFlight extends StatefulWidget {
   const ShipFlight({
     super.key,
@@ -113,7 +116,19 @@ class ShipFlight extends StatefulWidget {
     required this.fillTo,
     required this.onLanded,
     this.emblem,
-  });
+  }) : _timeline = _FlightTimeline.celebrate;
+
+  const ShipFlight.hop({
+    super.key,
+    required this.from,
+    required this.to,
+    required this.islandSize,
+    required double fill,
+    required this.onLanded,
+    this.emblem,
+  }) : fillFrom = fill,
+       fillTo = fill,
+       _timeline = _FlightTimeline.hop;
 
   final Offset from;
   final Offset to;
@@ -125,8 +140,13 @@ class ShipFlight extends StatefulWidget {
   /// The commander's emblem on the ship's hull ([StoryArt.emblem]).
   final (IconData, Color)? emblem;
 
+  final _FlightTimeline _timeline;
+
   /// How long the flight takes, from take-off to landing and fading away.
   static const duration = Duration(milliseconds: 7000);
+
+  /// How long a [ShipFlight.hop] takes, from take-off to landing.
+  static const hopDuration = Duration(milliseconds: 2400);
 
   @override
   State<ShipFlight> createState() => _ShipFlightState();
@@ -134,23 +154,13 @@ class ShipFlight extends StatefulWidget {
 
 class _ShipFlightState extends State<ShipFlight>
     with SingleTickerProviderStateMixin {
+  late final _timeline = widget._timeline;
   late final _controller = AnimationController(
     vsync: this,
-    duration: ShipFlight.duration,
+    duration: _timeline.duration,
   );
   StoryArt? _art;
   var _landed = false;
-
-  /// Sounds by when they play, as a share of the flight.
-  static const _sounds = [
-    (0.2, SoundEffect.star),
-    (0.27, SoundEffect.star),
-    (0.34, SoundEffect.star),
-    (_landAt, SoundEffect.goal),
-  ];
-
-  /// When the ship touches down on the next planet.
-  static const _landAt = 0.86;
   var _last = 0.0;
 
   @override
@@ -161,10 +171,12 @@ class _ShipFlightState extends State<ShipFlight>
       (art) {
         if (!mounted) return;
         setState(() => _art = art.withEmblem(widget.emblem));
-        context.read<AudioService>().playVoice(
-          VoiceClips.storyFly,
-          languageCode: Localizations.localeOf(context).languageCode,
-        );
+        if (_timeline.collects) {
+          context.read<AudioService>().playVoice(
+            VoiceClips.storyFly,
+            languageCode: Localizations.localeOf(context).languageCode,
+          );
+        }
         _controller.forward();
       },
       // Without its pictures the planet opens at once.
@@ -174,13 +186,13 @@ class _ShipFlightState extends State<ShipFlight>
 
   void _tick() {
     final v = _controller.value;
-    for (final (at, effect) in _sounds) {
+    for (final (at, effect) in _timeline.sounds) {
       if (_last < at && v >= at) {
         context.read<AudioService>().playEffect(effect);
       }
     }
     _last = v;
-    if (v >= _landAt) _land();
+    if (v >= _timeline.landAt) _land();
   }
 
   void _land() {
@@ -200,6 +212,7 @@ class _ShipFlightState extends State<ShipFlight>
     child: CustomPaint(
       painter: _FlightPainter(
         progress: _controller,
+        timeline: _timeline,
         art: _art,
         from: widget.from,
         to: widget.to,
@@ -214,6 +227,7 @@ class _ShipFlightState extends State<ShipFlight>
 class _FlightPainter extends CustomPainter {
   _FlightPainter({
     required this.progress,
+    required this.timeline,
     required this.art,
     required this.from,
     required this.to,
@@ -223,6 +237,7 @@ class _FlightPainter extends CustomPainter {
   }) : super(repaint: progress);
 
   final Animation<double> progress;
+  final _FlightTimeline timeline;
   final StoryArt? art;
   final Offset from;
   final Offset to;
@@ -243,16 +258,17 @@ class _FlightPainter extends CustomPainter {
     final up = start - Offset(0, hover);
     final over = end - Offset(0, hover);
     double part(double a, double b) => ((v - a) / (b - a)).clamp(0.0, 1.0);
-    final time = v * ShipFlight.duration.inMilliseconds / 1000;
+    final t = timeline;
+    final time = v * t.duration.inMilliseconds / 1000;
     final bob = Offset(0, sin(time * 3) * size * 0.03);
 
-    if (v < 0.4) {
+    if (v < t.flyFrom) {
       // Lifts off, then hovers while the planet's stars fly into the tank.
-      final lift = Curves.easeInOut.transform(part(0, 0.14));
+      final lift = Curves.easeInOut.transform(part(0, t.liftTo));
       final base = Offset.lerp(start, up, lift)! + (lift == 1 ? bob : .zero);
       // It grows from its size on the planet as it lifts off.
       final big = parked + (picture - parked) * lift;
-      final collect = part(0.14, 0.4);
+      final collect = t.collects ? part(t.liftTo, t.flyFrom) : 0.0;
       paintShip(
         canvas,
         art,
@@ -275,9 +291,9 @@ class _FlightPainter extends CustomPainter {
             Offset(sin(pi * p) * size * 0.2, 0);
         _star(canvas, at, size * 0.09 * (1 - 0.5 * p), time * 3 + i);
       }
-    } else if (v < 0.75) {
+    } else if (v < t.flyTo) {
       // Flies in an arc along the path to the next planet, nose first.
-      final p = Curves.easeInOut.transform(part(0.4, 0.75));
+      final p = Curves.easeInOut.transform(part(t.flyFrom, t.flyTo));
       final control = (up + over) / 2 - Offset(0, size * 0.6);
       final base = _bezier(up, control, over, p);
       final heading = _bezier(up, control, over, min(1, p + 0.01)) - base;
@@ -299,10 +315,8 @@ class _FlightPainter extends CustomPainter {
       );
     } else {
       // Comes down on the planet, then fades as the planet opens.
-      final down = Curves.easeOut.transform(
-        part(0.75, _ShipFlightState._landAt),
-      );
-      final landed = v >= _ShipFlightState._landAt;
+      final down = Curves.easeOut.transform(part(t.flyTo, t.landAt));
+      final landed = v >= t.landAt;
       paintShip(
         canvas,
         art,
@@ -313,7 +327,7 @@ class _FlightPainter extends CustomPainter {
         fill: fillTo,
         face: landed ? RobotFace.cheer : RobotFace.normal,
         time: time,
-        opacity: 1 - part(0.93, 1),
+        opacity: t.landAt < 1 ? 1 - part(0.93, 1) : 1,
       );
     }
   }
@@ -321,11 +335,63 @@ class _FlightPainter extends CustomPainter {
   @override
   bool shouldRepaint(_FlightPainter old) =>
       old.art != art ||
+      old.timeline != timeline ||
       old.from != from ||
       old.to != to ||
       old.size != size ||
       old.fillFrom != fillFrom ||
       old.fillTo != fillTo;
+}
+
+/// When each part of a [ShipFlight] happens, as a share of its [duration]:
+/// the lift-off ends at [liftTo], the flight runs from [flyFrom] to [flyTo],
+/// and the ship touches down at [landAt].
+enum _FlightTimeline {
+  celebrate(
+    duration: ShipFlight.duration,
+    collects: true,
+    liftTo: 0.14,
+    flyFrom: 0.4,
+    flyTo: 0.75,
+    landAt: 0.86,
+    sounds: [
+      (0.2, SoundEffect.star),
+      (0.27, SoundEffect.star),
+      (0.34, SoundEffect.star),
+      (0.86, SoundEffect.goal),
+    ],
+  ),
+  hop(
+    duration: ShipFlight.hopDuration,
+    collects: false,
+    liftTo: 0.2,
+    flyFrom: 0.22,
+    flyTo: 0.8,
+    landAt: 1,
+    sounds: [],
+  );
+
+  const _FlightTimeline({
+    required this.duration,
+    required this.collects,
+    required this.liftTo,
+    required this.flyFrom,
+    required this.flyTo,
+    required this.landAt,
+    required this.sounds,
+  });
+
+  final Duration duration;
+
+  /// Whether the planet's stars fly into the tank while the ship hovers.
+  final bool collects;
+  final double liftTo;
+  final double flyFrom;
+  final double flyTo;
+  final double landAt;
+
+  /// Sounds by when they play, as a share of the flight.
+  final List<(double, SoundEffect)> sounds;
 }
 
 Offset _bezier(Offset a, Offset c, Offset b, double t) =>

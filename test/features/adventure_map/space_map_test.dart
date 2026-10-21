@@ -1,5 +1,6 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/features/adventure_map/view/space_map.dart';
+import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/features/story/view/ship_flight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,7 +53,24 @@ Future<List<String>> pumpMap(
   return opened;
 }
 
+/// Lets a [ShipFlight.hop] load its pictures, fly and land.
+Future<void> flyShip(WidgetTester tester) async {
+  await tester.pump();
+  // The loaded pictures reach the flight on the real event loop.
+  await tester.runAsync(() => Future<void>.delayed(Duration.zero));
+  await tester.pump();
+  await tester.pump(ShipFlight.hopDuration);
+  await tester.pump();
+}
+
 void main() {
+  // Loaded once on the real event loop: a load started inside a test's fake
+  // clock never finishes for the tests after it.
+  setUpAll(() async {
+    TestWidgetsFlutterBinding.ensureInitialized();
+    await StoryArt.load();
+  });
+
   testWidgets('Koba\'s ship stands on the current planet', (tester) async {
     await pumpMap(tester, const Size(1280, 740));
     final ship = tester.widget<ParkedShip>(find.byType(ParkedShip));
@@ -66,7 +84,12 @@ void main() {
   testWidgets('keyboard navigation opens only unlocked islands', (
     tester,
   ) async {
-    final opened = await pumpMap(tester, const Size(1280, 740));
+    // Without animations the ship's trips don't wait.
+    final opened = await pumpMap(
+      tester,
+      const Size(1280, 740),
+      disableAnimations: true,
+    );
 
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pump();
@@ -98,16 +121,61 @@ void main() {
       // Fog on the two locked islands.
       expect(find.byIcon(Icons.cloud_rounded), findsNWidgets(2));
 
+      // The ship is already on the current planet: it opens at once.
       await tester.tap(find.text('Step by step'));
+      expect(opened, ['sequencing']);
       await tester.ensureVisible(find.text('Directions'));
       await tester.pump();
       await tester.tap(find.text('Directions'));
+      await flyShip(tester);
+      expect(opened, ['sequencing', 'directions']);
       await tester.ensureVisible(find.text('Loops'));
       await tester.pump();
       await tester.tap(find.text('Loops'));
+      await tester.pump();
+      expect(find.byType(ShipFlight), findsNothing);
       expect(opened, ['sequencing', 'directions']);
     });
   }
+
+  testWidgets('the ship flies to an opened planet, and back for Play', (
+    tester,
+  ) async {
+    final opened = await pumpMap(tester, const Size(1280, 740));
+    Offset shipAt() =>
+        tester.widget<ParkedShip>(find.byType(ParkedShip)).centre;
+    final home = shipAt();
+
+    await tester.tap(find.text('Directions'));
+    await tester.pump();
+    // It flies first, and the planet opens once it lands there.
+    expect(find.byType(ParkedShip), findsNothing);
+    expect(opened, isEmpty);
+    await flyShip(tester);
+    expect(opened, ['directions']);
+    final visited = shipAt();
+    expect(visited, isNot(home));
+    expect(find.byType(ShipFlight), findsNothing);
+
+    // Play flies it back to the current planet before the puzzle starts.
+    var played = false;
+    tester
+        .state<SpaceMapState>(find.byType(SpaceMap))
+        .flyHome(() => played = true);
+    await tester.pump();
+    expect(played, isFalse);
+    await flyShip(tester);
+    expect(played, isTrue);
+    expect(shipAt(), home);
+
+    // From home, Play starts at once.
+    played = false;
+    tester
+        .state<SpaceMapState>(find.byType(SpaceMap))
+        .flyHome(() => played = true);
+    expect(played, isTrue);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('a phone held sideways shows one big row it can scroll', (
     tester,

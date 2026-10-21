@@ -34,8 +34,10 @@ GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
       routes: [
         GoRoute(
           path: '/child/:profileId',
-          builder: (_, state) =>
-              AdventureMapScreen(profileId: _profileId(state)),
+          builder: (_, state) => AdventureMapScreen(
+            profileId: _profileId(state),
+            flyHome: state.uri.queryParameters['fly'] == 'home',
+          ),
           routes: [
             GoRoute(
               path: 'play',
