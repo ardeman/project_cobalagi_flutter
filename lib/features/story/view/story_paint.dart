@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/painting.dart';
 
 import 'package:cobalagi/core/character/robot_face.dart';
+import 'package:cobalagi/core/character/robot_turn.dart';
 import 'package:cobalagi/features/play/view/world/planet_piece.dart';
 import 'package:cobalagi/features/play/view/world/world_theme.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
@@ -207,7 +208,8 @@ void paintDust(Canvas canvas, Offset base, double u, double p) {
 
 /// Koba from the side (facing right, or left when [mirror]ed) or, with
 /// [front], facing the child (with [back], from behind), standing at [base]
-/// in a picture [size] wide.
+/// in a picture [size] wide. With [turnFrame] it shows that frame of Koba
+/// turning on the spot instead (see `robotTurnFrame`).
 void paintKoba(
   Canvas canvas,
   StoryArt art, {
@@ -220,24 +222,32 @@ void paintKoba(
   bool mirror = false,
   double angle = 0,
   Offset gaze = Offset.zero,
+  int? turnFrame,
 }) {
   // Where the wheels touch the ground in the 512-pixel pictures.
-  final foot = front || back ? const Offset(256, 500) : const Offset(270, 500);
+  final foot = front || back || turnFrame != null
+      ? const Offset(256, 500)
+      : const Offset(270, 500);
   canvas
     ..save()
     ..translate(base.dx, base.dy)
     ..rotate(angle)
     ..scale(mirror ? -size / 512 : size / 512, size / 512)
-    ..translate(-foot.dx, -foot.dy)
-    ..drawImage(
-      back
-          ? art.robotBack
-          : front
-          ? art.robotFront
-          : art.robot,
-      Offset.zero,
-      Paint(),
-    );
+    ..translate(-foot.dx, -foot.dy);
+  if (turnFrame != null) {
+    paintRobotTurning(canvas, art.robotTurn, turnFrame, face, time: time);
+    canvas.restore();
+    return;
+  }
+  canvas.drawImage(
+    back
+        ? art.robotBack
+        : front
+        ? art.robotFront
+        : art.robot,
+    Offset.zero,
+    Paint(),
+  );
   if (!back) paintRobotFace(canvas, face, time: time, front: front, gaze: gaze);
   canvas.restore();
 }

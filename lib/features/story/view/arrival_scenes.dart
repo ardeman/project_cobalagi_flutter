@@ -211,6 +211,7 @@ final class ArrivalStage {
     bool mirror = false,
     double angle = 0,
     Offset gaze = Offset.zero,
+    int? turnFrame,
   }) {
     final art = this.art;
     if (art == null) return;
@@ -226,6 +227,7 @@ final class ArrivalStage {
       mirror: mirror,
       angle: angle,
       gaze: gaze,
+      turnFrame: turnFrame,
     );
   }
 }

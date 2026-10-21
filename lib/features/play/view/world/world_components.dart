@@ -9,6 +9,7 @@ import '../../../../engine/world/direction.dart';
 import '../../../../engine/world/grid_point.dart';
 import '../../../../engine/world/level.dart';
 import '../../../../core/character/robot_face.dart';
+import '../../../../core/character/robot_turn.dart';
 import 'board_painter.dart';
 import 'ink.dart';
 import 'world_theme.dart';
@@ -177,14 +178,10 @@ class ActorComponent extends PositionComponent {
   Sprite? headSprite;
   Sprite? bodySprite;
 
-  /// The 3D robot turning on the spot (`assets/images/robot_turn.webp`, made
-  /// by `tool/robot/render_turn.py`), shown part way round a turn so it
-  /// turns round instead of switching pictures: [turnFrameCount] frames of
-  /// 256 pixels, six to a row, each turned a step further from facing the
-  /// child towards its right, the wheels rolling opposite ways.
+  /// The 3D robot turning on the spot (`assets/images/robot_turn.webp`, see
+  /// [robotTurnFrameCount]), shown part way round a turn so it turns round
+  /// instead of switching pictures.
   Image? turnFrames;
-
-  static const turnFrameCount = 24;
 
   /// Set while it moves between tiles: it stays on the ground then, instead
   /// of bobbing.
@@ -246,7 +243,6 @@ class ActorComponent extends PositionComponent {
   static final _eye = Paint()..color = const Color(0xFFFFFFFF);
   static final _pupil = Paint()..color = const Color(0xFF263238);
   static final _shadow = Paint()..color = const Color(0x33000000);
-  static final _smooth = Paint()..filterQuality = FilterQuality.medium;
   static final _picture = Vector2.all(512);
 
   /// A soft cone of light from the robot over the next tile, facing up
@@ -326,21 +322,9 @@ class ActorComponent extends PositionComponent {
   }
 
   /// The turning frame to show for a facing [angle] on the screen, or null
-  /// when it faces along the board: the drawn pictures show then.
-  int? _turnFrame(double angle) {
-    if (turnFrames == null) return null;
-    final quarters = angle / (pi / 2);
-    if ((quarters - quarters.roundToDouble()).abs() < 0.04) return null;
-    // The drawn pictures as turns of the 3D robot, in degrees, clockwise
-    // on the screen from facing up: its back, the three-quarter picture
-    // (facing right), its front, the three-quarter picture mirrored, its
-    // back again. In between, it turns evenly.
-    const pictures = [180.0, 310.0, 360.0, 410.0, 540.0];
-    final at = quarters % 4;
-    final i = at.floor();
-    final degrees = pictures[i] + (pictures[i + 1] - pictures[i]) * (at - i);
-    return (degrees * turnFrameCount / 360).round() % turnFrameCount;
-  }
+  /// when it faces along the board (see [robotTurnFrame]).
+  int? _turnFrame(double angle) =>
+      turnFrames == null ? null : robotTurnFrame(angle);
 
   @override
   void render(Canvas canvas) {
@@ -464,28 +448,9 @@ class ActorComponent extends PositionComponent {
   /// on its screen while that shows.
   void _renderTurning(Canvas canvas, int frame, RobotFace face) {
     canvas
-      ..drawImageRect(
-        turnFrames!,
-        Rect.fromLTWH(frame % 6 * 256, frame ~/ 6 * 256, 256, 256),
-        const Rect.fromLTWH(-0.55, -0.82, 1.1, 1.1),
-        _smooth,
-      )
       ..translate(-0.55, -0.82)
       ..scale(1.1 / 512);
-    // How far the frame is turned, and where the middle of its screen shows
-    // then, in the 512 pixels of the drawn pictures: measured on the frames,
-    // as the curved screen's front (render_turn.py's numbers) swings
-    // further round than the part that shows.
-    final turned = frame * 2 * pi / turnFrameCount;
-    if (cos(turned) < 0.2) return;
-    paintRobotFace(
-      canvas,
-      face,
-      time: _time,
-      gaze: Offset(-sin(turned) * 14, 0),
-      at: Offset(256 - 75 * sin(turned), 194),
-      squash: cos(turned),
-    );
+    paintRobotTurning(canvas, turnFrames!, frame, face, time: _time);
   }
 
   static final _navy = Paint()

@@ -107,7 +107,8 @@ final class StoryArt {
     this.tanks,
     this.robot,
     this.robotFront,
-    this.robotBack, [
+    this.robotBack,
+    this.robotTurn, [
     this.emblem,
   ]);
 
@@ -122,6 +123,9 @@ final class StoryArt {
   final ui.Image robotFront;
   final ui.Image robotBack;
 
+  /// Koba turning on the spot, as in the puzzle (see `robotTurnFrame`).
+  final ui.Image robotTurn;
+
   /// The commander's emblem (their avatar's icon and colour), painted on the
   /// ship's hull: it is the child's ship too. None paints a plain hull.
   final (IconData, Color)? emblem;
@@ -129,7 +133,15 @@ final class StoryArt {
   /// The same pictures with [emblem] on the ship.
   StoryArt withEmblem((IconData, Color)? emblem) => emblem == this.emblem
       ? this
-      : StoryArt._(ships, tanks, robot, robotFront, robotBack, emblem);
+      : StoryArt._(
+          ships,
+          tanks,
+          robot,
+          robotFront,
+          robotBack,
+          robotTurn,
+          emblem,
+        );
 
   static Future<StoryArt>? _loading;
 
@@ -156,6 +168,7 @@ final class StoryArt {
       await image('robot.png'),
       await image('robot_front.png'),
       await image('robot_back.png'),
+      await image('robot_turn.webp'),
     );
   }
 }

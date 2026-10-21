@@ -5,6 +5,7 @@ import 'package:flutter/animation.dart';
 
 import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/character/robot_face.dart';
+import 'package:cobalagi/core/character/robot_turn.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
 import 'package:cobalagi/engine/interpreter/run_event.dart';
 import 'package:cobalagi/engine/world/direction.dart';
@@ -13,6 +14,7 @@ import 'package:cobalagi/engine/world/level.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
 import 'package:cobalagi/features/play/view/world/board_painter.dart';
 import 'package:cobalagi/features/play/view/world/ink.dart';
+import 'package:cobalagi/features/play/view/world/world_game.dart';
 import 'package:cobalagi/features/play/view/world/world_theme.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/features/story/data/story_scene.dart';
@@ -53,12 +55,33 @@ abstract class BoardArrival extends ArrivalScene {
   static const _dropsFrom = 0.03, _dropsTo = 0.28, _go = 0.3;
   static const _runFrom = 0.34, _runTo = 0.92;
 
+  /// How much of the beat a second of the run takes: as fast as in the
+  /// puzzle, unless the run is too long to fit before [_runTo].
+  double get _perSecond => min(
+    1000 / kobaLength.inMilliseconds,
+    (_runTo - _runFrom) / play.starts.last,
+  );
+
   double _dropAt(int i) =>
       _dropsFrom + (_dropsTo - _dropsFrom) * i / max(1, blocks.length - 1);
 
-  /// When step [i] of the run starts, and how long each lasts.
-  double _stepAt(int i) => _runFrom + i * _stepLength;
-  double get _stepLength => (_runTo - _runFrom) / play.steps.length;
+  /// When step [i] of the run starts (with [i] past the last, when the run
+  /// ends), timed as in the puzzle.
+  double _stepAt(int i) => _runFrom + play.starts[i] * _perSecond;
+  double get _runEnd => _stepAt(play.steps.length);
+
+  /// The step playing at [t] (the last one once the run is over).
+  int _stepNow(double t) {
+    var i = 0;
+    while (i + 1 < play.steps.length && _stepAt(i + 1) <= t) {
+      i++;
+    }
+    return i;
+  }
+
+  /// How far through step [i] the run is at [t], 0 to 1, not eased.
+  double _through(int i, double t) =>
+      ((t - _stepAt(i)) / (_stepAt(i + 1) - _stepAt(i))).clamp(0, 1);
 
   @override
   List<(double, SoundEffect)> get effects => [
@@ -68,7 +91,7 @@ abstract class BoardArrival extends ArrivalScene {
       (_stepAt(i), step.turn ? SoundEffect.turn : SoundEffect.step),
       if (step.star) (_stepAt(i + 1), SoundEffect.star),
     ],
-    (_runTo, SoundEffect.goal),
+    (_runEnd, SoundEffect.goal),
   ];
 
   // Unused: the board scene paints itself.
@@ -108,20 +131,17 @@ abstract class BoardArrival extends ArrivalScene {
     _paintProgram(s, b);
 
     // Where the run is: the step playing and how far through it.
-    final into = ((s.t - _runFrom) / _stepLength).clamp(
-      0.0,
-      play.steps.length.toDouble(),
-    );
-    final done = into >= play.steps.length;
-    final now = done ? play.steps.length - 1 : into.floor();
+    final done = s.t >= _runEnd;
+    final now = _stepNow(s.t);
     final step = play.steps[now];
-    final p = done ? 1.0 : Curves.easeInOut.transform(into - now);
+    final through = _through(now, s.t);
+    final p = step.curve.transform(through);
     final taken = {
       for (final (i, earlier) in play.steps.indexed)
         if (earlier.star && (i < now || done)) earlier.to,
     };
     // A star pops as Koba arrives on it.
-    final popping = !done && step.star && p > 0.85 ? step.to : null;
+    final popping = !done && step.star && through > 0.85 ? step.to : null;
 
     final x = storyLerp(step.from.x + 0.0, step.to.x + 0.0, p);
     final y = storyLerp(step.from.y + 0.0, step.to.y + 0.0, p);
@@ -137,8 +157,8 @@ abstract class BoardArrival extends ArrivalScene {
       y,
       angle,
       size: kobaSize,
-      cheer: s.t >= _runTo,
-      rolling: s.t >= _runFrom && !done,
+      cheer: done,
+      rolling: s.t >= _runFrom && !done && !step.turn,
     );
     if (kobaFirst) _paintFinish(s, b);
   }
@@ -175,8 +195,8 @@ abstract class BoardArrival extends ArrivalScene {
       );
     Offset slot(int i) =>
         Offset(centre.dx - width / 2 + size / 2 + i * (size + gap), centre.dy);
-    final running = s.t >= _runFrom && s.t < _runTo
-        ? play.steps[((s.t - _runFrom) / _stepLength).floor()].block
+    final running = s.t >= _runFrom && s.t < _runEnd
+        ? play.steps[_stepNow(s.t)].block
         : null;
     for (final (i, type) in blocks.indexed) {
       final drop = ((s.t - _dropAt(i)) / 0.04).clamp(0.0, 1.0);
@@ -232,10 +252,7 @@ abstract class BoardArrival extends ArrivalScene {
     for (final star in play.level.stars) {
       if (taken.contains(star)) continue;
       final pop = star == popping
-          ? ((s.t - _stepAt(play.steps.indexWhere((e) => e.to == star))) /
-                        _stepLength -
-                    0.85) /
-                0.15
+          ? (_through(_stepNow(s.t), s.t) - 0.85) / 0.15
           : 0.0;
       paintStoryStar(
         s.canvas,
@@ -269,7 +286,7 @@ abstract class BoardArrival extends ArrivalScene {
 
   /// Koba on tile ([x], [y]) facing [angle] (clockwise from up the board),
   /// shown as in the world: its back going up, its front coming down, its
-  /// side across, squeezed for a moment as it turns between them.
+  /// side across, and the 3D robot's frames as it turns between them.
   void _paintKoba(
     ArrivalStage s,
     _BoardLayout b,
@@ -291,15 +308,8 @@ abstract class BoardArrival extends ArrivalScene {
       ),
       Paint()..color = const Color(0x40000000),
     );
-    final quarter = (angle / (pi / 2)).round();
-    final between = (angle / (pi / 2) - quarter).abs() * 2;
-    final facing = Direction.values[quarter % 4];
+    final facing = Direction.values[(angle / (pi / 2)).round() % 4];
     final face = cheer ? RobotFace.cheer : RobotFace.normal;
-    s.canvas
-      ..save()
-      ..translate(foot.dx, foot.dy)
-      ..scale(1 - 0.6 * between, 1)
-      ..translate(-foot.dx, -foot.dy);
     s.koba(
       foot - Offset(0, rolling ? 0 : sin(s.time * 2.4).abs() * b.tile * 0.02),
       size: size,
@@ -307,8 +317,8 @@ abstract class BoardArrival extends ArrivalScene {
       back: facing == Direction.north && !cheer,
       front: facing == Direction.south,
       mirror: facing == Direction.west,
+      turnFrame: robotTurnFrame(angle),
     );
-    s.canvas.restore();
   }
 }
 
@@ -344,6 +354,7 @@ typedef BoardStep = ({
   double toAngle,
   bool turn,
   bool star,
+  Curve curve,
 });
 
 /// A [BoardArrival]'s puzzle, its picture and its run, built once.
@@ -376,6 +387,7 @@ final class BoardPlay {
             toAngle: angle,
             turn: false,
             star: false,
+            curve: Curves.linear,
           ));
         case Turned(:final from, :final to):
           final turn = (to.index - from.index + 4) % 4 == 1 ? pi / 2 : -pi / 2;
@@ -388,6 +400,7 @@ final class BoardPlay {
             toAngle: angle + turn,
             turn: true,
             star: false,
+            curve: Curves.easeInOut,
           ));
           angle += turn;
         case Collected():
@@ -400,10 +413,29 @@ final class BoardPlay {
             toAngle: last.toAngle,
             turn: last.turn,
             star: true,
+            curve: last.curve,
           ));
         case Bumped() || PathChecked() || StepsStored():
           break;
       }
+    }
+    // Timed as in the puzzle: steps in a row roll on, turns turn.
+    for (final (i, step) in steps.indexed) {
+      bool moves(int j) => j >= 0 && j < steps.length && !steps[j].turn;
+      final (seconds, curve) = step.turn
+          ? (WorldGame.turnTime, Curves.easeInOut)
+          : WorldGame.moveTiming(rollIn: moves(i - 1), rollOn: moves(i + 1));
+      steps[i] = (
+        block: step.block,
+        from: step.from,
+        to: step.to,
+        fromAngle: step.fromAngle,
+        toAngle: step.toAngle,
+        turn: step.turn,
+        star: step.star,
+        curve: curve,
+      );
+      starts.add(starts.last + seconds);
     }
   }
 
@@ -417,6 +449,10 @@ final class BoardPlay {
   final WorldTheme theme;
   late final RunResult run;
   final steps = <BoardStep>[];
+
+  /// When each step starts, in seconds from the first, and last when the
+  /// run ends.
+  final starts = <double>[0];
 
   late final board = BoardPainter(level, theme, leftRoom: leftRoom);
   late final Image finish = inkedPiece(

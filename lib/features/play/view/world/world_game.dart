@@ -68,12 +68,24 @@ class WorldGame extends FlameGame {
   var quarterTurns = 0;
 
   /// Seconds per tile while Koba rolls on through several steps; starting
-  /// and stopping take [_rollTime] for their tile, and a single step
-  /// [_stepTime].
-  static const _cruiseTime = 0.3;
-  static const _rollTime = _cruiseTime * 1.5;
-  static const _stepTime = 0.4;
-  static const _turnTime = 0.35;
+  /// and stopping take [rollTime] for their tile, and a single step
+  /// [stepTime].
+  static const cruiseTime = 0.3;
+  static const rollTime = cruiseTime * 1.5;
+  static const stepTime = 0.4;
+  static const turnTime = 0.35;
+
+  /// How long a step takes and how it eases: from a stop unless it [rollIn]
+  /// from the step before, and to a stop unless it [rollOn] into the next.
+  static (double, Curve) moveTiming({
+    required bool rollIn,
+    required bool rollOn,
+  }) => switch ((rollIn, rollOn)) {
+    (false, false) => (stepTime, Curves.easeInOut),
+    (false, true) => (rollTime, _speedUp),
+    (true, true) => (cruiseTime, Curves.linear),
+    (true, false) => (rollTime, _speedUp.flipped),
+  };
 
   /// Whether the last step rolled on at speed, so the next one starts
   /// rolling instead of from a stop.
@@ -465,12 +477,7 @@ class WorldGame extends FlameGame {
         // Like a robot on wheels: it speeds up from a stop, rolls on at a
         // steady speed through steps in a row and brakes at the last one,
         // the speeds matching where steps meet.
-        final (duration, curve) = switch ((rollIn, rollOn)) {
-          (false, false) => (_stepTime, Curves.easeInOut),
-          (false, true) => (_rollTime, _speedUp),
-          (true, true) => (_cruiseTime, Curves.linear),
-          (true, false) => (_rollTime, _speedUp.flipped),
-        };
+        final (duration, curve) = moveTiming(rollIn: rollIn, rollOn: rollOn);
         _actor.add(
           MoveToEffect(
             tileCenter(to),
@@ -486,7 +493,7 @@ class WorldGame extends FlameGame {
         _actor.add(
           RotateEffect.by(
             to == from.left ? -pi / 2 : pi / 2,
-            EffectController(duration: _turnTime, curve: Curves.easeInOut),
+            EffectController(duration: turnTime, curve: Curves.easeInOut),
             onComplete: done,
           ),
         );
@@ -550,8 +557,8 @@ class WorldGame extends FlameGame {
 }
 
 /// Speeding up from a stop to rolling speed: still at the start, and at
-/// the end 1.5 times as fast as on average, so a step [WorldGame._rollTime]
-/// long ends at the speed of a step [WorldGame._cruiseTime] long.
+/// the end 1.5 times as fast as on average, so a step [WorldGame.rollTime]
+/// long ends at the speed of a step [WorldGame.cruiseTime] long.
 const _speedUp = _SpeedUp();
 
 class _SpeedUp extends Curve {
