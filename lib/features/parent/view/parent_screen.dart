@@ -19,7 +19,6 @@ import '../../learning/data/parent_placement.dart';
 import '../../learning/data/progress_repository.dart';
 import '../../profiles/cubit/profiles_cubit.dart';
 import '../../profiles/data/profile.dart';
-import '../../profiles/view/add_profile_dialog.dart';
 import '../../profiles/view/profile_avatar.dart';
 import 'donation_sheet.dart';
 import 'placement_dialog.dart';
@@ -181,7 +180,6 @@ class ParentScreen extends StatelessWidget {
                 _PlayerTile(
                   key: ValueKey(profile.id),
                   profile: profile,
-                  onEdit: () => editProfile(context, profile),
                   onDelete: () => _confirmDelete(context, profile),
                 ),
               const SizedBox(height: 32),
@@ -194,17 +192,12 @@ class ParentScreen extends StatelessWidget {
   }
 }
 
-/// A player row: shows where they start; tap for their progress.
+/// A player row: shows where they start; tap for their progress, where the
+/// player is edited.
 class _PlayerTile extends StatefulWidget {
-  const _PlayerTile({
-    super.key,
-    required this.profile,
-    required this.onEdit,
-    required this.onDelete,
-  });
+  const _PlayerTile({super.key, required this.profile, required this.onDelete});
 
   final Profile profile;
-  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   @override
@@ -255,25 +248,13 @@ class _PlayerTileState extends State<_PlayerTile> {
         await context.push('/parent/progress/${widget.profile.id}');
         await _refresh();
       },
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          IconButton(
-            tooltip: l10n.editPlayer,
-            style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
-            icon: const Icon(Icons.edit_outlined),
-            onPressed: widget.onEdit,
-          ),
-          // Apart from Edit, so a parent doesn't tap Delete by mistake.
-          const SizedBox(width: 24),
-          IconButton(
-            tooltip: l10n.delete,
-            style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
-            color: Theme.of(context).colorScheme.error,
-            icon: const Icon(Icons.delete_outline),
-            onPressed: widget.onDelete,
-          ),
-        ],
+      // Editing sits on the progress screen; only Delete stays here.
+      trailing: IconButton(
+        tooltip: l10n.delete,
+        style: IconButton.styleFrom(minimumSize: const Size(64, 64)),
+        color: Theme.of(context).colorScheme.error,
+        icon: const Icon(Icons.delete_outline),
+        onPressed: widget.onDelete,
       ),
     );
   }

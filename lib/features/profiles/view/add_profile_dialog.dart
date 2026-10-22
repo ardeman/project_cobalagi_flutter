@@ -11,7 +11,8 @@ import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
 /// Asks for a new player's nickname and avatar, or, with [nickname] and
 /// [avatar], lets a parent change them. Returns `(nickname, avatar)`, or
-/// null if cancelled.
+/// null if cancelled. The avatars come first; the name waits for a tap
+/// instead of opening the keyboard over them.
 Future<(String, int)?> showProfileDialog(
   BuildContext context, {
   String? nickname,
@@ -72,48 +73,70 @@ class _AddProfileDialogState extends State<_AddProfileDialog> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _nickname,
-            autofocus: true,
-            maxLength: 16,
-            decoration: InputDecoration(labelText: l10n.nickname),
-            // Enter only closes the keyboard: the avatar comes next, and
-            // Save stays the one way to add the player.
-            textInputAction: TextInputAction.done,
-            onSubmitted: (_) => FocusScope.of(context).unfocus(),
-          ),
+          ..._avatarPicker(l10n),
           const SizedBox(height: 16),
-          Text(l10n.chooseAvatar),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 12,
-            runSpacing: 12,
-            children: [
-              for (var i = 0; i < avatarStyles.length; i++)
-                FocusTap(
-                  onTap: () => setState(() => _avatar = i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 150),
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        width: 4,
-                        color: i == _avatar
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.transparent,
-                      ),
-                    ),
-                    child: ProfileAvatar(avatar: i, size: 64),
-                  ),
-                ),
-            ],
-          ),
+          _name(l10n),
         ],
       ),
       confirmLabel: l10n.save,
       onConfirm: _submit,
       onCancel: () => Navigator.pop(context),
     );
+  }
+
+  Widget _name(AppLocalizations l10n) => TextField(
+    controller: _nickname,
+    maxLength: 16,
+    decoration: InputDecoration(labelText: l10n.nickname),
+    // Enter only closes the keyboard: Save stays the one way to add the
+    // player.
+    textInputAction: TextInputAction.done,
+    onSubmitted: (_) => FocusScope.of(context).unfocus(),
+  );
+
+  List<Widget> _avatarPicker(AppLocalizations l10n) => [
+    Text(l10n.chooseAvatar),
+    const SizedBox(height: 8),
+    SizedBox(
+      width: _pickerWidth(MediaQuery.sizeOf(context).width),
+      child: Wrap(
+        spacing: 12,
+        runSpacing: 12,
+        children: [
+          for (var i = 0; i < avatarStyles.length; i++)
+            FocusTap(
+              onTap: () => setState(() => _avatar = i),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    width: 4,
+                    color: i == _avatar
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
+                  ),
+                ),
+                child: ProfileAvatar(avatar: i, size: 64),
+              ),
+            ),
+        ],
+      ),
+    ),
+  ];
+
+  /// As many avatars a row as fit the dialog on a [screenWidth] screen,
+  /// shared out evenly, so no row ends with one or two on their own.
+  static double _pickerWidth(double screenWidth) {
+    const item = 64 + 2 * (4 + 4), gap = 12;
+    // The dialog's 40 inset and 24 padding on each side.
+    final fit = ((screenWidth - 128 + gap) ~/ (item + gap)).clamp(
+      1,
+      avatarStyles.length,
+    );
+    final rows = (avatarStyles.length / fit).ceil();
+    final perRow = (avatarStyles.length / rows).ceil();
+    return perRow * (item + gap) - gap.toDouble();
   }
 }

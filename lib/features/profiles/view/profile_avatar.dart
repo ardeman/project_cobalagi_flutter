@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 /// The space friends a child can pick, by the index saved in their profile.
-/// Keep the count and order: a profile stores only the index.
+/// Keep the order and add new ones at the end: a profile stores only the
+/// index.
 const avatarStyles = <(IconData, Color)>[
   (Icons.rocket_launch_rounded, Color(0xFFFF8A65)),
   (Icons.smart_toy_rounded, Color(0xFFBA68C8)),
@@ -9,6 +10,12 @@ const avatarStyles = <(IconData, Color)>[
   (Icons.satellite_alt_rounded, Color(0xFF81C784)),
   (Icons.nightlight_round, Color(0xFFFFC83D)),
   (Icons.auto_awesome_rounded, Color(0xFF4DB6AC)),
+  (Icons.star_rounded, Color(0xFFF06292)),
+  (Icons.wb_sunny_rounded, Color(0xFFFFB74D)),
+  (Icons.bolt_rounded, Color(0xFF7986CB)),
+  (Icons.pets_rounded, Color(0xFFA1887F)),
+  (Icons.cruelty_free_rounded, Color(0xFF9575CD)),
+  (Icons.favorite_rounded, Color(0xFFE57373)),
 ];
 
 /// The icon and colour of [avatar], also painted as the child's emblem on

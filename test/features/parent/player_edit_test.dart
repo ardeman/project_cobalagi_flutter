@@ -77,16 +77,14 @@ void main() {
     expect(find.byType(TypingDialog), findsOneWidget);
   });
 
-  testWidgets('Edit and Delete sit apart in the parent area', (tester) async {
+  testWidgets('the parent area offers only Delete; editing is inside', (
+    tester,
+  ) async {
     await _open(tester, '/parent');
-    final edit = tester.getRect(
-      find.widgetWithIcon(IconButton, Icons.edit_outlined),
-    );
+    expect(find.widgetWithIcon(IconButton, Icons.edit_outlined), findsNothing);
     final delete = tester.getRect(
       find.widgetWithIcon(IconButton, Icons.delete_outline),
     );
-    expect(edit.width, greaterThanOrEqualTo(64));
     expect(delete.width, greaterThanOrEqualTo(64));
-    expect(delete.left - edit.right, greaterThanOrEqualTo(24));
   });
 }

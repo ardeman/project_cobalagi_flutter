@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Enter after the name leaves time to choose an avatar', (
+  testWidgets('Enter after the name does not add the player yet', (
     tester,
   ) async {
     (String, int)? result;
@@ -71,5 +71,28 @@ void main() {
     await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
     expect(result, ('Gito', 3));
+  });
+
+  testWidgets('the avatars come before the name', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => showProfileDialog(context),
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    );
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    final avatarTop = tester.getTopLeft(find.byType(ProfileAvatar).first).dy;
+    final nameTop = tester.getTopLeft(find.byType(TextField)).dy;
+    expect(avatarTop, lessThan(nameTop));
+    final field = tester.widget<TextField>(find.byType(TextField));
+    expect(field.autofocus, isFalse);
   });
 }
