@@ -1,3 +1,5 @@
+import 'package:cobalagi/core/responsive/fold.dart';
+import 'package:cobalagi/features/adventure_map/view/fold_scenery.dart';
 import 'package:flutter/material.dart';
 import 'package:cobalagi/core/widgets/centered_scroll_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,55 +71,69 @@ class _StickerBookScreenState extends State<StickerBookScreen> {
       for (final s in book)
         if (s.game != null) s,
     ];
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: GlassAppBar(
-        leading: BackButton(
-          onPressed: () => context.go('/child/${widget.profileId}'),
-        ),
-        title: Text(l10n.stickerBook),
-      ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: WindowClassBuilder(
-          builder: (context, windowClass) {
-            final size = windowClass == WindowClass.compact ? 88.0 : 112.0;
-            Widget section(String title, List<Sticker> stickers) => Column(
+    // On a half-folded phone, the planets' stickers stand behind the fold
+    // and the Warm-up games' lie flat in front of it.
+    final folded = FoldHalves.of(context) != null;
+    Widget sections({
+      bool planets = true,
+      bool warmUp = true,
+      EdgeInsets? padding,
+    }) => WindowClassBuilder(
+      builder: (context, windowClass) {
+        final size = windowClass == WindowClass.compact ? 88.0 : 112.0;
+        Widget section(String title, List<Sticker> stickers) => Column(
+          children: [
+            Text(title, style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 16),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 24,
+              runSpacing: 20,
               children: [
-                Text(title, style: Theme.of(context).textTheme.headlineSmall),
-                const SizedBox(height: 16),
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 24,
-                  runSpacing: 20,
-                  children: [
-                    for (final (i, s) in stickers.indexed)
-                      _Slot(
-                        sticker: s,
-                        size: size,
-                        // Alternate tilts, like stuck on by hand.
-                        tilt: (i.isEven ? 1 : -1) * (0.01 + (i % 3) * 0.012),
-                        fresh: fresh.contains(s.id) || fresh.contains(s.goldId),
-                      ),
-                  ],
-                ),
+                for (final (i, s) in stickers.indexed)
+                  _Slot(
+                    sticker: s,
+                    size: size,
+                    // Alternate tilts, like stuck on by hand.
+                    tilt: (i.isEven ? 1 : -1) * (0.01 + (i % 3) * 0.012),
+                    fresh: fresh.contains(s.id) || fresh.contains(s.goldId),
+                  ),
               ],
-            );
-            return CenteredScrollView(
-              padding: belowBars(context, const EdgeInsets.all(24)),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 900),
-                child: Column(
-                  children: [
-                    section(l10n.stickersIslands, islands),
-                    const SizedBox(height: 40),
-                    section(conceptName(l10n, warmUpIsland), games),
-                  ],
-                ),
-              ),
-            );
-          },
+            ),
+          ],
+        );
+        return CenteredScrollView(
+          padding: padding ?? belowBars(context, const EdgeInsets.all(24)),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 900),
+            child: Column(
+              children: [
+                if (planets) section(l10n.stickersIslands, islands),
+                if (planets && warmUp) const SizedBox(height: 40),
+                if (warmUp) section(conceptName(l10n, warmUpIsland), games),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+    return FoldHalf(
+      viewTakesTaps: folded,
+      view: folded
+          ? sections(warmUp: false, padding: EdgeInsets.zero)
+          : const FoldScenery(),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: GlassAppBar(
+          leading: BackButton(
+            onPressed: () => context.go('/child/${widget.profileId}'),
+          ),
+          title: Text(l10n.stickerBook),
+        ),
+        body: SafeArea(
+          top: false,
+          bottom: false,
+          child: Builder(builder: (context) => sections(planets: !folded)),
         ),
       ),
     );

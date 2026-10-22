@@ -67,6 +67,7 @@ class SpaceMap extends StatefulWidget {
     this.padding = EdgeInsets.zero,
     this.flight,
     this.shipFill = 0,
+    this.sky = true,
   });
 
   final List<MapIsland> islands;
@@ -88,6 +89,11 @@ class SpaceMap extends StatefulWidget {
 
   /// How full the tank of Koba's ship is, landed on the current planet.
   final double shipFill;
+
+  /// Whether the map paints its own night sky; false lays the planets and
+  /// paths over a sky painted behind it (across both halves of a
+  /// half-folded phone, with no seam at the fold).
+  final bool sky;
 
   @override
   State<SpaceMap> createState() => SpaceMapState();
@@ -179,6 +185,9 @@ class SpaceMapState extends State<SpaceMap> {
       // The height islands may use, between the bars.
       final room = max(0.0, constraints.maxHeight - pad.vertical);
       final wide = width > room * 1.1;
+      // The width islands may use upright, clear of the side insets (the
+      // iPhone Duo's status bar on its side edge).
+      final across = max(0.0, width - pad.horizontal);
       final n = widget.islands.length;
       // Short and wide (phones held sideways): two rows would crush the
       // islands, so they sit in one row and the sea scrolls sideways.
@@ -193,7 +202,7 @@ class SpaceMapState extends State<SpaceMap> {
               room * 0.24,
               max(width / (max(n, 1) * 2.2), 104.0),
             ).clamp(72.0, 170.0).toDouble()
-          : min(width * 0.3, 150.0).clamp(72.0, 150.0).toDouble();
+          : min(across * 0.3, 150.0).clamp(72.0, 150.0).toDouble();
       // Wide zigzag: islands spread over the screen, at least 1.8 sizes
       // apart, with 13% of the screen as a margin at each end.
       final step = n < 2
@@ -226,7 +235,14 @@ class SpaceMapState extends State<SpaceMap> {
                   pad.top + room * (i.isEven ? 0.36 : 0.64),
                 )
               : Offset(
-                  width * (i.isEven ? 0.27 : 0.73),
+                  // An island and its label are two sizes wide: all on
+                  // screen, clear of the side insets.
+                  (pad.left + across * (i.isEven ? 0.27 : 0.73))
+                      .clamp(
+                        pad.left + min(size, across / 2),
+                        width - pad.right - min(size, across / 2),
+                      )
+                      .toDouble(),
                   pad.top + size * 1.1 + i * size * _rowStep,
                 ),
       ];
@@ -255,6 +271,7 @@ class SpaceMapState extends State<SpaceMap> {
               child: RepaintBoundary(
                 child: CustomPaint(
                   painter: _SkyPainter(
+                    sky: widget.sky,
                     reached: reached,
                     paths: mapConnections(
                       centres: centres,
@@ -389,6 +406,60 @@ class SpaceMapState extends State<SpaceMap> {
 /// between planets.
 /// The map's starry sky alone, with no planets or paths (the first visit's
 /// welcome).
+/// One planet as the map draws it, with Koba's ship landed on it as on the
+/// map ([ParkedShip]): its tank [fill] full, the child's [emblem] on its
+/// hull. Sized to fit, centred.
+class LandedPlanet extends StatelessWidget {
+  const LandedPlanet({
+    super.key,
+    required this.concept,
+    required this.fill,
+    this.emblem,
+  });
+
+  final String concept;
+  final double fill;
+  final (IconData, Color)? emblem;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, box) {
+      // The map's layout around an island's centre: the planet from 0.8
+      // sizes above it to 0.1 below, the ship's top 1.2 sizes above it and
+      // its side a size to the right.
+      final size = min(box.maxWidth / 2.1, box.maxHeight / 1.4);
+      final centre = Offset(
+        box.maxWidth / 2 - size * 0.12,
+        box.maxHeight / 2 + size * 0.55,
+      );
+      return Stack(
+        children: [
+          Positioned(
+            left: centre.dx - size * 0.75,
+            top: centre.dy - size * 0.8,
+            child: CustomPaint(
+              size: Size(size * 1.5, size * 0.9),
+              painter: _PlanetPiece(
+                concept: concept,
+                locked: false,
+                current: false,
+              ),
+            ),
+          ),
+          Positioned.fill(
+            child: ParkedShip(
+              centre: centre,
+              islandSize: size,
+              fill: fill,
+              emblem: emblem,
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
 class SpaceSky extends StatelessWidget {
   const SpaceSky({super.key});
 
@@ -402,7 +473,10 @@ class SpaceSky extends StatelessWidget {
 }
 
 class _SkyPainter extends CustomPainter {
-  _SkyPainter({required this.paths, required this.reached});
+  _SkyPainter({required this.paths, required this.reached, this.sky = true});
+
+  /// The background, clouds and stars; false paints only the paths.
+  final bool sky;
 
   /// Where the path leaves one island and reaches the next.
   final List<Path> paths;
@@ -410,6 +484,11 @@ class _SkyPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    if (sky) _paintSky(canvas, size);
+    _paintPaths(canvas, size);
+  }
+
+  void _paintSky(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
     canvas.drawRect(
       rect,
@@ -470,7 +549,9 @@ class _SkyPainter extends CustomPainter {
         );
       }
     }
+  }
 
+  void _paintPaths(Canvas canvas, Size size) {
     // The flight path: dots along a gentle curve from planet to planet.
     for (var i = 0; i < paths.length; i++) {
       final path = paths[i];
@@ -513,7 +594,7 @@ class _SkyPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SkyPainter old) =>
-      old.reached != reached || old.paths != paths;
+      old.reached != reached || old.paths != paths || old.sky != sky;
 }
 
 /// A planet with the concept's emblem, its stars, name and levels.

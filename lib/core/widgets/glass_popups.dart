@@ -3,6 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
+/// On a half-folded phone, Flutter shows a pop-up on the side of the fold
+/// nearest this point: far to the bottom right, the half that lies flat
+/// (`FoldHalves.controls`), where the screen's controls are too.
+const foldAnchor = Offset(100000, 100000);
+
 /// Shows a dialog over a softly blurred screen; the dialog's translucent
 /// panel (see `dialogTheme` in `app_theme.dart`) lets that blur through.
 /// High-contrast mode keeps a plain dimmed screen and an opaque dialog.
@@ -14,6 +19,7 @@ Future<T?> showGlassDialog<T>({
   context: context,
   barrierDismissible: barrierDismissible,
   barrierColor: Colors.black.withValues(alpha: 0.18),
+  anchorPoint: foldAnchor,
   builder: (context) => _GlassBackdrop(child: builder(context)),
 );
 
@@ -26,6 +32,7 @@ Future<T?> showGlassSheet<T>({
 }) => showModalBottomSheet<T>(
   context: context,
   isScrollControlled: isScrollControlled,
+  anchorPoint: foldAnchor,
   backgroundColor: Colors.transparent,
   clipBehavior: Clip.antiAlias,
   // The panel draws the handle itself, so it sits on the glass too.

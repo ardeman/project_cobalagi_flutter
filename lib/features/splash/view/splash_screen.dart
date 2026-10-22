@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cobalagi/core/responsive/fold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -87,69 +88,78 @@ class _SplashScreenState extends State<SplashScreen> {
                       colors: [Color(0xFFFF9A6B), Color(0xFFF0623F)],
                     ),
                   ),
-                  child: SafeArea(
-                    child: SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight:
-                              MediaQuery.sizeOf(context).height -
-                              MediaQuery.paddingOf(context).vertical,
-                        ),
-                        child: IntrinsicHeight(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const Spacer(),
-                              Center(
-                                child: RollingRobot(
-                                  size: 220,
-                                  semanticLabel: l10n.appTitle,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                l10n.appTitle,
-                                textAlign: TextAlign.center,
-                                style: theme.textTheme.displaySmall?.copyWith(
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const Spacer(),
-                              if (updateState.offered)
-                                Padding(
-                                  padding: const EdgeInsets.all(24),
-                                  child: AppUpdateNotice(
-                                    state: updateState,
-                                    onUpdate: () async {
-                                      if (await showParentGate(context) &&
-                                          context.mounted) {
-                                        await context
-                                            .read<AppUpdateCubit>()
-                                            .openUpdate();
-                                      }
-                                    },
-                                    onContinue:
-                                        context
-                                            .watch<ProfilesCubit>()
-                                            .state
-                                            .loaded
-                                        ? () {
-                                            context
-                                                .read<AppUpdateCubit>()
-                                                .dismiss();
-                                            context.go('/');
-                                          }
-                                        : null,
+                  // Half folded, Koba and the version stand behind the
+                  // fold, and the coral still fills the screen.
+                  child: FoldHalf(
+                    behindFold: true,
+                    // Measured inside the half, not the whole screen.
+                    child: Builder(
+                      builder: (context) => SafeArea(
+                        child: SingleChildScrollView(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight:
+                                  MediaQuery.sizeOf(context).height -
+                                  MediaQuery.paddingOf(context).vertical,
+                            ),
+                            child: IntrinsicHeight(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  const Spacer(),
+                                  Center(
+                                    child: RollingRobot(
+                                      size: 220,
+                                      semanticLabel: l10n.appTitle,
+                                    ),
                                   ),
-                                ),
-                              AppVersionText(
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: Colors.white,
-                                ),
+                                  const SizedBox(height: 16),
+                                  Text(
+                                    l10n.appTitle,
+                                    textAlign: TextAlign.center,
+                                    style: theme.textTheme.displaySmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          color: Colors.white,
+                                        ),
+                                  ),
+                                  const Spacer(),
+                                  if (updateState.offered)
+                                    Padding(
+                                      padding: const EdgeInsets.all(24),
+                                      child: AppUpdateNotice(
+                                        state: updateState,
+                                        onUpdate: () async {
+                                          if (await showParentGate(context) &&
+                                              context.mounted) {
+                                            await context
+                                                .read<AppUpdateCubit>()
+                                                .openUpdate();
+                                          }
+                                        },
+                                        onContinue:
+                                            context
+                                                .watch<ProfilesCubit>()
+                                                .state
+                                                .loaded
+                                            ? () {
+                                                context
+                                                    .read<AppUpdateCubit>()
+                                                    .dismiss();
+                                                context.go('/');
+                                              }
+                                            : null,
+                                      ),
+                                    ),
+                                  AppVersionText(
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 24),
+                                ],
                               ),
-                              const SizedBox(height: 24),
-                            ],
+                            ),
                           ),
                         ),
                       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 abstract final class AppTheme {
   static const _seed = Color(0xFF00A6A6);
@@ -36,6 +37,12 @@ abstract final class AppTheme {
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         scrolledUnderElevation: 0,
+        // The bars are see-through, so the status bar's time and signal
+        // follow the background behind them, not the bar's own colour
+        // (which Flutter would read as dark and paint them white).
+        systemOverlayStyle: brightness == Brightness.light
+            ? SystemUiOverlayStyle.dark
+            : SystemUiOverlayStyle.light,
       ),
       cardTheme: CardThemeData(
         shape: shape,

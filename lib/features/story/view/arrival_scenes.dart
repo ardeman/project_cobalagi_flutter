@@ -170,13 +170,25 @@ final class ArrivalStage {
     Canvas canvas,
     Rect stage,
     StoryFrame frame,
-    StoryArt? art,
-  ) {
+    StoryArt? art, {
+    Rect? rows,
+  }) {
     final (box, u) = storyBox(stage);
-    return ArrivalStage._(canvas, box, u, frame, art);
+    return ArrivalStage._(canvas, box, u, frame, art, rows);
   }
 
-  ArrivalStage._(this.canvas, this.box, this.u, this.frame, this.art);
+  ArrivalStage._(
+    this.canvas,
+    this.box,
+    this.u,
+    this.frame,
+    this.art,
+    this.rows,
+  );
+
+  /// Half folded, where program rows go (in front of the fold); null when
+  /// they go over the board.
+  final Rect? rows;
 
   final Canvas canvas;
   final Rect box;

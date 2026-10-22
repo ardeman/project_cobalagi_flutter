@@ -18,6 +18,7 @@ import '../../../core/audio/audio_service.dart';
 import '../../../core/audio/sound_effects.dart';
 import '../../../core/audio/voice_clips.dart';
 import '../../../core/feedback/cheers.dart';
+import '../../../core/responsive/fold.dart';
 import '../../../core/responsive/window_class.dart';
 import '../../../core/settings/hint_arrows_cubit.dart';
 import '../../../engine/generator/off_track.dart';
@@ -531,17 +532,21 @@ class _PlayViewState extends State<PlayView> {
           children: [
             Scaffold(
               // Phones pad inside their glass bars instead, so the page can
-              // scroll under the bars from edge to edge.
-              body: SafeArea(
+              // scroll under the bars from edge to edge. A half-folded phone
+              // pads each half on its own ([FoldSplit]).
+              body: _MaybeSafeArea(
+                safe: FoldHalves.of(context) == null,
                 child: WindowClassBuilder(
                   builder: (context, windowClass) {
+                    final halves = FoldHalves.of(context);
                     final compact = windowClass == WindowClass.compact;
                     // Phones held sideways: wide enough for two columns, too short
                     // for the tablet's big blocks and fixed editor.
                     final short =
                         !compact && MediaQuery.sizeOf(context).height < 500;
                     // Small blocks, an icon editor switch and a page that scrolls.
-                    final tight = compact || short;
+                    // Each half of a half-folded phone is a closed phone's.
+                    final tight = compact || short || halves != null;
                     // Tall screens (phones, tablets held upright) stack the world
                     // over the editor in one scrolling page.
                     final screen = MediaQuery.sizeOf(context);
@@ -744,6 +749,47 @@ class _PlayViewState extends State<PlayView> {
                               );
                       },
                     );
+                    if (halves != null) {
+                      // Half folded: the world stands up behind the fold and
+                      // the blocks and Go lie flat in front of it. The top
+                      // bar rides above the world, far from the fold, so
+                      // the program has room for a repeat.
+                      return FoldSplit(
+                        halves: halves,
+                        view: SafeArea(
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                topBar,
+                                const SizedBox(height: 12),
+                                Expanded(child: panel),
+                              ],
+                            ),
+                          ),
+                        ),
+                        controls: SafeArea(
+                          child: Padding(
+                            // Held like a book, the half reaches the top
+                            // of the screen; on a table it starts at the
+                            // fold's clearance.
+                            padding: EdgeInsets.fromLTRB(
+                              16,
+                              halves.controls.top <= 0 ? 16 : 0,
+                              16,
+                              8,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(child: editorFor(fit: false)),
+                                controlSlot,
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                     // Typing code on a phone: the code gets the room. The tree
                     // keeps its shape, so the code field keeps the keyboard.
                     final typing = tight && _codeMode && keyboardOpen;
@@ -1764,4 +1810,17 @@ enum _Hint {
 
   /// The child's own block to change, ringed.
   ring,
+}
+
+/// [SafeArea] around [child] when [safe]; off, but still in the tree, so
+/// the screen below keeps its state when a phone half folds.
+class _MaybeSafeArea extends StatelessWidget {
+  const _MaybeSafeArea({required this.safe, required this.child});
+
+  final bool safe;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) =>
+      SafeArea(left: safe, top: safe, right: safe, bottom: safe, child: child);
 }

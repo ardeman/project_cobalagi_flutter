@@ -2,9 +2,11 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cobalagi/core/responsive/fold.dart';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/app/theme/app_theme.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
@@ -237,11 +239,32 @@ class _StoryPlayerState extends State<StoryPlayer>
     final bottom = Stack(
       alignment: Alignment.center,
       children: [
-        const SizedBox(width: double.infinity, height: _wordsHeight),
-        AnimatedOpacity(
-          opacity: _finished ? 0 : 1,
-          duration: fade,
-          child: FittedBox(fit: BoxFit.scaleDown, child: words),
+        SizedBox(
+          width: double.infinity,
+          // Half folded, the flat half has room to spare and is narrow:
+          // three lines of words at full size.
+          height: FoldHalves.of(context) == null
+              ? _wordsHeight
+              : _wordsHeight * 1.5,
+        ),
+        // The words wrap to the width there is (one half of a half-folded
+        // phone, a narrow phone), and shrink only if they still don't fit.
+        Positioned.fill(
+          child: AnimatedOpacity(
+            opacity: _finished ? 0 : 1,
+            duration: fade,
+            child: LayoutBuilder(
+              builder: (context, box) => Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: box.maxWidth),
+                    child: words,
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
         Positioned.fill(
           child: IgnorePointer(
@@ -256,41 +279,81 @@ class _StoryPlayerState extends State<StoryPlayer>
       ],
     );
     final safe = MediaQuery.paddingOf(context);
-    return Scaffold(
-      backgroundColor: _sky.first,
-      body: Stack(
-        children: [
-          // The child watches: the scene takes no taps.
-          Positioned.fill(
-            child: RepaintBoundary(
-              child: CustomPaint(
-                painter: StoryScenePainter(
-                  scene: widget.scene,
-                  frame: _frame,
-                  art: _art,
-                  stage: EdgeInsets.fromLTRB(
-                    safe.left + 16,
-                    safe.top + 16 + 64,
-                    safe.right + 16,
-                    safe.bottom + 16 + _wordsHeight,
+    final size = MediaQuery.sizeOf(context);
+    // Half folded, the scene plays behind the fold, with the sky across
+    // both halves, and the words and buttons lie flat in front of it.
+    final halves = FoldHalves.of(context);
+    final view = halves?.view;
+    final controls = Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(children: [top, const Spacer(), bottom]),
+    );
+    // Light time and signal over the night sky.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: _sky.first,
+        body: Stack(
+          children: [
+            // The child watches: the scene takes no taps.
+            Positioned.fill(
+              child: RepaintBoundary(
+                child: CustomPaint(
+                  painter: StoryScenePainter(
+                    scene: widget.scene,
+                    frame: _frame,
+                    art: _art,
+                    stage: view == null
+                        ? EdgeInsets.fromLTRB(
+                            safe.left + 16,
+                            safe.top + 16 + 64,
+                            safe.right + 16,
+                            safe.bottom + 16 + _wordsHeight,
+                          )
+                        : EdgeInsets.fromLTRB(
+                            max(view.left, safe.left) + 16,
+                            max(view.top, safe.top) + 16,
+                            max(size.width - view.right, safe.right) + 16,
+                            max(size.height - view.bottom, safe.bottom) + 16,
+                          ),
+                    controls: halves == null
+                        ? null
+                        : _rowsRoom(halves, size, safe),
                   ),
                 ),
               ),
             ),
-          ),
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(children: [top, const Spacer(), bottom]),
-            ),
-          ),
-        ],
+            if (halves == null)
+              SafeArea(child: controls)
+            else
+              FoldSplit(
+                halves: halves,
+                view: const SizedBox(),
+                controls: SafeArea(child: controls),
+              ),
+          ],
+        ),
       ),
     );
   }
 
   /// Room for the words, and for the end buttons in their place.
   static const _wordsHeight = 88.0;
+
+  /// Half folded, the room in front of the fold between the title row and
+  /// the words, where an arrival's program row goes.
+  static Rect _rowsRoom(FoldHalves halves, Size size, EdgeInsets safe) {
+    final c = halves.controls;
+    return Rect.fromLTRB(
+      c.left + (c.left <= 0 ? safe.left : 0) + 16,
+      c.top + (c.top <= 0 ? safe.top : 0) + 16 + 64,
+      c.right - (c.right >= size.width ? safe.right : 0) - 16,
+      c.bottom -
+          (c.bottom >= size.height ? safe.bottom : 0) -
+          16 -
+          _wordsHeight * 1.5,
+    );
+  }
 }
 
 const _sky = [Color(0xFF1A1F4E), Color(0xFF2B2468), Color(0xFF3B2A78)];
@@ -316,6 +379,7 @@ class StoryScenePainter extends CustomPainter {
     required this.frame,
     required this.art,
     required this.stage,
+    this.controls,
   }) : super(repaint: frame);
 
   final StoryScene scene;
@@ -324,6 +388,10 @@ class StoryScenePainter extends CustomPainter {
 
   /// Kept clear of the title row and the words.
   final EdgeInsets stage;
+
+  /// Half folded: the room in front of the fold, between the title row and
+  /// the words ([StoryScene.paintSplit]).
+  final Rect? controls;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -351,10 +419,18 @@ class StoryScenePainter extends CustomPainter {
     }
     var room = stage.deflateRect(rect);
     if (room.isEmpty) room = rect;
-    scene.paint(canvas, room, f, art);
+    final controls = this.controls;
+    if (controls == null || controls.isEmpty) {
+      scene.paint(canvas, room, f, art);
+    } else {
+      scene.paintSplit(canvas, room, controls, f, art);
+    }
   }
 
   @override
   bool shouldRepaint(StoryScenePainter old) =>
-      old.scene != scene || old.art != art || old.stage != stage;
+      old.scene != scene ||
+      old.art != art ||
+      old.stage != stage ||
+      old.controls != controls;
 }

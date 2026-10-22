@@ -72,30 +72,37 @@ class _WarmUpIslandScreenState extends State<WarmUpIslandScreen> {
         child: WindowClassBuilder(
           builder: (context, windowClass) {
             final padding = belowBars(context, const EdgeInsets.all(24));
-            final room = MediaQuery.sizeOf(context);
-            final tile = _tileSize(
-              games: cubit.curriculum.warmUp.games.length,
-              width: room.width - padding.horizontal,
-              height: room.height - padding.vertical,
-              largest: windowClass == WindowClass.compact ? 132.0 : 168.0,
-            );
-            return CenteredScrollView(
-              padding: padding,
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                spacing: _gap,
-                runSpacing: _gap,
-                children: [
-                  for (final game in cubit.curriculum.warmUp.games)
-                    _GameTile(
-                      game: game,
-                      size: tile,
-                      stars: learner.warmUp[game.name] ?? 0,
-                      onTap: () =>
-                          context.go('/child/$profileId/warm-up/${game.name}'),
-                    ),
-                ],
-              ),
+            // The room the safe area leaves, not the whole screen: a side
+            // inset (the iPhone Duo's status bar) would leave a column
+            // short, and the last row would fall off the screen.
+            return LayoutBuilder(
+              builder: (context, room) {
+                final tile = _tileSize(
+                  games: cubit.curriculum.warmUp.games.length,
+                  width: room.maxWidth - padding.horizontal,
+                  height: room.maxHeight - padding.vertical,
+                  largest: windowClass == WindowClass.compact ? 132.0 : 168.0,
+                );
+                return CenteredScrollView(
+                  padding: padding,
+                  child: Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: _gap,
+                    runSpacing: _gap,
+                    children: [
+                      for (final game in cubit.curriculum.warmUp.games)
+                        _GameTile(
+                          game: game,
+                          size: tile,
+                          stars: learner.warmUp[game.name] ?? 0,
+                          onTap: () => context.go(
+                            '/child/$profileId/warm-up/${game.name}',
+                          ),
+                        ),
+                    ],
+                  ),
+                );
+              },
             );
           },
         ),

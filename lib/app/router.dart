@@ -1,7 +1,9 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/responsive/fold.dart';
 import '../features/adventure_map/view/adventure_map_screen.dart';
+import '../features/adventure_map/view/fold_scenery.dart';
 import '../features/adventure_map/view/island_screen.dart';
 import '../features/learning/view/child_scope.dart';
 import '../features/parent/view/parent_screen.dart';
@@ -22,7 +24,11 @@ import '../learning/warm_up/warm_up.dart';
 GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
   initialLocation: initialLocation,
   routes: [
-    GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
+    GoRoute(
+      path: '/splash',
+      // The splash fills the whole screen, folded or not.
+      builder: (_, _) => const SplashScreen(),
+    ),
     GoRoute(path: '/', builder: (_, _) => const ProfilesScreen()),
     // Everything a child sees shares one learning loop.
     ShellRoute(
@@ -45,9 +51,15 @@ GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
             ),
             GoRoute(
               path: 'island/:conceptId',
-              builder: (_, state) => IslandScreen(
-                profileId: _profileId(state),
-                conceptId: state.pathParameters['conceptId']!,
+              builder: (_, state) => FoldHalf(
+                view: FoldScenery(
+                  concept: state.pathParameters['conceptId'],
+                  profileId: _profileId(state),
+                ),
+                child: IslandScreen(
+                  profileId: _profileId(state),
+                  conceptId: state.pathParameters['conceptId']!,
+                ),
               ),
             ),
             GoRoute(
@@ -84,15 +96,20 @@ GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
             ),
             GoRoute(
               path: 'warm-up',
-              builder: (_, state) =>
-                  WarmUpIslandScreen(profileId: _profileId(state)),
+              builder: (_, state) => FoldHalf(
+                view: const FoldScenery(),
+                child: WarmUpIslandScreen(profileId: _profileId(state)),
+              ),
               routes: [
                 GoRoute(
                   path: ':game',
-                  builder: (_, state) => WarmUpGameScreen(
-                    profileId: _profileId(state),
-                    game: WarmUpGame.values.byName(
-                      state.pathParameters['game']!,
+                  builder: (_, state) => FoldHalf(
+                    view: const FoldScenery(),
+                    child: WarmUpGameScreen(
+                      profileId: _profileId(state),
+                      game: WarmUpGame.values.byName(
+                        state.pathParameters['game']!,
+                      ),
                     ),
                   ),
                 ),
@@ -100,18 +117,27 @@ GoRouter createRouter({String initialLocation = '/splash'}) => GoRouter(
             ),
             GoRoute(
               path: 'pretest',
-              builder: (_, state) =>
-                  PretestScreen(profileId: _profileId(state)),
+              builder: (_, state) => FoldHalf(
+                view: const FoldScenery(),
+                child: PretestScreen(profileId: _profileId(state)),
+              ),
             ),
           ],
         ),
       ],
     ),
-    GoRoute(path: '/parent', builder: (_, _) => const ParentScreen()),
+    GoRoute(
+      path: '/parent',
+      builder: (_, _) =>
+          const FoldHalf(view: FoldScenery(), child: ParentScreen()),
+    ),
     GoRoute(
       path: '/parent/progress/:profileId',
-      builder: (_, state) => ProgressScreen(
-        profileId: int.parse(state.pathParameters['profileId']!),
+      builder: (_, state) => FoldHalf(
+        view: const FoldScenery(),
+        child: ProgressScreen(
+          profileId: int.parse(state.pathParameters['profileId']!),
+        ),
       ),
     ),
   ],

@@ -9,6 +9,7 @@ import 'core/audio/audio_service.dart';
 import 'core/entitlement/entitlement_factory.dart';
 import 'core/gamepad/gamepad_navigator.dart';
 import 'core/gamepad/screen_keyboard.dart';
+import 'core/responsive/fold.dart';
 import 'core/entitlement/store_rules.dart';
 import 'core/entitlement/unlock_code.dart';
 import 'core/settings/settings_repository.dart';
@@ -48,6 +49,7 @@ Future<void> main() async {
       progress: ProgressRepository(db),
       padCommands: controllerCommands(),
       keyboard: steamKeyboard(),
+      hingeHalfOpen: hingeHalfOpen(),
       updates: createAppUpdateService(),
       storeRules: storeRules,
     ),

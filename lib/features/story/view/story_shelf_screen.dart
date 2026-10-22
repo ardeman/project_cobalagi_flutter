@@ -1,3 +1,5 @@
+import 'package:cobalagi/core/responsive/fold.dart';
+import 'package:cobalagi/features/adventure_map/view/fold_scenery.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -58,18 +60,15 @@ class _StoryShelfScreenState extends State<StoryShelfScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     final map = '/child/${widget.profileId}';
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: GlassAppBar(
-        leading: BackButton(onPressed: () => context.go(map)),
-        title: Text(l10n.storyTitle),
-      ),
-      body: SafeArea(
-        top: false,
-        bottom: false,
-        child: WindowClassBuilder(
+    // On a half-folded phone, the beginning and the endings stand behind the
+    // fold and the planets' scenes lie flat in front of it.
+    final folded = FoldHalves.of(context) != null;
+    final reached = StoryScreen.reached(learner);
+    bool planet(String name) => name.startsWith('arrival-');
+    Widget shelf(Iterable<String> names, {EdgeInsets? padding}) =>
+        WindowClassBuilder(
           builder: (context, windowClass) => CenteredScrollView(
-            padding: belowBars(context, const EdgeInsets.all(24)),
+            padding: padding ?? belowBars(context, const EdgeInsets.all(24)),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 900),
               child: Wrap(
@@ -77,7 +76,7 @@ class _StoryShelfScreenState extends State<StoryShelfScreen> {
                 spacing: 20,
                 runSpacing: 20,
                 children: [
-                  for (final name in StoryScreen.reached(learner))
+                  for (final name in names)
                     _SceneCard(
                       scene: StoryScreen.scenes[name]!,
                       title: _title(l10n, name),
@@ -88,6 +87,28 @@ class _StoryShelfScreenState extends State<StoryShelfScreen> {
                 ],
               ),
             ),
+          ),
+        );
+    return FoldHalf(
+      viewTakesTaps: folded,
+      view: folded
+          ? shelf(
+              reached.where((name) => !planet(name)),
+              padding: EdgeInsets.zero,
+            )
+          : const FoldScenery(),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: GlassAppBar(
+          leading: BackButton(onPressed: () => context.go(map)),
+          title: Text(l10n.storyTitle),
+        ),
+        body: SafeArea(
+          top: false,
+          bottom: false,
+          child: Builder(
+            builder: (context) =>
+                shelf(folded ? reached.where(planet) : reached),
           ),
         ),
       ),

@@ -164,8 +164,21 @@ abstract class BoardArrival extends ArrivalScene {
   void paintKobaBeat(ArrivalStage s) {}
 
   @override
-  void paint(Canvas canvas, Rect stage, StoryFrame frame, StoryArt? art) {
-    final s = ArrivalStage(canvas, stage, frame, art);
+  void paint(Canvas canvas, Rect stage, StoryFrame frame, StoryArt? art) =>
+      _paint(ArrivalStage(canvas, stage, frame, art));
+
+  @override
+  void paintSplit(
+    Canvas canvas,
+    Rect stage,
+    Rect controls,
+    StoryFrame frame,
+    StoryArt? art,
+  ) => _paint(ArrivalStage(canvas, stage, frame, art, rows: controls));
+
+  void _paint(ArrivalStage s) {
+    final canvas = s.canvas;
+    final frame = s.frame;
     final b = BoardLayout(s, play);
     canvas
       ..save()
@@ -283,8 +296,38 @@ abstract class BoardArrival extends ArrivalScene {
 
   /// How wide a block in the program row is: smaller when many blocks
   /// would not fit across the scene.
-  double blockSize(ArrivalStage s) =>
-      min(s.u * 0.1, s.u * 1.3 / max(play.rowWidth + 1.22, play.magicWidth));
+  double blockSize(ArrivalStage s) {
+    final rows = s.rows;
+    if (rows != null) {
+      // In front of the fold: as big as the room allows, like the blocks
+      // the child places there, but no bigger.
+      return min(
+        64,
+        min(
+          rows.width / (max(play.rowWidth + 1.22, play.magicWidth) + 1.2),
+          rows.height / (_rowsHeight + 0.4),
+        ),
+      );
+    }
+    return min(
+      s.u * 0.1,
+      s.u * 1.3 / max(play.rowWidth + 1.22, play.magicWidth),
+    );
+  }
+
+  /// The program rows' height, in blocks.
+  double get _rowsHeight =>
+      play.rowHeight + (play.magicRow.isEmpty ? 0 : 0.3 + play.magicHeight);
+
+  /// The middle of the program row's height.
+  double _rowY(ArrivalStage s, double size) {
+    final rows = s.rows;
+    if (rows == null) return s.box.top + s.u * 0.15;
+    return rows.center.dy - _rowsHeight * size / 2 + play.rowHeight * size / 2;
+  }
+
+  /// The middle of where the rows go, across.
+  double _rowsX(ArrivalStage s) => (s.rows ?? s.box).center.dx;
 
   /// Where block [id] is in the program rows at [ArrivalStage.t], if shown.
   Rect? blockRect(ArrivalStage s, String id) {
@@ -298,14 +341,14 @@ abstract class BoardArrival extends ArrivalScene {
   Iterable<(RowPiece, Rect)> _placed(ArrivalStage s) sync* {
     final size = blockSize(s);
     final width = play.rowWidth + 1.22;
-    final left = s.box.center.dx - width * size / 2;
-    final y = s.box.top + s.u * 0.15;
+    final left = _rowsX(s) - width * size / 2;
+    final y = _rowY(s, size);
     for (final piece in _rowAt(s.t)) {
       yield (piece, _scaled(piece.rect, Offset(left, y), size));
     }
     if (play.magicRow.isEmpty) return;
     final magicY = y + size * (play.rowHeight / 2 + 0.3 + play.magicHeight / 2);
-    final magicLeft = s.box.center.dx - play.magicWidth * size / 2;
+    final magicLeft = _rowsX(s) - play.magicWidth * size / 2;
     for (final piece in play.magicRow) {
       yield (piece, _scaled(piece.rect, Offset(magicLeft, magicY), size));
     }
@@ -322,10 +365,7 @@ abstract class BoardArrival extends ArrivalScene {
   Offset _goAt(ArrivalStage s) {
     final size = blockSize(s);
     final width = play.rowWidth + 1.22;
-    return Offset(
-      s.box.center.dx + width * size / 2 - size / 2,
-      s.box.top + s.u * 0.15,
-    );
+    return Offset(_rowsX(s) + width * size / 2 - size / 2, _rowY(s, size));
   }
 
   /// The program rows over the board: each block drops into its place, then
@@ -711,7 +751,13 @@ final class BoardLayout {
       tile,
       Offset(
         s.box.center.dx - tile * (play.level.width - BoardPlay.leftRoom) / 2,
-        s.box.top + s.u * (play.magicRow.isEmpty ? 0.4 : 0.47),
+        s.box.top +
+            s.u *
+                (s.rows != null
+                    ? 0.25
+                    : play.magicRow.isEmpty
+                    ? 0.4
+                    : 0.47),
       ),
     );
   }

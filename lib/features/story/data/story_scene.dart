@@ -51,4 +51,15 @@ abstract class StoryScene {
   /// sky behind it is already painted. Without [art] (still loading) the
   /// pictures are left out.
   void paint(Canvas canvas, Rect stage, StoryFrame frame, StoryArt? art);
+
+  /// Paints [frame] on a half-folded phone: [stage] is behind the fold and
+  /// [controls] the room in front of it, where the child's blocks would be
+  /// (an arrival's program row goes there). Most scenes use [stage] alone.
+  void paintSplit(
+    Canvas canvas,
+    Rect stage,
+    Rect controls,
+    StoryFrame frame,
+    StoryArt? art,
+  ) => paint(canvas, stage, frame, art);
 }

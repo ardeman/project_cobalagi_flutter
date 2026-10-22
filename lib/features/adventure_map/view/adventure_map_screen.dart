@@ -2,6 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:cobalagi/features/adventure_map/view/fold_scenery.dart';
+import 'package:cobalagi/core/responsive/fold.dart';
 import 'package:cobalagi/core/character/koba_head.dart';
 import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
@@ -95,7 +98,8 @@ class _AdventureMapScreenState extends State<AdventureMapScreen> {
             ),
             fillTo: Story.tankFill(finished: opening, planets: concepts.length),
           );
-    SpaceMap map(EdgeInsets padding) => SpaceMap(
+    SpaceMap map(EdgeInsets padding, {bool sky = true}) => SpaceMap(
+      sky: sky,
       key: _map,
       padding: padding,
       flight: flight,
@@ -186,10 +190,16 @@ class _AdventureMapScreenState extends State<AdventureMapScreen> {
       // Space is dark: the bars, their glass and words are made for night.
       child: Theme(
         data: AppTheme.dark(),
-        child: Scaffold(
-          // Phones scroll the sky under the glass bars.
-          extendBodyBehindAppBar: true,
-          appBar: GlassAppBar(
+        child: _MaybeFolded(
+          // Half folded, the planets stand behind the fold and the bars lie
+          // flat in front of it.
+          fold: learner.placement == null ? null : FoldHalves.of(context),
+          // One sky across both halves, painted behind them.
+          map: (padding) => map(padding, sky: false),
+          banner: banner,
+          play: play,
+          bar: (context, {glass = true}) => GlassAppBar(
+            glass: glass,
             leading: BackButton(onPressed: () => context.go('/')),
             actions: [
               if (learner.placement != null)
@@ -204,58 +214,188 @@ class _AdventureMapScreenState extends State<AdventureMapScreen> {
             ],
             title: _Greeting(words: l10n.greeting(profile.nickname)),
           ),
-          body: WindowClassBuilder(
-            builder: (context, windowClass) {
-              final islandSize = switch (windowClass) {
-                WindowClass.compact => 104.0,
-                WindowClass.medium => 140.0,
-                WindowClass.expanded => 180.0,
-              };
-              if (learner.placement == null) {
-                // In space like the map, so the night bars and words show.
-                return Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    const SpaceSky(),
-                    SafeArea(
-                      child: _Welcome(
-                        size: islandSize,
-                        onStart: () => context.go('/child/$profileId/pretest'),
-                      ),
-                    ),
-                  ],
-                );
-              }
-              // The sky fills the screen on every device, under the app bar and
-              // the Play bar. They stay clear while nothing is beneath them and
-              // turn to glass when planets scroll under; the bonus banner
-              // floats on top.
-              final top = MediaQuery.paddingOf(context).top;
-              return GlassFrame(
-                bottom: SafeArea(top: false, child: Center(child: play)),
-                builder: (context, insets) => Stack(
-                  children: [
-                    Positioned.fill(
-                      child: map(
-                        EdgeInsets.only(
-                          top: top + (banner == null ? 0 : 88),
-                          bottom: insets.bottom,
+          child: Scaffold(
+            // Phones scroll the sky under the glass bars.
+            extendBodyBehindAppBar: true,
+            appBar: GlassAppBar(
+              leading: BackButton(onPressed: () => context.go('/')),
+              actions: [
+                if (learner.placement != null)
+                  _StoryButton(
+                    onPressed: () => context.go('/child/$profileId/stories'),
+                  ),
+                if (learner.placement != null)
+                  _StickerButton(
+                    fresh: newStickers(learner, cubit.stickers).length,
+                    onPressed: () => context.go('/child/$profileId/stickers'),
+                  ),
+              ],
+              title: _Greeting(words: l10n.greeting(profile.nickname)),
+            ),
+            body: WindowClassBuilder(
+              builder: (context, windowClass) {
+                final islandSize = switch (windowClass) {
+                  WindowClass.compact => 104.0,
+                  WindowClass.medium => 140.0,
+                  WindowClass.expanded => 180.0,
+                };
+                if (learner.placement == null) {
+                  // In space like the map, so the night bars and words show.
+                  return Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      const SpaceSky(),
+                      SafeArea(
+                        child: _Welcome(
+                          size: islandSize,
+                          onStart: () =>
+                              context.go('/child/$profileId/pretest'),
                         ),
                       ),
-                    ),
-                    if (banner != null)
-                      Positioned(
-                        top: top + 8,
-                        left: 16,
-                        right: 16,
-                        // Floating glass, as wide as its words.
-                        child: Center(child: banner),
+                    ],
+                  );
+                }
+                // The sky fills the screen on every device, under the app bar and
+                // the Play bar. They stay clear while nothing is beneath them and
+                // turn to glass when planets scroll under; the bonus banner
+                // floats on top.
+                final safe = MediaQuery.paddingOf(context);
+                final top = safe.top;
+                return GlassFrame(
+                  bottom: SafeArea(top: false, child: Center(child: play)),
+                  builder: (context, insets) => Stack(
+                    children: [
+                      Positioned.fill(
+                        child: map(
+                          EdgeInsets.only(
+                            left: safe.left,
+                            top: top + (banner == null ? 0 : 88),
+                            right: safe.right,
+                            bottom: insets.bottom,
+                          ),
+                        ),
                       ),
+                      if (banner != null)
+                        Positioned(
+                          top: top + 8,
+                          left: 16,
+                          right: 16,
+                          // Floating glass, as wide as its words.
+                          child: Center(child: banner),
+                        ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The map as it is, or on a half-folded phone ([fold]) split at the fold:
+/// the planets behind it, the bar, the bonus banner and Play in front, all
+/// on one starry sky.
+class _MaybeFolded extends StatelessWidget {
+  const _MaybeFolded({
+    required this.fold,
+    required this.map,
+    required this.banner,
+    required this.play,
+    required this.bar,
+    required this.child,
+  });
+
+  final FoldHalves? fold;
+  final Widget Function(EdgeInsets padding) map;
+  final Widget? banner;
+  final Widget play;
+  final PreferredSizeWidget Function(BuildContext context, {bool glass}) bar;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final fold = this.fold;
+    if (fold == null) {
+      // Not folded, or before the warm-up: one half, as on a closed phone.
+      return FoldHalf(view: const FoldScenery(), child: child);
+    }
+    final banner = this.banner;
+    // Light time and signal over space.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        body: Stack(
+          fit: StackFit.expand,
+          children: [
+            const SpaceSky(),
+            FoldSplit(
+              halves: fold,
+              // The bar above the planets, as the play screen's sits above
+              // the world.
+              view: Builder(
+                builder: (context) {
+                  final top = MediaQuery.paddingOf(context).top;
+                  final barBottom = top + GlassAppBar.height;
+                  return Stack(
+                    children: [
+                      // The planets pass under the bar and blur away
+                      // towards the top, never cut off on a line.
+                      Positioned.fill(
+                        // The bar is plain: the map's scrolling mustn't
+                        // turn it to glass.
+                        child: NotificationListener<ScrollNotification>(
+                          onNotification: (_) => true,
+                          child: map(
+                            MediaQuery.paddingOf(
+                              context,
+                            ).copyWith(top: barBottom),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: barBottom + 24,
+                        // Blur only, no tint: the sky shows no band.
+                        child: const LiquidGlassScrollEdge(
+                          edge: LiquidGlassEdge.top,
+                          color: Colors.transparent,
+                          blur: 10,
+                        ),
+                      ),
+                      Positioned(
+                        top: top,
+                        left: 0,
+                        right: 0,
+                        height: GlassAppBar.height,
+                        // Below the status bar, which the bar would
+                        // otherwise add to its own height.
+                        child: MediaQuery.removePadding(
+                          context: context,
+                          removeTop: true,
+                          child: bar(context, glass: false),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              // Play in the middle of the flat half, under the bonus banner.
+              controls: SafeArea(
+                child: Column(
+                  children: [
+                    if (banner != null)
+                      Padding(padding: const EdgeInsets.all(16), child: banner),
+                    Expanded(child: Center(child: play)),
                   ],
                 ),
-              );
-            },
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );

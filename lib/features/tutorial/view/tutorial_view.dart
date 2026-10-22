@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'package:cobalagi/core/responsive/fold.dart';
 import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
 
@@ -300,6 +301,46 @@ class _TutorialViewState extends State<TutorialView> {
         ),
       ],
     );
+    final halves = FoldHalves.of(context);
+    if (halves != null) {
+      // Half folded: the world plays behind the fold, and the blocks and Go
+      // lie flat in front of it, as on the play screen.
+      return Scaffold(
+        body: FoldSplit(
+          halves: halves,
+          view: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: IgnorePointer(child: world),
+            ),
+          ),
+          controls: SafeArea(
+            child: Padding(
+              // Held like a book, the half reaches the top of the screen.
+              padding: EdgeInsets.fromLTRB(
+                16,
+                halves.controls.top <= 0 ? 16 : 0,
+                16,
+                16,
+              ),
+              child: Column(
+                children: [
+                  top,
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: IgnorePointer(
+                      child: SingleChildScrollView(child: editorFor(fit: true)),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  goSlot,
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       body: SafeArea(
         child: Padding(

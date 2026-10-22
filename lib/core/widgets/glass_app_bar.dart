@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cobalagi/core/gamepad/gamepad_shortcut.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
+import 'package:cobalagi/core/responsive/fold.dart';
 
 import 'glass_bar.dart';
 
@@ -9,11 +10,21 @@ import 'glass_bar.dart';
 /// `Scaffold(extendBodyBehindAppBar: true)` and pad the body's scroll view by
 /// `MediaQuery.paddingOf(context)` (see [belowBars]).
 class GlassAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const GlassAppBar({super.key, this.leading, this.title, this.actions});
+  const GlassAppBar({
+    super.key,
+    this.leading,
+    this.title,
+    this.actions,
+    this.glass = true,
+  });
 
   final Widget? leading;
   final Widget? title;
   final List<Widget>? actions;
+
+  /// False for a bar that never has content under it (beside the fold of a
+  /// half-folded phone), which must show no frosted panel.
+  final bool glass;
 
   /// Same room as the game screen's top bar: 64 dp buttons with a 16 dp
   /// margin around them.
@@ -44,8 +55,11 @@ class _GlassAppBarState extends State<GlassAppBar> {
     if (button != null) Actions.maybeInvoke(button, const ActivateIntent());
   }
 
+  FoldBarSlot? _slot;
+
   @override
   void dispose() {
+    _slot?.hide(this);
     _observer?.removeListener(_onScroll);
     _leading.dispose();
     super.dispose();
@@ -69,38 +83,53 @@ class _GlassAppBarState extends State<GlassAppBar> {
         (ModalRoute.of(context)?.impliesAppBarDismissal ?? false
             ? const BackButton()
             : null);
+    // Half folded, the bar shows above the picture behind the fold, like
+    // the play screen's top bar, and leaves its place here empty.
+    final slot = FoldBarSlot.maybeOf(context);
+    if (slot != _slot) _slot?.hide(this);
+    _slot = slot;
+    if (slot != null) {
+      final bar = SizedBox(height: 64, child: _bar(leading, folded: true));
+      slot.show(this, bar);
+      return const SizedBox.shrink();
+    }
+    if (!widget.glass) return _bar(leading, folded: false);
     return GlassBar(
       under: _under,
       edge: GlassEdge.top,
-      child: AppBar(
-        toolbarHeight: GlassAppBar.height,
-        leadingWidth: 64 + 16 + 8,
-        automaticallyImplyLeading: false,
-        leading: leading == null
-            ? null
-            : Padding(
-                padding: const EdgeInsets.only(left: 16, right: 8),
-                // The leading button is the way back: the controller's B
-                // presses it.
-                child: Center(
-                  child: GamepadShortcut(
-                    button: PadButton.b,
-                    onPressed: _pressLeading,
-                    child: Focus(focusNode: _leading, child: leading),
-                  ),
-                ),
-              ),
-        titleSpacing: leading == null ? 16 : 8,
-        title: widget.title,
-        // The same 16 dp from the edge as the leading button.
-        actions: [...?widget.actions, const SizedBox(width: 16)],
-        backgroundColor: Colors.transparent,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-      ),
+      child: _bar(leading, folded: false),
     );
   }
+
+  /// The bar itself; [folded] above the picture behind the fold, which pads
+  /// it already.
+  Widget _bar(Widget? leading, {required bool folded}) => AppBar(
+    toolbarHeight: folded ? 64 : GlassAppBar.height,
+    leadingWidth: folded ? 64 + 8 : 64 + 16 + 8,
+    automaticallyImplyLeading: false,
+    leading: leading == null
+        ? null
+        : Padding(
+            padding: EdgeInsets.only(left: folded ? 0 : 16, right: 8),
+            // The leading button is the way back: the controller's B
+            // presses it.
+            child: Center(
+              child: GamepadShortcut(
+                button: PadButton.b,
+                onPressed: _pressLeading,
+                child: Focus(focusNode: _leading, child: leading),
+              ),
+            ),
+          ),
+    titleSpacing: leading == null ? (folded ? 0 : 16) : 8,
+    title: widget.title,
+    // The same 16 dp from the edge as the leading button.
+    actions: [...?widget.actions, if (!folded) const SizedBox(width: 16)],
+    backgroundColor: Colors.transparent,
+    surfaceTintColor: Colors.transparent,
+    scrolledUnderElevation: 0,
+    elevation: 0,
+  );
 }
 
 /// [padding] plus the space a [GlassAppBar] and the system bars take, for a

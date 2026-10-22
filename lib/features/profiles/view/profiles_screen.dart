@@ -1,3 +1,5 @@
+import 'package:cobalagi/core/responsive/fold.dart';
+import 'package:cobalagi/features/adventure_map/view/fold_scenery.dart';
 import 'package:cobalagi/core/character/koba_head.dart';
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/view/app_update_notice.dart';
@@ -37,117 +39,147 @@ class ProfilesScreen extends StatelessWidget {
     final state = context.watch<ProfilesCubit>().state;
     final maxProfiles = context.watch<EntitlementCubit>().state.maxProfiles;
     final canAdd = state.profiles.length < maxProfiles;
-
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: GlassAppBar(
-        title: LayoutBuilder(
-          builder: (context, constraints) => Row(
-            children: [
-              // Koba watches who taps (or what the controller highlights),
-              // when the bar has room beside the words.
-              if (constraints.maxWidth >= 200) ...[
-                const KobaHead.follow(size: 44),
-                const SizedBox(width: 12),
-              ],
-              Expanded(
-                child: Text(
-                  l10n.whoIsPlaying,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+    // On a half-folded phone, the players stand behind the fold (under the
+    // title and Parent area) and New player lies flat in front of it.
+    final folded = FoldHalves.of(context) != null;
+    double tileSizeFor(WindowClass windowClass) => switch (windowClass) {
+      WindowClass.compact => 160.0,
+      WindowClass.medium => 200.0,
+      WindowClass.expanded => 240.0,
+    };
+    List<Widget> players(double tileSize) => [
+      for (final profile in state.profiles)
+        _Tile(
+          label: profile.nickname,
+          onTap: () => context.go('/child/${profile.id}'),
+          child: ProfileAvatar(avatar: profile.avatar, size: tileSize * 0.6),
         ),
-        actions: [
-          // Labelled, so parents find it and it doesn't look like the lock
-          // on a full "new player" tile.
-          GamepadShortcut(
-            button: PadButton.menu,
-            onPressed: () => _openParentArea(context),
-            child: Tooltip(
-              message: l10n.parentArea,
-              child: TextButton.icon(
-                // Smaller than dialog buttons: it shares the bar with the
-                // title on small phones.
-                style: TextButton.styleFrom(
-                  textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
+    ];
+    Widget newPlayer(BuildContext context, double tileSize) => _Tile(
+      label: l10n.addPlayer,
+      onTap: canAdd
+          ? () => _addProfile(context, maxProfiles)
+          : () => ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l10n.playerLimitReached))),
+      child: Icon(
+        canAdd ? Icons.add_circle : Icons.lock,
+        size: tileSize * 0.5,
+        color: Theme.of(context).colorScheme.primary,
+      ),
+    );
+
+    return FoldHalf(
+      viewTakesTaps: folded,
+      view: !folded
+          ? const FoldScenery()
+          : !state.loaded
+          ? const SizedBox.shrink()
+          : WindowClassBuilder(
+              builder: (context, windowClass) => GridView.extent(
+                maxCrossAxisExtent: tileSizeFor(windowClass),
+                mainAxisSpacing: 24,
+                crossAxisSpacing: 24,
+                children: players(tileSizeFor(windowClass)),
+              ),
+            ),
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: GlassAppBar(
+          title: LayoutBuilder(
+            builder: (context, constraints) => Row(
+              children: [
+                // Koba watches who taps (or what the controller highlights),
+                // when the bar has room beside the words.
+                if (constraints.maxWidth >= 200) ...[
+                  const KobaHead.follow(size: 44),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Text(
+                    l10n.whoIsPlaying,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                icon: const Icon(Icons.family_restroom_rounded),
-                label: Text(l10n.parentArea),
-                onPressed: () => _openParentArea(context),
-              ),
+              ],
             ),
           ),
-        ],
+          actions: [
+            // Labelled, so parents find it and it doesn't look like the lock
+            // on a full "new player" tile.
+            GamepadShortcut(
+              button: PadButton.menu,
+              onPressed: () => _openParentArea(context),
+              child: Tooltip(
+                message: l10n.parentArea,
+                child: TextButton.icon(
+                  // Smaller than dialog buttons: it shares the bar with the
+                  // title on small phones.
+                  style: TextButton.styleFrom(
+                    textStyle: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  icon: const Icon(Icons.family_restroom_rounded),
+                  label: Text(l10n.parentArea),
+                  onPressed: () => _openParentArea(context),
+                ),
+              ),
+            ),
+          ],
+        ),
+        // An update the store reported after the splash: offered here, never
+        // in the way (missing in screens built without the app's checker).
+        bottomNavigationBar: context.read<AppUpdateCubit?>() == null
+            ? null
+            : BlocBuilder<AppUpdateCubit, AppUpdateState>(
+                builder: (context, update) => !update.offered
+                    ? const SizedBox.shrink()
+                    : SafeArea(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                          child: AppUpdateNotice(
+                            state: update,
+                            onUpdate: () async {
+                              if (await showParentGate(context) &&
+                                  context.mounted) {
+                                await context
+                                    .read<AppUpdateCubit>()
+                                    .openUpdate();
+                              }
+                            },
+                            onContinue: context.read<AppUpdateCubit>().dismiss,
+                          ),
+                        ),
+                      ),
+              ),
+        body: !state.loaded
+            ? const Center(child: CircularProgressIndicator())
+            : WindowClassBuilder(
+                builder: (context, windowClass) {
+                  final tileSize = tileSizeFor(windowClass);
+                  if (folded) {
+                    // In the middle of the flat half.
+                    return Center(
+                      child: SizedBox.square(
+                        dimension: tileSize,
+                        child: newPlayer(context, tileSize),
+                      ),
+                    );
+                  }
+                  return GridView.extent(
+                    maxCrossAxisExtent: tileSize,
+                    padding: belowBars(context, const EdgeInsets.all(24)),
+                    mainAxisSpacing: 24,
+                    crossAxisSpacing: 24,
+                    children: [
+                      ...players(tileSize),
+                      newPlayer(context, tileSize),
+                    ],
+                  );
+                },
+              ),
       ),
-      // An update the store reported after the splash: offered here, never
-      // in the way (missing in screens built without the app's checker).
-      bottomNavigationBar: context.read<AppUpdateCubit?>() == null
-          ? null
-          : BlocBuilder<AppUpdateCubit, AppUpdateState>(
-              builder: (context, update) => !update.offered
-                  ? const SizedBox.shrink()
-                  : SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                        child: AppUpdateNotice(
-                          state: update,
-                          onUpdate: () async {
-                            if (await showParentGate(context) &&
-                                context.mounted) {
-                              await context.read<AppUpdateCubit>().openUpdate();
-                            }
-                          },
-                          onContinue: context.read<AppUpdateCubit>().dismiss,
-                        ),
-                      ),
-                    ),
-            ),
-      body: !state.loaded
-          ? const Center(child: CircularProgressIndicator())
-          : WindowClassBuilder(
-              builder: (context, windowClass) {
-                final tileSize = switch (windowClass) {
-                  WindowClass.compact => 160.0,
-                  WindowClass.medium => 200.0,
-                  WindowClass.expanded => 240.0,
-                };
-                return GridView.extent(
-                  maxCrossAxisExtent: tileSize,
-                  padding: belowBars(context, const EdgeInsets.all(24)),
-                  mainAxisSpacing: 24,
-                  crossAxisSpacing: 24,
-                  children: [
-                    for (final profile in state.profiles)
-                      _Tile(
-                        label: profile.nickname,
-                        onTap: () => context.go('/child/${profile.id}'),
-                        child: ProfileAvatar(
-                          avatar: profile.avatar,
-                          size: tileSize * 0.6,
-                        ),
-                      ),
-                    _Tile(
-                      label: l10n.addPlayer,
-                      onTap: canAdd
-                          ? () => _addProfile(context, maxProfiles)
-                          : () => ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.playerLimitReached)),
-                            ),
-                      child: Icon(
-                        canAdd ? Icons.add_circle : Icons.lock,
-                        size: tileSize * 0.5,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
     );
   }
 }

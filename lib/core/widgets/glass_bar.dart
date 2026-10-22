@@ -23,7 +23,6 @@ class GlassBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final dark = theme.brightness == Brightness.dark;
     final highContrast = MediaQuery.highContrastOf(context);
     final surface = theme.colorScheme.surface;
     final hairline = BorderSide(color: theme.colorScheme.outline);
@@ -48,10 +47,10 @@ class GlassBar extends StatelessWidget {
           )
         else
           // A scroll edge, like iOS: what passes under the bar blurs more
-          // the closer it is to the screen edge, under a light tint, with
-          // no line. It reaches [_fadeOut] past the bar, so the blur eases
-          // out instead of ending on an edge. It fades in by its own blur
-          // and tint, never by opacity.
+          // the closer it is to the screen edge, with no line and no tint.
+          // It reaches [_fadeOut] past the bar, so the blur eases out
+          // instead of ending on an edge. It fades in by its own blur,
+          // never by opacity.
           Positioned(
             left: 0,
             right: 0,
@@ -67,7 +66,10 @@ class GlassBar extends StatelessWidget {
                       edge: edge == GlassEdge.top
                           ? LiquidGlassEdge.top
                           : LiquidGlassEdge.bottom,
-                      color: surface.withValues(alpha: (dark ? 0.7 : 0.6) * t),
+                      // Blur only, no tint: content passing under a bar
+                      // softens away rather than darkening (the user's
+                      // choice); high contrast keeps its solid bar above.
+                      color: Colors.transparent,
                       blur: 10 * t,
                     ),
             ),

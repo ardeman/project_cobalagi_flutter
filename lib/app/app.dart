@@ -5,6 +5,7 @@ import 'package:cobalagi/core/gamepad/gamepad_cubit.dart';
 import 'package:cobalagi/core/gamepad/gamepad_navigator.dart';
 import 'package:cobalagi/core/gamepad/pad_input.dart';
 import 'package:cobalagi/core/gamepad/screen_keyboard.dart';
+import 'package:cobalagi/core/responsive/fold.dart';
 import 'package:cobalagi/core/widgets/glass_background.dart';
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
 import 'package:cobalagi/features/splash/data/app_update_service.dart';
@@ -41,6 +42,7 @@ class CobaLagiApp extends StatefulWidget {
     this.storeRules = const StoreRules(appStore: false),
     this.padCommands,
     this.keyboard,
+    this.hingeHalfOpen,
   });
 
   final ProfileRepository profiles;
@@ -60,6 +62,10 @@ class CobaLagiApp extends StatefulWidget {
   /// An on-screen keyboard for text fields ([steamKeyboard]); null where
   /// the system opens and closes its own.
   final ScreenKeyboard? keyboard;
+
+  /// Whether the iPhone's hinge is half open ([hingeHalfOpen]); null where
+  /// the system reports folds itself, and in tests.
+  final Stream<bool>? hingeHalfOpen;
 
   @override
   State<CobaLagiApp> createState() => _CobaLagiAppState();
@@ -144,11 +150,14 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
           theme: AppTheme.light(),
           darkTheme: AppTheme.dark(),
-          builder: (context, child) => GamepadNavigator(
-            commands: widget.padCommands,
-            child: ScreenKeyboardOnFocus(
-              keyboard: widget.keyboard,
-              child: GlassBackground(child: child!),
+          builder: (context, child) => HingeFold(
+            halfOpen: widget.hingeHalfOpen,
+            child: GamepadNavigator(
+              commands: widget.padCommands,
+              child: ScreenKeyboardOnFocus(
+                keyboard: widget.keyboard,
+                child: GlassBackground(child: child!),
+              ),
             ),
           ),
           // null follows the device; languages other than id/en fall back to English.

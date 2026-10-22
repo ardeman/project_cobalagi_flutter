@@ -1,3 +1,4 @@
+import 'package:cobalagi/core/responsive/fold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -35,16 +36,20 @@ class _ReplayScreenState extends State<ReplayScreen> {
   Widget build(BuildContext context) {
     final learning = context.watch<LearningCubit>();
     if (learning.state.learner == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const FoldHalf(
+        child: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
     }
     if (_onBreak) {
-      return BreakScreen(onContinue: () => setState(() => _onBreak = false));
+      return FoldHalf(
+        child: BreakScreen(onContinue: () => setState(() => _onBreak = false)),
+      );
     }
     final exercise = _exercise ??= learning.replayExercise(widget.levelId);
     final mapPath = '/child/${widget.profileId}';
     if (exercise == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => context.go(mapPath));
-      return const Scaffold();
+      return const FoldHalf(child: Scaffold());
     }
     final islandPath = '$mapPath/island/${exercise.plan.conceptId}';
     return PlayView(

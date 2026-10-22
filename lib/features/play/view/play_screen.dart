@@ -1,3 +1,4 @@
+import 'package:cobalagi/core/responsive/fold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -43,10 +44,14 @@ class _PlayScreenState extends State<PlayScreen> {
   Widget build(BuildContext context) {
     final learning = context.watch<LearningCubit>();
     if (learning.state.learner == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const FoldHalf(
+        child: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
     }
     if (_onBreak) {
-      return BreakScreen(onContinue: () => setState(() => _onBreak = false));
+      return FoldHalf(
+        child: BreakScreen(onContinue: () => setState(() => _onBreak = false)),
+      );
     }
     final exercise = _exercise ??= learning.nextExercise();
     final concept = exercise.plan.conceptId;
