@@ -1,34 +1,55 @@
 #!/usr/bin/env bash
-# Renders the Google Play graphics for each listing language with headless
-# Chrome, from website/screenshots/ and branding/icon.svg:
-#   store/google_play/<locale>/feature_graphic.png   1024 x 500 (tablet and phone)
-#   store/google_play/<locale>/screenshots/*.png     1920 x 1080 (16:9, tablets)
-#   store/google_play/<locale>/phone_screenshots/*.png 1080 x 1920 (9:16, phones), from the
-#     phone-*.png renders of tool/screenshots
-# and the App Store screenshots, from the 2x renders in tool/screenshots/out/:
-#   store/app_store/<locale>/screenshots/iphone/*.jpg 1206 x 2622 (iPhone 6.3",
-#     the size App Store Connect requires)
-#   store/app_store/<locale>/screenshots/ipad/*.jpg   2752 x 2064 (iPad 13")
-#   store/app_store/<locale>/screenshots/mac/*.jpg    2880 x 1800
+# Renders the store graphics for each listing language with headless Chrome,
+# from the device renders in tool/screenshots/out/devices/ (run
+# flutter test tool/screenshots --update-goldens first), the device frames in
+# store/bezels/ (tool/fetch_bezels.sh) and branding/icon.svg. Every
+# screenshot shows its real device around it, with its status bar
+# (store/device.mjs), in each way it is held:
+#   store/google_play/<locale>/feature_graphic.png     1024 x 500
+#   store/google_play/<locale>/screenshots/*.png       1920 x 1080 (16:9, tablets):
+#     Pixel Tablet, sideways and upright
+#   store/google_play/<locale>/phone_screenshots/*.png 1080 x 1920 (9:16, phones):
+#     Pixel 9, upright and sideways
+#   store/app_store/<locale>/screenshots/iphone/*.jpg  1206 x 2622 (iPhone 6.3",
+#     the size App Store Connect requires): iPhone 17, upright and sideways
+#   store/app_store/<locale>/screenshots/ipad/*.jpg    2752 x 2064 (iPad 13"):
+#     iPad Pro, sideways and upright
+#   store/app_store/<locale>/screenshots/mac/*.jpg     2880 x 1800: MacBook Air
+#   store/app_store/<locale>/screenshots/duo/*.jpg     2007 x 2853 (iPhone Duo):
+#     open upright and sideways, closed both ways, half folded on a table and
+#     like a book
+#   store/app_store/<locale>/header.png, search_result.png (creative assets)
 # Run from the project root: store/render.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 ROOT="$PWD"
+OUT="$ROOT/tool/screenshots/out/devices"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 TMP="$(mktemp -d)"
 trap 'rm -rf -- "${TMP:?}"' EXIT
 
+if [ ! -f "$OUT/pixel/adventure-map.png" ]; then
+  echo "Missing $OUT: run flutter test tool/screenshots --update-goldens first." >&2
+  exit 1
+fi
+if [ ! -f store/bezels/screens.txt ]; then
+  echo "Missing store/bezels: run tool/fetch_bezels.sh first." >&2
+  exit 1
+fi
+# Android's status bar clock is Roboto, which ships with Flutter.
+FONTS="$(dirname "$(dirname "$(readlink -f "$(command -v flutter)")")")/bin/cache/artifacts/material_fonts"
+
 # The character from the app icon, without its background.
 CHARACTER="$(sed -n '/<g id="foreground">/,/^  <\/g>$/p' branding/icon.svg)"
 
-STYLE='
+STYLE="
+  @font-face{font-family:Roboto;src:url('file://$FONTS/Roboto-Regular.ttf')}
+"'
   html,body{margin:0}
   body{font-family:ui-rounded,"SF Pro Rounded",-apple-system,system-ui,sans-serif;color:#fff;
        background:radial-gradient(circle at 85% 15%,#ffb38a 0,transparent 45%),
                   radial-gradient(circle at 10% 95%,#ffc83d55 0,transparent 40%),
                   linear-gradient(180deg,#ff9a6b,#e85a37);overflow:hidden}
-  .tablet{background:#1d2b2b;padding:18px;border-radius:44px;box-shadow:0 30px 60px -20px #00303088}
-  .tablet img{display:block;border-radius:28px}
   h1{margin:0;font-weight:800;letter-spacing:0}
 '
 
@@ -40,64 +61,113 @@ shot() {
     --window-size="$1,$2" --screenshot="$4" "file://$TMP/page.html" 2>/dev/null
 }
 
-# phone_slide <image> <caption> <out>: caption above a framed 400 x 760
-# phone screenshot, in portrait.
-phone_slide() {
-  shot 1080 1920 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:56px;height:1920px\">
-      <h1 style=\"font-size:72px;max-width:900px;text-align:center;line-height:1.1\">$2</h1>
-      <div class=\"tablet\" style=\"padding:16px;border-radius:64px\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"height:1400px;border-radius:50px\"></div>
-    </div>" "$3"
+# device <kind> <image> <box width> <box height> [style]: the screenshot
+# $OUT/<image> in its device (store/device.mjs), as big as fits the box. The
+# kind is the device's folder in $OUT; the map's dark sky gets a light status
+# bar.
+device() {
+  local tone=dark lang=en
+  case "$2" in *adventure-map*) tone=light ;; esac
+  case "$2" in *-id.png) lang=id ;; esac
+  node store/device.mjs "$1" "$OUT/$2" "$3" "$4" "$tone" "$lang" "${5:-}"
 }
 
-# phone_pair_slide <image> <image> <caption> <out>: two framed phone
-# screenshots side by side, for related screens.
-phone_pair_slide() {
-  shot 1080 1920 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:56px;height:1920px\">
-      <h1 style=\"font-size:72px;max-width:900px;text-align:center;line-height:1.1\">$3</h1>
-      <div style=\"display:flex;align-items:flex-start\">
-        <div class=\"tablet\" style=\"padding:12px;border-radius:48px;transform:rotate(-2deg)\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"height:1040px;display:block;border-radius:38px\"></div>
-        <div class=\"tablet\" style=\"padding:12px;border-radius:48px;transform:rotate(2deg);margin-left:-150px;margin-top:240px\"><img src=\"file://$ROOT/website/screenshots/$2\" style=\"height:1040px;display:block;border-radius:38px\"></div>
-      </div>
-    </div>" "$4"
-}
-
-render_phone() { # locale suffix captions...
-  local locale="$1" s="$2"; shift 2
-  local dir="store/google_play/$locale/phone_screenshots"
-  mkdir -p "$dir"
-  rm -f "$dir/"*.png
-  phone_slide "phone-adventure-map$s.png"   "$1" "$dir/1-adventure-map.png"
-  phone_slide "phone-play-loops$s.png"      "$2" "$dir/2-play-loops.png"
-  phone_slide "phone-play-code$s.png"       "$3" "$dir/3-code.png"
-  phone_slide "phone-play-functions$s.png"  "$4" "$dir/4-play-functions.png"
-  phone_slide "phone-play-debugging$s.png"  "$5" "$dir/5-fix-it.png"
-  phone_slide "phone-solved$s.png"          "$6" "$dir/6-solved.png"
-  phone_slide "phone-play-until$s.png"      "$7" "$dir/7-until.png"
-  phone_pair_slide "phone-parent-placement$s.png" "phone-parent-progress$s.png" "$8" "$dir/8-parents.png"
-}
-
-# pair_slide <image> <image> <caption> <out>: two framed tablet screenshots
-# side by side, slightly overlapping, for related screens.
-pair_slide() {
-  shot 1920 1080 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;height:1080px\">
-      <h1 style=\"font-size:72px\">$3</h1>
-      <div style=\"display:flex;align-items:flex-start\">
-        <div class=\"tablet\" style=\"padding:12px;border-radius:32px;transform:rotate(-2deg)\"><img src=\"file://$ROOT/website/screenshots/$1\" style=\"width:1040px;display:block;border-radius:20px\"></div>
-        <div class=\"tablet\" style=\"padding:12px;border-radius:32px;transform:rotate(2deg);margin-left:-300px;margin-top:220px\"><img src=\"file://$ROOT/website/screenshots/$2\" style=\"width:1040px;display:block;border-radius:20px\"></div>
-      </div>
-    </div>" "$4"
-}
-
-# slide <image> <caption> <out>: caption above a framed 1280 x 740 screenshot.
+# slide <width> <height> <font size> <caption> <devices html> <out>: the
+# caption above the devices.
 slide() {
-  shot 1920 1080 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:44px;height:1080px\">
-      <h1 style=\"font-size:76px\">$2</h1>
-      <div class=\"tablet\"><img src=\"file://$ROOT/website/screenshots/$1\" width=\"1280\" height=\"740\"></div>
-    </div>" "$3"
+  shot "$1" "$2" "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:$(($3 * 2 / 3))px;height:$2px\">
+      <h1 style=\"font-size:$3px;max-width:$(($1 * 9 / 10))px;text-align:center;line-height:1.1\">$4</h1>
+      <div style=\"display:flex;align-items:center;justify-content:center\">$5</div>
+    </div>" "$6"
 }
 
-# feature <tagline> <tablet screenshot> <phone screenshot> <out>: a tablet
-# with a phone in front of its corner, like the App Store's search result.
+# box_w <w>, box_h <h> <font>: room for the devices below the caption.
+box_w() { echo $(($1 * 90 / 100)); }
+box_h() { echo $(($1 - $2 * 4)); }
+
+# one <w> <h> <font> <device> <screen> <suffix> <caption> <out>
+one() {
+  slide "$1" "$2" "$3" "$7" "$(device "$4" "$4/$5$6.png" "$(box_w "$1")" "$(box_h "$2" "$3")")" "$8"
+}
+
+# pair <w> <h> <font> <device> <screen> <screen> <suffix> <caption> <out>:
+# two screens of one device, overlapping, for related screens.
+pair() {
+  local bw bh
+  if [ "$1" -gt "$2" ]; then bw=$(($1 * 55 / 100)); bh=$(($2 * 62 / 100))
+  else bw=$(($1 * 62 / 100)); bh=$(($2 * 55 / 100)); fi
+  slide "$1" "$2" "$3" "$8" "<div style=\"display:flex;align-items:flex-start\">
+      $(device "$4" "$4/$5$7.png" "$bw" "$bh" "transform:rotate(-2deg)")
+      $(device "$4" "$4/$6$7.png" "$bw" "$bh" "transform:rotate(2deg);margin-left:-$((bw * 22 / 100))px;margin-top:$((bh * 22 / 100))px")
+    </div>" "$9"
+}
+
+# turned <w> <h> <font> <device> <turned device> <screen> <suffix> <caption>
+# <out>: one screen on a device held both ways, upright and sideways; the
+# slide's own way gets the most room.
+turned() {
+  local up side
+  if [ "$1" -gt "$2" ]; then
+    side="$(device "$4" "$4/$6$7.png" $(($1 * 54 / 100)) $(($(box_h "$2" "$3") * 85 / 100)))"
+    up="$(device "$5" "$5/$6$7.png" $(($1 * 34 / 100)) "$(box_h "$2" "$3")" "margin-left:$(($1 * 4 / 100))px")"
+    slide "$1" "$2" "$3" "$8" "$side$up" "$9"
+  else
+    up="$(device "$4" "$4/$6$7.png" $(($1 * 80 / 100)) $(($(box_h "$2" "$3") * 56 / 100)))"
+    side="$(device "$5" "$5/$6$7.png" "$(box_w "$1")" $(($(box_h "$2" "$3") * 36 / 100)) "margin-top:$(($2 * 3 / 100))px")"
+    slide "$1" "$2" "$3" "$8" "<div style=\"display:flex;flex-direction:column;align-items:center\">$up$side</div>" "$9"
+  fi
+}
+
+# set_of <w> <h> <font> <device> <slide 3: the device turned, or "" for
+# none> <suffix> <out dir> captions...: the eight slides of one device.
+set_of() {
+  local w="$1" h="$2" f="$3" d="$4" t="$5" s="$6" dir="$7"
+  shift 7
+  mkdir -p "$dir"
+  rm -f "${dir:?}/"*.png "${dir:?}/"*.jpg
+  one "$w" "$h" "$f" "$d" adventure-map  "$s" "$1" "$dir/1-adventure-map.png"
+  one "$w" "$h" "$f" "$d" play-loops     "$s" "$2" "$dir/2-play-loops.png"
+  if [ -n "$t" ]; then
+    turned "$w" "$h" "$f" "$d" "$t" play-code "$s" "$3" "$dir/3-code.png"
+  else
+    one "$w" "$h" "$f" "$d" play-code    "$s" "$3" "$dir/3-code.png"
+  fi
+  one "$w" "$h" "$f" "$d" play-functions "$s" "$4" "$dir/4-play-functions.png"
+  one "$w" "$h" "$f" "$d" play-debugging "$s" "$5" "$dir/5-fix-it.png"
+  one "$w" "$h" "$f" "$d" solved         "$s" "$6" "$dir/6-solved.png"
+  one "$w" "$h" "$f" "$d" play-until     "$s" "$7" "$dir/7-until.png"
+  pair "$w" "$h" "$f" "$d" parent-placement parent-progress "$s" "$8" "$dir/8-parents.png"
+}
+
+# duo_set <suffix> <out dir> captions...: the iPhone Duo in every way it is
+# held: open upright, half folded on a table and like a book, open sideways,
+# closed upright, open again, closed sideways, and open for the parents.
+duo_set() {
+  local s="$1" dir="$2" w=2007 h=2853 f=120
+  shift 2
+  mkdir -p "$dir"
+  rm -f "${dir:?}/"*.png "${dir:?}/"*.jpg
+  one "$w" "$h" "$f" duo                 adventure-map  "$s" "$1" "$dir/1-adventure-map.png"
+  one "$w" "$h" "$f" duo-table           play-loops     "$s" "$2" "$dir/2-play-loops.png"
+  one "$w" "$h" "$f" duo-book            play-code      "$s" "$3" "$dir/3-code.png"
+  one "$w" "$h" "$f" duo-landscape       play-functions "$s" "$4" "$dir/4-play-functions.png"
+  one "$w" "$h" "$f" duo-outer           play-debugging "$s" "$5" "$dir/5-fix-it.png"
+  one "$w" "$h" "$f" duo                 solved         "$s" "$6" "$dir/6-solved.png"
+  one "$w" "$h" "$f" duo-outer-landscape play-until     "$s" "$7" "$dir/7-until.png"
+  pair "$w" "$h" "$f" duo parent-placement parent-progress "$s" "$8" "$dir/8-parents.png"
+}
+
+# JPEG halves the size, and the App Store takes it.
+to_jpeg() {
+  local png
+  for png in "$1/"*.png; do
+    sips -s format jpeg -s formatOptions 90 "$png" --out "${png%.png}.jpg" >/dev/null
+    rm "$png"
+  done
+}
+
+# feature <tagline> <suffix> <out>: Koba and the tagline beside a Pixel
+# Tablet with a Pixel 9 in front of its corner.
 feature() {
   shot 1024 500 "<div style=\"display:flex;align-items:center;height:500px;padding-left:56px;gap:8px\">
       <div style=\"width:380px;flex:none\">
@@ -106,29 +176,10 @@ feature() {
         <p style=\"font-size:30px;font-weight:700;margin:6px 0 0;opacity:.95\">$1</p>
       </div>
       <div style=\"position:relative;flex:none\">
-        <div class=\"tablet\" style=\"padding:10px;border-radius:26px;transform:rotate(-4deg);margin-top:-40px\">
-          <img src=\"file://$ROOT/website/screenshots/$2\" style=\"width:480px;border-radius:17px\">
-        </div>
-        <div class=\"tablet\" style=\"position:absolute;left:400px;top:0;padding:7px;border-radius:28px;transform:rotate(5deg)\">
-          <img src=\"file://$ROOT/website/screenshots/$3\" style=\"height:300px;border-radius:22px\">
-        </div>
+        $(device pixel-tablet "pixel-tablet/play-loops$2.png" 500 340 "transform:rotate(-4deg);margin-top:-30px")
+        <div style=\"position:absolute;left:410px;top:10px\">$(device pixel "pixel/play-code$2.png" 200 320 "transform:rotate(5deg)")</div>
       </div>
-    </div>" "$4"
-}
-
-render_locale() { # locale suffix tagline captions...
-  local locale="$1" s="$2" tagline="$3"; shift 3
-  mkdir -p "store/google_play/$locale/screenshots"
-  feature "$tagline" "play-loops$s.png" "phone-play-code$s.png" "store/google_play/$locale/feature_graphic.png"
-  rm -f "store/google_play/$locale/screenshots/"*.png
-  slide "adventure-map$s.png"   "$1" "store/google_play/$locale/screenshots/1-adventure-map.png"
-  slide "play-loops$s.png"      "$2" "store/google_play/$locale/screenshots/2-play-loops.png"
-  slide "play-code$s.png"       "$3" "store/google_play/$locale/screenshots/3-code.png"
-  slide "play-functions$s.png"  "$4" "store/google_play/$locale/screenshots/4-play-functions.png"
-  slide "play-debugging$s.png"  "$5" "store/google_play/$locale/screenshots/5-fix-it.png"
-  slide "solved$s.png"          "$6" "store/google_play/$locale/screenshots/6-solved.png"
-  slide "play-until$s.png"      "$7" "store/google_play/$locale/screenshots/7-until.png"
-  pair_slide "parent-placement$s.png" "parent-progress$s.png" "$8" "store/google_play/$locale/screenshots/8-parents.png"
+    </div>" "$3"
 }
 
 CAPTIONS_ID=(
@@ -152,89 +203,34 @@ CAPTIONS_EN=(
   "Parents set the start; sponsors see progress"
 )
 
+render_locale() { # locale suffix tagline captions...
+  local locale="$1" s="$2" tagline="$3"; shift 3
+  local play="store/google_play/$locale" apple="store/app_store/$locale/screenshots"
+  feature "$tagline" "$s" "$play/feature_graphic.png"
+  set_of 1920 1080 64 pixel-tablet pixel-tablet-portrait "$s" "$play/screenshots" "$@"
+  set_of 1080 1920 68 pixel pixel-landscape "$s" "$play/phone_screenshots" "$@"
+  set_of 1206 2622 84 iphone iphone-landscape "$s" "$apple/iphone" "$@"
+  set_of 2752 2064 104 ipad ipad-portrait "$s" "$apple/ipad" "$@"
+  set_of 2880 1800 100 mac "" "$s" "$apple/mac" "$@"
+  duo_set "$s" "$apple/duo" "$@"
+  local set
+  for set in iphone ipad mac duo; do to_jpeg "$apple/$set"; done
+}
+
 render_locale id "-id" "Belajar coding sambil bermain" "${CAPTIONS_ID[@]}"
 render_locale en-US "" "Learn to code through play" "${CAPTIONS_EN[@]}"
-render_phone id "-id" "${CAPTIONS_ID[@]}"
-render_phone en-US "" "${CAPTIONS_EN[@]}"
-
-# The App Store's sets use the 2x renders, which are sharp at its sizes.
-OUT="$ROOT/tool/screenshots/out"
-if [ ! -f "$OUT/adventure-map.png" ]; then
-  echo "Missing $OUT: run flutter test tool/screenshots --update-goldens first." >&2
-  exit 1
-fi
-
-# big_slide <w> <h> <image width> <font size> <image> <caption> <out>:
-# caption above one framed screenshot from $OUT.
-big_slide() {
-  shot "$1" "$2" "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:$(($4 * 2 / 3))px;height:$2px\">
-      <h1 style=\"font-size:$4px;max-width:$(($1 * 9 / 10))px;text-align:center;line-height:1.1\">$6</h1>
-      <div class=\"tablet\" style=\"padding:$(($3 / 60))px;border-radius:$(($3 / 25))px\"><img src=\"file://$OUT/$5\" style=\"width:$3px;border-radius:$(($3 / 40))px\"></div>
-    </div>" "$7"
-}
-
-# big_pair_slide <w> <h> <image width> <font size> <image> <image> <caption>
-# <out>: two framed screenshots from $OUT, overlapping, for related screens.
-big_pair_slide() {
-  local pad=$(($3 / 80))
-  # Overlap just enough that the pair fills 92% of the width.
-  local overlap=$((2 * $3 + 4 * pad - $1 * 92 / 100))
-  local frame="padding:${pad}px;border-radius:$(($3 / 25))px"
-  local img="width:$3px;display:block;border-radius:$(($3 / 33))px"
-  shot "$1" "$2" "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;gap:$(($4 * 2 / 3))px;height:$2px\">
-      <h1 style=\"font-size:$4px;max-width:$(($1 * 9 / 10))px;text-align:center;line-height:1.1\">$7</h1>
-      <div style=\"display:flex;align-items:flex-start\">
-        <div class=\"tablet\" style=\"$frame;transform:rotate(-2deg)\"><img src=\"file://$OUT/$5\" style=\"$img\"></div>
-        <div class=\"tablet\" style=\"$frame;transform:rotate(2deg);margin-left:-${overlap}px;margin-top:$(($3 / 5))px\"><img src=\"file://$OUT/$6\" style=\"$img\"></div>
-      </div>
-    </div>" "$8"
-}
-
-# render_apple <locale> <suffix> <set> <w> <h> <image prefix> <image width>
-# <pair image width> <font size> captions...
-render_apple() {
-  local locale="$1" s="$2" set="$3" w="$4" h="$5" p="$6" iw="$7" pw="$8" f="$9"
-  shift 9
-  local dir="store/app_store/$locale/screenshots/$set"
-  mkdir -p "$dir"
-  rm -f "$dir/"*.png "$dir/"*.jpg
-  big_slide "$w" "$h" "$iw" "$f" "${p}adventure-map$s.png"  "$1" "$dir/1-adventure-map.png"
-  big_slide "$w" "$h" "$iw" "$f" "${p}play-loops$s.png"     "$2" "$dir/2-play-loops.png"
-  big_slide "$w" "$h" "$iw" "$f" "${p}play-code$s.png"      "$3" "$dir/3-code.png"
-  big_slide "$w" "$h" "$iw" "$f" "${p}play-functions$s.png" "$4" "$dir/4-play-functions.png"
-  big_slide "$w" "$h" "$iw" "$f" "${p}play-debugging$s.png" "$5" "$dir/5-fix-it.png"
-  big_slide "$w" "$h" "$iw" "$f" "${p}solved$s.png"         "$6" "$dir/6-solved.png"
-  big_slide "$w" "$h" "$iw" "$f" "${p}play-until$s.png"     "$7" "$dir/7-until.png"
-  big_pair_slide "$w" "$h" "$pw" "$f" "${p}parent-placement$s.png" "${p}parent-progress$s.png" "$8" "$dir/8-parents.png"
-  # JPEG halves the size, and the App Store takes it.
-  for png in "$dir/"*.png; do
-    sips -s format jpeg -s formatOptions 90 "$png" --out "${png%.png}.jpg" >/dev/null
-    rm "$png"
-  done
-}
-
-render_apple id -id iphone 1206 2622 phone- 1005 585 88 "${CAPTIONS_ID[@]}"
-render_apple id -id ipad 2752 2064 "" 2300 1500 110 "${CAPTIONS_ID[@]}"
-render_apple id -id mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_ID[@]}"
-render_apple en-US "" iphone 1206 2622 phone- 1005 585 88 "${CAPTIONS_EN[@]}"
-render_apple en-US "" ipad 2752 2064 "" 2300 1500 110 "${CAPTIONS_EN[@]}"
-render_apple en-US "" mac 2880 1800 "" 2200 1500 104 "${CAPTIONS_EN[@]}"
 
 # App Store creative assets (Header and Search Results), PNG without alpha:
 #   store/app_store/<locale>/header.png          3840 x 1646 (21:9, product page)
 #   store/app_store/<locale>/search_result.png   3840 x 2560 (3:2, search results)
 # The header is cropped on narrow screens, so Koba and the tagline sit in the
-# middle, with a tablet and phones at the sides that may be cut off.
+# middle, with an iPad and iPhones at the sides that may be cut off.
 creative() { # locale suffix tagline
   local dir="store/app_store/$1" s="$2" tagline="$3"
-  local tablet="padding:24px;border-radius:72px"
-  local img="width:1400px;display:block;border-radius:52px"
-  local phone="padding:18px;border-radius:84px"
-  local pimg="height:1100px;display:block;border-radius:68px"
   shot 3840 1646 "<div style=\"position:relative;height:1646px\">
-      <div class=\"tablet\" style=\"$tablet;position:absolute;left:-180px;top:330px;transform:rotate(-6deg)\"><img src=\"file://$OUT/adventure-map$s.png\" style=\"$img\"></div>
-      <div class=\"tablet\" style=\"$phone;position:absolute;left:3300px;top:300px;transform:rotate(10deg)\"><img src=\"file://$OUT/phone-play-code$s.png\" style=\"$pimg\"></div>
-      <div class=\"tablet\" style=\"$phone;position:absolute;left:2760px;top:220px;transform:rotate(4deg)\"><img src=\"file://$OUT/phone-play-loops$s.png\" style=\"$pimg\"></div>
+      <div style=\"position:absolute;left:-180px;top:300px\">$(device ipad "ipad/adventure-map$s.png" 1500 1200 "transform:rotate(-6deg)")</div>
+      <div style=\"position:absolute;left:3300px;top:280px\">$(device iphone "iphone/play-code$s.png" 560 1200 "transform:rotate(10deg)")</div>
+      <div style=\"position:absolute;left:2760px;top:200px\">$(device iphone "iphone/play-loops$s.png" 560 1200 "transform:rotate(4deg)")</div>
       <div style=\"position:absolute;left:1220px;width:1400px;top:0;height:1646px;display:flex;flex-direction:column;align-items:center;justify-content:center\">
         <svg viewBox=\"180 190 660 670\" width=\"720\" height=\"730\">$CHARACTER</svg>
         <h1 style=\"font-size:150px;text-align:center;line-height:1.1;margin-top:40px\">$tagline</h1>
@@ -246,8 +242,8 @@ creative() { # locale suffix tagline
         <h1 style=\"font-size:170px\">$tagline</h1>
       </div>
       <div style=\"display:flex;align-items:flex-end\">
-        <div class=\"tablet\" style=\"padding:36px;border-radius:100px\"><img src=\"file://$OUT/play-loops$s.png\" style=\"width:2500px;display:block;border-radius:68px\"></div>
-        <div class=\"tablet\" style=\"padding:20px;border-radius:92px;margin-left:-260px;margin-bottom:-60px;transform:rotate(4deg)\"><img src=\"file://$OUT/phone-play-code$s.png\" style=\"height:1500px;display:block;border-radius:74px\"></div>
+        $(device ipad "ipad/play-loops$s.png" 2500 1800)
+        $(device iphone "iphone/play-code$s.png" 800 1600 "margin-left:-260px;margin-bottom:-60px;transform:rotate(4deg)")
       </div>
     </div>" "$TMP/search.png"
   # PNG: App Store Connect turns down .jpg here ("invalid extension"). Chrome's

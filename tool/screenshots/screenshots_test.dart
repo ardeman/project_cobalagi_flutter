@@ -6,6 +6,7 @@
 //
 // Not part of the Checks: it writes images instead of testing behaviour.
 import 'dart:io';
+import 'dart:ui' show DisplayFeature, DisplayFeatureState, DisplayFeatureType;
 
 import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/app/app.dart';
@@ -40,6 +41,168 @@ const _size = Size(1280, 740);
 
 /// Phone screenshots, portrait.
 const _phone = Size(400, 760);
+
+/// A device the store slides show, in one way of holding it: its screen in
+/// logical pixels, its pixel ratio, the system bars' insets (logical) and a
+/// half-open fold. Renders go to `out/devices/<name>/`, and
+/// `store/render.sh` draws the device's frame around them.
+typedef _Device = ({
+  String name,
+  Size size,
+  double ratio,
+  EdgeInsets insets,
+  Rect? fold,
+  List<String> screens,
+});
+
+/// Every screen of the store slides.
+const _allScreens = [
+  'adventure-map',
+  'play-loops',
+  'play-code',
+  'play-functions',
+  'play-debugging',
+  'solved',
+  'play-until',
+  'parent-placement',
+  'parent-progress',
+];
+
+/// The store's devices in every way the slides hold them, each at the size
+/// of its frame's screen (`store/bezels/screens.txt`). Insets are the system
+/// bars' and cutouts': `store/render.sh` draws the status bars into them.
+const List<_Device> _devices = [
+  // Google Play: Pixel 9 (the camera hole is on the left held sideways) and
+  // Pixel Tablet (its camera is on the right held upright).
+  (
+    name: 'pixel',
+    size: Size(1080 / 2.625, 2424 / 2.625),
+    ratio: 2.625,
+    insets: EdgeInsets.only(top: 52, bottom: 24),
+    fold: null,
+    screens: _allScreens,
+  ),
+  (
+    name: 'pixel-landscape',
+    size: Size(2424 / 2.625, 1080 / 2.625),
+    ratio: 2.625,
+    insets: EdgeInsets.only(left: 52, top: 24, bottom: 24),
+    fold: null,
+    screens: ['play-code'],
+  ),
+  (
+    name: 'pixel-tablet',
+    size: Size(1280, 800),
+    ratio: 2,
+    insets: EdgeInsets.only(top: 24, bottom: 24),
+    fold: null,
+    screens: _allScreens,
+  ),
+  (
+    name: 'pixel-tablet-portrait',
+    size: Size(800, 1280),
+    ratio: 2,
+    insets: EdgeInsets.only(top: 24, bottom: 24),
+    fold: null,
+    screens: ['play-code'],
+  ),
+  // App Store: iPhone 17, iPad Pro 13" and MacBook Air 13" (the app's
+  // window on the desktop, below the menu bar). An iPhone held sideways
+  // hides its status bar.
+  (
+    name: 'iphone',
+    size: Size(402, 874),
+    ratio: 3,
+    insets: EdgeInsets.only(top: 62, bottom: 34),
+    fold: null,
+    screens: _allScreens,
+  ),
+  (
+    name: 'iphone-landscape',
+    size: Size(874, 402),
+    ratio: 3,
+    insets: EdgeInsets.only(left: 62, right: 62, bottom: 21),
+    fold: null,
+    screens: ['play-code'],
+  ),
+  (
+    name: 'ipad',
+    size: Size(1376, 1032),
+    ratio: 2,
+    insets: EdgeInsets.only(top: 24, bottom: 20),
+    fold: null,
+    screens: _allScreens,
+  ),
+  (
+    name: 'ipad-portrait',
+    size: Size(1032, 1376),
+    ratio: 2,
+    insets: EdgeInsets.only(top: 24, bottom: 20),
+    fold: null,
+    screens: ['play-code'],
+  ),
+  (
+    name: 'mac',
+    size: Size(1120, 680),
+    ratio: 2,
+    insets: EdgeInsets.zero,
+    fold: null,
+    screens: _allScreens,
+  ),
+  // The iPhone Duo: its status bar runs down a side edge, at the top of the
+  // right one (on the closed screen, under its camera: on the left held
+  // sideways). Open (2007 x 2853) upright and sideways, closed on its outer
+  // screen (1398 x 2034) both ways, and half folded on a table or like a
+  // book.
+  (
+    name: 'duo',
+    size: Size(669, 951),
+    ratio: 3,
+    insets: EdgeInsets.only(right: 62, bottom: 21),
+    fold: null,
+    screens: ['adventure-map', 'solved', 'parent-placement', 'parent-progress'],
+  ),
+  (
+    name: 'duo-landscape',
+    size: Size(951, 669),
+    ratio: 3,
+    insets: EdgeInsets.only(right: 62, bottom: 21),
+    fold: null,
+    screens: ['play-functions'],
+  ),
+  (
+    name: 'duo-outer',
+    size: Size(466, 678),
+    ratio: 3,
+    insets: EdgeInsets.only(right: 62, bottom: 21),
+    fold: null,
+    screens: ['play-debugging'],
+  ),
+  (
+    name: 'duo-outer-landscape',
+    size: Size(678, 466),
+    ratio: 3,
+    insets: EdgeInsets.only(left: 62, bottom: 21),
+    fold: null,
+    screens: ['play-until'],
+  ),
+  (
+    name: 'duo-table',
+    size: Size(669, 951),
+    ratio: 3,
+    insets: EdgeInsets.only(right: 62, bottom: 21),
+    fold: Rect.fromLTWH(0, 475.5, 669, 0),
+    screens: ['play-loops'],
+  ),
+  (
+    name: 'duo-book',
+    size: Size(951, 669),
+    ratio: 3,
+    insets: EdgeInsets.only(right: 62, bottom: 21),
+    fold: Rect.fromLTWH(475.5, 0, 0, 669),
+    screens: ['play-code'],
+  ),
+];
 
 /// The Material fonts that ship with the Flutter SDK running this test.
 Future<void> _loadFonts() async {
@@ -362,6 +525,81 @@ Future<void> _showSolved(WidgetTester tester, String language) async {
   throw StateError('loop answer did not reach the solved screen');
 }
 
+/// Opens [screen] (one of [_allScreens]) as the store slides show it, in an
+/// app pumped with [_stagePlan] and [_stageReader] for it.
+Future<void> _stage(WidgetTester tester, String screen, String language) async {
+  final phone =
+      tester.view.physicalSize.shortestSide / tester.view.devicePixelRatio <
+      600;
+  switch (screen) {
+    case 'adventure-map':
+      // Decode Koba's ship, which stands on the current planet.
+      await tester.runAsync(StoryArt.load);
+      await _open(tester, '/child/1');
+    case 'play-loops':
+      await _open(tester, '/child/1/replay/loops-03');
+      await _buildLoopAnswer(tester, 'loops-03');
+    case 'play-code':
+      await _open(tester, '/child/1/replay/loops-03');
+      await _buildLoopAnswer(tester, 'loops-03');
+      final code = language == 'id' ? 'Kode' : 'Code';
+      // Phones show the switch as icons with tooltips.
+      final icon = find.byTooltip(code);
+      await tester.tap(icon.evaluate().isNotEmpty ? icon : find.text(code));
+      await _settle(tester);
+    case 'play-functions':
+      final level = phone ? 'functions-01' : 'functions-02';
+      await _open(tester, '/child/1/replay/$level');
+      await _buildAnswer(tester, level);
+    case 'play-debugging':
+      // A turn the wrong way inside stairs: the starter blocks are there.
+      await _open(tester, '/child/1/replay/debugging-05');
+      // The child has spotted the wrong turn and tapped it.
+      final cubit = tester
+          .element(find.byType(BlockEditor))
+          .read<BlocksCubit>();
+      cubit.pickBlock(cubit.state.main.single.children.last.id);
+      await _settle(tester);
+    case 'solved':
+      await _showSolved(tester, language);
+    case 'play-until':
+      await _open(tester, '/child/1/replay/until-03');
+      // Stairs of any size: one loop that runs to the flag.
+      final cubit = tester
+          .element(find.byType(BlockEditor))
+          .read<BlocksCubit>();
+      cubit.add(BlockType.untilGoal);
+      final until = cubit.state.main.single.id;
+      for (final type in [
+        BlockType.forward,
+        BlockType.turnLeft,
+        BlockType.forward,
+        BlockType.turnRight,
+      ]) {
+        cubit.add(type, parentId: until);
+      }
+      await _settle(tester);
+    case 'parent-placement':
+      await _openPlacement(tester, language);
+    case 'parent-progress':
+      await _open(tester, '/parent');
+      final context = tester.element(find.byType(Scaffold).first);
+      GoRouter.of(context).push('/parent/progress/1');
+      await _settle(tester);
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -280));
+      await _settle(tester);
+    default:
+      throw ArgumentError.value(screen, 'screen');
+  }
+}
+
+/// The plan [screen] needs: the parent screens show the sponsor features.
+Plan _stagePlan(String screen) =>
+    screen.startsWith('parent-') ? Plan.full : Plan.free;
+
+/// Whether [screen] needs a reader, so the Code tab shows.
+bool _stageReader(String screen) => screen == 'play-code';
+
 void main() {
   setUpAll(_loadFonts);
 
@@ -372,10 +610,28 @@ void main() {
       WidgetTester tester, {
       Plan plan = Plan.free,
       Size size = _size,
+      double ratio = 2,
+      EdgeInsets insets = EdgeInsets.zero,
+      Rect? fold,
       bool reader = false,
     }) async {
-      tester.view.physicalSize = size * 2;
-      tester.view.devicePixelRatio = 2;
+      tester.view.physicalSize = size * ratio;
+      tester.view.devicePixelRatio = ratio;
+      tester.view.padding = FakeViewPadding(
+        left: insets.left * ratio,
+        top: insets.top * ratio,
+        right: insets.right * ratio,
+        bottom: insets.bottom * ratio,
+      );
+      if (fold != null) {
+        tester.view.displayFeatures = [
+          DisplayFeature(
+            bounds: fold,
+            type: DisplayFeatureType.fold,
+            state: DisplayFeatureState.postureHalfOpened,
+          ),
+        ];
+      }
       addTearDown(tester.view.reset);
       rootBundle.clear();
       final db = await tester.runAsync(() => _seed(language, reader: reader));
@@ -447,13 +703,17 @@ void main() {
           bool reader = false,
         }) => pumpApp(tester, plan: plan, size: size, reader: reader);
 
-        testWidgets('map', (tester) async {
-          await device(tester);
-          // Decode Koba's ship, which stands on the current planet.
-          await tester.runAsync(StoryArt.load);
-          await _open(tester, '/child/1');
-          await shoot('${prefix}adventure-map');
-        });
+        Future<void> staged(WidgetTester tester, String screen) async {
+          await device(
+            tester,
+            plan: _stagePlan(screen),
+            reader: _stageReader(screen),
+          );
+          await _stage(tester, screen, language);
+          await shoot('$prefix$screen');
+        }
+
+        testWidgets('map', (tester) => staged(tester, 'adventure-map'));
 
         // Only the tablet render is used (website, README).
         testWidgets('profiles', skip: prefix.isNotEmpty, (tester) async {
@@ -462,20 +722,12 @@ void main() {
           await shoot('${prefix}profiles');
         });
 
-        testWidgets('loops puzzle', (tester) async {
-          await device(tester);
-          await _open(tester, '/child/1/replay/loops-03');
-          await _buildLoopAnswer(tester, 'loops-03');
-          await shoot('${prefix}play-loops');
-        });
+        testWidgets('loops puzzle', (tester) => staged(tester, 'play-loops'));
 
-        testWidgets('magic block', (tester) async {
-          await device(tester);
-          final level = prefix.isEmpty ? 'functions-02' : 'functions-01';
-          await _open(tester, '/child/1/replay/$level');
-          await _buildAnswer(tester, level);
-          await shoot('${prefix}play-functions');
-        });
+        testWidgets(
+          'magic block',
+          (tester) => staged(tester, 'play-functions'),
+        );
 
         // Only the tablet render is used (website, README).
         testWidgets('look ahead', skip: prefix.isNotEmpty, (tester) async {
@@ -493,18 +745,7 @@ void main() {
           await shoot('${prefix}play-variables');
         });
 
-        testWidgets('typed code', (tester) async {
-          // A reader, so the Code tab shows.
-          await device(tester, reader: true);
-          await _open(tester, '/child/1/replay/loops-03');
-          await _buildLoopAnswer(tester, 'loops-03');
-          final code = language == 'id' ? 'Kode' : 'Code';
-          // Phones show the switch as icons with tooltips.
-          final icon = find.byTooltip(code);
-          await tester.tap(icon.evaluate().isNotEmpty ? icon : find.text(code));
-          await _settle(tester);
-          await shoot('${prefix}play-code');
-        });
+        testWidgets('typed code', (tester) => staged(tester, 'play-code'));
 
         // The tablet's Loops hint is the one shown (website, README).
         {
@@ -550,39 +791,9 @@ void main() {
           }
         }
 
-        testWidgets('fix it', (tester) async {
-          await device(tester);
-          // A turn the wrong way inside stairs: the starter blocks are there.
-          await _open(tester, '/child/1/replay/debugging-05');
-          // The child has spotted the wrong turn and tapped it.
-          final cubit = tester
-              .element(find.byType(BlockEditor))
-              .read<BlocksCubit>();
-          cubit.pickBlock(cubit.state.main.single.children.last.id);
-          await _settle(tester);
-          await shoot('${prefix}play-debugging');
-        });
+        testWidgets('fix it', (tester) => staged(tester, 'play-debugging'));
 
-        testWidgets('until the flag', (tester) async {
-          await device(tester);
-          await _open(tester, '/child/1/replay/until-03');
-          // Stairs of any size: one loop that runs to the flag.
-          final cubit = tester
-              .element(find.byType(BlockEditor))
-              .read<BlocksCubit>();
-          cubit.add(BlockType.untilGoal);
-          final until = cubit.state.main.single.id;
-          for (final type in [
-            BlockType.forward,
-            BlockType.turnLeft,
-            BlockType.forward,
-            BlockType.turnRight,
-          ]) {
-            cubit.add(type, parentId: until);
-          }
-          await _settle(tester);
-          await shoot('${prefix}play-until');
-        });
+        testWidgets('until the flag', (tester) => staged(tester, 'play-until'));
 
         // Only the tablet render is used (website, README).
         testWidgets('otherwise', skip: prefix.isNotEmpty, (tester) async {
@@ -634,11 +845,7 @@ void main() {
           );
         }
 
-        testWidgets('solved', (tester) async {
-          await device(tester);
-          await _showSolved(tester, language);
-          await shoot('${prefix}solved');
-        });
+        testWidgets('solved', (tester) => staged(tester, 'solved'));
 
         testWidgets('warm-up', (tester) async {
           await device(tester);
@@ -666,25 +873,37 @@ void main() {
           await shoot('${prefix}warm-up-colors');
         });
 
-        testWidgets('parent placement', (tester) async {
-          await device(tester, plan: Plan.full);
-          await _openPlacement(tester, language);
-          await shoot('${prefix}parent-placement');
-        });
+        testWidgets(
+          'parent placement',
+          (tester) => staged(tester, 'parent-placement'),
+        );
 
-        testWidgets('progress', (tester) async {
-          await device(tester, plan: Plan.full);
-          await _open(tester, '/parent');
-          final context = tester.element(find.byType(Scaffold).first);
-          GoRouter.of(context).push('/parent/progress/1');
-          await _settle(tester);
-          await tester.drag(
-            find.byType(Scrollable).first,
-            const Offset(0, -280),
-          );
-          await _settle(tester);
-          await shoot('${prefix}parent-progress');
-        });
+        testWidgets('progress', (tester) => staged(tester, 'parent-progress'));
+      });
+    }
+
+    // The store slides' devices, in every way they are held; framed by
+    // store/render.sh.
+    for (final d in _devices) {
+      group('device ${d.name} $language', () {
+        for (final screen in d.screens) {
+          testWidgets(screen, (tester) async {
+            await pumpApp(
+              tester,
+              plan: _stagePlan(screen),
+              size: d.size,
+              ratio: d.ratio,
+              insets: d.insets,
+              fold: d.fold,
+              reader: _stageReader(screen),
+            );
+            await _stage(tester, screen, language);
+            await expectLater(
+              find.byType(CobaLagiApp),
+              matchesGoldenFile('out/devices/${d.name}/$screen$suffix.png'),
+            );
+          });
+        }
       });
     }
   }

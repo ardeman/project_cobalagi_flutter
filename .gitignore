@@ -55,3 +55,6 @@ app.*.map.json
 
 # Screenshot renders; tool/screenshots/export.sh copies them to website/.
 /tool/screenshots/out/
+
+# Device frames for the store screenshots (tool/fetch_bezels.sh); Apple's may not be shared.
+/store/bezels/
