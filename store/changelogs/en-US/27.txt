@@ -1,0 +1,7 @@
+- A Reading game on the Warm-up planet.
+- Each planet's opening scene now plays on its own puzzle board, and the movie button on the map replays any scene.
+- Look ahead puzzles come with several maps, so looking ahead really counts.
+- Koba's ship flies to every planet your child opens.
+- Six new avatars.
+- On a half-folded phone, the game sits above the fold and the buttons below.
+- Koba reacts when touched, and the story has new ship sounds.

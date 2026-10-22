@@ -1,0 +1,7 @@
+- Permainan Membaca baru di planet Pemanasan.
+- Adegan pembuka tiap planet kini diputar di papan teka-tekinya, dan tombol film di peta memutar ulang adegan mana pun.
+- Teka-teki Lihat depan kini punya beberapa peta, jadi melihat ke depan benar-benar perlu.
+- Kapal Koba terbang ke setiap planet yang dibuka anak.
+- Enam avatar baru.
+- Di ponsel yang dilipat setengah, permainan ada di atas lipatan dan tombolnya di bawah.
+- Koba bereaksi saat disentuh, dan cerita punya suara kapal baru.
