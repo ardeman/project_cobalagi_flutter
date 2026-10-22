@@ -1,9 +1,11 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
+import 'package:cobalagi/core/audio/audio_service.dart';
 import 'package:cobalagi/features/adventure_map/view/space_map.dart';
 import 'package:cobalagi/features/story/data/story_art.dart';
 import 'package:cobalagi/features/story/view/ship_flight.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 MapIsland island(String id, {bool current = false, bool locked = false}) =>
@@ -16,6 +18,15 @@ MapIsland island(String id, {bool current = false, bool locked = false}) =>
       locked: locked,
     );
 
+/// Pumps [app] with the silent audio the ship's flights play their sounds on.
+Future<void> pumpWithAudio(WidgetTester tester, Widget app) =>
+    tester.pumpWidget(
+      RepositoryProvider<AudioService>.value(
+        value: const SilentAudioService(),
+        child: app,
+      ),
+    );
+
 Future<List<String>> pumpMap(
   WidgetTester tester,
   Size size, {
@@ -25,7 +36,8 @@ Future<List<String>> pumpMap(
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   final opened = <String>[];
-  await tester.pumpWidget(
+  await pumpWithAudio(
+    tester,
     MaterialApp(
       locale: const Locale('en'),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -187,7 +199,8 @@ void main() {
       'directions', 'sequencing', 'loops', 'functions', //
       'conditions', 'variables', 'debugging', 'until',
     ];
-    await tester.pumpWidget(
+    await pumpWithAudio(
+      tester,
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
@@ -231,7 +244,8 @@ void main() {
       tester.view.physicalSize = const Size(1280, 740);
       tester.view.devicePixelRatio = 1;
       addTearDown(tester.view.reset);
-      await tester.pumpWidget(
+      await pumpWithAudio(
+        tester,
         MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -284,7 +298,8 @@ void main() {
       'warmup', 'directions', 'sequencing', 'loops', 'functions', //
       'conditions', 'variables', 'debugging', 'until', 'otherwise',
     ];
-    await tester.pumpWidget(
+    await pumpWithAudio(
+      tester,
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,

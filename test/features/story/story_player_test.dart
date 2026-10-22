@@ -1,5 +1,6 @@
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
+import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/features/story/view/intro_scene.dart';
 import 'package:cobalagi/features/story/view/story_player.dart';
@@ -12,6 +13,10 @@ class _Voices extends SilentAudioService {
   _Voices();
 
   final said = <String>[];
+  final heard = <SoundEffect>[];
+
+  @override
+  void playEffect(SoundEffect effect) => heard.add(effect);
 
   @override
   Future<void> playVoice(
@@ -57,6 +62,28 @@ void main() {
       expect(VoiceClips.all, contains(beat.clip));
       expect(() => VoiceClips.speakerOf(beat.clip), returnsNormally);
     }
+  });
+
+  testWidgets('the ship and the wind are heard as the intro shows them', (
+    tester,
+  ) async {
+    final audio = _Voices();
+    await _pump(tester, audio, () {});
+    await tester.pump();
+    for (final beat in scene.beats) {
+      await tester.pump(beat.length);
+      await tester.pump(const Duration(milliseconds: 20));
+    }
+    expect(
+      audio.heard.where(
+        (e) => const [
+          SoundEffect.shipFly,
+          SoundEffect.wind,
+          SoundEffect.shipLand,
+        ].contains(e),
+      ),
+      [SoundEffect.shipFly, SoundEffect.wind, SoundEffect.shipLand],
+    );
   });
 
   for (final still in [false, true]) {

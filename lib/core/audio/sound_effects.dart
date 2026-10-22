@@ -33,7 +33,20 @@ enum SoundEffect {
 
   /// The child touches Koba on the board, and it shakes its head with a
   /// smile.
-  poke;
+  poke,
+
+  /// Koba's ship lifts off a planet, on the map or in a story scene.
+  shipLaunch,
+
+  /// Koba's ship flies through space.
+  shipFly,
+
+  /// Koba's ship touches down on a planet.
+  shipLand,
+
+  /// The space wind that blows the stars out of the ship's tank in the
+  /// story.
+  wind;
 
   String get asset => 'audio/sfx/$name.mp3';
 }

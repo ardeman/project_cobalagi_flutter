@@ -42,6 +42,22 @@
     "poke": {
       "seconds": 0.6,
       "text": "a cute little toy robot giving a happy two-note rising electronic beep-boop with a tiny springy bounce, cheerful and giggly, soft, no voice, no music, for a children's game"
+    },
+    "shipLaunch": {
+      "seconds": 1.2,
+      "text": "a small cartoon rocket ship lifting off, a soft rumbling engine ignition that rises into a bright whoosh going up, playful and gentle, not loud, no music, no voice, for a children's game"
+    },
+    "shipFly": {
+      "seconds": 1.5,
+      "text": "a small cartoon spaceship zooming past through space, a smooth soft whoosh with a light humming engine, rising then fading, playful, no music, no voice, for a children's game"
+    },
+    "shipLand": {
+      "seconds": 0.8,
+      "text": "a small cartoon spaceship touching down on the ground, a soft puff of thrusters and a gentle springy thump, then a tiny engine power-down hiss, playful, no music, no voice, for a children's game"
+    },
+    "wind": {
+      "seconds": 2.5,
+      "text": "a strong gust of whooshing magical space wind blowing past, swirling and airy with a faint sparkly shimmer, rising then dying away, a little dramatic but not scary, no music, no voice, for a children's game"
     }
   }
 }

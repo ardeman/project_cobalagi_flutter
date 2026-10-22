@@ -373,9 +373,12 @@ enum _FlightTimeline {
     flyTo: 0.75,
     landAt: 0.86,
     sounds: [
+      (0.001, SoundEffect.shipLaunch),
       (0.2, SoundEffect.star),
       (0.27, SoundEffect.star),
       (0.34, SoundEffect.star),
+      (0.4, SoundEffect.shipFly),
+      (0.84, SoundEffect.shipLand),
       (0.86, SoundEffect.goal),
     ],
   ),
@@ -386,7 +389,11 @@ enum _FlightTimeline {
     flyFrom: 0.22,
     flyTo: 0.8,
     landAt: 1,
-    sounds: [],
+    sounds: [
+      (0.001, SoundEffect.shipLaunch),
+      (0.22, SoundEffect.shipFly),
+      (0.97, SoundEffect.shipLand),
+    ],
   );
 
   const _FlightTimeline({

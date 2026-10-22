@@ -36,7 +36,11 @@ class EndingScene extends StoryScene {
       clip: VoiceClips.storyEnding,
       words: (l10n) => l10n.storyEnding,
       length: const Duration(milliseconds: 5000),
-      effects: const [(0.55, SoundEffect.star), (0.8, SoundEffect.star)],
+      effects: const [
+        (0.08, SoundEffect.shipLaunch),
+        (0.55, SoundEffect.star),
+        (0.8, SoundEffect.star),
+      ],
     ),
     StoryBeat(
       clip: VoiceClips.storyEndingKoba,
@@ -48,6 +52,7 @@ class EndingScene extends StoryScene {
       clip: VoiceClips.storyEndingMore,
       words: (l10n) => l10n.storyEndingMore,
       length: const Duration(milliseconds: 5000),
+      effects: const [(0, SoundEffect.shipFly)],
     ),
   ];
 
@@ -153,7 +158,11 @@ class FullAgainScene extends StoryScene {
       clip: VoiceClips.storyFullAgain,
       words: (l10n) => l10n.storyFullAgain,
       length: const Duration(milliseconds: 4000),
-      effects: const [(0.5, SoundEffect.star), (0.75, SoundEffect.star)],
+      effects: const [
+        (0, SoundEffect.shipFly),
+        (0.5, SoundEffect.star),
+        (0.75, SoundEffect.star),
+      ],
     ),
     StoryBeat(
       clip: VoiceClips.storyThanks(lastPlanet),
@@ -221,6 +230,7 @@ class NewPlanetScene extends StoryScene {
       clip: VoiceClips.storyNewPlanet,
       words: (l10n) => l10n.storyNewPlanet,
       length: const Duration(milliseconds: 6000),
+      effects: const [(0.05, SoundEffect.wind)],
     ),
     StoryBeat(
       clip: VoiceClips.storyNewPlanetKoba,

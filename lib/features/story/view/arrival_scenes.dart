@@ -68,6 +68,8 @@ abstract class ArrivalScene extends StoryScene {
       clip: VoiceClips.storyArrival(concept),
       words: sceneWords,
       length: const Duration(milliseconds: 4500),
+      // Touches down when [paintLanding] lands it.
+      effects: const [(0.43, SoundEffect.shipLand)],
     ),
     StoryBeat(
       clip: VoiceClips.storyArrivalKoba(concept),

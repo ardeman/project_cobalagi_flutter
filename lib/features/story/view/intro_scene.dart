@@ -27,16 +27,19 @@ class IntroScene extends StoryScene {
       clip: VoiceClips.storyIntroFly,
       words: (l10n) => l10n.storyIntroFly,
       length: const Duration(milliseconds: 5000),
+      effects: const [(0, SoundEffect.shipFly)],
     ),
     StoryBeat(
       clip: VoiceClips.storyIntroWind,
       words: (l10n) => l10n.storyIntroWind,
       length: const Duration(milliseconds: 5000),
+      effects: const [(0.05, SoundEffect.wind)],
     ),
     StoryBeat(
       clip: VoiceClips.storyIntroLand,
       words: (l10n) => l10n.storyIntroLand,
       length: const Duration(milliseconds: 4500),
+      effects: const [(0.73, SoundEffect.shipLand)],
     ),
     StoryBeat(
       clip: VoiceClips.storyIntroBump,
