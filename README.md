@@ -365,7 +365,7 @@ App Store Connect → the app, once per language for the text and screenshots:
 
 ### Promo videos
 
-Promo videos show real gameplay from the "Watch me!" demos. They are made in the separate `../../assets/ai-generated-content` repo (`cobalagi/`; its `README.md` has the commands, the formats and how to upload them to YouTube), like other generated media, so this repo holds no promo scripts or videos. What stays here is recording the gameplay frames they use (about 15 minutes, again whenever the demos look different): `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, into `tool/screenshots/out/video/`. The videos also use `website/screenshots/`, the voice clips and music in `assets/audio/`, the ARB words and the version in `pubspec.yaml`.
+Promo videos show real gameplay from the "Watch me!" demos. They are made in the separate `../../assets/ai-generated-content` repo (`cobalagi/`; its `README.md` has the commands, the formats and how to upload them to YouTube), like other generated media, so this repo holds no promo scripts or videos. What stays here is recording the gameplay frames they use (about 30 minutes, again whenever the demos or story scenes look different): `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, into `tool/screenshots/out/video/`. Besides the demos it records, at phone size only, the story's intro, three arrivals and the ending (each with a `<scene>.beats` file listing the frame each line starts on) and Koba bumping a rock and the bump being fixed, for the shorts. The videos also use `website/screenshots/`, the voice clips and music in `assets/audio/`, the ARB words and the version in `pubspec.yaml`.
 
 ## Roadmap (MVP)
 
@@ -521,7 +521,8 @@ Done on 2026-10-21: gameplay frames re-recorded, all promos rendered for 2.8.0, 
 
 1. **Upload** (the user, by hand): the videos in `../../assets/ai-generated-content/cobalagi/out/`, replacing the old YouTube promos, and the shorts on every platform with their captions.
 2. **Fill in the landing page's ids:** Koba's short's YouTube ids go in `data-video`/`data-en-video` and `href`/`data-en-href` of the `video-short` card in `website/index.html`, which then plays like the main video; replace the main promo's ids too if it was re-uploaded.
-3. **Story scenes in the videos** (optional): the frames record only the demos, so the videos show gameplay, not the story scenes. Recording the intro and an arrival needs a new case in `tool/screenshots`' video frames.
+3. **Shorts for TikTok:** done on 2026-10-23. Both shorts were redone to hold attention (gameplay from the first frame, burned-in captions, quick cuts, a looping end), and Koba's short now shows the story scenes; upload them again with item 1.
+4. **App Store header and search-result videos** (3840 × 1646 and 3:2, 5–30 seconds), in the real device frames from `store/bezels/`.
 
 ### Later
 

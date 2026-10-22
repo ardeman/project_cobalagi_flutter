@@ -25,6 +25,8 @@ import 'package:cobalagi/features/learning/data/curriculum_repository.dart';
 import 'package:cobalagi/features/learning/data/progress_repository.dart';
 import 'package:cobalagi/features/play/data/level_repository.dart';
 import 'package:cobalagi/features/profiles/data/profile_repository.dart';
+import 'package:cobalagi/features/play/cubit/play_cubit.dart';
+import 'package:cobalagi/features/story/view/story_screen.dart';
 import 'package:cobalagi/learning/exercise_result.dart';
 import 'package:cobalagi/learning/learner_state.dart';
 import 'package:cobalagi/learning/placement/placement.dart';
@@ -844,6 +846,101 @@ void main() {
             },
           );
         }
+
+        // Frames of the story's scenes and of a bump being fixed, for the
+        // shorts (phone only). Each story scene also writes the frame each
+        // beat starts on (`<name>.beats`), so a video can hold a beat's
+        // last frame while its voice finishes.
+        Future<void> record(
+          WidgetTester tester,
+          String name,
+          int frames, {
+          int from = 0,
+        }) async {
+          for (var frame = from; frame < from + frames; frame++) {
+            await expectLater(
+              find.byType(CobaLagiApp),
+              matchesGoldenFile(
+                'out/video/$prefix$name$suffix-'
+                '${frame.toString().padLeft(3, '0')}.png',
+              ),
+            );
+            await tester.pump(const Duration(milliseconds: 100));
+          }
+        }
+
+        for (final scene in [
+          'intro',
+          'arrival-loops',
+          'arrival-debugging',
+          'arrival-until',
+          'ending-otherwise',
+        ]) {
+          testWidgets(
+            'video frames story $scene',
+            skip:
+                prefix.isEmpty ||
+                !Platform.environment.containsKey('VIDEO_FRAMES'),
+            (tester) async {
+              await device(tester);
+              final starts = <int>[];
+              var at = 0;
+              for (final beat in StoryScreen.scenes[scene]!.beats) {
+                starts.add(at);
+                at += beat.length.inMilliseconds ~/ 100;
+              }
+              File(
+                'tool/screenshots/out/video/$prefix$scene$suffix.beats',
+              ).writeAsStringSync('${starts.join(' ')}\n');
+              // The pictures decode outside fake time, before the scene.
+              await tester.runAsync(StoryArt.load);
+              final context = tester.element(find.byType(Scaffold).first);
+              GoRouter.of(context).go('/child/1/story/$scene');
+              await tester.pump();
+              await record(tester, scene, at + 10);
+            },
+          );
+        }
+
+        // Koba bumps a rock, the block that did it wears the orange ring,
+        // one block is changed and the run reaches the flag.
+        testWidgets(
+          'video frames bump and fix',
+          skip:
+              prefix.isEmpty ||
+              !Platform.environment.containsKey('VIDEO_FRAMES'),
+          (tester) async {
+            await device(tester);
+            // The answer is F F R F L F R F; the first turn is the wrong way.
+            await _open(tester, '/child/1/replay/directions-05');
+            final editor = tester.element(find.byType(BlockEditor));
+            final blocks = editor.read<BlocksCubit>();
+            for (final type in [
+              BlockType.forward,
+              BlockType.forward,
+              BlockType.turnLeft,
+              BlockType.forward,
+              BlockType.turnLeft,
+              BlockType.forward,
+              BlockType.turnRight,
+              BlockType.forward,
+            ]) {
+              blocks.add(type);
+            }
+            await record(tester, 'bump', 5);
+            await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+            await record(tester, 'bump', 45, from: 5);
+            // "Try again" keeps the ring on the block that bumped.
+            editor.read<PlayCubit>().reset();
+            await record(tester, 'bump', 15, from: 50);
+            blocks.pickBlock(blocks.state.main[2].id);
+            await record(tester, 'bump', 8, from: 65);
+            blocks.tap(BlockType.turnRight);
+            await record(tester, 'bump', 7, from: 73);
+            await tester.tap(find.byIcon(Icons.play_arrow_rounded).first);
+            await record(tester, 'bump', 100, from: 80);
+          },
+        );
 
         testWidgets('solved', (tester) => staged(tester, 'solved'));
 
