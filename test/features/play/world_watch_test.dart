@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/engine/program/instruction.dart';
 import 'package:cobalagi/engine/world/direction.dart';
+import 'package:cobalagi/engine/world/grid_point.dart';
 import 'package:cobalagi/engine/world/level.dart';
 import 'package:cobalagi/features/play/view/world/world_components.dart';
 import 'package:cobalagi/features/play/view/world/world_game.dart';
@@ -86,6 +87,20 @@ void main() {
       expect(sounds, [SoundEffect.poke, SoundEffect.poke]);
     },
   );
+
+  test('touched with its back turned, Koba shakes its head without '
+      'turning round', () {
+    final actor = ActorComponent(const GridPoint(0, 0), Direction.north);
+    expect(actor.showsBack, isTrue);
+    expect(actor.poke(), isTrue);
+    final turns = <double>[];
+    for (var i = 0; i < 30; i++) {
+      actor.update(1 / 60);
+      turns.add(actor.headTurn);
+      expect(actor.showsBack, isTrue, reason: 'its back stays turned');
+    }
+    expect(turns.reduce(max), greaterThan(0.08), reason: 'shakes its head');
+  });
 }
 
 extension on ActorComponent {

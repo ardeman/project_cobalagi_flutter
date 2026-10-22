@@ -142,7 +142,7 @@ class StarComponent extends PositionComponent {
 /// ahead, its side when facing left or right, its back facing up and its
 /// front facing down, and its eyes look the way it faces, or at what it
 /// [watching], its head turning that way too. Touched, it shakes its head
-/// with a smile ([poke]). It bobs gently
+/// ([poke]), with a smile unless its back is turned. It bobs gently
 /// while idle; as it moves it stays on the ground and its wheels roll, as
 /// far as it travels: spokes turn on the hubs seen from the side, and the
 /// treads run past seen from the front or back.
@@ -312,9 +312,15 @@ class ActorComponent extends PositionComponent {
       ? const Offset(0, 6)
       : Offset(sin(angle) * 14, -cos(angle) * 22);
 
-  /// Touched: it shakes its head with a smile, its face turning to the
-  /// child even with its back turned. False while it shows another face or
-  /// still shakes, so a quick run of taps doesn't make it jitter.
+  /// Whether its back shows: facing up the board, it walks away. Its faces
+  /// (dizzy, cheering) always turn to the child, but a [poke] doesn't turn
+  /// it round: with its back turned it only shakes its head.
+  bool get showsBack =>
+      face == RobotFace.normal && cos(angle - viewAngle) > 0.7;
+
+  /// Touched: it shakes its head, with a smile when its face shows. False
+  /// while it shows another face or still shakes, so a quick run of taps
+  /// doesn't make it jitter.
   bool poke() {
     if (face != RobotFace.normal || _delight > 0) return false;
     _delight = _delightTime;
@@ -335,9 +341,7 @@ class ActorComponent extends PositionComponent {
     final face = this.face == RobotFace.normal && _delight > 0
         ? RobotFace.cheer
         : this.face;
-    // Facing up the board, it walks away: its back shows. Its faces
-    // (dizzy, cheering) always turn to the child.
-    final away = face == RobotFace.normal && cos(angle) > 0.7;
+    final away = showsBack;
     // Facing down the board, it faces the child.
     final front = frontSprite != null && -cos(angle) > 0.7;
     final robot = away
