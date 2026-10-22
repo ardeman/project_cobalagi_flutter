@@ -979,6 +979,44 @@ void main() {
       });
     }
 
+    // Frames of the demos on the App Store's iPhone and iPad, for the
+    // product page header and search result videos (app-store-video.sh in
+    // ../../assets/ai-generated-content), at a lower pixel ratio than the
+    // slides: the videos show them smaller.
+    for (final d in _devices.where(
+      (d) => d.name == 'iphone' || d.name == 'ipad',
+    )) {
+      for (final (concept, frames) in [
+        ('loops', 130),
+        ('debugging', 130),
+        ('until', 170),
+      ]) {
+        testWidgets(
+          'video frames ${d.name} $language $concept',
+          skip: !Platform.environment.containsKey('VIDEO_FRAMES'),
+          (tester) async {
+            await pumpApp(
+              tester,
+              size: d.size,
+              ratio: d.name == 'ipad' ? 1.25 : 2,
+              insets: d.insets,
+            );
+            await _open(tester, '/child/1/tutorial/$concept');
+            for (var frame = 0; frame < frames; frame++) {
+              await expectLater(
+                find.byType(CobaLagiApp),
+                matchesGoldenFile(
+                  'out/video/${d.name}-$concept$suffix-'
+                  '${frame.toString().padLeft(3, '0')}.png',
+                ),
+              );
+              await tester.pump(const Duration(milliseconds: 100));
+            }
+          },
+        );
+      }
+    }
+
     // The store slides' devices, in every way they are held; framed by
     // store/render.sh.
     for (final d in _devices) {

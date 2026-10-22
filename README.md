@@ -360,12 +360,12 @@ App Store Connect → the app, once per language for the text and screenshots:
 | Support URL | `https://cobalagi.ardeman.com` |
 | App Review notes | Paste `store/app_store/review_notes.txt` (one English text for every language, iOS and macOS; keep it true when the app changes). It answers the Kids Category questions (guideline 1.3) up front, or review stops with "2.1.0 App Completeness" until they are answered. After replying to such a message, open the version, press Update Review, then Resubmit to App Review |
 | Text and screenshots | `store/app_store/<locale>/` as above; upload slides in order, 1 to 8 (Apple takes up to 10) |
-| Header and Search Results | `header.png` under Header and `search_result.png` under Search Results, per language (Product Page Information → Header and Search Results → Upload) |
+| Header and Search Results | `header.png` under Header and `search_result.png` under Search Results, per language (Product Page Information → Header and Search Results → Upload), or their moving versions `app-store-header-<lang>.mp4` and `app-store-search-<lang>.mp4` from `../../assets/ai-generated-content/cobalagi/out/` (see Promo videos) |
 | Version release | Automatically release this version, for iOS and macOS |
 
 ### Promo videos
 
-Promo videos show real gameplay from the "Watch me!" demos. They are made in the separate `../../assets/ai-generated-content` repo (`cobalagi/`; its `README.md` has the commands, the formats and how to upload them to YouTube), like other generated media, so this repo holds no promo scripts or videos. What stays here is recording the gameplay frames they use (about 30 minutes, again whenever the demos or story scenes look different): `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, into `tool/screenshots/out/video/`. Besides the demos it records, at phone size only, the story's intro, three arrivals and the ending (each with a `<scene>.beats` file listing the frame each line starts on) and Koba bumping a rock and the bump being fixed, for the shorts. The videos also use `website/screenshots/`, the voice clips and music in `assets/audio/`, the ARB words and the version in `pubspec.yaml`.
+Promo videos show real gameplay from the "Watch me!" demos. They are made in the separate `../../assets/ai-generated-content` repo (`cobalagi/`; its `README.md` has the commands, the formats and how to upload them to YouTube), like other generated media, so this repo holds no promo scripts or videos. What stays here is recording the gameplay frames they use (about 30 minutes, again whenever the demos or story scenes look different): `VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'`, into `tool/screenshots/out/video/`. Besides the demos it records the demos on the App Store's iPhone and iPad, for the header and search result videos, and, at phone size only, the story's intro, three arrivals and the ending (each with a `<scene>.beats` file listing the frame each line starts on) and Koba bumping a rock and the bump being fixed, for the shorts. The videos also use `website/screenshots/`, the voice clips and music in `assets/audio/`, the ARB words and the version in `pubspec.yaml`.
 
 ## Roadmap (MVP)
 
@@ -522,7 +522,7 @@ Done on 2026-10-21: gameplay frames re-recorded, all promos rendered for 2.8.0, 
 1. **Upload** (the user, by hand): the videos in `../../assets/ai-generated-content/cobalagi/out/`, replacing the old YouTube promos, and the shorts on every platform with their captions.
 2. **Fill in the landing page's ids:** Koba's short's YouTube ids go in `data-video`/`data-en-video` and `href`/`data-en-href` of the `video-short` card in `website/index.html`, which then plays like the main video; replace the main promo's ids too if it was re-uploaded.
 3. **Shorts for TikTok:** done on 2026-10-23. Both shorts were redone to hold attention (gameplay from the first frame, burned-in captions, quick cuts, a looping end), and Koba's short now shows the story scenes; upload them again with item 1.
-4. **App Store header and search-result videos** (3840 × 1646 and 3:2, 5–30 seconds), in the real device frames from `store/bezels/`.
+4. **App Store header and search-result videos:** done on 2026-10-23 (`app-store-video.sh` there: 13 seconds, an iPhone and an iPad playing the demos in their real frames); upload them under Header and Search Results (Store listing → App Store listing).
 
 ### Later
 
