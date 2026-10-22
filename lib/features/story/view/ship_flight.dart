@@ -246,7 +246,7 @@ class _FlightPainter extends CustomPainter {
   final double fillTo;
 
   @override
-  void paint(Canvas canvas, Size _) {
+  void paint(Canvas canvas, Size map) {
     final art = this.art;
     if (art == null) return;
     final v = progress.value;
@@ -261,6 +261,19 @@ class _FlightPainter extends CustomPainter {
     final t = timeline;
     final time = v * t.duration.inMilliseconds / 1000;
     final bob = Offset(0, sin(time * 3) * size * 0.03);
+    final control = (up + over) / 2 - Offset(0, size * 0.6);
+    ({Offset base, double angle, bool left}) flying(double p) {
+      final base = _bezier(up, control, over, p);
+      final heading = _bezier(up, control, over, min(1, p + 0.01)) - base;
+      final left = (over - up).dx < 0;
+      // The picture flies nose up and to the right by itself.
+      final raw = atan2(heading.dy, left ? -heading.dx : heading.dx) + 0.4;
+      return (
+        base: base,
+        angle: raw.clamp(-0.6, 0.9) * (left ? -1 : 1),
+        left: left,
+      );
+    }
 
     if (v < t.flyFrom) {
       // Lifts off, then hovers while the planet's stars fly into the tank.
@@ -294,18 +307,13 @@ class _FlightPainter extends CustomPainter {
     } else if (v < t.flyTo) {
       // Flies in an arc along the path to the next planet, nose first.
       final p = Curves.easeInOut.transform(part(t.flyFrom, t.flyTo));
-      final control = (up + over) / 2 - Offset(0, size * 0.6);
-      final base = _bezier(up, control, over, p);
-      final heading = _bezier(up, control, over, min(1, p + 0.01)) - base;
-      final left = (over - up).dx < 0;
-      // The picture flies nose up and to the right by itself.
-      final raw = atan2(heading.dy, left ? -heading.dx : heading.dx) + 0.4;
-      final angle = raw.clamp(-0.6, 0.9) * (left ? -1 : 1);
+      final (:base, :angle, :left) = flying(p);
       paintShip(
         canvas,
         art,
         ShipView.flying,
-        base: base,
+        base:
+            base + keepFlyingShipInside(map.width, base, picture, angle, left),
         size: picture,
         angle: angle,
         mirror: left,
@@ -317,11 +325,21 @@ class _FlightPainter extends CustomPainter {
       // Comes down on the planet, then fades as the planet opens.
       final down = Curves.easeOut.transform(part(t.flyTo, t.landAt));
       final landed = v >= t.landAt;
+      // Slid in from the edge as the flight ended, it slides back as it
+      // comes down, so it never jumps.
+      final last = flying(0.99);
+      final slide = keepFlyingShipInside(
+        map.width,
+        last.base,
+        picture,
+        last.angle,
+        last.left,
+      );
       paintShip(
         canvas,
         art,
         landed ? ShipView.landed : ShipView.landing,
-        base: Offset.lerp(over, end, down)!,
+        base: Offset.lerp(over, end, down)! + slide * (1 - down),
         // Down to its size on the planet, where [ParkedShip] takes over.
         size: picture + (parked - picture) * down,
         fill: fillTo,
@@ -393,6 +411,44 @@ enum _FlightTimeline {
   /// Sounds by when they play, as a share of the flight.
   final List<(double, SoundEffect)> sounds;
 }
+
+/// How far to move the flying ship sideways, standing at [base] at [size]
+/// turned by [angle], so all of it stays on a map [width] wide: its nose
+/// reaches far ahead of [base], which is at its tail, and on a planet near
+/// the screen's edge it would poke out of the screen.
+@visibleForTesting
+Offset keepFlyingShipInside(
+  double width,
+  Offset base,
+  double size,
+  double angle,
+  bool mirror,
+) {
+  final g = ShipGeometry.of(ShipView.flying);
+  final scale = size / ShipGeometry.picture;
+  var low = double.infinity;
+  var high = double.negativeInfinity;
+  for (final corner in [
+    _flyingBody.topLeft,
+    _flyingBody.topRight,
+    _flyingBody.bottomLeft,
+    _flyingBody.bottomRight,
+  ]) {
+    final d = corner - g.base;
+    final x = d.dx * scale * (mirror ? -1 : 1);
+    final y = d.dy * scale;
+    final at = base.dx + x * cos(angle) - y * sin(angle);
+    low = min(low, at);
+    high = max(high, at);
+  }
+  if (high - low > width) return .zero;
+  if (low < 0) return Offset(-low, 0);
+  if (high > width) return Offset(width - high, 0);
+  return .zero;
+}
+
+/// The ship in the flying picture, in its 512 pixels.
+const _flyingBody = Rect.fromLTRB(78, 140, 434, 372);
 
 Offset _bezier(Offset a, Offset c, Offset b, double t) =>
     a * ((1 - t) * (1 - t)) + c * (2 * (1 - t) * t) + b * (t * t);
