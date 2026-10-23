@@ -43,16 +43,16 @@ String _bilingual(List<(bool, String)> id, List<(bool, String)> en) {
   for (var i = 0; i < id.length; i++) {
     final (item, idText) = id[i];
     final enText = en[i].$2;
-    if (item && !inList) out.writeln('      <ul>');
-    if (!item && inList) out.writeln('      </ul>');
+    if (item && !inList) out.writeln('          <ul>');
+    if (!item && inList) out.writeln('          </ul>');
     inList = item;
     final tag = item ? 'li' : 'p';
     out.writeln(
-      '${item ? '        ' : '      '}<$tag data-en="${_attr(enText)}">'
+      '${item ? '            ' : '          '}<$tag data-en="${_attr(enText)}">'
       '${_escape(idText)}</$tag>',
     );
   }
-  if (inList) out.writeln('      </ul>');
+  if (inList) out.writeln('          </ul>');
   return out.toString();
 }
 
@@ -88,11 +88,14 @@ String buildChangelogPage({String root = '.'}) {
         File('$root/store/changelogs/$locale/$build.txt').readAsStringSync();
     final dateId = '${date.day} ${_monthsId[date.month - 1]} ${date.year}';
     final dateEn = '${date.day} ${_monthsEn[date.month - 1]} ${date.year}';
+    final newest = entries.isEmpty
+        ? '<span class="newest" data-en="Newest">Terbaru</span> '
+        : '';
     entries.write('''
-    <article class="release" id="build-$build">
-      <h2>$version <span class="build" data-en="build $build">build $build</span></h2>
-      <p class="updated"><time datetime="${r['date']}" data-en="$dateEn">$dateId</time></p>
-${_bilingual(_notes(notes('id')), _notes(notes('en-US')))}    </article>
+        <article class="release" id="build-$build">
+          <h2>$newest$version <span class="build" data-en="build $build">build $build</span></h2>
+          <p class="updated"><time datetime="${r['date']}" data-en="$dateEn">$dateId</time></p>
+${_bilingual(_notes(notes('id')), _notes(notes('en-US')))}        </article>
 ''');
   }
   return '''
@@ -104,16 +107,22 @@ ${_bilingual(_notes(notes('id')), _notes(notes('en-US')))}    </article>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-en="What's new · Coba Lagi">Yang baru · Coba Lagi</title>
   <meta name="description" content="Catatan rilis Coba Lagi: apa yang berubah di setiap versi.">
-  <meta name="theme-color" content="#00a6a6">
+  <meta name="theme-color" content="#0b0f2c">
   <link rel="icon" href="icon.png">
   <link rel="stylesheet" href="site.css">
 </head>
 <body>
 ${_header(root)}
-  <main class="wrap doc">
-    <h1 data-en="What's new">Yang baru</h1>
-    <p class="updated" data-en="What changed in each version of Coba Lagi. The newest is at the top.">Apa yang berubah di setiap versi Coba Lagi. Yang terbaru ada di paling atas.</p>
+  <main>
+    <div class="wrap page-head">
+      <h1 data-en="What's new">Yang baru</h1>
+      <p class="updated" data-en="What changed in each version of Coba Lagi. The newest is at the top.">Apa yang berubah di setiap versi Coba Lagi. Yang terbaru ada di paling atas.</p>
+    </div>
+    <div class="sheet">
+      <div class="wrap doc releases">
 ${entries.toString().trimRight()}
+      </div>
+    </div>
   </main>
 
 ${_footer(root)}

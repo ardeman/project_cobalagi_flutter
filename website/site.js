@@ -54,6 +54,18 @@
   }
 })();
 
+// The visitor's device, so the home page offers its download first. Read
+// from the browser only; nothing is stored or sent. Without it the App Store
+// badge shows, and every download is listed further down.
+(function () {
+  var ua = navigator.userAgent;
+  var device = /Android/i.test(ua) ? 'android'
+    : /iPhone|iPad|iPod|Macintosh/i.test(ua) ? 'apple'
+    : /Linux/i.test(ua) && !/CrOS/i.test(ua) ? 'linux'
+    : '';
+  if (device) document.documentElement.dataset.device = device;
+})();
+
 // Slideshows. Without JavaScript they are rows to swipe or scroll; this adds
 // arrows, dots or tabs, keyboard keys and, where asked, gentle autoplay that
 // stops for good once the visitor takes over (and never runs for visitors

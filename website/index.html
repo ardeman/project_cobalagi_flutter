@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title data-en="Coba Lagi · Learn to code through play">Coba Lagi · Belajar coding sambil bermain</title>
   <meta name="description" content="Coba Lagi: petualangan coding gratis untuk anak, dalam Bahasa Indonesia dan English. Tanpa iklan, tanpa pelacakan.">
-  <meta name="theme-color" content="#00a6a6">
+  <meta name="theme-color" content="#0b0f2c">
   <meta property="og:title" content="Coba Lagi · Belajar coding sambil bermain">
   <meta property="og:description" content="Petualangan coding gratis untuk anak, dalam Bahasa Indonesia dan English.">
   <meta property="og:image" content="https://cobalagi.ardeman.com/screenshots/play-loops.png">
@@ -29,6 +29,7 @@
           <a href="#parents" data-en="Parents">Orang tua</a>
           <a href="changelog.html" data-keep-lang data-en="What's new">Yang baru</a>
           <a href="privacy.html" data-keep-lang data-en="Privacy">Privasi</a>
+          <a class="get" href="#download" data-en="Download">Unduh</a>
         </div>
         <a class="github" href="https://github.com/ardeman/project_cobalagi_flutter" aria-label="Kode sumber di GitHub" data-en-label="Source code on GitHub">
           <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
@@ -47,13 +48,17 @@
         <div>
           <span class="kicker" data-en="A coding adventure for kids">Petualangan coding untuk anak</span>
           <h1 data-en="Learn to code <span class=&quot;accent&quot;>through play.</span>">Belajar coding <span class="accent">sambil bermain.</span></h1>
-          <p class="lead" data-en="Children put picture blocks in order to guide their little robot, Koba, to the flag. Free, in Bahasa Indonesia and English.">Anak menyusun blok bergambar untuk menuntun Koba, robot kecilnya, sampai ke bendera. Gratis, dalam Bahasa Indonesia dan English.</p>
+          <p class="lead" data-en="Children put picture blocks in order to guide their little robot, Koba, from planet to planet. Free, in Bahasa Indonesia and English.">Anak menyusun blok bergambar untuk menuntun Koba, robot kecilnya, dari planet ke planet. Gratis, dalam Bahasa Indonesia dan English.</p>
           <div class="cta">
-            <a class="store-badge" href="https://apps.apple.com/app/id6823508005"><img src="badges/app-store-id.svg" height="54" alt="Download di App Store" data-en-src="badges/app-store.svg" data-en-alt="Download on the App Store"></a>
-            <a class="btn btn-ghost" href="#how" data-en="See how it works">Lihat cara kerjanya</a>
-            <a class="btn btn-ghost" href="#download" data-en="Try it now">Coba sekarang</a>
+            <a class="store-badge for-device" data-for="apple" href="https://apps.apple.com/app/id6823508005"><img src="badges/app-store-id.svg" height="54" alt="Download di App Store" data-en-src="badges/app-store.svg" data-en-alt="Download on the App Store"></a>
+            <a class="btn btn-primary for-device" data-for="android" href="#download" data-en="Download for Android">Unduh untuk Android</a>
+            <a class="btn btn-primary for-device" data-for="linux" href="#download" data-en="Download for Linux">Unduh untuk Linux</a>
+            <a class="btn btn-ghost" href="#video">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg>
+              <span data-en="Watch the video">Tonton videonya</span>
+            </a>
           </div>
-          <p class="cta-note" data-en="For iPhone, iPad and Mac. Google Play is coming soon.">Untuk iPhone, iPad, dan Mac. Google Play segera hadir.</p>
+          <p class="cta-note" data-en="For iPhone, iPad, Mac, Android, Linux and Steam Deck. <a href=&quot;#download&quot;>All downloads</a>">Untuk iPhone, iPad, Mac, Android, Linux, dan Steam Deck. <a href="#download">Semua unduhan</a></p>
           <ul class="chips">
             <li data-en="Free">Gratis</li>
             <li data-en="No ads">Tanpa iklan</li>
@@ -61,47 +66,35 @@
             <li data-en="Ages 4+">Usia 4+</li>
           </ul>
         </div>
-        <div class="carousel hero-show" data-carousel data-autoplay="4500"
-             aria-roledescription="carousel" aria-label="Cuplikan aplikasi"
-             data-en-label="App screenshots">
-          <div class="tablet">
-            <div class="track" tabindex="0">
-              <figure class="slide">
-                <img src="screenshots/adventure-map-id.png" width="1280" height="740"
-                     data-en-src="screenshots/adventure-map.png"
-                     alt="Peta petualangan dengan planet-planet di luar angkasa"
-                     data-en-alt="The adventure map with planets in space">
-              </figure>
-              <figure class="slide">
-                <img src="screenshots/play-loops-id.png" width="1280" height="740" loading="lazy"
-                     data-en-src="screenshots/play-loops.png"
-                     alt="Teka-teki Perulangan: blok ulangi berisi blok maju dan belok"
-                     data-en-alt="A Loops puzzle: a repeat block holding forward and turn blocks">
-              </figure>
-              <figure class="slide">
-                <img src="screenshots/play-functions-id.png" width="1280" height="740" loading="lazy"
-                     data-en-src="screenshots/play-functions.png"
-                     alt="Blok Ajaib: blok bintang buatan sendiri dipakai berkali-kali"
-                     data-en-alt="Magic Block: the child’s own star block, used again and again">
-              </figure>
-              <figure class="slide">
-                <img src="screenshots/play-code-id.png" width="1280" height="740" loading="lazy"
-                     data-en-src="screenshots/play-code.png"
-                     alt="Tab Kode: program perulangan yang diketik sebagai teks"
-                     data-en-alt="The Code tab: a loop program typed as text">
-              </figure>
-            </div>
+        <div class="scene" role="img" aria-label="Koba berdiri di sebuah planet di dekat bendera, sementara kapalnya terbang di antara bintang" data-en-label="Koba standing on a planet near the flag while its ship flies among the stars">
+          <svg class="far far-1 float-slow" viewBox="0 0 100 60" aria-hidden="true"><path d="M6 22 C6 8 94 8 94 22 L84 38 L66 46 L52 58 L36 46 L18 40 Z" fill="#6d4aff" stroke="#1d2350" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="21" rx="44" ry="11" fill="#b39cff" stroke="#1d2350" stroke-width="4"/></svg>
+          <svg class="far far-2 float" viewBox="0 0 100 60" aria-hidden="true"><path d="M6 22 C6 8 94 8 94 22 L84 38 L66 46 L52 58 L36 46 L18 40 Z" fill="#00897b" stroke="#1d2350" stroke-width="4" stroke-linejoin="round"/><ellipse cx="50" cy="21" rx="44" ry="11" fill="#7fe3c9" stroke="#1d2350" stroke-width="4"/></svg>
+          <svg class="trail" viewBox="0 0 200 100" aria-hidden="true"><path d="M4 70 C 50 96, 120 90, 196 40" fill="none" stroke="#ffe9a8" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 16" opacity="0.8"/></svg>
+          <img class="ship float" src="art/ship.webp" width="512" height="512" alt="">
+          <svg class="piece" viewBox="0 0 500 170" aria-hidden="true">
+            <path d="M10 52 C10 18 490 18 490 52 L468 84 L432 104 L404 98 L366 134 L326 120 L286 162 L246 130 L206 146 L166 114 L124 124 L84 96 L42 86 Z" fill="#5a3f8c" stroke="#1d2350" stroke-width="6" stroke-linejoin="round"/>
+            <path d="M120 96 L150 104 M300 128 L330 116 M420 92 L440 88" stroke="#43306e" stroke-width="6" stroke-linecap="round"/>
+            <ellipse cx="250" cy="50" rx="240" ry="34" fill="#e8b07a" stroke="#1d2350" stroke-width="6"/>
+            <ellipse cx="110" cy="52" rx="26" ry="7" fill="#d39663"/>
+            <ellipse cx="370" cy="62" rx="18" ry="5" fill="#d39663"/>
+            <ellipse cx="200" cy="66" rx="12" ry="4" fill="#d39663"/>
+            <path d="M54 50 Q60 30 76 34 Q90 30 92 50 Z" fill="#a98bd6" stroke="#1d2350" stroke-width="5" stroke-linejoin="round"/>
+            <line x1="430" y1="56" x2="430" y2="-4" stroke="#1d2350" stroke-width="6" stroke-linecap="round"/>
+            <path d="M432 0 L470 12 L432 26 Z" fill="#ff7a59" stroke="#1d2350" stroke-width="5" stroke-linejoin="round"/>
+          </svg>
+          <div class="koba">
+            <img src="art/koba.png" width="512" height="512" alt="">
+            <svg viewBox="0 0 512 512" aria-hidden="true"><ellipse cx="214" cy="220" rx="22" ry="30" fill="#7fe9e0"/><ellipse cx="294" cy="220" rx="22" ry="30" fill="#7fe9e0"/><circle cx="221" cy="208" r="7" fill="#fff"/><circle cx="301" cy="208" r="7" fill="#fff"/><path d="M232 266 Q254 284 276 266" fill="none" stroke="#7fe9e0" stroke-width="9" stroke-linecap="round"/></svg>
           </div>
-          <div class="dots"></div>
         </div>
       </div>
     </div>
 
     <section id="video" class="video-section">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head center">
           <h2 data-en="See it in a minute">Lihat dalam semenit</h2>
-          <p data-en="A short tour of the planets, the blocks and the little robot.">Tur singkat ke planet-planet, blok-bloknya, dan robot kecilnya.</p>
+          <p data-en="A short tour of the planets, the blocks and Koba.">Tur singkat ke planet-planet, blok-bloknya, dan Koba.</p>
         </div>
         <!-- Nothing loads from YouTube until the visitor presses play. -->
         <div class="videos">
@@ -132,19 +125,14 @@
       </div>
     </section>
 
+    <div class="sheet">
     <section id="features">
       <div class="wrap">
         <div class="section-head">
-          <h2 data-en="Why Coba Lagi?">Kenapa Coba Lagi?</h2>
-          <p data-en="Made for curious kids, built so parents can relax.">Dibuat untuk anak yang penasaran, dirancang agar orang tua tenang.</p>
+          <span class="eyebrow" data-en="Why Coba Lagi?">Kenapa Coba Lagi?</span>
+          <h2 data-en="Made for curious kids, built so parents can relax.">Dibuat untuk anak yang penasaran, dirancang agar orang tua tenang.</h2>
         </div>
         <div class="features">
-          <article class="card">
-            <div class="icon i-blue"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h8V5zm4 14.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></div>
-            <h3 data-en="iPhone, iPad and Mac">iPhone, iPad, dan Mac</h3>
-            <p data-en="Get Coba Lagi from the App Store, one app for all three.">Unduh Coba Lagi dari App Store, satu aplikasi untuk ketiganya.</p>
-            <p><a href="https://apps.apple.com/app/id6823508005" data-en="Open in the App Store">Buka di App Store</a></p>
-          </article>
           <article class="card">
             <div class="icon i-green"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3l7 7h-4.5v10h-5V10H5z"/></svg></div>
             <h3 data-en="Playable before reading">Bisa dimainkan sebelum bisa membaca</h3>
@@ -182,8 +170,8 @@
     <section id="how">
       <div class="wrap">
         <div class="section-head">
-          <h2 data-en="How it works">Cara kerjanya</h2>
-          <p data-en="Three steps, then your child leads the way.">Tiga langkah, lalu anakmu yang memimpin.</p>
+          <span class="eyebrow" data-en="How it works">Cara kerjanya</span>
+          <h2 data-en="Three steps, then your child leads the way.">Tiga langkah, lalu anakmu yang memimpin.</h2>
         </div>
         <div class="steps">
           <div class="step">
@@ -216,22 +204,24 @@
             <div class="step-text">
               <span class="num">3</span>
               <h3 data-en="Build, run, try again">Susun, jalankan, coba lagi</h3>
-              <p data-en="Drag or tap blocks, press Go!, and watch the robot move. Stuck? The light bulb shows the way.">Seret atau ketuk blok, tekan Jalan!, dan lihat robotnya bergerak. Bingung? Lampu petunjuk menunjukkan jalannya.</p>
+              <p data-en="Drag or tap blocks, press Go!, and watch Koba move. Stuck? The light bulb shows the way.">Seret atau ketuk blok, tekan Jalan!, dan lihat Koba bergerak. Bingung? Lampu petunjuk menunjukkan jalannya.</p>
             </div>
             <div class="shot">
               <img src="screenshots/solved-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/solved.png"
-                   alt="Teka-teki yang berhasil diselesaikan, dengan sorakan dan tombol Lanjut"
-                   data-en-alt="A solved puzzle with a cheer and a Next button">
+                   alt="Teka-teki yang berhasil diselesaikan, dengan sorakan dan bintang"
+                   data-en-alt="A solved puzzle with a cheer and its stars">
             </div>
           </div>
         </div>
       </div>
     </section>
+    </div>
 
     <section id="planets">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head center">
+          <span class="eyebrow" data-en="The adventure">Petualangannya</span>
           <h2 data-en="Ten planets to explore">Sepuluh planet untuk dijelajahi</h2>
           <p data-en="Picture games on the Warm-up planet, then one idea of coding per planet, one small puzzle at a time.">Permainan bergambar di planet Pemanasan, lalu satu konsep coding di setiap planet, satu teka-teki kecil setiap kali.</p>
         </div>
@@ -255,11 +245,11 @@
             <figure class="slide" style="--c: #FF7A59">
               <img src="screenshots/warm-up-island-id.png" width="1280" height="740" loading="lazy"
                    data-en-src="screenshots/warm-up-island.png"
-                   alt="Planet Pemanasan: enam permainan bergambar dengan bintangnya"
-                   data-en-alt="The Warm-up planet: six picture games with their stars">
+                   alt="Planet Pemanasan: permainan bergambar dengan bintangnya"
+                   data-en-alt="The Warm-up planet: picture games with their stars">
               <figcaption>
                 <strong data-en="Warm-up">Pemanasan</strong>
-                <span data-en="Counting, colours, shapes, patterns, left and right, and steps, for the youngest players.">Berhitung, warna, bentuk, pola, kiri dan kanan, serta langkah, untuk pemain termuda.</span>
+                <span data-en="Counting, colours, shapes, patterns, left and right, steps and reading, for the youngest players.">Berhitung, warna, bentuk, pola, kiri dan kanan, langkah, serta membaca, untuk pemain termuda.</span>
               </figcaption>
             </figure>
             <figure class="slide" style="--c: #29B6F6">
@@ -362,14 +352,14 @@
             <h3 data-en="Reading already? Type real code">Sudah bisa membaca? Ketik kode sungguhan</h3>
             <p data-en="Children who read get a Code tab next to the blocks and type the same program as text. Parents can turn it on or off for each child.">Anak yang sudah bisa membaca mendapat tab Kode di samping blok dan mengetik program yang sama sebagai teks. Orang tua bisa menyalakan atau mematikannya untuk tiap anak.</p>
           </div>
-          <div class="shot">
+          <div class="space-shot">
             <img src="screenshots/play-code-id.png" width="1280" height="740" loading="lazy"
                  data-en-src="screenshots/play-code.png"
                  alt="Tab Kode: program perulangan yang diketik sebagai teks"
                  data-en-alt="The Code tab: a loop program typed as text">
           </div>
         </div>
-        <div class="section-head phones-head">
+        <div class="section-head center phones-head">
           <h3 data-en="On phones too">Di ponsel juga</h3>
           <p data-en="Made for tablets, and just as playable on a phone, upright or sideways.">Dibuat untuk tablet, dan sama nyamannya dimainkan di ponsel, tegak maupun miring.</p>
         </div>
@@ -387,11 +377,12 @@
       </div>
     </section>
 
+    <div class="sheet">
     <section id="parents">
-      <div class="wrap parents">
+      <div class="wrap">
         <div class="section-head">
-          <h2 data-en="For parents">Untuk orang tua</h2>
-          <p data-en="You stay in charge, without hovering.">Kamu tetap memegang kendali, tanpa harus terus mengawasi.</p>
+          <span class="eyebrow" data-en="For parents">Untuk orang tua</span>
+          <h2 data-en="You stay in charge, without hovering.">Kamu tetap memegang kendali, tanpa harus terus mengawasi.</h2>
         </div>
         <div class="parents-grid">
           <div>
@@ -418,30 +409,77 @@
       </div>
     </section>
 
+    <section id="faq">
+      <div class="wrap">
+        <div class="section-head center">
+          <span class="eyebrow" data-en="Questions">Pertanyaan</span>
+          <h2 data-en="What parents ask">Yang sering ditanyakan</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary data-en="What age is it for?">Untuk usia berapa?</summary>
+            <p data-en="Ages 4 and up. Picture blocks and spoken instructions suit ages 4–7, and children who read can type real code.">Usia 4 tahun ke atas. Blok bergambar dan petunjuk suara cocok untuk usia 4–7, dan anak yang sudah bisa membaca bisa mengetik kode sungguhan.</p>
+          </details>
+          <details>
+            <summary data-en="Does my child need to read?">Apakah anak harus bisa membaca?</summary>
+            <p data-en="No. Every instruction is spoken and the blocks are pictures. A short warm-up game finds the right starting point.">Tidak. Setiap petunjuk dibacakan, dan blok-bloknya berupa gambar. Permainan pemanasan singkat menemukan titik awal yang pas.</p>
+          </details>
+          <details>
+            <summary data-en="Is it really free?">Benarkah gratis?</summary>
+            <p data-en="Yes, with no ads and nothing for children to buy. It's free for one player. A donation of any size (a tip on the App Store), made from the parent area, unlocks sponsor features such as up to six players and progress reports.">Ya, tanpa iklan dan tanpa apa pun yang bisa dibeli anak. Gratis untuk satu pemain. Donasi berapa pun (tip di App Store) dari area orang tua membuka fitur sponsor, misalnya hingga enam pemain dan laporan perkembangan.</p>
+          </details>
+          <details>
+            <summary data-en="Does it need the internet?">Apakah perlu internet?</summary>
+            <p data-en="No. The released app has no internet access, so it plays anywhere, even on a trip.">Tidak. Aplikasi versi rilis tidak memiliki akses internet, jadi bisa dimainkan di mana saja, bahkan di perjalanan.</p>
+          </details>
+          <details>
+            <summary data-en="What does it keep about my child?">Apa yang disimpan tentang anakku?</summary>
+            <p data-en="Only each player's nickname, avatar and progress, on your device. There are no accounts, and nothing is sent to us. <a href=&quot;privacy.html&quot;>Read the privacy policy</a>.">Hanya nama panggilan, avatar, dan progres tiap pemain, di perangkatmu. Tidak ada akun, dan tidak ada yang dikirim kepada kami. <a href="privacy.html">Baca kebijakan privasi</a>.</p>
+          </details>
+          <details>
+            <summary data-en="When is it coming to Google Play?">Kapan ada di Google Play?</summary>
+            <p data-en="Soon. Until then, every new version is on GitHub as an APK file; see Try it now below.">Segera. Sampai saat itu, setiap versi baru tersedia di GitHub sebagai file APK; lihat Coba sekarang di bawah.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+    </div>
+
     <section id="download">
       <div class="wrap">
-        <div class="section-head">
+        <div class="section-head center">
+          <span class="eyebrow" data-en="Download">Unduh</span>
           <h2 data-en="Try it now">Coba sekarang</h2>
           <p data-en="Coba Lagi is on the App Store for iPhone, iPad and Mac. While Google Play is on its way, every new version is also on GitHub.">Coba Lagi sudah ada di App Store untuk iPhone, iPad, dan Mac. Sambil menunggu Google Play, setiap versi baru juga tersedia di GitHub.</p>
         </div>
-        <div class="features">
-          <article class="card">
-            <div class="icon i-green"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5zm5 14.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></div>
+        <div class="downloads">
+          <article class="get-card" data-for="apple">
+            <span class="yours" data-en="This device">Perangkat ini</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 2h8a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h8V5zm4 14.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></div>
+            <h3 data-en="iPhone, iPad and Mac">iPhone, iPad, dan Mac</h3>
+            <p data-en="One app for all three, from the App Store.">Satu aplikasi untuk ketiganya, dari App Store.</p>
+            <a class="store-badge" href="https://apps.apple.com/app/id6823508005"><img src="badges/app-store-id.svg" height="54" alt="Download di App Store" data-en-src="badges/app-store.svg" data-en-alt="Download on the App Store"></a>
+          </article>
+          <article class="get-card" data-for="android">
+            <span class="yours" data-en="This device">Perangkat ini</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 3v13h10V5zm5 14.2a1 1 0 1 0 0 2 1 1 0 0 0 0-2z"/></svg></div>
             <h3 data-en="Android">Android</h3>
-            <p data-en="Install the APK on a phone or tablet. Most devices take the arm64-v8a file; the universal file works on any.">Pasang file APK di ponsel atau tablet. Kebanyakan perangkat memakai file arm64-v8a; file universal bisa di perangkat mana pun.</p>
-            <p><a href="https://github.com/ardeman/project_cobalagi_flutter/releases" data-en="Download for Android">Unduh untuk Android</a></p>
+            <p data-en="Google Play is coming soon. Until then, install the app file from GitHub.">Google Play segera hadir. Sampai saat itu, pasang file aplikasinya dari GitHub.</p>
+            <p class="how" data-en="On the newest release, tap the file ending in <b>arm64-v8a.apk</b>, which suits most phones and tablets. If it won't install, take the one ending in <b>universal.apk</b>.">Di rilis terbaru, ketuk file yang berakhiran <b>arm64-v8a.apk</b>, yang cocok untuk kebanyakan ponsel dan tablet. Kalau tidak bisa dipasang, ambil yang berakhiran <b>universal.apk</b>.</p>
+            <a class="btn btn-primary" href="https://github.com/ardeman/project_cobalagi_flutter/releases" data-en="Download for Android">Unduh untuk Android</a>
           </article>
-          <article class="card">
-            <div class="icon i-blue"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h16V6z"/></svg></div>
+          <article class="get-card" data-for="linux">
+            <span class="yours" data-en="This device">Perangkat ini</span>
+            <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 4h18a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-7v2h3v2H7v-2h3v-2H3a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm1 2v9h16V6z"/></svg></div>
             <h3 data-en="Linux and Steam Deck">Linux dan Steam Deck</h3>
-            <p data-en="One AppImage runs on Linux PCs and the Steam Deck. On the Deck, a small installer adds Coba Lagi to your Steam library.">Satu AppImage berjalan di PC Linux dan Steam Deck. Di Deck, penginstal kecil menambahkan Coba Lagi ke perpustakaan Steam-mu.</p>
-            <p><a href="https://github.com/ardeman/project_cobalagi_flutter/releases" data-en="Download for Linux">Unduh untuk Linux</a></p>
+            <p data-en="One AppImage runs on Linux PCs and the Steam Deck.">Satu AppImage berjalan di PC Linux dan Steam Deck.</p>
+            <p class="how" data-en="On a PC, take <b>CobaLagi-x86_64.AppImage</b>. On the Steam Deck, in Desktop Mode, take <b>CobaLagi-Steam-Installer.desktop</b> and open it: it adds Coba Lagi to your Steam library.">Di PC, ambil <b>CobaLagi-x86_64.AppImage</b>. Di Steam Deck, dalam Mode Desktop, ambil <b>CobaLagi-Steam-Installer.desktop</b> lalu buka: ia menambahkan Coba Lagi ke perpustakaan Steam-mu.</p>
+            <a class="btn btn-primary" href="https://github.com/ardeman/project_cobalagi_flutter/releases" data-en="Download for Linux">Unduh untuk Linux</a>
           </article>
-          <article class="card">
-            <div class="icon i-purple"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6h10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.3 2.1L14.5 15h-5l-1.2 1.6A3.5 3.5 0 0 1 2 14.5V11a5 5 0 0 1 5-5zm0 3v2H5v2h2v2h2v-2h2v-2H9V9zm9.5 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zm-2 2.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg></div>
-            <h3 data-en="Play with a controller">Main dengan kontroler</h3>
-            <p data-en="Steam Deck, Xbox, PlayStation and other controllers work on every screen, even dragging blocks. No touching needed.">Steam Deck, Xbox, PlayStation, dan kontroler lain bisa dipakai di setiap layar, bahkan untuk menggeser blok. Tanpa perlu menyentuh layar.</p>
-          </article>
+        </div>
+        <div class="extra">
+          <div class="icon"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 6h10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.3 2.1L14.5 15h-5l-1.2 1.6A3.5 3.5 0 0 1 2 14.5V11a5 5 0 0 1 5-5zm0 3v2H5v2h2v2h2v-2h2v-2H9V9zm9.5 0a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4zm-2 2.6a1.2 1.2 0 1 0 0 2.4 1.2 1.2 0 0 0 0-2.4z"/></svg></div>
+          <p data-en="<strong>Play with a controller.</strong> Steam Deck, Xbox, PlayStation and other controllers work on every screen, even dragging blocks. No touching needed."><strong>Main dengan kontroler.</strong> Steam Deck, Xbox, PlayStation, dan kontroler lain bisa dipakai di setiap layar, bahkan untuk menggeser blok. Tanpa perlu menyentuh layar.</p>
         </div>
         <p class="trademarks" data-en="Apple, the Apple logo, iPhone, iPad and Mac are trademarks of Apple Inc., registered in the U.S. and other countries and regions. App Store is a service mark of Apple Inc.">Apple, logo Apple, iPhone, iPad, dan Mac adalah merek dagang Apple Inc., yang terdaftar di AS serta negara dan wilayah lain. App Store adalah merek layanan Apple Inc.</p>
       </div>
