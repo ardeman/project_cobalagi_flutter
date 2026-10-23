@@ -78,25 +78,59 @@ String buildChangelogPage({String root = '.'}) {
       (jsonDecode(File('$root/store/releases.json').readAsStringSync())
               as Map<String, dynamic>)['releases']
           as List;
-  final entries = StringBuffer();
-  for (final release in releases.reversed) {
-    final r = release as Map<String, dynamic>;
-    final build = r['build'] as int;
-    final version = r['version'] as String;
+  // Test uploads of one release share its version name: one card each,
+  // newest build first, so the page doesn't grow with every retry.
+  final versions = <List<Map<String, dynamic>>>[];
+  for (final release in releases.reversed.cast<Map<String, dynamic>>()) {
+    if (versions.isNotEmpty &&
+        versions.last.first['version'] == release['version']) {
+      versions.last.add(release);
+    } else {
+      versions.add([release]);
+    }
+  }
+  String notes(int build, String locale) =>
+      File('$root/store/changelogs/$locale/$build.txt').readAsStringSync();
+  String body(int build) =>
+      _bilingual(_notes(notes(build, 'id')), _notes(notes(build, 'en-US')));
+  String time(Map<String, dynamic> r) {
     final date = DateTime.parse(r['date'] as String);
-    String notes(String locale) =>
-        File('$root/store/changelogs/$locale/$build.txt').readAsStringSync();
     final dateId = '${date.day} ${_monthsId[date.month - 1]} ${date.year}';
     final dateEn = '${date.day} ${_monthsEn[date.month - 1]} ${date.year}';
+    return '<time datetime="${r['date']}" data-en="$dateEn">$dateId</time>';
+  }
+
+  final entries = StringBuffer();
+  for (final builds in versions) {
+    final version = builds.first['version'] as String;
     final newest = entries.isEmpty
         ? '<span class="newest" data-en="Newest">Terbaru</span> '
         : '';
-    entries.write('''
+    if (builds.length == 1) {
+      final r = builds.single;
+      final build = r['build'] as int;
+      entries.write('''
         <article class="release" id="build-$build">
           <h2>$newest$version <span class="build" data-en="build $build">build $build</span></h2>
-          <p class="updated"><time datetime="${r['date']}" data-en="$dateEn">$dateId</time></p>
-${_bilingual(_notes(notes('id')), _notes(notes('en-US')))}        </article>
+          <p class="updated">${time(r)}</p>
+${body(build)}        </article>
 ''');
+      continue;
+    }
+    final range = '${builds.last['build']}–${builds.first['build']}';
+    entries.write('''
+        <article class="release">
+          <h2>$newest$version <span class="build" data-en="builds $range">build $range</span></h2>
+''');
+    for (final r in builds) {
+      final build = r['build'] as int;
+      entries.write('''
+          <section class="release-build" id="build-$build">
+          <h3><span class="build" data-en="build $build">build $build</span> ${time(r)}</h3>
+${body(build)}          </section>
+''');
+    }
+    entries.write('        </article>\n');
   }
   return '''
 <!doctype html>

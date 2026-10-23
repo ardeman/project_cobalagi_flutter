@@ -26,6 +26,15 @@ void main() {
     }
   });
 
+  test('test builds of one version share its card', () {
+    final page = buildChangelogPage();
+    final versions = RegExp(
+      r'<h2>(?:<span class="newest"[^>]*>[^<]*</span> )?([\d.]+) ',
+    ).allMatches(page).map((m) => m[1]).toList();
+    expect(versions.toSet(), hasLength(versions.length));
+    expect(page, contains('data-en="builds 21–23"'));
+  });
+
   test('every page has the same menu and footer', () {
     String part(String page, String tag) {
       final html = File('website/$page').readAsStringSync();

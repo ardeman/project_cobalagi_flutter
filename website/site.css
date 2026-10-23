@@ -472,7 +472,7 @@ footer { padding: 40px 0 56px; color: var(--space-muted); font-size: 0.95rem; }
 .prose ul { padding-left: 1.2em; }
 .prose li { margin: 6px 0; }
 
-/* Release notes (changelog.html): one card per version, the newest marked. */
+/* Release notes (changelog.html): one card per version name (its test builds inside), the newest marked. */
 .releases { display: grid; gap: 20px; max-width: 820px; margin-inline: auto; }
 .release { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 28px; }
 .release:first-child { border: 2px solid var(--teal); box-shadow: var(--shadow); }
@@ -488,6 +488,9 @@ footer { padding: 40px 0 56px; color: var(--space-muted); font-size: 0.95rem; }
 .release .updated { margin: 0 0 8px; color: var(--muted); }
 .release ul { margin: 8px 0 0; padding-left: 1.2em; }
 .release li { margin: 6px 0; color: var(--muted); }
+.release-build { padding: 0; }
+.release-build + .release-build { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.release h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 8px 0 0; font-size: 1rem; font-weight: 400; color: var(--muted); }
 
 /* 404 page */
 .notfound { text-align: center; padding: 48px 0 72px; }
