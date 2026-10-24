@@ -12,8 +12,8 @@ enum AppLanguage {
   indonesian('id', 'Bahasa Indonesia'),
   acehnese('ace', 'Bahsa Acèh', fallback: 'id', voiced: false),
   minangkabau('min', 'Baso Minang', fallback: 'id', voiced: false),
-  javanese('jv', 'Basa Jawa', fallback: 'id', voiced: false),
-  sundanese('su', 'Basa Sunda', fallback: 'id', voiced: false),
+  javanese('jv', 'Basa Jawa', fallback: 'id'),
+  sundanese('su', 'Basa Sunda', fallback: 'id'),
   english('en', 'English');
 
   const AppLanguage(this.code, this.name, {this.fallback, this.voiced = true});

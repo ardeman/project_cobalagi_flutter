@@ -57,6 +57,18 @@ void main() {
     });
   }
 
+  test(
+    'generated regional voices are offered alongside Indonesian and English',
+    () {
+      expect(AppLanguage.offered, [
+        AppLanguage.indonesian,
+        AppLanguage.javanese,
+        AppLanguage.sundanese,
+        AppLanguage.english,
+      ]);
+    },
+  );
+
   test('English comes first, for device languages the app does not offer', () {
     expect(offeredLocales.first, const Locale('en'));
     expect(offeredLocales.toSet(), {

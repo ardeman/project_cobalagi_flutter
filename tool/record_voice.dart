@@ -1,5 +1,5 @@
 // Records a native speaker reading the voice clips, for languages that
-// ElevenLabs can't speak (Acehnese, Minangkabau, Javanese, Sundanese). generate_voice.dart then
+// ElevenLabs can't speak (Acehnese, Minangkabau). generate_voice.dart then
 // turns each recording into Koba's or the narrator's voice with ElevenLabs
 // speech-to-speech, keeping the speaker's pronunciation.
 //

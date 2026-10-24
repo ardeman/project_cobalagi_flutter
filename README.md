@@ -162,7 +162,7 @@ Repeats take counts from 1 to 9 and `//` starts a comment. Command buttons offer
 
 Every clip is listed in `lib/core/audio/voice_clips.dart` with its words and its speaker: Koba (tours, goals, hints, cheers, demos, in the first person) or the narrator (warm-up questions, announcements, the story's narration). Missing clips are skipped silently. Clips live in `assets/audio/<language>/<clipId>.mp3` and are committed.
 
-**ElevenLabs** makes the Indonesian and English clips. Put the API key in `.env` (copy `.env.example`; git-ignored). Voices, models and settings are in `tool/elevenlabs.json` under `voices.<speaker>.<language>`. Shipping clips needs a paid plan with a commercial license.
+**ElevenLabs** makes the Indonesian, English, Javanese and Sundanese clips. Put the API key in `.env` (copy `.env.example`; git-ignored). Voices, models and settings are in `tool/elevenlabs.json` under `voices.<speaker>.<language>`. Shipping clips needs a paid plan with a commercial license.
 
 ```sh
 dart run tool/generate_voice.dart --voices    # list voices in the account
@@ -176,10 +176,12 @@ dart run tool/design_voice.dart --save <generated_voice_id>  # keep a preview as
 
 ### Regional languages
 
-ElevenLabs can't speak Acehnese, Minangkabau, Javanese or Sundanese well enough (Decisions, 2026-10-24). Instead a native speaker reads the lines, and ElevenLabs speech-to-speech turns each reading into Koba's or the narrator's voice, keeping the pronunciation and removing background noise. These languages have `"recordings": true` in `tool/elevenlabs.json`. Raw recordings stay in the git-ignored `recordings/<language>/`.
+Javanese and Sundanese use direct text-to-speech with `eleven_v4`, following the user's sample review (Decisions, 2026-10-25). Generate their missing clips with `dart run tool/generate_voice.dart --lang jv` or `--lang su`. Javanese sets `language_code: jv`; Sundanese lets the model infer the language because it has no supported language code. Pronunciation and the draft texts still need a native speaker's review before release.
+
+Acehnese and Minangkabau need native recordings (Decisions, 2026-10-24). Instead a native speaker reads the lines, and ElevenLabs speech-to-speech turns each reading into Koba's or the narrator's voice, keeping the pronunciation and removing background noise. These languages have `"recordings": true` in `tool/elevenlabs.json`. Raw recordings stay in the git-ignored `recordings/<language>/`.
 
 ```sh
-# <lang> is ace (Acehnese), min (Minangkabau), jv (Javanese) or su (Sundanese)
+# <lang> is ace (Acehnese) or min (Minangkabau)
 dart run tool/record_voice.dart --lang <lang>                   # record at the Mac, in your own terminal
 dart run tool/record_voice.dart --mics                          # list microphones; pick one with --mic <index>
 dart run tool/record_voice.dart --lang <lang> --sheet           # script sheet for a speaker recording on a phone
@@ -363,10 +365,10 @@ Production access was requested on 2026-10-21. Once approved, promote the closed
 
 ### Next: regional languages
 
-Acehnese, Minangkabau, Javanese and Sundanese have every text (drafted) but no voice yet, so they're hidden from the language picker (see Voice-over → Regional languages).
+Javanese and Sundanese have generated voices and are offered in the language picker; their pronunciation and all regional texts still need a native speaker's review before release. Acehnese and Minangkabau need recordings and remain hidden (see Voice-over → Regional languages).
 
 1. **Check the texts:** a native speaker reads each ARB file and fixes stiff words.
-2. **Record the voices:** the user records Acehnese and Minangkabau; Javanese and Sundanese speakers record on a phone from the script sheet, with permission to use their voice. Convert, listen, then turn the language on.
+2. **Record the voices:** the user records Acehnese and Minangkabau. Convert, listen, then turn those languages on. Review the generated Javanese and Sundanese clips and replace any inaccurate lines.
 3. **Tell people:** a release that turns a language on is a new feature (minor version) and goes in the release notes, both listings and the website.
 
 ### Later
