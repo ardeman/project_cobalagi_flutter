@@ -242,6 +242,8 @@ Future<void> _convert(
     ),
   );
   field('model_id', model);
+  // Room noise in a recording would carry over into the voice.
+  field('remove_background_noise', 'true');
   if (voice['settings'] case final Map<String, Object?> settings) {
     field('voice_settings', jsonEncode(settings));
   }
