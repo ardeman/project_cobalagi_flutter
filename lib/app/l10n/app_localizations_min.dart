@@ -203,7 +203,7 @@ class AppLocalizationsMin extends AppLocalizations {
   String get blockRepeat => 'Ulangi';
 
   @override
-  String get blockStar => 'Blok buatan ambo';
+  String get blockStar => 'Blok buatan awak';
 
   @override
   String get toMap => 'Ka peta';
@@ -280,7 +280,7 @@ class AppLocalizationsMin extends AppLocalizations {
   String get dropBlocksHere => 'Latakan blok di siko';
 
   @override
-  String get pretestWelcome => 'Hai, ambo Koba! Ayo main pamanasan dulu!';
+  String get pretestWelcome => 'Hai, awak Koba! Ayo main pamanasan dulu!';
 
   @override
   String get pretestStart => 'Mulai';
@@ -452,7 +452,7 @@ class AppLocalizationsMin extends AppLocalizations {
   String get thanksForSupport => 'Tarimo kasih alah mandukuang Coba Lagi!';
 
   @override
-  String get playGoal => 'Bantu ambo sampai ka bandera!';
+  String get playGoal => 'Bantu awak sampai ka bandera!';
 
   @override
   String get playGoalStars => 'Kumpuan sadonyo bintang, lalu ka bandera!';
@@ -593,7 +593,7 @@ class AppLocalizationsMin extends AppLocalizations {
   }
 
   @override
-  String get codeDefineStar => 'Buek blok ambo';
+  String get codeDefineStar => 'Buek blok awak';
 
   @override
   String get conceptUntil => 'Sampai bandera';
@@ -642,7 +642,7 @@ class AppLocalizationsMin extends AppLocalizations {
       'Simpan angko dulu, lalu pakai kotak untuak maju. Angkonyo tatap samo sampai kau manggantinyo.';
 
   @override
-  String get tutorialTitle => 'Caliak ambo!';
+  String get tutorialTitle => 'Caliak awak!';
 
   @override
   String get tutorialWatchAgain => 'Caliak baliak';
@@ -680,15 +680,15 @@ class AppLocalizationsMin extends AppLocalizations {
   String get storyIntroLand => 'Bintangnyo abih, jadi kapanyo harus mandarat.';
 
   @override
-  String get storyIntroBump => 'Ups, ado batu! Indak baa do. Ambo cubo baliak!';
+  String get storyIntroBump => 'Ups, ado batu! Indak baa do. Awak cubo baliak!';
 
   @override
   String get storyIntroHelp =>
-      'Ayo cari bintangnyo basamo. Namuah kau mambantu ambo, Komandan?';
+      'Ayo cari bintangnyo basamo. Namuah kau mambantu awak, Komandan?';
 
   @override
   String get storyFly =>
-      'Tangki ambo batambah bintang! Ayo ka planet barikuiknyo!';
+      'Tangki awak batambah bintang! Ayo ka planet barikuiknyo!';
 
   @override
   String get storyArrivalDirections =>
@@ -696,7 +696,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyArrivalDirectionsKoba =>
-      'Ambo harus ka ma? Tunjuakan jo panah: maju, kida, atau suok!';
+      'Awak harus ka ma? Tunjuakan jo panah: maju, kida, atau suok!';
 
   @override
   String get storyArrivalSequencing =>
@@ -704,7 +704,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyArrivalSequencingKoba =>
-      'Ambo paralu sadonyo langkahnyo baurutan, ciek-ciek!';
+      'Awak paralu sadonyo langkahnyo baurutan, ciek-ciek!';
 
   @override
   String get storyArrivalLoops =>
@@ -720,7 +720,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyArrivalFunctionsKoba =>
-      'Blok ko bisa maingek garak ambo! Ajari sakali, lalu pakai bakali-kali.';
+      'Blok ko bisa maingek garak awak! Ajari sakali, lalu pakai bakali-kali.';
 
   @override
   String get storyArrivalConditions =>
@@ -728,7 +728,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyArrivalConditionsKoba =>
-      'Ambo iduikan lampu ambo dan mancaliak ka muko sabalun malangkah.';
+      'Awak iduikan lampu awak dan mancaliak ka muko sabalun malangkah.';
 
   @override
   String get storyArrivalVariables =>
@@ -736,7 +736,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyArrivalVariablesKoba =>
-      'Kotak ko maingek angko! Angkonyo mangatoan bara langkah ambo bajalan.';
+      'Kotak ko maingek angko! Angkonyo mangatoan bara langkah awak bajalan.';
 
   @override
   String get storyArrivalDebugging =>
@@ -752,7 +752,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyArrivalUntilKoba =>
-      'Langkahnyo talalu banyak untuak dihituang! Ambo bajalan taruih sajo sampai ka bandera.';
+      'Langkahnyo talalu banyak untuak dihituang! Awak bajalan taruih sajo sampai ka bandera.';
 
   @override
   String get storyArrivalOtherwise =>
@@ -760,7 +760,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyArrivalOtherwiseKoba =>
-      'Kalau jalannyo kosong, ambo maju. Kalau indak, ambo baluak!';
+      'Kalau jalannyo kosong, awak maju. Kalau indak, awak baluak!';
 
   @override
   String get storyEnding =>
@@ -768,7 +768,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyEndingKoba =>
-      'Tarimo kasih, Komandan! Kau mambantu ambo manamukan sadonyo bintang.';
+      'Tarimo kasih, Komandan! Kau mambantu awak manamukan sadonyo bintang.';
 
   @override
   String get storyEndingMore =>
@@ -783,50 +783,50 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get storyNewPlanetKoba =>
-      'Planet baru! Namuah kau mambantu ambo mancari bintang baliak, Komandan?';
+      'Planet baru! Namuah kau mambantu awak mancari bintang baliak, Komandan?';
 
   @override
   String get storyThanksDirections =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo kida jo suok, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak kida jo suok, Komandan!';
 
   @override
   String get storyThanksSequencing =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo langkah baurutan, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak langkah baurutan, Komandan!';
 
   @override
   String get storyThanksLoops =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo maulang, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak maulang, Komandan!';
 
   @override
   String get storyThanksFunctions =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo Blok Ajaib, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak Blok Ajaib, Komandan!';
 
   @override
   String get storyThanksConditions =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo mancaliak ka muko, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak mancaliak ka muko, Komandan!';
 
   @override
   String get storyThanksVariables =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo Kotak Langkah, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak Kotak Langkah, Komandan!';
 
   @override
   String get storyThanksDebugging =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo mamelokan blok, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak mamelokan blok, Komandan!';
 
   @override
   String get storyThanksUntil =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo bajalan sampai ka bandera, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak bajalan sampai ka bandera, Komandan!';
 
   @override
   String get storyThanksOtherwise =>
-      'Panuah baliak! Tarimo kasih alah maajari ambo apo nan dikarajoan kalau indak, Komandan!';
+      'Panuah baliak! Tarimo kasih alah maajari awak apo nan dikarajoan kalau indak, Komandan!';
 
   @override
   String get watchHow => 'Caliak caronyo';
 
   @override
   String get tutorialDirections =>
-      'Sentuah blok panah untuak mambari tahu ambo ka ma harus pai: maju, baluak kida, baluak suok. Lalu tekan Jalan!';
+      'Sentuah blok panah untuak mambari tahu awak ka ma harus pai: maju, baluak kida, baluak suok. Lalu tekan Jalan!';
 
   @override
   String get tutorialSequencing =>
@@ -842,7 +842,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get tutorialConditions =>
-      'Blok mato mancaliak ka muko. Kalau jalannyo kosong, ambo maju. Kalau indak, ambo manunggu. Jadi blok nan samo barasil di tiok peta!';
+      'Blok mato mancaliak ka muko. Kalau jalannyo kosong, awak maju. Kalau indak, awak manunggu. Jadi blok nan samo barasil di tiok peta!';
 
   @override
   String get tutorialVariables =>
@@ -886,17 +886,17 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get tourProgram =>
-      'Programmu ado di siko. Ambo manjalankan bloknyo baurutan, dari nan partamo. Sentuah blok untuak manggantinyo.';
+      'Programmu ado di siko. Awak manjalankan bloknyo baurutan, dari nan partamo. Sentuah blok untuak manggantinyo.';
 
   @override
-  String get tourGo => 'Tekan Jalan, dan ambo maikuik blok-blokmu!';
+  String get tourGo => 'Tekan Jalan, dan awak maikuik blok-blokmu!';
 
   @override
   String get tourStep =>
       'Tombol ko manjalankan ciek blok tiok kali, jadi kau bisa mancaliak jo taliti.';
 
   @override
-  String get tourReset => 'Nan iko mambaok ambo baliak ka awal.';
+  String get tourReset => 'Nan iko mambaok awak baliak ka awal.';
 
   @override
   String get tourHint =>
@@ -904,11 +904,11 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get tourFollow =>
-      'Iko mamuta peta saparampek putaran tiok kali, jadi kau bisa mancaliaknyo dari sisi ambo.';
+      'Iko mamuta peta saparampek putaran tiok kali, jadi kau bisa mancaliaknyo dari sisi awak.';
 
   @override
   String get tourBoards =>
-      'Di siko ado babarapo peta. Sentuah titiak untuak mancaliak tiok peta. Blokmu harus mambaok ambo ka bandera di tiok peta!';
+      'Di siko ado babarapo peta. Sentuah titiak untuak mancaliak tiok peta. Blokmu harus mambaok awak ka bandera di tiok peta!';
 
   @override
   String get tourListen =>
@@ -926,15 +926,15 @@ class AppLocalizationsMin extends AppLocalizations {
       'Jajak kaki manunjuakan alah sajauah ma kau bamain.';
 
   @override
-  String get tourBlockForward => 'Panah ijau mambuek ambo maju ciek langkah.';
+  String get tourBlockForward => 'Panah ijau mambuek awak maju ciek langkah.';
 
   @override
   String get tourBlockTurnLeft =>
-      'Panah biru mambuek ambo baluak ka kida, tanpa bapindah.';
+      'Panah biru mambuek awak baluak ka kida, tanpa bapindah.';
 
   @override
   String get tourBlockTurnRight =>
-      'Panah oranye mambuek ambo baluak ka suok, tanpa bapindah.';
+      'Panah oranye mambuek awak baluak ka suok, tanpa bapindah.';
 
   @override
   String get tourBlockRepeat =>
@@ -946,7 +946,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get tourBlockMoveSteps =>
-      'Panah ko mambuek ambo maju sabanyak angko di Kotak Langkah.';
+      'Panah ko mambuek awak maju sabanyak angko di Kotak Langkah.';
 
   @override
   String get tourBlockIfPathClear =>
@@ -958,7 +958,7 @@ class AppLocalizationsMin extends AppLocalizations {
 
   @override
   String get tourBlockUntilGoal =>
-      'Ulangi sampai bandera manjalankan blok di dalamnyo taruih-manaruih, sampai ambo tibo di bandera.';
+      'Ulangi sampai bandera manjalankan blok di dalamnyo taruih-manaruih, sampai awak tibo di bandera.';
 
   @override
   String get tourBlockStar =>

@@ -8,7 +8,9 @@ import 'package:intl/intl.dart' as intl;
 import 'app_localizations_ace.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_id.dart';
+import 'app_localizations_jv.dart';
 import 'app_localizations_min.dart';
+import 'app_localizations_su.dart';
 
 // ignore_for_file: type=lint
 
@@ -99,7 +101,9 @@ abstract class AppLocalizations {
     Locale('ace'),
     Locale('en'),
     Locale('id'),
+    Locale('jv'),
     Locale('min'),
+    Locale('su'),
   ];
 
   /// No description provided for @appTitle.
@@ -2045,8 +2049,14 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['ace', 'en', 'id', 'min'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'ace',
+    'en',
+    'id',
+    'jv',
+    'min',
+    'su',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -2061,8 +2071,12 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsEn();
     case 'id':
       return AppLocalizationsId();
+    case 'jv':
+      return AppLocalizationsJv();
     case 'min':
       return AppLocalizationsMin();
+    case 'su':
+      return AppLocalizationsSu();
   }
 
   throw FlutterError(
