@@ -7,7 +7,7 @@ A coding-learning app for children, in Bahasa Indonesia and English. Koba the ro
 
 A short, voice-led warm-up game picks each child's starting point; after every lesson the app chooses to advance, practise or review.
 
-> **Status:** version 2.9.0 (build 27). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac. On Google Play in closed testing, waiting for production access. Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
+> **Status:** version 2.9.0 (build 27). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac. Google Play production access granted; the first production release was submitted on 2026-10-25 and is awaiting review. Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -225,6 +225,7 @@ keyPassword=<password>
 
 **Play Console:**
 
+- **Release track:** future releases go directly to Production after the checks and builds below. Closed testing was used to meet Google's requirement before the first launch; it is not part of the ongoing release workflow.
 - **Donations:** one-time products with the ids in `assets/config/donations.json`. Prices: US $0.99, $2.99 and $4.99; Indonesia Rp 5,000, 19,000 and 49,000, the same as the App Store's tips. Any of them unlocks the sponsor plan. Test with license testers.
 - **Families policy:** target audience children, no ads, no data collection, no internet permission. Privacy policy: `https://cobalagi.ardeman.com/privacy.html`.
 
@@ -356,7 +357,7 @@ Still to check on real devices once a release carries them:
 
 ### Next: Google Play production
 
-Production access was requested on 2026-10-21. Once approved, promote the closed-test release to production.
+Production access was granted on 2026-10-25, and version 2.9.0 (build 27) was submitted for a full production rollout in 177 countries/regions plus the rest of the world. Wait for Google's review and confirm the release is live. Managed publishing is off.
 
 ### Next: promo videos
 
