@@ -186,11 +186,13 @@ dart run tool/design_voice.dart --save <generated_voice_id>  # keep a preview as
 
 Model, voices and settings (`speed`, `stability`, `style`…) live in `tool/elevenlabs.json`, under `voices.<speaker>.<language>`. Every clip names its speaker in `VoiceClips` (`kobaSays` or `narratorSays`): Koba says its tours, goals, hints, feedback, cheers, demos and its introduction, in the first person; the narrator says the warm-up's questions, announcements and the story's narration. When the test voices are replaced, the tool removes `assets/audio/TEST_VOICES`. The narrator uses Cahaya (Indonesian) and Jessica (English); Koba has one voice made with Voice Design for both languages. The clips are committed in `assets/audio/`.
 
-**Regional languages (native speaker + speech-to-speech):** ElevenLabs can't speak Acehnese or Minangkabau (its voices read them with an Indonesian accent), so a native speaker reads the lines and ElevenLabs speech-to-speech turns each reading into Koba's or the narrator's voice, keeping the pronunciation; it also removes the recording's background noise. A language set up this way has `"recordings": true` in its `voices.<speaker>.<language>` entries. Recordings stay in the git-ignored `recordings/<language>/`; only the converted clips are committed. A line not recorded yet plays the Indonesian clip.
+**Regional languages (native speaker + speech-to-speech):** ElevenLabs can't speak Acehnese, Minangkabau or Sundanese (its voices read them with an Indonesian accent), so a native speaker reads the lines and ElevenLabs speech-to-speech turns each reading into Koba's or the narrator's voice, keeping the pronunciation; it also removes the recording's background noise. A language set up this way has `"recordings": true` in its `voices.<speaker>.<language>` entries. A speaker can also record on a phone from a script sheet (numbered lines with the Indonesian meaning, instructions in Indonesian), one file per line named by its number; the numbers follow `VoiceClips.all`, so make a new sheet when clips are added. Recordings stay in the git-ignored `recordings/<language>/`; only the converted clips are committed. A line not recorded yet plays the Indonesian clip.
 
 ```sh
 dart run tool/record_voice.dart --lang ace    # run in your own terminal: shows each line, Enter records
 dart run tool/record_voice.dart --mics        # list microphones; pick one with --mic <index>
+dart run tool/record_voice.dart --lang ace --sheet   # script for a speaker recording on a phone: build/recording_scripts/ace.txt
+dart run tool/record_voice.dart --lang ace --import <folder>   # their files, one per line named 001, 002…
 dart run tool/generate_voice.dart --lang ace --sample   # convert the 5 sample lines first, to listen
 dart run tool/generate_voice.dart --lang ace  # convert every recorded line into assets/audio/ace/
 ```

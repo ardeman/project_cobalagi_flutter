@@ -54,6 +54,17 @@
           "style": 0.3,
           "use_speaker_boost": true
         }
+      },
+      "su": {
+        "voice_id": "iWydkXKoiVtvdn4vLKp9",
+        "recordings": true,
+        "model_id": "eleven_multilingual_sts_v2",
+        "settings": {
+          "stability": 0.5,
+          "similarity_boost": 0.75,
+          "style": 0.3,
+          "use_speaker_boost": true
+        }
       }
     },
     "koba": {
@@ -92,6 +103,17 @@
         }
       },
       "min": {
+        "voice_id": "biecSiz6mhOL2jZ3xxmt",
+        "recordings": true,
+        "model_id": "eleven_multilingual_sts_v2",
+        "settings": {
+          "stability": 0.5,
+          "similarity_boost": 0.75,
+          "style": 0.3,
+          "use_speaker_boost": true
+        }
+      },
+      "su": {
         "voice_id": "biecSiz6mhOL2jZ3xxmt",
         "recordings": true,
         "model_id": "eleven_multilingual_sts_v2",
