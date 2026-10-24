@@ -7,6 +7,7 @@ class SettingsRepository {
   static final _store = StoreRef<String, Object?>('settings');
   static const _localeKey = 'locale';
   static const _supporterKey = 'supporter';
+  static const _purchasedCodesKey = 'purchasedCodes';
   static const _effectsKey = 'soundEffects';
   static const _musicKey = 'music';
   static const _breakKey = 'breakMinutes';
@@ -27,6 +28,19 @@ class SettingsRepository {
       await _store.record(_supporterKey).get(_db) as bool? ?? false;
 
   Future<void> saveSupporter() => _store.record(_supporterKey).put(_db, true);
+
+  /// Codes bought on the website that unlocked the supporter plan, in their
+  /// canonical text, kept so they can be checked again after an update.
+  Future<List<String>> loadPurchasedCodes() async =>
+      (await _store.record(_purchasedCodesKey).get(_db) as List<Object?>? ??
+              const [])
+          .cast<String>();
+
+  Future<void> savePurchasedCode(String code) async {
+    final codes = await loadPurchasedCodes();
+    if (codes.contains(code)) return;
+    await _store.record(_purchasedCodesKey).put(_db, [...codes, code]);
+  }
 
   /// Whether sound effects play; on unless a parent turned them off.
   Future<bool> loadSoundEffects() async =>

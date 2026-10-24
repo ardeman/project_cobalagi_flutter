@@ -130,7 +130,8 @@ class _DonationSheetState extends State<_DonationSheet> {
   }
 }
 
-/// Unlocks the supporter plan with a code, e.g. one given to store reviewers.
+/// Unlocks the supporter plan with a code: one given to store reviewers, or
+/// in GitHub builds one bought on the website.
 class _UnlockCodeDialog extends StatefulWidget {
   const _UnlockCodeDialog();
 

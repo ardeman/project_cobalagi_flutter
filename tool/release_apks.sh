@@ -76,9 +76,9 @@ fi
 # (android/app/build.gradle.kts).
 if $build_apks; then
   export COBALAGI_GITHUB_APK=1
-  flutter build apk --release --split-per-abi
+  flutter build apk --release --split-per-abi --dart-define=GITHUB_RELEASE=true
   # The universal APK last: it has its own file name, so both sets remain.
-  flutter build apk --release
+  flutter build apk --release --dart-define=GITHUB_RELEASE=true
 fi
 if ! $publish; then
   echo "Built the APKs in build/app/outputs/flutter-apk."

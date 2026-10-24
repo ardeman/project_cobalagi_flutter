@@ -254,8 +254,8 @@ To test the real flow, install an older build from a Play test track, then make 
 ## macOS
 
 ```sh
-flutter build macos --release                              # GitHub build → build/macos/Build/Products/Release/Coba Lagi.app
-flutter build macos --release --dart-define=APP_STORE=true # Mac App Store build: tips, no unlock codes
+flutter build macos --release --dart-define=GITHUB_RELEASE=true # GitHub build → build/macos/Build/Products/Release/Coba Lagi.app
+flutter build macos --release --dart-define=APP_STORE=true      # Mac App Store build: tips, no unlock codes
 ```
 
 - Needs macOS 12+ and Xcode. Plugins come through Swift Package Manager, without CocoaPods. **Apple Silicon only** (`ARCHS = arm64`): Xcode 27's `lipo -verify_arch` breaks Flutter 3.41's universal build; remove that setting once Flutter handles it.
@@ -363,6 +363,13 @@ Production access was granted on 2026-10-25, and version 2.9.0 (build 27) was su
 
 1. **Upload** (by hand): the videos in `../../assets/ai-generated-content/cobalagi/out/`, replacing the old YouTube promos, the shorts on every platform with their captions, and the App Store header and search-result videos.
 2. **Landing page:** put Koba's short's YouTube ids in the `video-short` card in `website/index.html` (`data-video`/`data-en-video`, `href`/`data-en-href`), and the main promo's ids if it was re-uploaded.
+
+### Next: buying on the website
+
+Sponsors without store billing (GitHub builds) will buy on the website through Dahlunas, Ardeman's payment service, which emails a signed code (format: Dahlunas's `docs/code-format.md`). The app side is done: "Have a code?" checks the code offline (`PurchasedCodes`, `lib/core/entitlement/purchased_code.dart`), only in builds made with `--dart-define=GITHUB_RELEASE=true` (`tool/release_apks.sh`, `tool/build_appimage.sh` and the macOS and Windows workflows pass it). Coba Lagi is Dahlunas project 1, and product 1 unlocks the sponsor plan (`purchased_codes` in `assets/config/donations.json`).
+
+1. **Keys:** once Dahlunas can mint, add Coba Lagi's public key by key id under `public_keys`; until then no code is accepted. Record project 1 and product 1 in Dahlunas's config.
+2. **Buying:** a "Buy a code" link in the donation sheet (parent area, GitHub builds only) and a support page on the website, once Dahlunas takes payments; mention the purchase in `privacy.html` (the code holds no buyer data; the email goes to Dahlunas, not the app).
 
 ### Next: regional languages
 

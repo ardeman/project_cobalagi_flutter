@@ -33,7 +33,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $PSNativeCommandUseErrorActionPreference = $true
           flutter pub get
-          flutter build windows --release
+          flutter build windows --release --dart-define=GITHUB_RELEASE=true
           $app = 'build\release\Coba Lagi'
           New-Item -ItemType Directory -Force -Path $app | Out-Null
           Copy-Item -Recurse 'build\windows\x64\runner\Release\*' $app
