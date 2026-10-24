@@ -1,4 +1,4 @@
-import 'dart:ui';
+// Pure Dart, no Flutter imports: the voice tools (tool/) import it too.
 
 /// A language the app speaks, named in its own words in the language picker.
 ///
@@ -34,14 +34,6 @@ enum AppLanguage {
   static List<AppLanguage> get offered => [
     for (final language in values)
       if (language.voiced) language,
-  ];
-
-  /// The locales the app matches the device's language against. English
-  /// comes first: a device language the app doesn't offer falls back to it.
-  static List<Locale> get supportedLocales => [
-    const Locale('en'),
-    for (final language in offered)
-      if (language != english) Locale(language.code),
   ];
 
   /// The language for [code], or null if the app doesn't speak it.

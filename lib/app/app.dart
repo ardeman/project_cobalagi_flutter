@@ -168,7 +168,7 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
           locale: AppLanguage.of(locale?.languageCode ?? '')?.voiced == true
               ? locale
               : null,
-          supportedLocales: AppLanguage.supportedLocales,
+          supportedLocales: offeredLocales,
           localizationsDelegates: appLocalizationsDelegates,
           routerConfig: _router,
         ),

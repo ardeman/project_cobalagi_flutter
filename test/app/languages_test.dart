@@ -58,8 +58,8 @@ void main() {
   }
 
   test('English comes first, for device languages the app does not offer', () {
-    expect(AppLanguage.supportedLocales.first, const Locale('en'));
-    expect(AppLanguage.supportedLocales.toSet(), {
+    expect(offeredLocales.first, const Locale('en'));
+    expect(offeredLocales.toSet(), {
       for (final language in AppLanguage.offered) Locale(language.code),
     });
   });

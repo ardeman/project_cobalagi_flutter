@@ -43,3 +43,12 @@ class FallbackLocalizationsDelegate<T> extends LocalizationsDelegate<T> {
   @override
   bool shouldReload(FallbackLocalizationsDelegate<T> old) => false;
 }
+
+/// The locales the app matches the device's language against: the offered
+/// languages, English first, so a device language the app doesn't offer
+/// falls back to English.
+List<Locale> get offeredLocales => [
+  const Locale('en'),
+  for (final language in AppLanguage.offered)
+    if (language != AppLanguage.english) Locale(language.code),
+];
