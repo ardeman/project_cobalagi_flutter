@@ -6,6 +6,7 @@
 enum AppLanguage {
   indonesian('id', 'Bahasa Indonesia'),
   acehnese('ace', 'Bahsa Acèh', fallback: 'id'),
+  minangkabau('min', 'Baso Minang', fallback: 'id'),
   english('en', 'English');
 
   const AppLanguage(this.code, this.name, {this.fallback});
