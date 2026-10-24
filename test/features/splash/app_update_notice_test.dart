@@ -1,3 +1,5 @@
+import 'package:cobalagi/app/fallback_localizations.dart';
+import 'package:cobalagi/core/settings/app_language.dart';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/app/theme/app_theme.dart';
 import 'package:cobalagi/features/splash/cubit/app_update_cubit.dart';
@@ -7,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  for (final language in ['en', 'id']) {
+  for (final language in [for (final l in AppLanguage.values) l.code]) {
     for (final scale in [1.0, 2.0]) {
       testWidgets('$language notice fits a narrow phone at text scale $scale', (
         tester,
@@ -20,7 +22,7 @@ void main() {
         await tester.pumpWidget(
           MaterialApp(
             locale: Locale(language),
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            localizationsDelegates: appLocalizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             theme: AppTheme.light(),
             home: MediaQuery(

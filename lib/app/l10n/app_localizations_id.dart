@@ -67,12 +67,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get languageSystem => 'Ikuti perangkat';
 
   @override
-  String get languageIndonesian => 'Bahasa Indonesia';
-
-  @override
-  String get languageEnglish => 'English';
-
-  @override
   String get plan => 'Versi';
 
   @override

@@ -25,6 +25,7 @@ import '../features/learning/data/curriculum_repository.dart';
 import '../features/learning/data/progress_repository.dart';
 import '../features/profiles/cubit/profiles_cubit.dart';
 import '../features/profiles/data/profile_repository.dart';
+import 'fallback_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -160,10 +161,11 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
               ),
             ),
           ),
-          // null follows the device; languages other than id/en fall back to English.
+          // null follows the device; languages the app doesn't speak fall
+          // back to English.
           locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: appLocalizationsDelegates,
           routerConfig: _router,
         ),
       ),

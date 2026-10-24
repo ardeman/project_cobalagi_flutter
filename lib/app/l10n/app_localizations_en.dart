@@ -67,12 +67,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageSystem => 'Same as device';
 
   @override
-  String get languageIndonesian => 'Bahasa Indonesia';
-
-  @override
-  String get languageEnglish => 'English';
-
-  @override
   String get plan => 'Version';
 
   @override
