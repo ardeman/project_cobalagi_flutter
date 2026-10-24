@@ -81,7 +81,7 @@ class ParentScreen extends StatelessWidget {
                 children: [
                   for (final (code, name) in [
                     (null, l10n.languageSystem),
-                    for (final language in AppLanguage.values)
+                    for (final language in AppLanguage.offered)
                       (language.code, language.name),
                   ])
                     ChoiceChip(

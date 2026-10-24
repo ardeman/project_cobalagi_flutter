@@ -18,6 +18,7 @@ import '../core/audio/sound_effects_cubit.dart';
 import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
 import '../core/entitlement/store_rules.dart';
+import '../core/settings/app_language.dart';
 import '../core/settings/hint_arrows_cubit.dart';
 import '../core/settings/settings_cubit.dart';
 import '../core/settings/settings_repository.dart';
@@ -161,10 +162,13 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
               ),
             ),
           ),
-          // null follows the device; languages the app doesn't speak fall
-          // back to English.
-          locale: locale,
-          supportedLocales: AppLocalizations.supportedLocales,
+          // null follows the device; languages the app doesn't offer fall
+          // back to English, and a saved language no longer offered (its
+          // voice isn't finished) follows the device.
+          locale: AppLanguage.of(locale?.languageCode ?? '')?.voiced == true
+              ? locale
+              : null,
+          supportedLocales: AppLanguage.supportedLocales,
           localizationsDelegates: appLocalizationsDelegates,
           routerConfig: _router,
         ),

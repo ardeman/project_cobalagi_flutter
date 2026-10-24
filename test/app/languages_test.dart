@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cobalagi/app/fallback_localizations.dart';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
+import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/core/settings/app_language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,6 +34,33 @@ void main() {
     ];
     expect(codes.toSet(), {
       for (final language in AppLanguage.values) language.code,
+    });
+  });
+
+  for (final language in AppLanguage.values) {
+    test('${language.name} is offered once its voice is finished', () {
+      final missing = [
+        for (final id in VoiceClips.all.keys)
+          if (!File('assets/audio/${language.code}/$id.mp3').existsSync()) id,
+      ];
+      final bundled = File(
+        'pubspec.yaml',
+      ).readAsStringSync().contains('- assets/audio/${language.code}/');
+      expect(
+        language.voiced,
+        missing.isEmpty && bundled,
+        reason: missing.isEmpty
+            ? 'Voiced: set voiced and list assets/audio/${language.code}/ '
+                  'in pubspec.yaml.'
+            : '${missing.length} clips missing, e.g. ${missing.first}.',
+      );
+    });
+  }
+
+  test('English comes first, for device languages the app does not offer', () {
+    expect(AppLanguage.supportedLocales.first, const Locale('en'));
+    expect(AppLanguage.supportedLocales.toSet(), {
+      for (final language in AppLanguage.offered) Locale(language.code),
     });
   });
 
