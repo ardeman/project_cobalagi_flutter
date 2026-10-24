@@ -8,6 +8,10 @@ final testVoicesMarker = File('assets/audio/TEST_VOICES');
 File clipFile(String language, String clipId) =>
     File('assets/audio/$language/$clipId.mp3');
 
+/// A native speaker's reading of a clip (tool/record_voice.dart), git-ignored.
+File recordingFile(String language, String clipId) =>
+    File('recordings/$language/$clipId.wav');
+
 /// The ARB strings of [language], keyed by message name.
 Map<String, Object?> loadStrings(String language) =>
     jsonDecode(File('lib/app/l10n/app_$language.arb').readAsStringSync())
@@ -34,6 +38,20 @@ Future<void> normalizeAudio(String input, String output) =>
       '64k',
       output,
     ]);
+
+/// Trims silence at both ends, keeping the recording's quality, so
+/// speech-to-speech converts (and bills) only the spoken part.
+Future<void> trimSilence(String input, String output) => runChecked('ffmpeg', [
+  '-y',
+  '-loglevel',
+  'error',
+  '-i',
+  input,
+  '-af',
+  'silenceremove=start_periods=1:start_threshold=-50dB,areverse,'
+      'silenceremove=start_periods=1:start_threshold=-50dB,areverse',
+  output,
+]);
 
 Future<void> runChecked(String command, List<String> args) async {
   final result = await Process.run(command, args);

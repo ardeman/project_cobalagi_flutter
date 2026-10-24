@@ -21,11 +21,18 @@
 // voices.<speaker>.<lang>.clip_models (e.g. Indonesian lines that sound
 // Malay: eleven_multilingual_v2 ignores language_code).
 //
+// A language ElevenLabs can't speak (Acehnese, Minangkabau) sets
+// voices.<speaker>.<lang>.recordings: its clips are a native speaker's
+// recordings (tool/record_voice.dart) turned into the speaker's voice with
+// speech-to-speech; a line not recorded yet is skipped, so the app plays
+// the Indonesian clip instead.
+//
 // Voices, model and settings live in tool/elevenlabs.json. Shipping the clips
 // needs an ElevenLabs plan with a commercial license (not the free plan).
 // Needs ffmpeg.
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cobalagi/core/audio/voice_clips.dart';
 
@@ -78,6 +85,7 @@ Future<void> main(List<String> args) async {
   final temp = Directory.systemTemp.createTempSync('elevenlabs');
   var made = 0;
   var failed = 0;
+  var unrecorded = 0;
   for (final language in languages) {
     final strings = loadStrings(language);
     for (final MapEntry(key: id, value: arbKey) in VoiceClips.all.entries) {
@@ -102,11 +110,17 @@ Future<void> main(List<String> args) async {
           : clipFile(language, id);
       if (out.existsSync() && !force && !sample && only == null) continue;
 
+      final recordings = voice!['recordings'] == true;
+      final recording = recordingFile(language, id);
+      if (recordings && !recording.existsSync()) {
+        unrecorded++;
+        continue;
+      }
       final text = strings[arbKey]! as String;
       // Some clips sound better on another model, e.g. when the default
       // model drifts into Malay: voices.<lang>.model_id or clip_models.
       final clipModels =
-          (voice!['clip_models'] as Map?)?.cast<String, String>() ?? const {};
+          (voice['clip_models'] as Map?)?.cast<String, String>() ?? const {};
       final model =
           _option(args, '--model') ??
           clipModels[id] ??
@@ -123,18 +137,28 @@ Future<void> main(List<String> args) async {
           'language_code': code,
       };
       if (dryRun) {
-        stdout.writeln('$language/$id (${speaker.name}): ${jsonEncode(body)}');
+        final source = recordings ? recording.path : jsonEncode(body);
+        stdout.writeln('$language/$id (${speaker.name}): $source');
         continue;
       }
       try {
         final raw = '${temp.path}/$language-$id.mp3';
-        await _speak(
-          key,
-          voiceId,
-          config['output_format']! as String,
-          body,
-          File(raw),
-        );
+        final format = config['output_format']! as String;
+        if (recordings) {
+          final trimmed = '${temp.path}/$language-$id.wav';
+          await trimSilence(recording.path, trimmed);
+          await _convert(
+            key,
+            voiceId,
+            format,
+            model,
+            voice,
+            File(trimmed),
+            File(raw),
+          );
+        } else {
+          await _speak(key, voiceId, format, body, File(raw));
+        }
         out.parent.createSync(recursive: true);
         await normalizeAudio(raw, out.path);
         made++;
@@ -151,6 +175,11 @@ Future<void> main(List<String> args) async {
   stdout.writeln(
     'Generated $made clips${failed > 0 ? ', $failed failed' : ''}.',
   );
+  if (unrecorded > 0) {
+    stdout.writeln(
+      '$unrecorded lines have no recording yet (tool/record_voice.dart).',
+    );
+  }
   if (sample) {
     stdout.writeln(
       'Samples are in build/voice_samples/ (not used by the app).',
@@ -183,6 +212,58 @@ Future<void> _speak(
       ..set('xi-api-key', key)
       ..contentType = ContentType.json;
     request.write(jsonEncode(body));
+    final response = await request.close();
+    if (response.statusCode != 200) {
+      final message = await response.transform(utf8.decoder).join();
+      throw HttpException('HTTP ${response.statusCode}: $message');
+    }
+    await response.pipe(out.openWrite());
+  } finally {
+    client.close();
+  }
+}
+
+/// Speech-to-speech: [recording] spoken again in [voiceId]'s voice.
+Future<void> _convert(
+  String key,
+  String voiceId,
+  String format,
+  String model,
+  Map<String, Object?> voice,
+  File recording,
+  File out,
+) async {
+  final boundary = 'cobalagi${DateTime.now().microsecondsSinceEpoch}';
+  final body = BytesBuilder();
+  void field(String name, String value) => body.add(
+    utf8.encode(
+      '--$boundary\r\nContent-Disposition: form-data; name="$name"\r\n\r\n'
+      '$value\r\n',
+    ),
+  );
+  field('model_id', model);
+  if (voice['settings'] case final Map<String, Object?> settings) {
+    field('voice_settings', jsonEncode(settings));
+  }
+  body
+    ..add(
+      utf8.encode(
+        '--$boundary\r\nContent-Disposition: form-data; name="audio"; '
+        'filename="clip.wav"\r\nContent-Type: audio/wav\r\n\r\n',
+      ),
+    )
+    ..add(recording.readAsBytesSync())
+    ..add(utf8.encode('\r\n--$boundary--\r\n'));
+
+  final client = HttpClient();
+  try {
+    final request = await client.postUrl(
+      Uri.parse('$_api/speech-to-speech/$voiceId?output_format=$format'),
+    );
+    request.headers
+      ..set('xi-api-key', key)
+      ..set('content-type', 'multipart/form-data; boundary=$boundary');
+    request.add(body.takeBytes());
     final response = await request.close();
     if (response.statusCode != 200) {
       final message = await response.transform(utf8.decoder).join();
