@@ -902,7 +902,7 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get tourFollow =>
-      'Nyoe jiputa peta siteungoh putaran tiep go, jadi kah jeuet kakalon nibak sisi lôn.';
+      'Nyoe jiputa peta seuperpeuet putaran tiep go, jadi kah jeuet kakalon nibak sisi lôn.';
 
   @override
   String get tourBoards =>

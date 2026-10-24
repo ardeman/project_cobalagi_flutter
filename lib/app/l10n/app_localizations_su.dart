@@ -868,11 +868,11 @@ class AppLocalizationsSu extends AppLocalizations {
   String get hintAgain => 'Toél lampu deui pikeun nempo blok nu diulang-ulang!';
 
   @override
-  String get hintLookHere => 'Tempo blok nu aya lampuan. Coba ganti blok éta!';
+  String get hintLookHere => 'Tempo blok nu aya lampuna. Coba ganti blok éta!';
 
   @override
   String get hintLookHereMany =>
-      'Tempo blok-blok nu aya lampuan. Coba ganti blok-blok éta!';
+      'Tempo blok-blok nu aya lampuna. Coba ganti blok-blok éta!';
 
   @override
   String get turnMap => 'Puterkeun peta';
