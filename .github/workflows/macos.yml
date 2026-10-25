@@ -48,7 +48,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         if: steps.secrets.outputs.ok == 'true'
         with:
-          flutter-version: '3.41.1'
+          flutter-version: '3.47.8'
           channel: stable
           cache: true
 
