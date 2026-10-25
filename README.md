@@ -78,7 +78,7 @@ Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `websit
 
 ## Getting started
 
-Install the [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel; built with Flutter 3.41.1, Dart `^3.11.0`) and the toolchain for your platform; `flutter doctor` checks it. Then:
+Install the [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel; built with Flutter 3.47.8) and the toolchain for your platform; `flutter doctor` checks it. Then:
 
 ```sh
 flutter pub get
