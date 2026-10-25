@@ -5,7 +5,8 @@ import 'package:cobalagi/core/entitlement/purchased_code.dart';
 import 'package:cryptography/cryptography.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// The fixture in Dahlunas's docs/code-format.md: test data only, its private
+// The fixture in Dahlunas's code format (payment_service.code_format in
+// external-projects.json): test data only, its private
 // key was thrown away.
 const fixturePublicKey =
     '008c7deff2cbf3a7a1a584bcd07688840e98a21e79758af3d14dae5f60c44c1f';

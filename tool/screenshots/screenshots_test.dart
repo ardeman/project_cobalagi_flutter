@@ -819,7 +819,7 @@ void main() {
         });
 
         // Frames of "Watch me!" demos, 10 per second, for the promo videos
-        // (../../assets/ai-generated-content, cobalagi/). Only on request:
+        // (the video project in external-projects.json). Only on request:
         //   VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens \
         //     --plain-name 'video frames'
         for (final (concept, frames) in [
@@ -981,7 +981,7 @@ void main() {
 
     // Frames of the demos on the App Store's iPhone and iPad, for the
     // product page header and search result videos (app-store-video.sh in
-    // ../../assets/ai-generated-content), at a lower pixel ratio than the
+    // the video project in external-projects.json), at a lower pixel ratio than the
     // slides: the videos show them smaller.
     for (final d in _devices.where(
       (d) => d.name == 'iphone' || d.name == 'ipad',

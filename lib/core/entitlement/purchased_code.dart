@@ -6,7 +6,8 @@ import 'package:cryptography/cryptography.dart';
 /// Checks codes bought on the website, which Dahlunas (Ardeman's payment
 /// service) emails to the buyer: `DL1.` and 144 Base32 characters, signed with
 /// Ed25519 and checked here without going online. The format is specified in
-/// Dahlunas's `docs/code-format.md`; this follows its steps in order.
+/// Dahlunas's code format (`payment_service.code_format` in `external-projects.json`); this
+/// follows its steps in order.
 ///
 /// Only GitHub builds accept them (`StoreRules.allowsPurchasedCodes`): stores
 /// with in-app purchase forbid unlocking with a purchase made elsewhere.

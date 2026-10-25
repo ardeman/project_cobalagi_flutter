@@ -88,6 +88,8 @@ flutter run                                   # pick a device, or: flutter run -
 
 Package name `cobalagi`, app ID `com.ardeman.cobalagi`.
 
+Separate projects (the promo video project, the Dahlunas payment service) are found through `external-projects.json`: copy `external-projects.example.json` to it and point each section's `folder`, `readme` and `rules` at your checkouts. Like `.env`, the copy is not committed.
+
 ## Commands
 
 | Task | Command |
@@ -335,7 +337,7 @@ Upload iOS builds made with Xcode 27.1 or later, so the app reaches the iPhone D
 
 ### Promo videos
 
-Promos are made in the separate `../../assets/ai-generated-content` repo (`cobalagi/`; its README has the commands and upload steps). This repo only records the gameplay frames they use, again whenever the demos or story scenes look different (about 30 minutes):
+Promos are made in a separate repo, the video project (`video_marketing` in `external-projects.json`; its README has the commands and upload steps). This repo only records the gameplay frames they use, again whenever the demos or story scenes look different (about 30 minutes):
 
 ```sh
 VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'video frames'   # → tool/screenshots/out/video/
@@ -361,12 +363,12 @@ Production access was granted on 2026-10-25, and version 2.9.0 (build 27) was su
 
 ### Next: promo videos
 
-1. **Upload** (by hand): the videos in `../../assets/ai-generated-content/cobalagi/out/`, replacing the old YouTube promos, the shorts on every platform with their captions, and the App Store header and search-result videos.
+1. **Upload** (by hand): the videos in the video project's `out/`, replacing the old YouTube promos, the shorts on every platform with their captions, and the App Store header and search-result videos.
 2. **Landing page:** put Koba's short's YouTube ids in the `video-short` card in `website/index.html` (`data-video`/`data-en-video`, `href`/`data-en-href`), and the main promo's ids if it was re-uploaded.
 
 ### Next: buying on the website
 
-Sponsors without store billing (GitHub builds) will buy on the website through Dahlunas, Ardeman's payment service, which emails a signed code (format: Dahlunas's `docs/code-format.md`). The app side is done: "Have a code?" checks the code offline (`PurchasedCodes`, `lib/core/entitlement/purchased_code.dart`), only in builds made with `--dart-define=GITHUB_RELEASE=true` (`tool/release_apks.sh`, `tool/build_appimage.sh` and the macOS and Windows workflows pass it). Coba Lagi is Dahlunas project 1, and product 1 unlocks the sponsor plan (`purchased_codes` in `assets/config/donations.json`).
+Sponsors without store billing (GitHub builds) will buy on the website through Dahlunas, Ardeman's payment service, which emails a signed code. Dahlunas is a separate repo (`payment_service` in `external-projects.json`; `code_format` is the code's spec). The app side is done: "Have a code?" checks the code offline (`PurchasedCodes`, `lib/core/entitlement/purchased_code.dart`), only in builds made with `--dart-define=GITHUB_RELEASE=true` (`tool/release_apks.sh`, `tool/build_appimage.sh` and the macOS and Windows workflows pass it). Coba Lagi is Dahlunas project 1, and product 1 unlocks the sponsor plan (`purchased_codes` in `assets/config/donations.json`).
 
 1. **Keys:** once Dahlunas can mint, add Coba Lagi's public key by key id under `public_keys`; until then no code is accepted. Record project 1 and product 1 in Dahlunas's config.
 2. **Buying:** a "Buy a code" link in the donation sheet (parent area, GitHub builds only) and a support page on the website, once Dahlunas takes payments; mention the purchase in `privacy.html` (the code holds no buyer data; the email goes to Dahlunas, not the app).
@@ -396,7 +398,8 @@ Each topic has one home. Update that file instead of copying its content elsewhe
 | `branding/README.md` | Whoever changes the art | Koba, the ship and the app icon |
 | `LICENSE`, `NOTICE.md` | Everyone | Terms for the code (GPL-3.0), and for sounds, art and the name |
 | `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots |
-| `../../assets/ai-generated-content/README.md` (separate repo) | Whoever makes the promo videos | Promo scripts, their YouTube text and uploads |
+| `video_marketing.readme` in `external-projects.json` (separate repo) | Whoever makes the promo videos | Promo scripts, their YouTube text and uploads |
+| `payment_service.readme` in `external-projects.json` (separate repo, Dahlunas) | Whoever works on purchases | Checkout, minting and the unlock code format |
 
 Agents that follow the [AGENTS.md](https://agents.md) convention (Codex, Cursor, Copilot and others) read `AGENTS.md` directly.
 

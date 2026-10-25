@@ -1,0 +1,13 @@
+{
+  "video_marketing": {
+    "folder": "../../assets/ai-generated-content/cobalagi",
+    "readme": "../../assets/ai-generated-content/README.md",
+    "rules": "../../assets/ai-generated-content/AGENTS.md"
+  },
+  "payment_service": {
+    "folder": "../project-dahlunas-go",
+    "readme": "../project-dahlunas-go/README.md",
+    "rules": "../project-dahlunas-go/AGENTS.md",
+    "code_format": "../project-dahlunas-go/docs/code-format.md"
+  }
+}
