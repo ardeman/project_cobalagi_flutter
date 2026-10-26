@@ -7,7 +7,7 @@ A coding-learning app for children, in Bahasa Indonesia and English. Koba the ro
 
 A short, voice-led warm-up game picks each child's starting point; after every lesson the app chooses to advance, practise or review.
 
-> **Status:** version 2.9.0 (build 27). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac. Google Play production access granted; the first production release was submitted on 2026-10-25 and is awaiting review. Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
+> **Status:** version 2.9.0 (build 27). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac (2.9.0 is live on the Mac; on iPhone and iPad 2.8.0 is live and 2.9.0 is waiting for review). Google Play production access granted; the first production release was submitted on 2026-10-25 and is awaiting review. Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -246,6 +246,8 @@ keyPassword=<password>
 
 - **Renders:** `flutter test tool/screenshots --update-goldens --plain-name '<test>'` (for example `'tablet en map'`) draws a screen into `tool/screenshots/out/`. For a screen without a test, add a temporary `testWidgets` there and remove it with its `out/*tmp-*` images afterwards. Renders draw plain blurs, not liquid-glass shaders.
 - **Emulators** (AVDs `Pixel_9a`, `Redmi_Pad_2`): start one with `~/Library/Android/sdk/emulator/emulator -avd <name> &`, drive the app from a temporary test in `integration_test/` (`flutter test integration_test/<file> -d emulator-5554`), print a marker at each step and grab `adb exec-out screencap -p` when it appears. Set orientation in the test with `SystemChrome.setPreferredOrientations`; the emulator's own rotation is unreliable.
+- **Real Android phones:** first check for a store copy (`adb shell pm list packages com.ardeman.cobalagi`, installer in `adb shell dumpsys package com.ardeman.cobalagi`). A debug install over a Play copy fails its signature check, and Flutter then uninstalls the Play copy, wiping its players and progress, so ask the phone's owner first. Keep the screen on while testing with `adb shell svc power stayon usb` (wake it with `adb shell input keyevent KEYCODE_WAKEUP`) and turn that off with `svc power stayon false` afterwards; on some phones (Pixel 5) the charging screensaver still locks it unless `screensaver_enabled` is off.
+- **iPhone Duo simulator** (iOS 27.1): fold it closed, half or open with the posture buttons under its screen in the Simulator app; `simctl` has no fold command, and `xcrun simctl io … screenshot` comes out black for its displays. To see a fold, render the screen in a temporary widget test instead (copy `_pumpApp` from `test/side_insets_test.dart`, set `tester.view.displayFeatures`, `captureImage`). A player can be seeded by appending sembast lines (`profiles` and `learners` stores) to the app's `cobalagi.db` while the app is stopped.
 
 ## Launch updates
 
@@ -261,7 +263,12 @@ flutter build macos --release --dart-define=APP_STORE=true      # Mac App Store 
 ```
 
 - Needs macOS 12+ and Xcode. Plugins come through Swift Package Manager, without CocoaPods. **Apple Silicon only** (`ARCHS = arm64`): Xcode 27's `lipo -verify_arch` breaks Flutter 3.41's universal build; remove that setting once Flutter handles it.
-- **Mac App Store upload:** run the App Store build command, then in Xcode (`macos/Runner.xcworkspace`) Product → Archive → Distribute App → App Store Connect. Signing is automatic.
+- **Mac App Store upload** (from the command line, no Organizer needed):
+  1. Run the App Store build command above.
+  2. `xcodebuild -workspace macos/Runner.xcworkspace -scheme Runner -configuration Release -archivePath build/macos/CobaLagi.xcarchive archive`
+  3. Export with `xcodebuild -exportArchive -archivePath build/macos/CobaLagi.xcarchive -exportPath build/macos/export -exportOptionsPlist <plist> -allowProvisioningUpdates`, where the plist sets `method` `app-store-connect`, `signingStyle` `automatic` and the `teamID` from `macos/Runner.xcodeproj`. Leave out the `-authenticationKey*` flags: the App Store Connect API key can't use Apple's cloud-managed distribution certificates, so only the Apple ID signed in to Xcode can sign the export.
+  4. `xcrun altool --upload-app --type macos -f "build/macos/export/Coba Lagi.pkg" --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"`
+- **iOS upload** is simpler: `flutter build ipa --release` signs locally, then `xcrun altool --upload-app --type ios -f build/ios/ipa/*.ipa` with the same API key flags.
 - **GitHub build:** CI (`.github/workflows/macos.yml`) signs it with Developer ID, notarizes it and adds `CobaLagi-macOS.zip` to each release. Secrets: `MACOS_CERTIFICATE_P12_BASE64`, `MACOS_CERTIFICATE_PASSWORD`, `APPLE_API_KEY_P8`; without them the job skips with a warning. **The certificate expires on 2 February 2027:** before then, create a new one (Xcode → Settings → Apple Accounts → Manage Certificates → + → Developer ID Application) and replace both certificate secrets.
 - Release builds run in the sandbox with no network (`macos/Runner/Release.entitlements`). The window opens at 1280 × 800 and can't shrink below 960 × 600.
 
@@ -345,7 +352,7 @@ VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'vide
 
 ## Roadmap
 
-**Done:** the engine, picture blocks and typed code; the learning loop and the warm-up placement; ten planets (Warm-up, Directions, Step by step, Loops, Magic Block, Look ahead, Step Box, Fix it!, Until the flag, Otherwise) with "Watch me!" demos; hints, stickers, sound, music and Koba's voice; the Star fuel story; game controllers and folding phones; releases on the App Store, Google Play's closed test and GitHub. The reasons behind each choice are in `AGENTS.md` → Decisions.
+**Done:** the engine, picture blocks and typed code; the learning loop and the warm-up placement; ten planets (Warm-up, Directions, Step by step, Loops, Magic Block, Look ahead, Step Box, Fix it!, Until the flag, Otherwise) with "Watch me!" demos; hints, stickers, sound, music and Koba's voice; the Star fuel story; game controllers and folding phones; releases on the App Store, Google Play (closed test, then production access) and GitHub. The reasons behind each choice are in `AGENTS.md` → Decisions.
 
 ### Next: more platforms
 
@@ -359,12 +366,19 @@ Still to check on real devices once a release carries them:
 
 ### Next: Google Play production
 
-Production access was granted on 2026-10-25, and version 2.9.0 (build 27) was submitted for a full production rollout in 177 countries/regions plus the rest of the world. Wait for Google's review and confirm the release is live. Managed publishing is off.
+Production access was granted on 2026-10-25, and version 2.9.0 (build 27) was submitted for a full production rollout in 177 countries/regions plus the rest of the world. Wait for Google's review and confirm the release is live. Managed publishing is off. Once it is live, regenerate the promos' YouTube text for a live store (`render.mjs all live` in the video project); the videos themselves name no store, so they need no new upload.
 
 ### Next: promo videos
 
-1. **Upload** (by hand): the videos in the video project's `out/`, replacing the old YouTube promos, the shorts on every platform with their captions, and the App Store header and search-result videos.
+1. **Upload** (by hand): the videos in the video project's `out/`, replacing the old YouTube promos, Koba's short (`short-<lang>`) on every platform with its captions, and the App Store header and search-result videos.
 2. **Landing page:** put Koba's short's YouTube ids in the `video-short` card in `website/index.html` (`data-video`/`data-en-video`, `href`/`data-en-href`), and the main promo's ids if it was re-uploaded.
+
+### Next: checking the story
+
+The story scenes wait for the user's look on a device before more story work (the intro and endings may move onto the real board next):
+
+1. **Arrival scenes** for planets 3–9 now play on the real board; open each at `/child/<id>/story/arrival-<concept>` and fix what looks off.
+2. **Tester feedback** (2026-10-21): confirm the story shelf (the map's ⧉) answers "replay an arrival scene", and whether anything in the scenes still looks misplaced since planets became flat floating pieces.
 
 ### Next: buying on the website
 
