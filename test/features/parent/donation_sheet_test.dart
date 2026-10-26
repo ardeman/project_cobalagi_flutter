@@ -49,6 +49,24 @@ void main() {
     expect(find.text('Have a code?'), findsOneWidget);
   });
 
+  testWidgets('GitHub builds without a store link to the shop', (tester) async {
+    await openSheet(
+      tester,
+      const StoreRules(appStore: false, githubRelease: true),
+    );
+    expect(find.text('Buy a code'), findsOneWidget);
+    expect(find.text('Have a code?'), findsOneWidget);
+    expect(
+      find.text('Donations aren\'t available on this device.'),
+      findsNothing,
+    );
+  });
+
+  testWidgets('Google Play builds never link to the shop', (tester) async {
+    await openSheet(tester, const StoreRules(appStore: false));
+    expect(find.text('Buy a code'), findsNothing);
+  });
+
   testWidgets('App Store builds say tips and offer no unlock code', (
     tester,
   ) async {

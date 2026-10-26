@@ -133,6 +133,8 @@
   "tipsUnavailable": "Tip tidak tersedia di perangkat ini.",
   "restorePurchases": "Pulihkan pembelian",
   "haveUnlockCode": "Punya kode?",
+  "buyUnlockCode": "Beli kode",
+  "buyUnlockCodeExplainer": "Beli kode di situs kami. Kodenya dikirim lewat email; lalu masukkan lewat \"Punya kode?\".",
   "unlockCode": "Kode",
   "useUnlockCode": "Pakai kode",
   "unlockCodeRejected": "Kode itu tidak berlaku. Periksa lagi, lalu coba sekali lagi.",

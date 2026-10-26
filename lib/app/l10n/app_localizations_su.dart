@@ -442,6 +442,13 @@ class AppLocalizationsSu extends AppLocalizations {
   String get haveUnlockCode => 'Boga kode?';
 
   @override
+  String get buyUnlockCode => 'Meuli kode';
+
+  @override
+  String get buyUnlockCodeExplainer =>
+      'Meuli kode di situs kami. Kodena dikirim ku email; tuluy asupkeun ngaliwatan \"Boga kode?\".';
+
+  @override
   String get unlockCode => 'Kode';
 
   @override

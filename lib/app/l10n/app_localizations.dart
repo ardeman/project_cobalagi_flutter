@@ -904,6 +904,18 @@ abstract class AppLocalizations {
   /// **'Have a code?'**
   String get haveUnlockCode;
 
+  /// GitHub builds only: opens the shop on the website that sells unlock codes.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy a code'**
+  String get buyUnlockCode;
+
+  /// No description provided for @buyUnlockCodeExplainer.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy a code on our website. It comes by email; then enter it with \"Have a code?\".'**
+  String get buyUnlockCodeExplainer;
+
   /// No description provided for @unlockCode.
   ///
   /// In en, this message translates to:

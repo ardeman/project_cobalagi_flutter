@@ -236,6 +236,11 @@
   "@haveUnlockCode": {
     "description": "Opens a field for a code that unlocks the sponsor plan without a donation."
   },
+  "buyUnlockCode": "Buy a code",
+  "@buyUnlockCode": {
+    "description": "GitHub builds only: opens the shop on the website that sells unlock codes."
+  },
+  "buyUnlockCodeExplainer": "Buy a code on our website. It comes by email; then enter it with \"Have a code?\".",
   "unlockCode": "Code",
   "useUnlockCode": "Use code",
   "unlockCodeRejected": "That code doesn't work. Check it and try again.",

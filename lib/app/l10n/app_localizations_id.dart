@@ -439,6 +439,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get haveUnlockCode => 'Punya kode?';
 
   @override
+  String get buyUnlockCode => 'Beli kode';
+
+  @override
+  String get buyUnlockCodeExplainer =>
+      'Beli kode di situs kami. Kodenya dikirim lewat email; lalu masukkan lewat \"Punya kode?\".';
+
+  @override
   String get unlockCode => 'Kode';
 
   @override

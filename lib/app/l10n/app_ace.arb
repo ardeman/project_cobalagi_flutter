@@ -133,6 +133,8 @@
   "tipsUnavailable": "Tip hana bak perangkat nyoe.",
   "restorePurchases": "Peuriwang peublòe",
   "haveUnlockCode": "Na kode?",
+  "buyUnlockCode": "Bloe kode",
+  "buyUnlockCodeExplainer": "Bloe kode bak situs kamoe. Kode geukirém lewat email; laju peutamong lewat \"Na kode?\".",
   "unlockCode": "Kode",
   "useUnlockCode": "Pakè kode",
   "unlockCodeRejected": "Kode nyan hana beulaku. Neuparéksa lom, lheuh nyan neucuba sigo treuk.",

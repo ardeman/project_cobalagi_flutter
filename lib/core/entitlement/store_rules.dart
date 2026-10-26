@@ -31,6 +31,10 @@ class StoreRules {
   /// Whether "Have a code?" may unlock the sponsor plan.
   bool get allowsUnlockCodes => !appStore;
 
+  /// Dahlunas's shop, which sells the codes that [allowsPurchasedCodes]
+  /// takes. Only GitHub builds link to it.
+  static final shop = Uri.parse('https://dahlunas.ardeman.com');
+
   /// Whether "Have a code?" also takes codes bought on the website.
   bool get allowsPurchasedCodes => githubRelease && !appStore;
 

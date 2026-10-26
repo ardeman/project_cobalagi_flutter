@@ -452,6 +452,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get haveUnlockCode => 'Have a code?';
 
   @override
+  String get buyUnlockCode => 'Buy a code';
+
+  @override
+  String get buyUnlockCodeExplainer =>
+      'Buy a code on our website. It comes by email; then enter it with \"Have a code?\".';
+
+  @override
   String get unlockCode => 'Code';
 
   @override

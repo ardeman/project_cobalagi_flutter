@@ -133,6 +133,8 @@
   "tipsUnavailable": "Tip ora ana ing piranti iki.",
   "restorePurchases": "Balèkna sing wis dituku",
   "haveUnlockCode": "Duwé kode?",
+  "buyUnlockCode": "Tuku kode",
+  "buyUnlockCodeExplainer": "Tuku kode ing situs kita. Kodené dikirim lewat email; banjur lebokna lewat \"Duwé kode?\".",
   "unlockCode": "Kode",
   "useUnlockCode": "Nganggo kode",
   "unlockCodeRejected": "Kode kuwi ora laku. Priksanen maneh, banjur coba sepisan engkas.",

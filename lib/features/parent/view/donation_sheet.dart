@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../app/l10n/app_localizations.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
@@ -11,7 +12,8 @@ import 'package:cobalagi/core/widgets/typing_dialog.dart';
 
 /// Donation choices from the store. Shown only in the parent area, behind the
 /// parent gate, as Google Play Families requires. App Store builds call them
-/// tips and offer no unlock code ([StoreRules]).
+/// tips and offer no unlock code ([StoreRules]); GitHub builds, which have no
+/// store, link to the shop that sells codes instead.
 Future<void> showDonationSheet(BuildContext context) => showGlassSheet(
   context: context,
   showDragHandle: true,
@@ -74,6 +76,25 @@ class _DonationSheetState extends State<_DonationSheet> {
                   final options = snapshot.data;
                   if (options == null) {
                     return const CircularProgressIndicator();
+                  }
+                  if (options.isEmpty && rules.allowsPurchasedCodes) {
+                    return Column(
+                      children: [
+                        Text(
+                          l10n.buyUnlockCodeExplainer,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        FilledButton.icon(
+                          onPressed: () => launchUrl(
+                            StoreRules.shop,
+                            mode: LaunchMode.externalApplication,
+                          ),
+                          icon: const Icon(Icons.open_in_new_rounded),
+                          label: Text(l10n.buyUnlockCode),
+                        ),
+                      ],
+                    );
                   }
                   if (options.isEmpty) {
                     return Text(

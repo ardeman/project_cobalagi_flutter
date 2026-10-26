@@ -29,6 +29,7 @@ dependencies:
   liquid_glass_easy: 4.3.4
   gamepads: ^0.1.12
   cryptography: ^2.9.0
+  url_launcher: ^6.3.3
 
 dev_dependencies:
   flutter_test:

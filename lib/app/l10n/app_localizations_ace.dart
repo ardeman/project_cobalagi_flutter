@@ -439,6 +439,13 @@ class AppLocalizationsAce extends AppLocalizations {
   String get haveUnlockCode => 'Na kode?';
 
   @override
+  String get buyUnlockCode => 'Bloe kode';
+
+  @override
+  String get buyUnlockCodeExplainer =>
+      'Bloe kode bak situs kamoe. Kode geukirém lewat email; laju peutamong lewat \"Na kode?\".';
+
+  @override
   String get unlockCode => 'Kode';
 
   @override

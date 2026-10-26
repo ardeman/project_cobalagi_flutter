@@ -133,6 +133,8 @@
   "tipsUnavailable": "Tip teu aya dina alat ieu.",
   "restorePurchases": "Pulihkeun pameulian",
   "haveUnlockCode": "Boga kode?",
+  "buyUnlockCode": "Meuli kode",
+  "buyUnlockCodeExplainer": "Meuli kode di situs kami. Kodena dikirim ku email; tuluy asupkeun ngaliwatan \"Boga kode?\".",
   "unlockCode": "Kode",
   "useUnlockCode": "Paké kode",
   "unlockCodeRejected": "Kode éta teu laku. Pariksa deui, terus coba sakali deui.",

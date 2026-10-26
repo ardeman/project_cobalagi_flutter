@@ -439,6 +439,13 @@ class AppLocalizationsMin extends AppLocalizations {
   String get haveUnlockCode => 'Punyo kode?';
 
   @override
+  String get buyUnlockCode => 'Bali kode';
+
+  @override
+  String get buyUnlockCodeExplainer =>
+      'Bali kode di situs kami. Kodenyo dikirim lewat email; sudah tu masuakan lewat \"Punyo kode?\".';
+
+  @override
   String get unlockCode => 'Kode';
 
   @override

@@ -133,6 +133,8 @@
   "tipsUnavailable": "Tip indak tasadio di parangkaik ko.",
   "restorePurchases": "Pulihkan pambalian",
   "haveUnlockCode": "Punyo kode?",
+  "buyUnlockCode": "Bali kode",
+  "buyUnlockCodeExplainer": "Bali kode di situs kami. Kodenyo dikirim lewat email; sudah tu masuakan lewat \"Punyo kode?\".",
   "unlockCode": "Kode",
   "useUnlockCode": "Pakai kode",
   "unlockCodeRejected": "Kode tu indak balaku. Pareso baliak, lalu cubo sakali lai.",

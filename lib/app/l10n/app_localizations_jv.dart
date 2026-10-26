@@ -440,6 +440,13 @@ class AppLocalizationsJv extends AppLocalizations {
   String get haveUnlockCode => 'Duwé kode?';
 
   @override
+  String get buyUnlockCode => 'Tuku kode';
+
+  @override
+  String get buyUnlockCodeExplainer =>
+      'Tuku kode ing situs kita. Kodené dikirim lewat email; banjur lebokna lewat \"Duwé kode?\".';
+
+  @override
   String get unlockCode => 'Kode';
 
   @override

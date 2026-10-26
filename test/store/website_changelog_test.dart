@@ -64,5 +64,7 @@ void main() {
     expect(part('index.html', 'footer'), footer);
     expect(part('404.html', 'header'), header);
     expect(part('404.html', 'footer'), footer);
+    expect(part('support.html', 'header'), header);
+    expect(part('support.html', 'footer'), footer);
   });
 }
