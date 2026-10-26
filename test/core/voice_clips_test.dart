@@ -5,11 +5,12 @@ import 'dart:math';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/core/feedback/cheers.dart';
+import 'package:cobalagi/core/settings/app_language.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  for (final language in ['en', 'id']) {
+  for (final language in AppLanguage.values.map((language) => language.code)) {
     test('every clip has words to record in $language', () {
       final arb =
           jsonDecode(File('lib/app/l10n/app_$language.arb').readAsStringSync())

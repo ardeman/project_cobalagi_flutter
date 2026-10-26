@@ -10,6 +10,7 @@ import '../../../core/audio/music_cubit.dart';
 import '../../../core/audio/sound_effects_cubit.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/plan.dart';
+import 'package:cobalagi/core/settings/app_language.dart';
 import '../../../core/settings/hint_arrows_cubit.dart';
 import '../../../core/settings/settings_cubit.dart';
 import '../../../core/version/app_version_text.dart';
@@ -74,18 +75,22 @@ class ParentScreen extends StatelessWidget {
             children: [
               Text(l10n.language, style: headerStyle),
               const SizedBox(height: 8),
-              SegmentedButton<String?>(
-                segments: [
-                  ButtonSegment(value: null, label: Text(l10n.languageSystem)),
-                  ButtonSegment(
-                    value: 'id',
-                    label: Text(l10n.languageIndonesian),
-                  ),
-                  ButtonSegment(value: 'en', label: Text(l10n.languageEnglish)),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final (code, name) in [
+                    (null, l10n.languageSystem),
+                    for (final language in AppLanguage.offered)
+                      (language.code, language.name),
+                  ])
+                    ChoiceChip(
+                      label: Text(name),
+                      selected: languageCode == code,
+                      onSelected: (_) =>
+                          context.read<SettingsCubit>().setLanguageCode(code),
+                    ),
                 ],
-                selected: {languageCode},
-                onSelectionChanged: (s) =>
-                    context.read<SettingsCubit>().setLanguageCode(s.first),
               ),
               const SizedBox(height: 8),
               SwitchListTile(

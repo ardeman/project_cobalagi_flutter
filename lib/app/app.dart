@@ -18,6 +18,7 @@ import '../core/audio/sound_effects_cubit.dart';
 import '../core/entitlement/entitlement_cubit.dart';
 import '../core/entitlement/entitlement_service.dart';
 import '../core/entitlement/store_rules.dart';
+import '../core/settings/app_language.dart';
 import '../core/settings/hint_arrows_cubit.dart';
 import '../core/settings/settings_cubit.dart';
 import '../core/settings/settings_repository.dart';
@@ -25,6 +26,7 @@ import '../features/learning/data/curriculum_repository.dart';
 import '../features/learning/data/progress_repository.dart';
 import '../features/profiles/cubit/profiles_cubit.dart';
 import '../features/profiles/data/profile_repository.dart';
+import 'fallback_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'router.dart';
 import 'theme/app_theme.dart';
@@ -160,10 +162,14 @@ class _CobaLagiAppState extends State<CobaLagiApp> with WidgetsBindingObserver {
               ),
             ),
           ),
-          // null follows the device; languages other than id/en fall back to English.
-          locale: locale,
-          supportedLocales: AppLocalizations.supportedLocales,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          // null follows the device; languages the app doesn't offer fall
+          // back to English, and a saved language no longer offered (its
+          // voice isn't finished) follows the device.
+          locale: AppLanguage.of(locale?.languageCode ?? '')?.voiced == true
+              ? locale
+              : null,
+          supportedLocales: offeredLocales,
+          localizationsDelegates: appLocalizationsDelegates,
           routerConfig: _router,
         ),
       ),

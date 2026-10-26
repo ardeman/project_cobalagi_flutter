@@ -71,6 +71,24 @@ void main() {
     expect(StoreRules.current().allowsUnlockCodes, isTrue);
   });
 
+  test('only GitHub builds take codes bought on the website', () {
+    expect(const StoreRules(appStore: false).allowsPurchasedCodes, isFalse);
+    expect(
+      const StoreRules(
+        appStore: false,
+        githubRelease: true,
+      ).allowsPurchasedCodes,
+      isTrue,
+    );
+    expect(
+      const StoreRules(
+        appStore: true,
+        githubRelease: true,
+      ).allowsPurchasedCodes,
+      isFalse,
+    );
+  });
+
   test('store billing: Google Play and the App Stores only', () {
     const github = StoreRules(appStore: false);
     const appStore = StoreRules(appStore: true);

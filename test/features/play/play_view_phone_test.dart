@@ -1,3 +1,5 @@
+import 'package:cobalagi/app/fallback_localizations.dart';
+import 'package:cobalagi/core/settings/app_language.dart';
 import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/app/theme/app_theme.dart';
 import 'package:cobalagi/core/audio/audio_service.dart';
@@ -50,7 +52,7 @@ Future<void> _pumpPhone(
     MaterialApp(
       theme: AppTheme.light(),
       locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      localizationsDelegates: appLocalizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: RepositoryProvider<AudioService>.value(
         value: audio,
@@ -680,7 +682,7 @@ void main() {
   group('with real fonts', () {
     setUpAll(loadRealFonts);
 
-    for (final language in ['en', 'id']) {
+    for (final language in [for (final l in AppLanguage.values) l.code]) {
       testWidgets('phones from 320 dp up fit the bars in $language', (
         tester,
       ) async {

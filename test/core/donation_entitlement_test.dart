@@ -6,11 +6,14 @@ import 'package:cobalagi/core/entitlement/donation_entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/entitlement_service.dart';
 import 'package:cobalagi/core/entitlement/plan.dart';
 import 'package:cobalagi/core/entitlement/purchase_store.dart';
+import 'package:cobalagi/core/entitlement/purchased_code.dart';
 import 'package:cobalagi/core/entitlement/unlock_code.dart';
 import 'package:cobalagi/core/settings/settings_repository.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sembast/sembast_memory.dart';
+
+import 'purchased_code_test.dart' show fixture, fixtureCodes;
 
 class FakeStore implements PurchaseStore {
   var available = true;
@@ -174,4 +177,50 @@ void main() {
       expect(await offline.loadPlan(), Plan.full);
     },
   );
+
+  group('codes bought on the website', () {
+    late DonationEntitlementService github;
+
+    setUp(() {
+      github = DonationEntitlementService(
+        productIds: {'small'},
+        store: const NoPurchaseStore(),
+        settings: settings,
+        purchasedCodes: fixtureCodes,
+      );
+    });
+
+    tearDown(() => github.dispose());
+
+    test('unlock and keep the canonical code, once', () async {
+      expect(await github.redeem(fixture.toLowerCase()), isTrue);
+      expect(await github.redeem(fixture), isTrue);
+      expect(await github.loadPlan(), Plan.full);
+      expect(await settings.loadPurchasedCodes(), [fixture]);
+    });
+
+    test('a rejected code changes nothing', () async {
+      expect(await github.redeem('${fixture.substring(0, 147)}A'), isFalse);
+      expect(await settings.loadSupporter(), isFalse);
+      expect(await settings.loadPurchasedCodes(), isEmpty);
+    });
+
+    test('other builds accept none', () async {
+      expect(await service.redeem(fixture), isFalse);
+    });
+
+    test('the shipped config reads, with 32-byte public keys', () {
+      final config =
+          jsonDecode(File('assets/config/donations.json').readAsStringSync())
+              as Map<String, Object?>;
+      final codes = PurchasedCodes.fromJson(
+        config['purchased_codes']! as Map<String, Object?>,
+      );
+      expect(codes.project, isPositive);
+      expect(codes.products, isNotEmpty);
+      for (final key in codes.publicKeys.values) {
+        expect(key, hasLength(32));
+      }
+    });
+  });
 }

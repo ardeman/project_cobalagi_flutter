@@ -5,8 +5,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_ace.dart';
 import 'app_localizations_en.dart';
 import 'app_localizations_id.dart';
+import 'app_localizations_jv.dart';
+import 'app_localizations_min.dart';
+import 'app_localizations_su.dart';
 
 // ignore_for_file: type=lint
 
@@ -94,8 +98,12 @@ abstract class AppLocalizations {
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
+    Locale('ace'),
     Locale('en'),
     Locale('id'),
+    Locale('jv'),
+    Locale('min'),
+    Locale('su'),
   ];
 
   /// No description provided for @appTitle.
@@ -205,18 +213,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Same as device'**
   String get languageSystem;
-
-  /// No description provided for @languageIndonesian.
-  ///
-  /// In en, this message translates to:
-  /// **'Bahasa Indonesia'**
-  String get languageIndonesian;
-
-  /// No description provided for @languageEnglish.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get languageEnglish;
 
   /// No description provided for @plan.
   ///
@@ -1091,7 +1087,7 @@ abstract class AppLocalizations {
   /// No description provided for @codeGuide.
   ///
   /// In en, this message translates to:
-  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in either language. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until the robot reaches the flag, with no count.'**
+  /// **'Tap a command to add it, or type it yourself. Keep the command names as shown in all languages. End actions with (); and put the contents of repeats and checks between opening and closing braces. Repeat counts are 1–9. Define your Magic Block with define star, then use star(); to run it. // starts a comment. Each command counts as one block, including commands inside braces. Save a number with steps = 3; and use move(steps); to move that many cells. The number stays until you save a new one. Save it before using it. until_flag repeats what is inside its braces until the robot reaches the flag, with no count.'**
   String get codeGuide;
 
   /// No description provided for @codeSyntax.
@@ -2053,8 +2049,14 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'id'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'ace',
+    'en',
+    'id',
+    'jv',
+    'min',
+    'su',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -2063,10 +2065,18 @@ class _AppLocalizationsDelegate
 AppLocalizations lookupAppLocalizations(Locale locale) {
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ace':
+      return AppLocalizationsAce();
     case 'en':
       return AppLocalizationsEn();
     case 'id':
       return AppLocalizationsId();
+    case 'jv':
+      return AppLocalizationsJv();
+    case 'min':
+      return AppLocalizationsMin();
+    case 'su':
+      return AppLocalizationsSu();
   }
 
   throw FlutterError(

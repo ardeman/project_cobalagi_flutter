@@ -1,3 +1,7 @@
+# Where the separate projects live on this machine
+# (see external-projects.example.json)
+external-projects.json
+
 # Miscellaneous
 *.class
 *.log
@@ -58,3 +62,6 @@ app.*.map.json
 
 # Device frames for the store screenshots (tool/fetch_bezels.sh); Apple's may not be shared.
 /store/bezels/
+
+# Native speakers' voice recordings (tool/record_voice.dart)
+/recordings/

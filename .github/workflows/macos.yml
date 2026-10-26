@@ -82,7 +82,7 @@ jobs:
           echo 'CODE_SIGNING_ALLOWED = NO' > "$RUNNER_TEMP/unsigned.xcconfig"
           export XCODE_XCCONFIG_FILE="$RUNNER_TEMP/unsigned.xcconfig"
           flutter pub get
-          flutter build macos --release
+          flutter build macos --release --dart-define=GITHUB_RELEASE=true
 
       - name: Sign, notarize and zip
         if: steps.secrets.outputs.ok == 'true'

@@ -10,6 +10,7 @@ import 'core/entitlement/entitlement_factory.dart';
 import 'core/gamepad/gamepad_navigator.dart';
 import 'core/gamepad/screen_keyboard.dart';
 import 'core/responsive/fold.dart';
+import 'core/entitlement/purchased_code.dart';
 import 'core/entitlement/store_rules.dart';
 import 'core/entitlement/unlock_code.dart';
 import 'core/settings/settings_repository.dart';
@@ -42,6 +43,11 @@ Future<void> main() async {
           if (storeRules.allowsUnlockCodes)
             ...(donations['unlock_code_sha256']! as List).cast<String>(),
         }),
+        purchasedCodes: storeRules.allowsPurchasedCodes
+            ? PurchasedCodes.fromJson(
+                donations['purchased_codes']! as Map<String, Object?>,
+              )
+            : const PurchasedCodes.none(),
         settings: settings,
       ),
       audio: AudioplayersAudioService(),

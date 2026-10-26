@@ -4,18 +4,21 @@ import '../settings/settings_repository.dart';
 import 'entitlement_service.dart';
 import 'plan.dart';
 import 'purchase_store.dart';
+import 'purchased_code.dart';
 import 'unlock_code.dart';
 
 /// Unlocks [Plan.full] when any of [productIds] has been bought. The result is
 /// cached on the device, so the plan is known offline. There is no server, so
 /// purchases are trusted as the store reports them. A valid [unlockCodes]
-/// code unlocks the same way, so store reviewers can see the supporter plan.
+/// code unlocks the same way, so store reviewers can see the supporter plan,
+/// and so does a [purchasedCodes] code bought on the website.
 class DonationEntitlementService implements EntitlementService {
   DonationEntitlementService({
     required this.productIds,
     required PurchaseStore store,
     required SettingsRepository settings,
     this.unlockCodes = const UnlockCodes({}),
+    this.purchasedCodes = const PurchasedCodes.none(),
   }) : _store = store,
        _settings = settings {
     _subscription = _store.purchases.listen(_onPurchases);
@@ -25,6 +28,9 @@ class DonationEntitlementService implements EntitlementService {
 
   /// Codes that unlock [Plan.full] without a donation (for store reviewers).
   final UnlockCodes unlockCodes;
+
+  /// Codes bought on the website (only in GitHub builds).
+  final PurchasedCodes purchasedCodes;
   final PurchaseStore _store;
   final SettingsRepository _settings;
   final _changes = StreamController<Plan>.broadcast();
@@ -59,7 +65,11 @@ class DonationEntitlementService implements EntitlementService {
 
   @override
   Future<bool> redeem(String code) async {
-    if (!unlockCodes.accepts(code)) return false;
+    if (!unlockCodes.accepts(code)) {
+      final purchased = await purchasedCodes.verify(code);
+      if (purchased == null) return false;
+      await _settings.savePurchasedCode(purchased);
+    }
     await _settings.saveSupporter();
     _changes.add(Plan.full);
     return true;

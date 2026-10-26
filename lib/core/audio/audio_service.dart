@@ -4,10 +4,12 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
+import '../settings/app_language.dart';
 import 'music.dart';
 import 'sound_effects.dart';
 
-/// Plays prerecorded voice clips from `assets/audio/<languageCode>/<clipId>.mp3`.
+/// Plays prerecorded voice clips from `assets/audio/<languageCode>/<clipId>.mp3`,
+/// or from the language's `AppLanguage.fallback` while it has none of its own.
 /// Clip ids are listed in `VoiceClips`.
 abstract interface class AudioService {
   /// Missing clips are skipped silently, so screens can request clips before
@@ -42,6 +44,13 @@ abstract interface class AudioService {
 
   Future<void> dispose();
 }
+
+/// Where [clipId] may be recorded for [languageCode], best first: a regional
+/// language speaks its fallback (Indonesian) until its own clip exists.
+List<String> voiceClipPaths(String clipId, String languageCode) => [
+  for (final code in [languageCode, ?AppLanguage.of(languageCode)?.fallback])
+    'audio/$code/$clipId.mp3',
+];
 
 class AudioplayersAudioService implements AudioService {
   AudioplayersAudioService({AssetBundle? bundle})
@@ -189,8 +198,14 @@ class AudioplayersAudioService implements AudioService {
     required String languageCode,
     bool queue = false,
   }) async {
-    final path = 'audio/$languageCode/$clipId.mp3';
-    if (!await _hasAsset(path)) return;
+    String? path;
+    for (final candidate in voiceClipPaths(clipId, languageCode)) {
+      if (await _hasAsset(candidate)) {
+        path = candidate;
+        break;
+      }
+    }
+    if (path == null) return;
     if (queue && _playing) {
       _queue.add(path);
       return;

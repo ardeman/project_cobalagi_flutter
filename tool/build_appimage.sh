@@ -49,7 +49,7 @@ fetch "https://raw.githubusercontent.com/linuxdeploy/linuxdeploy-plugin-gstreame
 export PATH="$PWD/$tools:$PATH"
 export APPIMAGE_EXTRACT_AND_RUN=1
 
-flutter build linux --release
+flutter build linux --release --dart-define=GITHUB_RELEASE=true
 
 # Flutter's bundle stays together in usr/bin: the engine loads lib/libapp.so
 # and data/ next to the executable.
