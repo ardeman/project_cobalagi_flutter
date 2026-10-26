@@ -401,9 +401,22 @@ html[data-device="linux"] .get-card[data-for="linux"] .yours {
 .extra p { margin: 0; }
 .trademarks { margin: 28px 0 0; color: var(--space-muted); font-size: 0.8rem; text-align: center; }
 
-footer { padding: 40px 0 56px; color: var(--space-muted); font-size: 0.95rem; }
-.foot { display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: center; justify-content: space-between; border-top: 1px solid var(--space-line); padding-top: 24px; }
-.foot p { margin: 0; }
+footer { padding: 40px 0 48px; color: var(--space-muted); font-size: 0.95rem; }
+.foot {
+  display: grid; grid-template-columns: auto 1fr; gap: 16px 24px; align-items: center;
+  border-top: 1px solid var(--space-line); padding-top: 28px;
+}
+.foot-brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: var(--space-text); text-decoration: none; }
+.foot-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 24px; }
+.foot-links a { color: var(--space-muted); font-weight: 600; text-decoration: none; }
+.foot-links a:hover, .foot-brand:hover { color: var(--space-link); }
+.foot-fine { grid-column: 1 / -1; margin: 0; font-size: 0.85rem; }
+.foot-fine a { color: inherit; text-underline-offset: 3px; }
+.foot-fine a:hover { color: var(--space-link); }
+@media (max-width: 560px) {
+  .foot { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .foot-links { justify-content: center; }
+}
 
 /* Promo video: a title card that turns into the YouTube player on press. */
 .video-section { padding-top: 24px; }
