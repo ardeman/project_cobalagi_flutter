@@ -456,6 +456,10 @@ class AppLocalizationsId extends AppLocalizations {
       'Kode itu tidak berlaku. Periksa lagi, lalu coba sekali lagi.';
 
   @override
+  String get unlockCodeGithubOnly =>
+      'Kode ini untuk aplikasi dari GitHub. Di aplikasi ini, dukungan lewat toko aplikasinya.';
+
+  @override
   String get thanksForSupport => 'Terima kasih sudah mendukung Coba Lagi!';
 
   @override

@@ -67,6 +67,24 @@ void main() {
     expect(find.text('Buy a code'), findsNothing);
   });
 
+  testWidgets('Google Play builds say a shop code is for GitHub\'s app', (
+    tester,
+  ) async {
+    await openSheet(tester, const StoreRules(appStore: false));
+    await tester.tap(find.text('Have a code?'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byType(TextField), 'NOT-A-CODE');
+    await tester.tap(find.text('Use code'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('That code doesn'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'DL1.${'A' * 144}');
+    await tester.tap(find.text('Use code'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('for the app from GitHub'), findsOneWidget);
+  });
+
   testWidgets('App Store builds say tips and offer no unlock code', (
     tester,
   ) async {

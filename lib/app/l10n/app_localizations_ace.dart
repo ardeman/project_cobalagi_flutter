@@ -456,6 +456,10 @@ class AppLocalizationsAce extends AppLocalizations {
       'Kode nyan hana beulaku. Neuparéksa lom, lheuh nyan neucuba sigo treuk.';
 
   @override
+  String get unlockCodeGithubOnly =>
+      'Kode nyoe keu aplikasi nibak GitHub. Bak aplikasi nyoe, bantuan meulalui toko aplikasi.';
+
+  @override
   String get thanksForSupport => 'Teurimong gaséh ka neudukông Coba Lagi!';
 
   @override

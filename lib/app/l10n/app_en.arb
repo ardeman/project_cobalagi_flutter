@@ -244,6 +244,10 @@
   "unlockCode": "Code",
   "useUnlockCode": "Use code",
   "unlockCodeRejected": "That code doesn't work. Check it and try again.",
+  "unlockCodeGithubOnly": "This code is for the app from GitHub. In this app, support goes through the store.",
+  "@unlockCodeGithubOnly": {
+    "description": "Google Play builds: a code bought on the website was entered; those codes only unlock the app from GitHub."
+  },
   "thanksForSupport": "Thank you for supporting Coba Lagi!",
   "playGoal": "Help me reach the flag!",
   "playGoalStars": "Collect all the stars, then go to the flag!",

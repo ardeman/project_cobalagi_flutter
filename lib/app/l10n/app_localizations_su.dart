@@ -459,6 +459,10 @@ class AppLocalizationsSu extends AppLocalizations {
       'Kode éta teu laku. Pariksa deui, terus coba sakali deui.';
 
   @override
+  String get unlockCodeGithubOnly =>
+      'Kode ieu kanggo aplikasi ti GitHub. Dina aplikasi ieu, dukungan ngaliwatan toko aplikasina.';
+
+  @override
   String get thanksForSupport => 'Nuhun geus ngadukung Coba Lagi!';
 
   @override

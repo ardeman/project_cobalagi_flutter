@@ -934,6 +934,12 @@ abstract class AppLocalizations {
   /// **'That code doesn\'t work. Check it and try again.'**
   String get unlockCodeRejected;
 
+  /// Google Play builds: a code bought on the website was entered; those codes only unlock the app from GitHub.
+  ///
+  /// In en, this message translates to:
+  /// **'This code is for the app from GitHub. In this app, support goes through the store.'**
+  String get unlockCodeGithubOnly;
+
   /// No description provided for @thanksForSupport.
   ///
   /// In en, this message translates to:

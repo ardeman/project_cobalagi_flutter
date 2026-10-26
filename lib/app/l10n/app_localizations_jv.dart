@@ -457,6 +457,10 @@ class AppLocalizationsJv extends AppLocalizations {
       'Kode kuwi ora laku. Priksanen maneh, banjur coba sepisan engkas.';
 
   @override
+  String get unlockCodeGithubOnly =>
+      'Kode iki kanggo aplikasi saka GitHub. Ing aplikasi iki, dhukungan liwat toko aplikasine.';
+
+  @override
   String get thanksForSupport => 'Suwun wis ndhukung Coba Lagi!';
 
   @override

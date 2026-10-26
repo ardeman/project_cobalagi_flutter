@@ -6,6 +6,7 @@ import '../../../app/l10n/app_localizations.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/entitlement_service.dart';
 import '../../../core/entitlement/plan.dart';
+import '../../../core/entitlement/purchased_code.dart';
 import '../../../core/entitlement/store_rules.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
 import 'package:cobalagi/core/widgets/typing_dialog.dart';
@@ -137,7 +138,7 @@ class _DonationSheetState extends State<_DonationSheet> {
                         context: context,
                         builder: (_) => BlocProvider.value(
                           value: context.read<EntitlementCubit>(),
-                          child: const _UnlockCodeDialog(),
+                          child: _UnlockCodeDialog(rules: rules),
                         ),
                       ),
                       child: Text(l10n.haveUnlockCode),
@@ -154,7 +155,9 @@ class _DonationSheetState extends State<_DonationSheet> {
 /// Unlocks the supporter plan with a code: one given to store reviewers, or
 /// in GitHub builds one bought on the website.
 class _UnlockCodeDialog extends StatefulWidget {
-  const _UnlockCodeDialog();
+  const _UnlockCodeDialog({required this.rules});
+
+  final StoreRules rules;
 
   @override
   State<_UnlockCodeDialog> createState() => _UnlockCodeDialogState();
@@ -164,13 +167,22 @@ class _UnlockCodeDialogState extends State<_UnlockCodeDialog> {
   final _code = TextEditingController();
   var _rejected = false;
 
+  /// Whether the rejected code was bought on the website, which this build
+  /// may not take (Google Play), so the parent learns it is for GitHub's app.
+  var _githubOnly = false;
+
   Future<void> _submit() async {
     final accepted = await context.read<EntitlementCubit>().redeem(_code.text);
     if (!mounted) return;
     if (accepted) {
       Navigator.pop(context);
     } else {
-      setState(() => _rejected = true);
+      setState(() {
+        _rejected = true;
+        _githubOnly =
+            !widget.rules.allowsPurchasedCodes &&
+            PurchasedCodes.decode(_code.text) != null;
+      });
     }
   }
 
@@ -192,7 +204,12 @@ class _UnlockCodeDialogState extends State<_UnlockCodeDialog> {
         autocorrect: false,
         decoration: InputDecoration(
           labelText: l10n.unlockCode,
-          errorText: _rejected ? l10n.unlockCodeRejected : null,
+          errorText: _githubOnly
+              ? l10n.unlockCodeGithubOnly
+              : _rejected
+              ? l10n.unlockCodeRejected
+              : null,
+          errorMaxLines: 3,
         ),
         onChanged: (_) {
           if (_rejected) setState(() => _rejected = false);

@@ -469,6 +469,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'That code doesn\'t work. Check it and try again.';
 
   @override
+  String get unlockCodeGithubOnly =>
+      'This code is for the app from GitHub. In this app, support goes through the store.';
+
+  @override
   String get thanksForSupport => 'Thank you for supporting Coba Lagi!';
 
   @override

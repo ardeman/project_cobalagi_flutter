@@ -138,6 +138,7 @@
   "unlockCode": "Kode",
   "useUnlockCode": "Pakai kode",
   "unlockCodeRejected": "Kode tu indak balaku. Pareso baliak, lalu cubo sakali lai.",
+  "unlockCodeGithubOnly": "Kode ko untuak aplikasi dari GitHub. Di aplikasi ko, dukuangan lewat toko aplikasinyo.",
   "thanksForSupport": "Tarimo kasih alah mandukuang Coba Lagi!",
   "playGoal": "Bantu awak sampai ka bandera!",
   "playGoalStars": "Kumpuan sadonyo bintang, lalu ka bandera!",

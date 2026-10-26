@@ -456,6 +456,10 @@ class AppLocalizationsMin extends AppLocalizations {
       'Kode tu indak balaku. Pareso baliak, lalu cubo sakali lai.';
 
   @override
+  String get unlockCodeGithubOnly =>
+      'Kode ko untuak aplikasi dari GitHub. Di aplikasi ko, dukuangan lewat toko aplikasinyo.';
+
+  @override
   String get thanksForSupport => 'Tarimo kasih alah mandukuang Coba Lagi!';
 
   @override

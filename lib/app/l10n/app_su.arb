@@ -138,6 +138,7 @@
   "unlockCode": "Kode",
   "useUnlockCode": "Paké kode",
   "unlockCodeRejected": "Kode éta teu laku. Pariksa deui, terus coba sakali deui.",
+  "unlockCodeGithubOnly": "Kode ieu kanggo aplikasi ti GitHub. Dina aplikasi ieu, dukungan ngaliwatan toko aplikasina.",
   "thanksForSupport": "Nuhun geus ngadukung Coba Lagi!",
   "playGoal": "Bantuan kuring nepi ka bandéra!",
   "playGoalStars": "Kumpulkeun sakabéh béntang, terus ka bandéra!",
