@@ -213,6 +213,7 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); line-height: 1.15; margin: 0 0 12p
   box-shadow: var(--space-shadow);
 }
 .sheet a { color: var(--teal-deep); }
+.sheet a.btn-primary { color: #fff; text-decoration: none; }
 .sheet .section-head p { color: var(--muted); }
 .sheet .eyebrow { color: var(--coral); }
 .sheet > section + section { border-top: 1px solid var(--line); }
