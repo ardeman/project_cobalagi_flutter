@@ -6,6 +6,8 @@
   "purchased_codes": {
     "project": 1,
     "products": [1],
-    "public_keys": {}
+    "public_keys": {
+      "2": "5a672f7b26f9c185154d54f1f32b2e153896d6f9b25fd3b2eeae29d0294b6d08"
+    }
   }
 }
