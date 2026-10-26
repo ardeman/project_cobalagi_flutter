@@ -14,6 +14,7 @@ class GlassSurface extends StatelessWidget {
     this.blur = true,
     this.borderColor,
     this.borderWidth = 1.2,
+    this.shadow = true,
   });
 
   final Widget child;
@@ -23,6 +24,10 @@ class GlassSurface extends StatelessWidget {
   final bool blur;
   final Color? borderColor;
   final double borderWidth;
+
+  /// Whether a soft shadow falls outside the panel; off where a parent clips
+  /// to the panel's outline (a menu), which would cut the shadow off.
+  final bool shadow;
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +68,14 @@ class GlassSurface extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: borderRadius,
         boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF164F59).withValues(alpha: dark ? 0.2 : 0.09),
-            blurRadius: 22,
-            offset: const Offset(0, 8),
-          ),
+          if (shadow)
+            BoxShadow(
+              color: const Color(
+                0xFF164F59,
+              ).withValues(alpha: dark ? 0.2 : 0.09),
+              blurRadius: 22,
+              offset: const Offset(0, 8),
+            ),
         ],
       ),
       child: ClipRRect(

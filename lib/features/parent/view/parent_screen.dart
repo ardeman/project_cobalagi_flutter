@@ -10,9 +10,7 @@ import '../../../core/audio/music_cubit.dart';
 import '../../../core/audio/sound_effects_cubit.dart';
 import '../../../core/entitlement/entitlement_cubit.dart';
 import '../../../core/entitlement/plan.dart';
-import 'package:cobalagi/core/settings/app_language.dart';
 import '../../../core/settings/hint_arrows_cubit.dart';
-import '../../../core/settings/settings_cubit.dart';
 import '../../../core/version/app_version_text.dart';
 import '../../../learning/learner_state.dart';
 import '../../learning/data/curriculum_repository.dart';
@@ -22,6 +20,7 @@ import '../../profiles/cubit/profiles_cubit.dart';
 import '../../profiles/data/profile.dart';
 import '../../profiles/view/profile_avatar.dart';
 import 'donation_sheet.dart';
+import 'language_picker.dart';
 import 'placement_dialog.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
@@ -56,7 +55,6 @@ class ParentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final languageCode = context.watch<SettingsCubit>().state?.languageCode;
     final plan = context.watch<EntitlementCubit>().state;
     final profiles = context.watch<ProfilesCubit>().state.profiles;
     final headerStyle = Theme.of(context).textTheme.titleMedium;
@@ -75,23 +73,7 @@ class ParentScreen extends StatelessWidget {
             children: [
               Text(l10n.language, style: headerStyle),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final (code, name) in [
-                    (null, l10n.languageSystem),
-                    for (final language in AppLanguage.offered)
-                      (language.code, language.name),
-                  ])
-                    ChoiceChip(
-                      label: Text(name),
-                      selected: languageCode == code,
-                      onSelected: (_) =>
-                          context.read<SettingsCubit>().setLanguageCode(code),
-                    ),
-                ],
-              ),
+              const LanguagePicker(),
               const SizedBox(height: 8),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
