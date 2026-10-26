@@ -46,6 +46,7 @@ Future<void> main() async {
         purchasedCodes: storeRules.allowsPurchasedCodes
             ? PurchasedCodes.fromJson(
                 donations['purchased_codes']! as Map<String, Object?>,
+                sandbox: PurchasedCodes.sandboxEnabled,
               )
             : const PurchasedCodes.none(),
         settings: settings,

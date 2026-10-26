@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:cryptography/cryptography.dart';
+import 'package:flutter/foundation.dart';
 
 /// Checks codes bought on the website, which Dahlunas (Ardeman's payment
 /// service) emails to the buyer: `DL1.` and 144 Base32 characters, signed with
@@ -27,15 +27,26 @@ class PurchasedCodes {
   /// Reads `purchased_codes` in `assets/config/donations.json`: the project id
   /// Dahlunas assigned to Coba Lagi, the product ids that unlock the sponsor
   /// plan, and each signing key's 32-byte public key in hex by key id.
-  factory PurchasedCodes.fromJson(Map<String, Object?> json) => PurchasedCodes(
+  ///
+  /// With [sandbox], codes from Dahlunas's sandbox shop (`sandbox_public_keys`)
+  /// work too. Anyone can get one there without paying, so only builds that
+  /// never ship turn it on (`sandboxEnabled`).
+  factory PurchasedCodes.fromJson(
+    Map<String, Object?> json, {
+    bool sandbox = false,
+  }) => PurchasedCodes(
     project: json['project']! as int,
     products: {...(json['products']! as List).cast<int>()},
     publicKeys: {
-      for (final MapEntry(:key, :value)
-          in (json['public_keys']! as Map<String, Object?>).entries)
-        int.parse(key): _hex(value! as String),
+      ..._keys(json['public_keys']!),
+      if (sandbox) ..._keys(json['sandbox_public_keys'] ?? const {}),
     },
   );
+
+  /// Whether this build takes sandbox codes: a debug or profile build made
+  /// with `--dart-define=DAHLUNAS_SANDBOX=true`. Release builds never do.
+  static const sandboxEnabled =
+      !kReleaseMode && bool.fromEnvironment('DAHLUNAS_SANDBOX');
 
   final int project;
   final Set<int> products;
@@ -124,6 +135,11 @@ class PurchasedCodes {
     }
     return out.toString();
   }
+
+  static Map<int, List<int>> _keys(Object json) => {
+    for (final MapEntry(:key, :value) in (json as Map<String, Object?>).entries)
+      int.parse(key): _hex(value! as String),
+  };
 
   static List<int> _hex(String hex) => [
     for (var i = 0; i + 1 < hex.length; i += 2)

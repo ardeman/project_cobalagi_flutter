@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:cobalagi/core/entitlement/purchased_code.dart';
@@ -185,6 +186,38 @@ void main() {
       ]) {
         expect(await codes.verify(code), isNull);
       }
+    });
+  });
+  group('sandbox keys', () {
+    final json = <String, Object?>{
+      'project': 1,
+      'products': [1],
+      'public_keys': {'2': '00' * 32},
+      'sandbox_public_keys': {'1': fixturePublicKey},
+    };
+
+    test('are ignored unless asked for', () async {
+      expect(await PurchasedCodes.fromJson(json).verify(fixture), isNull);
+    });
+
+    test('take sandbox codes when asked for', () async {
+      final codes = PurchasedCodes.fromJson(json, sandbox: true);
+      expect(await codes.verify(fixture), isNotNull);
+    });
+
+    test('are off in this test build', () {
+      expect(PurchasedCodes.sandboxEnabled, isFalse);
+    });
+
+    test('never share a key id with the bundled production keys', () {
+      final config =
+          jsonDecode(File('assets/config/donations.json').readAsStringSync())
+              as Map<String, Object?>;
+      final purchased = config['purchased_codes']! as Map<String, Object?>;
+      final production = (purchased['public_keys']! as Map).keys.toSet();
+      final sandbox = (purchased['sandbox_public_keys']! as Map).keys.toSet();
+      expect(sandbox, isNotEmpty);
+      expect(production.intersection(sandbox), isEmpty);
     });
   });
 }
