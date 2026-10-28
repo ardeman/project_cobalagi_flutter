@@ -1,5 +1,5 @@
-// Writes website/changelog.html, and the newest release's card on the home
-// page, from store/releases.json and the release notes in
+// Writes website/changelog.html, and the newest release's card and download
+// links on the home page, from store/releases.json and the release notes in
 // store/changelogs/<locale>/, so the website never keeps its own copy of
 // them. Run from the project root after bumping the version:
 //   dart run tool/website_changelog.dart
@@ -179,8 +179,13 @@ ${_footer(root)}
 ''';
 }
 
+/// GitHub Releases' download links: the tag, then an APK's version and build.
+final _releaseTag = RegExp(r'(/releases/download/)v[^/"&]+/');
+final _apkVersion = RegExp(r'cobalagi-[0-9.]+-build[0-9]+-');
+
 /// The home page with its newest-release card (between the markers in the
-/// download section) rewritten from the newest build's notes.
+/// download section) rewritten from the newest build's notes, and its
+/// download buttons pointing at the newest build's files on GitHub Releases.
 String buildHomePage({String root = '.'}) {
   final home = File('$root/$homePath').readAsStringSync();
   final start = home.indexOf(_latestStart);
@@ -197,14 +202,17 @@ String buildHomePage({String root = '.'}) {
 ${_body(root, build)}          <a href="changelog.html#build-$build" data-keep-lang data-en="All release notes">Semua catatan rilis</a>
         </article>
 ''';
-  return home.substring(0, start + _latestStart.length) +
-      card +
-      home.substring(end);
+  final tag = 'v${r['version']}%2B$build';
+  return (home.substring(0, start + _latestStart.length) +
+          card +
+          home.substring(end))
+      .replaceAllMapped(_releaseTag, (m) => '${m[1]}$tag/')
+      .replaceAll(_apkVersion, 'cobalagi-${r['version']}-build$build-');
 }
 
 void main() {
   File(pagePath).writeAsStringSync(buildChangelogPage());
   stdout.writeln('Wrote $pagePath');
   File(homePath).writeAsStringSync(buildHomePage());
-  stdout.writeln('Wrote the newest release on $homePath');
+  stdout.writeln('Wrote the newest release and its downloads on $homePath');
 }
