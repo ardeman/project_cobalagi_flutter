@@ -295,6 +295,19 @@ void main() {
     expect(scroll.offset, lessThan(start));
     expect(cubit.state.main, program.main);
 
+    // So does a swipe on the repeat itself, away from its tile: a repeat
+    // can fill the program area. Only its tile drags it.
+    await tester.ensureVisible(repeat);
+    await tester.pumpAndSettle();
+    final onRepeat = scroll.offset;
+    await tester.dragFrom(
+      tester.getRect(repeat).bottomRight - const Offset(6, 6),
+      const Offset(0, 120),
+    );
+    await tester.pumpAndSettle();
+    expect(scroll.offset, lessThan(onRepeat));
+    expect(cubit.state.main, program.main);
+
     // A block drags at once, and held near the top it scrolls the page up
     // to the palette, where it is removed.
     final last = find.byKey(ValueKey(cubit.state.main.last.id));

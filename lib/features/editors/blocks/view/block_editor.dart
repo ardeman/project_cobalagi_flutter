@@ -555,6 +555,7 @@ class _BlockDraggable<T extends Object> extends StatefulWidget {
     required this.size,
     required this.childWhenDragging,
     required this.child,
+    this.onDragging,
   });
 
   final T data;
@@ -562,6 +563,9 @@ class _BlockDraggable<T extends Object> extends StatefulWidget {
   final double size;
   final Widget childWhenDragging;
   final Widget child;
+
+  /// Told when a drag starts (true) and ends (false).
+  final ValueChanged<bool>? onDragging;
 
   @override
   State<_BlockDraggable<T>> createState() => _BlockDraggableState<T>();
@@ -588,6 +592,7 @@ class _BlockDraggableState<T extends Object> extends State<_BlockDraggable<T>> {
   void _stop() {
     _scroller?.stopAutoScroll();
     _scroller = null;
+    widget.onDragging?.call(false);
   }
 
   @override
@@ -610,6 +615,7 @@ class _BlockDraggableState<T extends Object> extends State<_BlockDraggable<T>> {
       feedbackOffset: Offset(0, lifted / 2 - anchor.dy),
       onDragStarted: () {
         HapticFeedback.selectionClick();
+        widget.onDragging?.call(true);
         if (_scrollable() case final scrollable?) {
           _scroller = EdgeDraggingAutoScroller(scrollable, velocityScalar: 50);
         }
@@ -618,6 +624,7 @@ class _BlockDraggableState<T extends Object> extends State<_BlockDraggable<T>> {
         (details.globalPosition - anchor) & Size.square(lifted),
       ),
       onDragEnd: (_) => _stop(),
+      onDraggableCanceled: (_, _) => _stop(),
       childWhenDragging: widget.childWhenDragging,
       child: widget.child,
     );
@@ -860,9 +867,8 @@ class _PlacedBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = style.size;
     final container = block.type.isContainer;
-    final Widget plain = container
-        ? _ContainerBlock(block: block, style: style)
-        : block.type == BlockType.setSteps
+    if (container) return _ContainerBlock(block: block, style: style);
+    final Widget plain = block.type == BlockType.setSteps
         ? _SavedStepsBlock(block: block, style: style)
         : BlockTile(
             key: ValueKey(block.id),
@@ -885,32 +891,30 @@ class _PlacedBlock extends StatelessWidget {
     final carried = picked && cubit.state.carrying;
     // A tap picks a single block to fix: a ring shows which one. With a
     // controller, holding R2 on it carries it somewhere else.
-    final Widget body = container
-        ? plain
-        : Semantics(
-            selected: picked,
-            child: FocusTap(
-              focusNode: style.focusFor(block.id),
-              onTap: () => cubit.pickBlock(block.id),
-              onGrab: () => cubit.carry(block.id),
-              child: _Lifted(
-                lifted: carried,
-                size: size,
-                child: Container(
-                  foregroundDecoration: picked
-                      ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(size * 0.26),
-                          border: Border.all(
-                            color: const Color(0xFFFFC83D),
-                            width: 5,
-                          ),
-                        )
-                      : null,
-                  child: plain,
-                ),
-              ),
-            ),
-          );
+    final Widget body = Semantics(
+      selected: picked,
+      child: FocusTap(
+        focusNode: style.focusFor(block.id),
+        onTap: () => cubit.pickBlock(block.id),
+        onGrab: () => cubit.carry(block.id),
+        child: _Lifted(
+          lifted: carried,
+          size: size,
+          child: Container(
+            foregroundDecoration: picked
+                ? BoxDecoration(
+                    borderRadius: BorderRadius.circular(size * 0.26),
+                    border: Border.all(
+                      color: const Color(0xFFFFC83D),
+                      width: 5,
+                    ),
+                  )
+                : null,
+            child: plain,
+          ),
+        ),
+      ),
+    );
     return _BlockDraggable<Block>(
       data: block,
       type: block.type,
@@ -970,15 +974,27 @@ class _SavedStepsBlock extends StatelessWidget {
   }
 }
 
-/// A repeat or condition holding its own row of blocks.
-class _ContainerBlock extends StatelessWidget {
+/// A repeat or condition holding its own row of blocks. It drags by its
+/// own tile only: a repeat can fill the program area, and a swipe on the
+/// rest of it must still scroll.
+class _ContainerBlock extends StatefulWidget {
   const _ContainerBlock({required this.block, required this.style});
 
   final Block block;
   final _BlockStyle style;
 
   @override
+  State<_ContainerBlock> createState() => _ContainerBlockState();
+}
+
+class _ContainerBlockState extends State<_ContainerBlock> {
+  /// Whether the block is being dragged by its tile, which fades it.
+  bool _dragging = false;
+
+  @override
   Widget build(BuildContext context) {
+    final block = widget.block;
+    final style = widget.style;
     final cubit = context.watch<BlocksCubit>();
     final size = style.size;
     // An "otherwise" block holds two rows: clear, and blocked.
@@ -998,18 +1014,32 @@ class _ContainerBlock extends StatelessWidget {
       ),
     );
     final carried = cubit.state.carrying && cubit.state.pickedBlock == block.id;
+    final tile = BlockTile(type: block.type, size: size * 0.8);
+    final handle = FocusTap(
+      focusNode: style.focusFor(block.id),
+      onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
+      onGrab: style.enabled ? () => cubit.carry(block.id) : null,
+      child: tile,
+    );
     final header = Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         // The controller picks the block here: the whole block holds other
         // blocks, which the highlight must reach too.
         // With a controller, holding R2 here carries the whole block.
-        FocusTap(
-          focusNode: style.focusFor(block.id),
-          onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
-          onGrab: style.enabled ? () => cubit.carry(block.id) : null,
-          child: BlockTile(type: block.type, size: size * 0.8),
-        ),
+        if (style.enabled)
+          _BlockDraggable<Block>(
+            data: block,
+            type: block.type,
+            size: size,
+            onDragging: (dragging) {
+              if (mounted) setState(() => _dragging = dragging);
+            },
+            childWhenDragging: tile,
+            child: handle,
+          )
+        else
+          handle,
         if (counted) ...[
           SizedBox(height: style.gap * 0.5),
           _CountStepper(
@@ -1095,7 +1125,7 @@ class _ContainerBlock extends StatelessWidget {
     } else {
       body = dropRow(block.id, block.children);
     }
-    return GestureDetector(
+    final container = GestureDetector(
       onTap: style.enabled ? () => cubit.pickContainer(block.id) : null,
       child: _Lifted(
         lifted: carried,
@@ -1153,6 +1183,9 @@ class _ContainerBlock extends StatelessWidget {
         ),
       ),
     );
+    // Always an Opacity, so a drag starting doesn't rebuild the dragged
+    // tile's place in the tree.
+    return Opacity(opacity: _dragging ? 0.3 : 1, child: container);
   }
 }
 
