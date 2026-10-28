@@ -130,6 +130,10 @@ if [ -n "$macos_zip" ]; then files+=("$out/$macos_zip"); fi
   sed 's| \./| |' > SHA256SUMS.txt)
 
 notes="$out/notes.md"
+# Each file in the table links to its download, so it can be clicked.
+repo="$(git remote get-url origin | sed -E 's#^(https://github.com/|git@github.com:)##; s#\.git$##')"
+download="https://github.com/$repo/releases/download/${tag//+/%2B}"
+file_link() { echo "[\`$1\`]($download/$1)"; }
 # One line per paragraph: GitHub keeps every line break in release notes.
 {
   echo "## What's new"
@@ -144,19 +148,19 @@ notes="$out/notes.md"
   echo
   echo "| File | For |"
   echo "|---|---|"
-  echo "| \`cobalagi-$name-build$build-universal.apk\` | Any Android device. Pick this if you're not sure (largest download). |"
-  echo "| \`cobalagi-$name-build$build-arm64-v8a.apk\` | Most phones and tablets |"
-  echo "| \`cobalagi-$name-build$build-armeabi-v7a.apk\` | Older 32-bit devices |"
-  echo "| \`cobalagi-$name-build$build-x86_64.apk\` | Emulators and Chromebooks |"
+  echo "| $(file_link "cobalagi-$name-build$build-universal.apk") | Any Android device. Pick this if you're not sure (largest download). |"
+  echo "| $(file_link "cobalagi-$name-build$build-arm64-v8a.apk") | Most phones and tablets |"
+  echo "| $(file_link "cobalagi-$name-build$build-armeabi-v7a.apk") | Older 32-bit devices |"
+  echo "| $(file_link "cobalagi-$name-build$build-x86_64.apk") | Emulators and Chromebooks |"
   if [ -n "$appimage" ]; then
-    echo "| \`$appimage\` | Linux PCs and the Steam Deck |"
-    echo "| \`$steam_script\` | Installs the newest Coba Lagi on the Steam Deck and adds it to Steam, with its pictures |"
+    echo "| $(file_link "$appimage") | Linux PCs and the Steam Deck |"
+    echo "| $(file_link "$steam_script") | Installs the newest Coba Lagi on the Steam Deck and adds it to Steam, with its pictures |"
   fi
   if [ -n "$windows_zip" ]; then
-    echo "| \`$windows_zip\` | Windows 10 and 11 PCs (64-bit) |"
+    echo "| $(file_link "$windows_zip") | Windows 10 and 11 PCs (64-bit) |"
   fi
   if [ -n "$macos_zip" ]; then
-    echo "| \`$macos_zip\` | Macs with Apple silicon (M1 or newer), macOS 12 or later |"
+    echo "| $(file_link "$macos_zip") | Macs with Apple silicon (M1 or newer), macOS 12 or later |"
   fi
   echo
   echo "## Before you install"
