@@ -177,7 +177,8 @@ h1 .accent { color: var(--coral); }
 html:not([data-device]) .for-device[data-for="apple"],
 html[data-device="apple"] .for-device[data-for="apple"],
 html[data-device="android"] .for-device[data-for="android"],
-html[data-device="linux"] .for-device[data-for="linux"] { display: inline-flex; }
+html[data-device="linux"] .for-device[data-for="linux"],
+html[data-device="windows"] .for-device[data-for="windows"] { display: inline-flex; }
 html:not([data-device]) .store-badge.for-device,
 html[data-device="apple"] .store-badge.for-device { display: inline-block; }
 
@@ -366,7 +367,7 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); line-height: 1.15; margin: 0 0 12p
 .faq details p { margin: 0 0 20px; color: var(--muted); }
 
 /* Download: one card per device, the visitor's own first. */
-.downloads { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.downloads { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
 @media (max-width: 900px) { .downloads { grid-template-columns: 1fr; max-width: 560px; margin-inline: auto; } }
 .get-card {
   position: relative; display: flex; flex-direction: column; gap: 10px;
@@ -383,12 +384,14 @@ h2 { font-size: clamp(1.8rem, 3.5vw, 2.6rem); line-height: 1.15; margin: 0 0 12p
 .get-card .yours { display: none; }
 html[data-device="apple"] .get-card[data-for="apple"],
 html[data-device="android"] .get-card[data-for="android"],
-html[data-device="linux"] .get-card[data-for="linux"] {
+html[data-device="linux"] .get-card[data-for="linux"],
+html[data-device="windows"] .get-card[data-for="windows"] {
   order: -1; border: 2px solid var(--teal); background: rgba(0, 166, 166, 0.14);
 }
 html[data-device="apple"] .get-card[data-for="apple"] .yours,
 html[data-device="android"] .get-card[data-for="android"] .yours,
-html[data-device="linux"] .get-card[data-for="linux"] .yours {
+html[data-device="linux"] .get-card[data-for="linux"] .yours,
+html[data-device="windows"] .get-card[data-for="windows"] .yours {
   display: inline-block; position: absolute; top: -13px; left: 24px;
   background: var(--teal); color: #fff; font-size: 0.8rem; font-weight: 800;
   padding: 3px 12px; border-radius: 999px;

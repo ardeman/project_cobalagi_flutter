@@ -61,6 +61,7 @@
   var ua = navigator.userAgent;
   var device = /Android/i.test(ua) ? 'android'
     : /iPhone|iPad|iPod|Macintosh/i.test(ua) ? 'apple'
+    : /Windows/i.test(ua) ? 'windows'
     : /Linux/i.test(ua) && !/CrOS/i.test(ua) ? 'linux'
     : '';
   if (device) document.documentElement.dataset.device = device;
