@@ -241,6 +241,7 @@ keyPassword=<password>
 6. **Checks and builds.** Run the Checks, then `flutter build appbundle --release` (for Play) and `flutter build apk --release --split-per-abi`.
 7. **Tell the user what to upload:** the bundle path, the release notes, and which listing items changed (Store listing → Updating the Play listing), naming the Play Console field for each and marking slides that changed only slightly as optional. When the user says the listing is uploaded, mark that build `"listing": true` in `store/releases.json`.
 8. **Commit and push only when asked**, as two commits: the feature work, then `build: bump version to <name>+<build>` with `pubspec.yaml`, `store/` and `website/`. Pushing the version change publishes the GitHub Release; watch it with `gh run watch $(gh run list --workflow release-apks.yml --limit 1 --json databaseId --jq '.[0].databaseId') --exit-status`.
+9. **Full release on GitHub.** The workflow publishes every build as a pre-release. Once Google Play production approves the build, mark it the latest full release: `gh release edit 'v<name>+<build>' --prerelease=false --latest`.
 
 ### Checking UI changes
 
