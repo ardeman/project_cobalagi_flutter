@@ -13,6 +13,14 @@ void main() {
     );
   });
 
+  test('the home page shows the newest release notes', () {
+    expect(
+      File(homePath).readAsStringSync(),
+      buildHomePage(),
+      reason: 'Run: dart run tool/website_changelog.dart',
+    );
+  });
+
   test('every build has release notes and an entry in store/releases.json', () {
     final notes = Directory('store/changelogs/en-US')
         .listSync()

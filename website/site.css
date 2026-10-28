@@ -396,6 +396,19 @@ html[data-device="windows"] .get-card[data-for="windows"] .yours {
   background: var(--teal); color: #fff; font-size: 0.8rem; font-weight: 800;
   padding: 3px 12px; border-radius: 999px;
 }
+.latest {
+  margin: 24px auto 0; max-width: 820px; padding: 24px 28px;
+  background: rgba(255, 255, 255, 0.06); border: 1px solid var(--space-line); border-radius: var(--radius);
+}
+.latest h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0; font-size: 1.35rem; }
+.latest h3 time { font-size: 1rem; font-weight: 400; color: var(--space-muted); }
+.latest .newest {
+  flex-basis: 100%;
+  font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--coral);
+}
+.latest ul { margin: 12px 0 16px; padding-left: 1.2em; }
+.latest li, .latest p { margin: 6px 0; color: var(--space-muted); }
+.latest > a { font-weight: 700; }
 .extra {
   display: flex; align-items: center; gap: 16px; margin: 24px auto 0; max-width: 820px;
   padding: 18px 24px; border-radius: 22px; border: 1px dashed var(--space-line); color: var(--space-muted);
