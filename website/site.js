@@ -269,3 +269,58 @@
     reset();
   });
 })();
+
+// Koba's eyes follow the pointer, as they follow a touch in the app's tour:
+// the further off it is, the further they turn, up to the edge of the eye.
+(function () {
+  var kobas = document.querySelectorAll('.koba');
+  if (!kobas.length) return;
+  var at = null;
+  var queued = false;
+  function look() {
+    queued = false;
+    kobas.forEach(function (koba) {
+      var pupils = koba.querySelector('.pupils');
+      if (!pupils) return;
+      var box = koba.getBoundingClientRect();
+      if (!box.width) return;
+      var dx = at.x - (box.left + box.width / 2);
+      var dy = at.y - (box.top + box.height / 2);
+      var distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < 1) {
+        pupils.style.transform = '';
+        return;
+      }
+      // In the picture's 512 pixels, like KobaHead's aim.
+      var reach = Math.min(1, distance / (box.width * 3)) / distance;
+      pupils.style.transform = 'translate(' + (dx * 16 * reach).toFixed(1) +
+        'px, ' + (dy * 24 * reach).toFixed(1) + 'px)';
+    });
+  }
+  document.addEventListener('pointermove', function (e) {
+    at = { x: e.clientX, y: e.clientY };
+    if (!queued) { queued = true; requestAnimationFrame(look); }
+  }, { passive: true });
+  document.documentElement.addEventListener('mouseleave', function () {
+    kobas.forEach(function (koba) {
+      var pupils = koba.querySelector('.pupils');
+      if (pupils) pupils.style.transform = '';
+    });
+  });
+})();
+
+// Poked, Koba shakes its head with a smile and a happy beep, as in the app;
+// taps while it still shakes are let be, so it doesn't jitter.
+(function () {
+  var beep = new Audio('audio/poke.mp3');
+  beep.preload = 'none';
+  document.querySelectorAll('.koba').forEach(function (koba) {
+    koba.addEventListener('pointerdown', function () {
+      if (koba.classList.contains('poked')) return;
+      koba.classList.add('poked');
+      beep.currentTime = 0;
+      beep.play().catch(function () {});
+      setTimeout(function () { koba.classList.remove('poked'); }, 900);
+    });
+  });
+})();

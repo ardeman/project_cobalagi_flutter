@@ -186,6 +186,7 @@ html[data-device="android"] .store-badge.for-device[data-for="android"] { displa
 /* Koba and the ship, drawn from the app's own pictures. */
 .scene { position: relative; aspect-ratio: 1 / 0.86; width: 100%; max-width: 560px; margin-inline: auto; }
 .scene > * { position: absolute; }
+.scene > :not(.koba) { pointer-events: none; }
 .scene .piece { left: 6%; right: 6%; bottom: 4%; width: 88%; height: auto; }
 .scene .koba { left: 42%; bottom: 20%; width: 38%; }
 .scene .ship { left: 2%; top: 4%; width: 40%; transform: rotate(-8deg); }
@@ -195,6 +196,16 @@ html[data-device="android"] .store-badge.for-device[data-for="android"] { displa
 .scene .far-2 { left: 2%; bottom: 40%; width: 12%; }
 .koba { aspect-ratio: 1; }
 .koba img, .koba svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.koba .pupils { transition: transform 0.15s ease-out; }
+/* Poked, Koba shakes its head with a smile, as in the app. */
+.koba { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.koba .cheer, .koba.poked .calm { display: none; }
+.koba.poked .cheer { display: inline; }
+.koba.poked > * { transform-origin: 50% 45%; animation: koba-shake 0.9s linear; }
+@keyframes koba-shake {
+  8% { rotate: 8.3deg; } 24% { rotate: -6.8deg; } 40% { rotate: 5.4deg; }
+  56% { rotate: -4deg; } 71% { rotate: 2.6deg; } 87% { rotate: -1.2deg; } 100% { rotate: 0deg; }
+}
 .float { animation: float 6s ease-in-out infinite; }
 .float-slow { animation: float 9s ease-in-out infinite reverse; }
 @keyframes float { 50% { translate: 0 -10px; } }
@@ -534,4 +545,6 @@ footer { padding: 40px 0 48px; color: var(--space-muted); font-size: 0.95rem; }
   html { scroll-behavior: auto; }
   .float, .float-slow { animation: none; }
   .video-play { transition: none; }
+  .koba .pupils { transition: none; }
+  .koba.poked > * { animation: none; }
 }
