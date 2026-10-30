@@ -1,8 +1,8 @@
 {
   "video_marketing": {
-    "folder": "../project-pamer-node/cobalagi",
-    "readme": "../project-pamer-node/README.md",
-    "rules": "../project-pamer-node/AGENTS.md"
+    "folder": "../project-pamerstudio-node/cobalagi",
+    "readme": "../project-pamerstudio-node/README.md",
+    "rules": "../project-pamerstudio-node/AGENTS.md"
   },
   "payment_service": {
     "folder": "../project-dahlunas-go",
