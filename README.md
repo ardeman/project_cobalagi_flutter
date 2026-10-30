@@ -7,7 +7,7 @@ A coding-learning app for children, in Bahasa Indonesia and English. Koba the ro
 
 A short, voice-led warm-up game picks each child's starting point; after every lesson the app chooses to advance, practise or review.
 
-> **Status:** version 2.9.0 (build 27). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac (2.9.0 is live on the Mac; on iPhone and iPad 2.8.0 is live and 2.9.0 is waiting for review). Google Play production access granted; the first production release was submitted on 2026-10-25 and is awaiting review. Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
+> **Status:** version 2.9.0 (build 27). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac, and on [Google Play](https://play.google.com/store/apps/details?id=com.ardeman.cobalagi) since 2026-10-30 (full production rollout). Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
@@ -365,9 +365,9 @@ Still to check on real devices once a release carries them:
 - **Windows:** starts, sound, saving, a controller and the minimum window size.
 - **Steam Deck:** touch, the controls, the 1280 × 800 screen, audio and Game Mode.
 
-### Next: Google Play production
+### Next: promos for a live Google Play
 
-Production access was granted on 2026-10-25, and version 2.9.0 (build 27) was submitted for a full production rollout in 177 countries/regions plus the rest of the world. Wait for Google's review and confirm the release is live. Managed publishing is off. Once it is live, regenerate the promos' YouTube text for a live store (`render.mjs all live` in the video project); the videos themselves name no store, so they need no new upload.
+Version 2.9.0 (build 27) went live on Google Play on 2026-10-30, a full production rollout in 177 countries/regions plus the rest of the world. Managed publishing is off. Still to do: regenerate the promos' YouTube text for a live store (`render.mjs all live` in the video project); the videos themselves name no store, so they need no new upload.
 
 ### Next: promo videos
 
