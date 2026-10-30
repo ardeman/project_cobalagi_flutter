@@ -398,6 +398,7 @@ Javanese and Sundanese have generated voices and are offered in the language pic
 ### Later
 
 - **Koba celebration clip** (a time-boxed test after the Play launch): an AI clip of Koba celebrating, turned into a sprite sheet for Flame's `SpriteAnimation` on the solved card. Keep it only if Koba still looks like Koba.
+- **Teach Koba (an AI planet)**: children learn that computers learn from examples, as in code.org's AI for Oceans, without reading, chatbots or the internet. Koba meets new things on a planet; the child sorts picture examples into safe and not safe, Koba sorts new ones by itself and gets some wrong when the examples were too alike, and more varied examples fix it. The model is a few lines of pure Dart (nearest neighbour on colour, shape and size), and Koba's eye block then uses what it learned in Otherwise programs, so the planet still compiles to the shared `Program`. No camera, microphone or generative AI. It needs everything a new planet needs (lesson pack, `PuzzleKind`, demo, arrival scene, thank-you line, tour lines and clips) plus the sorting screen.
 - **Progress export and import** (parent area, behind the parent gate): "Save progress" writes a file to the share sheet; "Load progress" on another device merges it (best stars kept, attempt logs combined). Nothing leaves the device unless a parent moves it. Cloud sync isn't planned: it would break the "no internet" promise.
 
 ## Documentation map
