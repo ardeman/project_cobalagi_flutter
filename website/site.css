@@ -179,8 +179,9 @@ html[data-device="apple"] .for-device[data-for="apple"],
 html[data-device="android"] .for-device[data-for="android"],
 html[data-device="linux"] .for-device[data-for="linux"],
 html[data-device="windows"] .for-device[data-for="windows"] { display: inline-flex; }
-html:not([data-device]) .store-badge.for-device,
-html[data-device="apple"] .store-badge.for-device { display: inline-block; }
+html:not([data-device]) .store-badge.for-device[data-for="apple"],
+html[data-device="apple"] .store-badge.for-device[data-for="apple"],
+html[data-device="android"] .store-badge.for-device[data-for="android"] { display: inline-block; }
 
 /* Koba and the ship, drawn from the app's own pictures. */
 .scene { position: relative; aspect-ratio: 1 / 0.86; width: 100%; max-width: 560px; margin-inline: auto; }
