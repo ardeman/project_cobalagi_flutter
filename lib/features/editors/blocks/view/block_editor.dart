@@ -597,7 +597,10 @@ class _BlockDraggableState<T extends Object> extends State<_BlockDraggable<T>> {
 
   @override
   void dispose() {
-    _stop();
+    // Not _stop: telling the parent would set its state while the tree is
+    // locked, and the parent is torn down or rebuilt with this block anyway.
+    _scroller?.stopAutoScroll();
+    _scroller = null;
     super.dispose();
   }
 
@@ -1185,7 +1188,10 @@ class _ContainerBlockState extends State<_ContainerBlock> {
     );
     // Always an Opacity, so a drag starting doesn't rebuild the dragged
     // tile's place in the tree.
-    return Opacity(opacity: _dragging ? 0.3 : 1, child: container);
+    return Opacity(
+      opacity: _dragging && style.enabled ? 0.3 : 1,
+      child: container,
+    );
   }
 }
 

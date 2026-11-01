@@ -20,6 +20,7 @@ Future<BlocksCubit> pumpEditor(
   BlocksCubit? blocks,
   String? activeBlockId,
   String? activeCallId,
+  bool enabled = true,
 }) async {
   final cubit = blocks ?? BlocksCubit(maxBlocks: maxBlocks);
   addTearDown(cubit.close);
@@ -45,6 +46,7 @@ Future<BlocksCubit> pumpEditor(
               showHowTo: showHowTo,
               activeBlockId: activeBlockId,
               activeCallId: activeCallId,
+              enabled: enabled,
             ),
           ),
         ),
@@ -661,6 +663,20 @@ void main() {
     await tester.tap(find.byIcon(Icons.add_circle_rounded));
     await tester.pump();
     expect(cubit.state.main.single.count, 3);
+  });
+
+  testWidgets('a repeat turns read-only cleanly when a run starts', (
+    tester,
+  ) async {
+    final cubit = await pumpEditor(tester);
+    await tester.tap(paletteBlock(Icons.repeat_rounded));
+    await tester.pump();
+    expect(cubit.state.main.single.type, BlockType.repeat);
+
+    // Running (or solving) disables the editor, which drops the repeat's drag
+    // handle: it must not set the repeat's state while the tree is locked.
+    await pumpEditor(tester, blocks: cubit, enabled: false);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('a full repeat block wraps its blocks instead of overflowing', (
