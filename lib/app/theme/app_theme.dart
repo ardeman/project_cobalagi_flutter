@@ -32,6 +32,9 @@ abstract final class AppTheme {
       colorScheme: scheme,
       scaffoldBackgroundColor: Colors.transparent,
       materialTapTargetSize: MaterialTapTargetSize.padded,
+      // No ripple from the finger: it doesn't suit the glass (the user's
+      // choice). Controls still show they are pressed and keep focus.
+      splashFactory: NoSplash.splashFactory,
       appBarTheme: AppBarThemeData(
         backgroundColor: scheme.surface.withValues(alpha: 0.7),
         surfaceTintColor: Colors.transparent,
