@@ -338,7 +338,7 @@ Delete the old slides first (Play takes at most eight), then upload 1 to 8 in or
 | App Review notes | Paste `store/app_store/review_notes.txt`; it answers the Kids Category questions up front. After replying to a review message: Update Review, then Resubmit |
 | In-app purchases | Non-Consumable tips with the ids in `assets/config/donations.json`, at the same prices as on Play, with Family Sharing on |
 | Text and screenshots | `store/app_store/<locale>/`, slides 1 to 8 in order |
-| Header and Search Results | `header.png` and `search_result.png`, or the videos from the promo repo |
+| Header and Search Results | The videos from the video project (`video_marketing` in `external-projects.json`, its `app-store-video.sh`); there are no stills |
 | Version release | Automatic, for iOS and macOS |
 
 Upload iOS builds made with Xcode 27.1 or later, so the app reaches the iPhone Duo's screen edge.

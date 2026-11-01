@@ -18,7 +18,6 @@
 #   store/app_store/<locale>/screenshots/duo/*.jpg     2007 x 2853 (iPhone Duo):
 #     open upright and sideways, closed both ways, half folded on a table and
 #     like a book
-#   store/app_store/<locale>/header.png, search_result.png (creative assets)
 # Run from the project root: store/render.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -219,47 +218,5 @@ render_locale() { # locale suffix tagline captions...
 
 render_locale id "-id" "Belajar coding sambil bermain" "${CAPTIONS_ID[@]}"
 render_locale en-US "" "Learn to code through play" "${CAPTIONS_EN[@]}"
-
-# App Store creative assets (Header and Search Results), PNG without alpha:
-#   store/app_store/<locale>/header.png          3840 x 1646 (21:9, product page)
-#   store/app_store/<locale>/search_result.png   3840 x 2560 (3:2, search results)
-# The header is cropped on narrow screens, so Koba and the tagline sit in the
-# middle, with an iPad and iPhones at the sides that may be cut off.
-creative() { # locale suffix tagline
-  local dir="store/app_store/$1" s="$2" tagline="$3"
-  shot 3840 1646 "<div style=\"position:relative;height:1646px\">
-      <div style=\"position:absolute;left:-180px;top:300px\">$(device ipad "ipad/adventure-map$s.png" 1500 1200 "transform:rotate(-6deg)")</div>
-      <div style=\"position:absolute;left:3300px;top:280px\">$(device iphone "iphone/play-code$s.png" 560 1200 "transform:rotate(10deg)")</div>
-      <div style=\"position:absolute;left:2760px;top:200px\">$(device iphone "iphone/play-loops$s.png" 560 1200 "transform:rotate(4deg)")</div>
-      <div style=\"position:absolute;left:1220px;width:1400px;top:0;height:1646px;display:flex;flex-direction:column;align-items:center;justify-content:center\">
-        <svg viewBox=\"180 190 660 670\" width=\"720\" height=\"730\">$CHARACTER</svg>
-        <h1 style=\"font-size:150px;text-align:center;line-height:1.1;margin-top:40px\">$tagline</h1>
-      </div>
-    </div>" "$TMP/header.png"
-  shot 3840 2560 "<div style=\"display:flex;flex-direction:column;align-items:center;justify-content:center;height:2560px;gap:110px\">
-      <div style=\"display:flex;align-items:center;gap:60px\">
-        <svg viewBox=\"180 190 660 670\" width=\"420\" height=\"426\">$CHARACTER</svg>
-        <h1 style=\"font-size:170px\">$tagline</h1>
-      </div>
-      <div style=\"display:flex;align-items:flex-end\">
-        $(device ipad "ipad/play-loops$s.png" 2500 1800)
-        $(device iphone "iphone/play-code$s.png" 800 1600 "margin-left:-260px;margin-bottom:-60px;transform:rotate(4deg)")
-      </div>
-    </div>" "$TMP/search.png"
-  # PNG: App Store Connect turns down .jpg here ("invalid extension"). Chrome's
-  # screenshots have an alpha channel, which Apple refuses; a pass through JPEG
-  # at full quality drops it.
-  rm -f "$dir/header.jpg" "$dir/search_result.jpg"
-  local name
-  for name in header search; do
-    sips -s format jpeg -s formatOptions 100 "$TMP/$name.png" --out "$TMP/$name.jpg" >/dev/null
-    sips -s format png "$TMP/$name.jpg" --out "$TMP/$name-opaque.png" >/dev/null
-  done
-  mv "$TMP/header-opaque.png" "$dir/header.png"
-  mv "$TMP/search-opaque.png" "$dir/search_result.png"
-}
-
-creative id -id "Belajar coding sambil bermain"
-creative en-US "" "Learn to code through play"
 
 echo "Store graphics rendered."
