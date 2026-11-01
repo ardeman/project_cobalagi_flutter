@@ -18,6 +18,7 @@ import '../../profiles/view/add_profile_dialog.dart';
 import '../../profiles/view/profile_avatar.dart';
 import 'donation_sheet.dart';
 import 'placement_dialog.dart';
+import 'progress_file_buttons.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
 /// One child's progress for a parent. Reached from the parent area, behind the
@@ -170,6 +171,11 @@ class _ProgressScreenState extends State<ProgressScreen> {
                   _Report(report: data.report)
                 else
                   const _SponsorOnly(),
+                const SizedBox(height: 24),
+                ProgressFileButtons(
+                  profile: profile,
+                  onLoaded: () => setState(() => _data = _load()),
+                ),
               ],
             ),
           );

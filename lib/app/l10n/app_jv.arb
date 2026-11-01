@@ -348,5 +348,17 @@
   "conceptOtherwise": "Yèn ora",
   "playGoalOtherwise": "Nganggo blok mripat sing rong baris: yèn dalané kosong, jumangkah. Yèn ora, menggok!",
   "tutorialOtherwise": "Mripat ndeleng ngarep. Yèn dalané kosong, jumangkah. Yèn ora, menggok. Banjur kabeh dibaleni nganti gendéra!",
-  "starsEarned": "{count} saka 3 lintang"
+  "starsEarned": "{count} saka 3 lintang",
+  "progressFileTitle": "Pindhah menyang piranti liya",
+  "progressFileHint": "Simpen kemajuane {name} menyang file, banjur bukak ing Coba Lagi ing piranti liya. Mbukak mung nambahi sing wis ana; ora ana sing ilang.",
+  "saveProgress": "Simpen kemajuan",
+  "loadProgress": "Bukak kemajuan",
+  "loadProgressConfirm": "Tambahna kemajuan saka file {fileName} menyang {name}? Lintang lan pelajaran sing wis rampung saka loro-lorone tetep disimpen.",
+  "load": "Bukak",
+  "progressSaved": "Kemajuan wis disimpen",
+  "progressLoaded": "Kemajuan wis dibukak",
+  "progressFileNotProgress": "File iki dudu kemajuan Coba Lagi.",
+  "progressFileTooNew": "File iki saka Coba Lagi sing luwih anyar. Anyarana aplikasine dhisik.",
+  "loadPlayer": "Bukak pemain saka file",
+  "playerLoaded": "{name} wis melu"
 }

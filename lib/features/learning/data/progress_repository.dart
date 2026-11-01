@@ -48,6 +48,28 @@ class ProgressRepository {
     ];
   }
 
+  /// Adds exercises finished on another device, skipping any already logged
+  /// (the same time and puzzle), so loading a file twice changes nothing.
+  Future<void> addAttempts(
+    int profileId,
+    List<(DateTime, ExerciseResult)> log,
+  ) => _db.transaction((txn) async {
+    final records = await _attempts.find(
+      txn,
+      finder: Finder(filter: Filter.equals('profile', profileId)),
+    );
+    final logged = {for (final r in records) (r.value['at'], r.value['level'])};
+    for (final (at, result) in log) {
+      final key = (at.millisecondsSinceEpoch, result.levelId);
+      if (!logged.add(key)) continue;
+      await _attempts.add(txn, {
+        'profile': profileId,
+        'at': key.$1,
+        ...result.toJson(),
+      });
+    }
+  });
+
   /// Removes all progress of a deleted profile.
   Future<void> deleteFor(int profileId) => _db.transaction((txn) async {
     await _learners.record(profileId).delete(txn);

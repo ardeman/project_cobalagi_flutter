@@ -348,5 +348,17 @@
   "conceptOtherwise": "Kalau indak",
   "playGoalOtherwise": "Pakai blok mato jo duo baris: kalau jalannyo kosong, malangkah. Kalau indak, baluak!",
   "tutorialOtherwise": "Mato mancaliak ka muko. Kalau jalannyo kosong, malangkah. Kalau indak, baluak. Lalu sadonyo diulang sampai ka bandera!",
-  "starsEarned": "{count} dari 3 bintang"
+  "starsEarned": "{count} dari 3 bintang",
+  "progressFileTitle": "Pindah ka parangkaik lain",
+  "progressFileHint": "Simpan kamajuan {name} ka file, sudah tu muek di Coba Lagi di parangkaik lain. Mamuek cuma manambah nan alah ado; indak ado nan ilang.",
+  "saveProgress": "Simpan kamajuan",
+  "loadProgress": "Muek kamajuan",
+  "loadProgressConfirm": "Tambahan kamajuan dari file {fileName} ka {name}? Bintang jo palajaran nan alah salasai dari kaduonyo tatap disimpan.",
+  "load": "Muek",
+  "progressSaved": "Kamajuan alah disimpan",
+  "progressLoaded": "Kamajuan alah dimuek",
+  "progressFileNotProgress": "File ko indak kamajuan Coba Lagi.",
+  "progressFileTooNew": "File ko dari Coba Lagi nan labiah baru. Paharui aplikasinyo dulu.",
+  "loadPlayer": "Muek pamain dari file",
+  "playerLoaded": "{name} alah bagabuang"
 }

@@ -492,5 +492,41 @@
     "placeholders": {
       "count": {"type": "int"}
     }
+  },
+  "progressFileTitle": "Move to another device",
+  "progressFileHint": "Save {name}'s progress to a file, then load it in Coba Lagi on the other device. Loading adds to what is there; nothing is lost.",
+  "@progressFileHint": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "saveProgress": "Save progress",
+  "loadProgress": "Load progress",
+  "loadProgressConfirm": "Add the progress in {fileName}'s file to {name}? Stars and finished lessons from both are kept.",
+  "@loadProgressConfirm": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "load": "Load",
+  "progressSaved": "Progress saved",
+  "progressLoaded": "Progress loaded",
+  "progressFileNotProgress": "This file isn't Coba Lagi progress.",
+  "progressFileTooNew": "This file comes from a newer Coba Lagi. Update the app first.",
+  "loadPlayer": "Load a player from a file",
+  "playerLoaded": "{name} has joined",
+  "@playerLoaded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   }
 }

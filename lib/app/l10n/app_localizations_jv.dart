@@ -1132,4 +1132,47 @@ class AppLocalizationsJv extends AppLocalizations {
   String starsEarned(int count) {
     return '$count saka 3 lintang';
   }
+
+  @override
+  String get progressFileTitle => 'Pindhah menyang piranti liya';
+
+  @override
+  String progressFileHint(String name) {
+    return 'Simpen kemajuane $name menyang file, banjur bukak ing Coba Lagi ing piranti liya. Mbukak mung nambahi sing wis ana; ora ana sing ilang.';
+  }
+
+  @override
+  String get saveProgress => 'Simpen kemajuan';
+
+  @override
+  String get loadProgress => 'Bukak kemajuan';
+
+  @override
+  String loadProgressConfirm(String fileName, String name) {
+    return 'Tambahna kemajuan saka file $fileName menyang $name? Lintang lan pelajaran sing wis rampung saka loro-lorone tetep disimpen.';
+  }
+
+  @override
+  String get load => 'Bukak';
+
+  @override
+  String get progressSaved => 'Kemajuan wis disimpen';
+
+  @override
+  String get progressLoaded => 'Kemajuan wis dibukak';
+
+  @override
+  String get progressFileNotProgress => 'File iki dudu kemajuan Coba Lagi.';
+
+  @override
+  String get progressFileTooNew =>
+      'File iki saka Coba Lagi sing luwih anyar. Anyarana aplikasine dhisik.';
+
+  @override
+  String get loadPlayer => 'Bukak pemain saka file';
+
+  @override
+  String playerLoaded(String name) {
+    return '$name wis melu';
+  }
 }

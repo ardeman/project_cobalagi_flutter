@@ -1130,4 +1130,47 @@ class AppLocalizationsSu extends AppLocalizations {
   String starsEarned(int count) {
     return '$count tina 3 béntang';
   }
+
+  @override
+  String get progressFileTitle => 'Pindah ka alat séjén';
+
+  @override
+  String progressFileHint(String name) {
+    return 'Simpen kamajuan $name kana file, terus buka dina Coba Lagi di alat séjén. Muka ngan ukur nambahan nu geus aya; euweuh nu leungit.';
+  }
+
+  @override
+  String get saveProgress => 'Simpen kamajuan';
+
+  @override
+  String get loadProgress => 'Buka kamajuan';
+
+  @override
+  String loadProgressConfirm(String fileName, String name) {
+    return 'Tambahkeun kamajuan tina file $fileName ka $name? Béntang jeung palajaran nu geus réngsé ti duanana tetep disimpen.';
+  }
+
+  @override
+  String get load => 'Buka';
+
+  @override
+  String get progressSaved => 'Kamajuan geus disimpen';
+
+  @override
+  String get progressLoaded => 'Kamajuan geus dibuka';
+
+  @override
+  String get progressFileNotProgress => 'File ieu lain kamajuan Coba Lagi.';
+
+  @override
+  String get progressFileTooNew =>
+      'File ieu ti Coba Lagi nu leuwih anyar. Anyarkeun heula aplikasina.';
+
+  @override
+  String get loadPlayer => 'Buka pamaén tina file';
+
+  @override
+  String playerLoaded(String name) {
+    return '$name geus ngagabung';
+  }
 }

@@ -1140,4 +1140,47 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get progressFileTitle => 'Move to another device';
+
+  @override
+  String progressFileHint(String name) {
+    return 'Save $name\'s progress to a file, then load it in Coba Lagi on the other device. Loading adds to what is there; nothing is lost.';
+  }
+
+  @override
+  String get saveProgress => 'Save progress';
+
+  @override
+  String get loadProgress => 'Load progress';
+
+  @override
+  String loadProgressConfirm(String fileName, String name) {
+    return 'Add the progress in $fileName\'s file to $name? Stars and finished lessons from both are kept.';
+  }
+
+  @override
+  String get load => 'Load';
+
+  @override
+  String get progressSaved => 'Progress saved';
+
+  @override
+  String get progressLoaded => 'Progress loaded';
+
+  @override
+  String get progressFileNotProgress => 'This file isn\'t Coba Lagi progress.';
+
+  @override
+  String get progressFileTooNew =>
+      'This file comes from a newer Coba Lagi. Update the app first.';
+
+  @override
+  String get loadPlayer => 'Load a player from a file';
+
+  @override
+  String playerLoaded(String name) {
+    return '$name has joined';
+  }
 }

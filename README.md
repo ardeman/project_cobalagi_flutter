@@ -353,7 +353,7 @@ VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'vide
 
 ## Roadmap
 
-**Done:** the engine, picture blocks and typed code; the learning loop and the warm-up placement; ten planets (Warm-up, Directions, Step by step, Loops, Magic Block, Look ahead, Step Box, Fix it!, Until the flag, Otherwise) with "Watch me!" demos; hints, stickers, sound, music and Koba's voice; the Star fuel story; game controllers and folding phones; releases on the App Store, Google Play (closed test, then production access) and GitHub. The reasons behind each choice are in `AGENTS.md` → Decisions.
+**Done:** the engine, picture blocks and typed code; the learning loop and the warm-up placement; ten planets (Warm-up, Directions, Step by step, Loops, Magic Block, Look ahead, Step Box, Fix it!, Until the flag, Otherwise) with "Watch me!" demos; hints, stickers, sound, music and Koba's voice; the Star fuel story; game controllers and folding phones; moving a child to another device with a progress file (parent area); releases on the App Store, Google Play (closed test, then production access) and GitHub. The reasons behind each choice are in `AGENTS.md` → Decisions.
 
 ### Next: more platforms
 
@@ -365,13 +365,9 @@ Still to check on real devices once a release carries them:
 - **Windows:** starts, sound, saving, a controller and the minimum window size.
 - **Steam Deck:** touch, the controls, the 1280 × 800 screen, audio and Game Mode.
 
-### Next: promos for a live Google Play
-
-Version 2.9.0 (build 27) went live on Google Play on 2026-10-30, a full production rollout in 177 countries/regions plus the rest of the world. Managed publishing is off. Still to do: regenerate the promos' YouTube text for a live store (`render.mjs all live` in the video project); the videos themselves name no store, so they need no new upload.
-
 ### Next: promo videos
 
-1. **Upload** (by hand): the videos in the video project's `out/`, replacing the old YouTube promos, Koba's short (`short-<lang>`) on every platform with its captions, and the App Store header and search-result videos.
+1. **Upload** (by hand): the videos in the video project's `out/`, replacing the old YouTube promos, Koba's short (`short-<lang>`) on every platform with its captions, and the App Store header and search-result videos. Their YouTube text (`<video>.youtube.txt`) was regenerated for the live Google Play on 2026-10-30; paste it into each upload.
 2. **Landing page:** put Koba's short's YouTube ids in the `video-short` card in `website/index.html` (`data-video`/`data-en-video`, `href`/`data-en-href`), and the main promo's ids if it was re-uploaded.
 
 ### Next: checking the story
@@ -399,7 +395,6 @@ Javanese and Sundanese have generated voices and are offered in the language pic
 
 - **Koba celebration clip** (a time-boxed test after the Play launch): an AI clip of Koba celebrating, turned into a sprite sheet for Flame's `SpriteAnimation` on the solved card. Keep it only if Koba still looks like Koba.
 - **Teach Koba (an AI planet)**: children learn that computers learn from examples, as in code.org's AI for Oceans, without reading, chatbots or the internet. Koba meets new things on a planet; the child sorts picture examples into safe and not safe, Koba sorts new ones by itself and gets some wrong when the examples were too alike, and more varied examples fix it. The model is a few lines of pure Dart (nearest neighbour on colour, shape and size), and Koba's eye block then uses what it learned in Otherwise programs, so the planet still compiles to the shared `Program`. No camera, microphone or generative AI. It needs everything a new planet needs (lesson pack, `PuzzleKind`, demo, arrival scene, thank-you line, tour lines and clips) plus the sorting screen.
-- **Progress export and import** (parent area, behind the parent gate): "Save progress" writes a file to the share sheet; "Load progress" on another device merges it (best stars kept, attempt logs combined). Nothing leaves the device unless a parent moves it. Cloud sync isn't planned: it would break the "no internet" promise.
 
 ## Documentation map
 

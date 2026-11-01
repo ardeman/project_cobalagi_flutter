@@ -1128,4 +1128,47 @@ class AppLocalizationsMin extends AppLocalizations {
   String starsEarned(int count) {
     return '$count dari 3 bintang';
   }
+
+  @override
+  String get progressFileTitle => 'Pindah ka parangkaik lain';
+
+  @override
+  String progressFileHint(String name) {
+    return 'Simpan kamajuan $name ka file, sudah tu muek di Coba Lagi di parangkaik lain. Mamuek cuma manambah nan alah ado; indak ado nan ilang.';
+  }
+
+  @override
+  String get saveProgress => 'Simpan kamajuan';
+
+  @override
+  String get loadProgress => 'Muek kamajuan';
+
+  @override
+  String loadProgressConfirm(String fileName, String name) {
+    return 'Tambahan kamajuan dari file $fileName ka $name? Bintang jo palajaran nan alah salasai dari kaduonyo tatap disimpan.';
+  }
+
+  @override
+  String get load => 'Muek';
+
+  @override
+  String get progressSaved => 'Kamajuan alah disimpan';
+
+  @override
+  String get progressLoaded => 'Kamajuan alah dimuek';
+
+  @override
+  String get progressFileNotProgress => 'File ko indak kamajuan Coba Lagi.';
+
+  @override
+  String get progressFileTooNew =>
+      'File ko dari Coba Lagi nan labiah baru. Paharui aplikasinyo dulu.';
+
+  @override
+  String get loadPlayer => 'Muek pamain dari file';
+
+  @override
+  String playerLoaded(String name) {
+    return '$name alah bagabuang';
+  }
 }

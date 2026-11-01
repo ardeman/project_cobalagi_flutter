@@ -348,5 +348,17 @@
   "conceptOtherwise": "Meunyo hana",
   "playGoalOtherwise": "Pakè blok mata ngon dua baréh: meunyo jalan jih soh, jak sa langkah. Meunyo hana, beulôk!",
   "tutorialOtherwise": "Mata jikalon u keue. Meunyo jalan jih soh, jak sa langkah. Meunyo hana, beulôk. Lheuh nyan mandum jih meu-ulang trôk u bandéra!",
-  "starsEarned": "{count} nibak 3 bintang"
+  "starsEarned": "{count} nibak 3 bintang",
+  "progressFileTitle": "Pinah u alat laen",
+  "progressFileHint": "Keubah kemajuan {name} lam file, lheuh nyan peuhah bak Coba Lagi lam alat laen. Peuhah cit meutamah bak nyang ka na; hana nyang gadoh.",
+  "saveProgress": "Keubah kemajuan",
+  "loadProgress": "Peuhah kemajuan",
+  "loadProgressConfirm": "Tamah kemajuan nibak file {fileName} u {name}? Bintang ngon pelajaran nyang ka seuleusoe nibak duwa jih teutap meukeubah.",
+  "load": "Peuhah",
+  "progressSaved": "Kemajuan ka meukeubah",
+  "progressLoaded": "Kemajuan ka meupeuhah",
+  "progressFileNotProgress": "File nyoe kon kemajuan Coba Lagi.",
+  "progressFileTooNew": "File nyoe nibak Coba Lagi nyang leubeh baro. Peubaro aplikasi dilee.",
+  "loadPlayer": "Peuhah ureueng meu'en nibak file",
+  "playerLoaded": "{name} ka meugabong"
 }

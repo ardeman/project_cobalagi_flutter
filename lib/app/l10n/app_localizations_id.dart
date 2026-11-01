@@ -1129,4 +1129,47 @@ class AppLocalizationsId extends AppLocalizations {
   String starsEarned(int count) {
     return '$count dari 3 bintang';
   }
+
+  @override
+  String get progressFileTitle => 'Pindah ke perangkat lain';
+
+  @override
+  String progressFileHint(String name) {
+    return 'Simpan progres $name ke file, lalu muat di Coba Lagi pada perangkat lain. Memuat hanya menambah yang sudah ada; tidak ada yang hilang.';
+  }
+
+  @override
+  String get saveProgress => 'Simpan progres';
+
+  @override
+  String get loadProgress => 'Muat progres';
+
+  @override
+  String loadProgressConfirm(String fileName, String name) {
+    return 'Tambahkan progres dari file $fileName ke $name? Bintang dan pelajaran yang selesai dari keduanya tetap disimpan.';
+  }
+
+  @override
+  String get load => 'Muat';
+
+  @override
+  String get progressSaved => 'Progres disimpan';
+
+  @override
+  String get progressLoaded => 'Progres dimuat';
+
+  @override
+  String get progressFileNotProgress => 'File ini bukan progres Coba Lagi.';
+
+  @override
+  String get progressFileTooNew =>
+      'File ini dari Coba Lagi yang lebih baru. Perbarui aplikasinya dulu.';
+
+  @override
+  String get loadPlayer => 'Muat pemain dari file';
+
+  @override
+  String playerLoaded(String name) {
+    return '$name sudah bergabung';
+  }
 }

@@ -1127,4 +1127,47 @@ class AppLocalizationsAce extends AppLocalizations {
   String starsEarned(int count) {
     return '$count nibak 3 bintang';
   }
+
+  @override
+  String get progressFileTitle => 'Pinah u alat laen';
+
+  @override
+  String progressFileHint(String name) {
+    return 'Keubah kemajuan $name lam file, lheuh nyan peuhah bak Coba Lagi lam alat laen. Peuhah cit meutamah bak nyang ka na; hana nyang gadoh.';
+  }
+
+  @override
+  String get saveProgress => 'Keubah kemajuan';
+
+  @override
+  String get loadProgress => 'Peuhah kemajuan';
+
+  @override
+  String loadProgressConfirm(String fileName, String name) {
+    return 'Tamah kemajuan nibak file $fileName u $name? Bintang ngon pelajaran nyang ka seuleusoe nibak duwa jih teutap meukeubah.';
+  }
+
+  @override
+  String get load => 'Peuhah';
+
+  @override
+  String get progressSaved => 'Kemajuan ka meukeubah';
+
+  @override
+  String get progressLoaded => 'Kemajuan ka meupeuhah';
+
+  @override
+  String get progressFileNotProgress => 'File nyoe kon kemajuan Coba Lagi.';
+
+  @override
+  String get progressFileTooNew =>
+      'File nyoe nibak Coba Lagi nyang leubeh baro. Peubaro aplikasi dilee.';
+
+  @override
+  String get loadPlayer => 'Peuhah ureueng meu\'en nibak file';
+
+  @override
+  String playerLoaded(String name) {
+    return '$name ka meugabong';
+  }
 }

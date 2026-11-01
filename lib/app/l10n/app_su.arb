@@ -348,5 +348,17 @@
   "conceptOtherwise": "Lamun henteu",
   "playGoalOtherwise": "Paké blok panon nu dua baris: lamun jalanna kosong, ngaléngkah. Lamun henteu, méngkol!",
   "tutorialOtherwise": "Panon nempo ka hareup. Lamun jalanna kosong, ngaléngkah. Lamun henteu, méngkol. Terus sakabéhna diulang nepi ka bandéra!",
-  "starsEarned": "{count} tina 3 béntang"
+  "starsEarned": "{count} tina 3 béntang",
+  "progressFileTitle": "Pindah ka alat séjén",
+  "progressFileHint": "Simpen kamajuan {name} kana file, terus buka dina Coba Lagi di alat séjén. Muka ngan ukur nambahan nu geus aya; euweuh nu leungit.",
+  "saveProgress": "Simpen kamajuan",
+  "loadProgress": "Buka kamajuan",
+  "loadProgressConfirm": "Tambahkeun kamajuan tina file {fileName} ka {name}? Béntang jeung palajaran nu geus réngsé ti duanana tetep disimpen.",
+  "load": "Buka",
+  "progressSaved": "Kamajuan geus disimpen",
+  "progressLoaded": "Kamajuan geus dibuka",
+  "progressFileNotProgress": "File ieu lain kamajuan Coba Lagi.",
+  "progressFileTooNew": "File ieu ti Coba Lagi nu leuwih anyar. Anyarkeun heula aplikasina.",
+  "loadPlayer": "Buka pamaén tina file",
+  "playerLoaded": "{name} geus ngagabung"
 }

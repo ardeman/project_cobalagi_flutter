@@ -2055,6 +2055,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 star of 3} other{{count} stars of 3}}'**
   String starsEarned(int count);
+
+  /// No description provided for @progressFileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to another device'**
+  String get progressFileTitle;
+
+  /// No description provided for @progressFileHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Save {name}\'s progress to a file, then load it in Coba Lagi on the other device. Loading adds to what is there; nothing is lost.'**
+  String progressFileHint(String name);
+
+  /// No description provided for @saveProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Save progress'**
+  String get saveProgress;
+
+  /// No description provided for @loadProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Load progress'**
+  String get loadProgress;
+
+  /// No description provided for @loadProgressConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add the progress in {fileName}\'s file to {name}? Stars and finished lessons from both are kept.'**
+  String loadProgressConfirm(String fileName, String name);
+
+  /// No description provided for @load.
+  ///
+  /// In en, this message translates to:
+  /// **'Load'**
+  String get load;
+
+  /// No description provided for @progressSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress saved'**
+  String get progressSaved;
+
+  /// No description provided for @progressLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress loaded'**
+  String get progressLoaded;
+
+  /// No description provided for @progressFileNotProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'This file isn\'t Coba Lagi progress.'**
+  String get progressFileNotProgress;
+
+  /// No description provided for @progressFileTooNew.
+  ///
+  /// In en, this message translates to:
+  /// **'This file comes from a newer Coba Lagi. Update the app first.'**
+  String get progressFileTooNew;
+
+  /// No description provided for @loadPlayer.
+  ///
+  /// In en, this message translates to:
+  /// **'Load a player from a file'**
+  String get loadPlayer;
+
+  /// No description provided for @playerLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} has joined'**
+  String playerLoaded(String name);
 }
 
 class _AppLocalizationsDelegate

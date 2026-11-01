@@ -22,6 +22,7 @@ import '../../profiles/view/profile_avatar.dart';
 import 'donation_sheet.dart';
 import 'language_picker.dart';
 import 'placement_dialog.dart';
+import 'progress_file_buttons.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 
@@ -168,6 +169,18 @@ class ParentScreen extends StatelessWidget {
                   key: ValueKey(profile.id),
                   profile: profile,
                   onDelete: () => _confirmDelete(context, profile),
+                ),
+              if (profiles.length < plan.maxProfiles)
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.person_add_alt_rounded),
+                    label: Text(l10n.loadPlayer),
+                    onPressed: () => loadPlayerFromFile(
+                      context,
+                      maxProfiles: plan.maxProfiles,
+                    ),
+                  ),
                 ),
               const SizedBox(height: 32),
               const AppVersionText(),

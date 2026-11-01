@@ -348,5 +348,17 @@
   "conceptOtherwise": "Kalau tidak",
   "playGoalOtherwise": "Pakai blok mata dengan dua baris: kalau jalannya kosong, melangkah. Kalau tidak, belok!",
   "tutorialOtherwise": "Mata melihat ke depan. Kalau jalannya kosong, melangkah. Kalau tidak, belok. Lalu semuanya diulang sampai bendera!",
-  "starsEarned": "{count} dari 3 bintang"
+  "starsEarned": "{count} dari 3 bintang",
+  "progressFileTitle": "Pindah ke perangkat lain",
+  "progressFileHint": "Simpan progres {name} ke file, lalu muat di Coba Lagi pada perangkat lain. Memuat hanya menambah yang sudah ada; tidak ada yang hilang.",
+  "saveProgress": "Simpan progres",
+  "loadProgress": "Muat progres",
+  "loadProgressConfirm": "Tambahkan progres dari file {fileName} ke {name}? Bintang dan pelajaran yang selesai dari keduanya tetap disimpan.",
+  "load": "Muat",
+  "progressSaved": "Progres disimpan",
+  "progressLoaded": "Progres dimuat",
+  "progressFileNotProgress": "File ini bukan progres Coba Lagi.",
+  "progressFileTooNew": "File ini dari Coba Lagi yang lebih baru. Perbarui aplikasinya dulu.",
+  "loadPlayer": "Muat pemain dari file",
+  "playerLoaded": "{name} sudah bergabung"
 }
