@@ -1,4 +1,5 @@
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
+import 'package:cobalagi/core/widgets/glass_background.dart';
 import 'package:cobalagi/core/widgets/glass_bar.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
 import 'package:cobalagi/core/widgets/glass_popups.dart';
@@ -51,6 +52,20 @@ void main() {
     expect(tester.getTopLeft(find.text('row 0')).dy, 80);
     expect(frosted(tester, GlassEdge.top), isFalse);
     expect(frosted(tester, GlassEdge.bottom), isTrue);
+    // The glass tints with the page's own background colour at that edge,
+    // so it shows no band, and blurs only a little, so what scrolls under it
+    // stays recognisable.
+    final edge = tester.widget<LiquidGlassScrollEdge>(
+      find.byType(LiquidGlassScrollEdge),
+    );
+    expect(
+      edge.color,
+      GlassBackground.edgeColor(
+        Brightness.light,
+        top: false,
+      ).withValues(alpha: barTintAlpha),
+    );
+    expect(edge.blur, barGlassBlur);
 
     await tester.drag(find.byType(ListView), const Offset(0, -300));
     await tester.pumpAndSettle();

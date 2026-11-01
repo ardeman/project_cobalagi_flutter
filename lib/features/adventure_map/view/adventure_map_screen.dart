@@ -14,6 +14,7 @@ import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 import 'package:go_router/go_router.dart';
 import 'package:cobalagi/core/widgets/glass_app_bar.dart';
 import 'package:cobalagi/core/widgets/glass_frame.dart';
+import 'package:cobalagi/core/widgets/glass_bar.dart';
 import 'package:cobalagi/core/widgets/glass_surface.dart';
 import 'package:cobalagi/features/story/view/ship_flight.dart';
 import 'package:cobalagi/features/story/view/story_screen.dart';
@@ -360,11 +361,14 @@ class _MaybeFolded extends StatelessWidget {
                         left: 0,
                         right: 0,
                         height: barBottom + 24,
-                        // Blur only, no tint: the sky shows no band.
-                        child: const LiquidGlassScrollEdge(
+                        // Tinted with the sky's own top colour, so the
+                        // planets fade into the sky with no band.
+                        child: LiquidGlassScrollEdge(
                           edge: LiquidGlassEdge.top,
-                          color: Colors.transparent,
-                          blur: 10,
+                          color: const Color(
+                            0xFF1A1F4E,
+                          ).withValues(alpha: barTintAlpha),
+                          blur: barGlassBlur,
                         ),
                       ),
                       Positioned(

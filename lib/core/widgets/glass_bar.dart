@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:cobalagi/core/widgets/glass_background.dart';
 import 'package:liquid_glass_easy/liquid_glass_easy.dart';
 
 /// Which side of the screen a [GlassBar] sits on: the side its blur is
 /// strongest at.
 enum GlassEdge { top, bottom }
 
-/// A full-width bar that blurs what scrolls under it ([under]), strongest at
-/// the screen edge like iOS, and stays clear otherwise. High-contrast mode
+/// Blur sigma under bars: light, as under the system's own bars, so what
+/// scrolls beneath stays recognisable while the tint keeps the bar readable.
+const barGlassBlur = 2.0;
+
+/// How strongly a bar's tint covers what scrolls under it, at the edge.
+const barTintAlpha = 0.85;
+
+/// A full-width bar that tints and lightly blurs what scrolls under it
+/// ([under]), strongest at the screen edge like iOS, and stays clear
+/// otherwise. High-contrast mode
 /// uses an opaque surface with a hairline instead.
 class GlassBar extends StatelessWidget {
   const GlassBar({
@@ -46,8 +55,9 @@ class GlassBar extends StatelessWidget {
             ),
           )
         else
-          // A scroll edge, like iOS: what passes under the bar blurs more
-          // the closer it is to the screen edge, with no line and no tint.
+          // A scroll edge, like iOS: what passes under the bar fades into the
+          // page's own background colour and blurs a little, more the closer it is to the
+          // screen edge, with no line.
           // It reaches [_fadeOut] past the bar, so the blur eases out
           // instead of ending on an edge. It fades in by its own blur,
           // never by opacity.
@@ -66,11 +76,13 @@ class GlassBar extends StatelessWidget {
                       edge: edge == GlassEdge.top
                           ? LiquidGlassEdge.top
                           : LiquidGlassEdge.bottom,
-                      // Blur only, no tint: content passing under a bar
-                      // softens away rather than darkening (the user's
+                      // A tint with a light blur, as in Bedug (the user's
                       // choice); high contrast keeps its solid bar above.
-                      color: Colors.transparent,
-                      blur: 10 * t,
+                      color: GlassBackground.edgeColor(
+                        theme.brightness,
+                        top: edge == GlassEdge.top,
+                      ).withValues(alpha: barTintAlpha * t),
+                      blur: barGlassBlur * t,
                     ),
             ),
           ),
