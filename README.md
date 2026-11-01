@@ -385,11 +385,18 @@ Sponsors without store billing (GitHub builds) will buy through Dahlunas, Ardema
 
 ### Next: regional languages
 
-Javanese and Sundanese have generated voices and are offered in the language picker; their pronunciation and all regional texts still need a native speaker's review before release. Acehnese and Minangkabau need recordings and remain hidden (see Voice-over → Regional languages).
+Javanese and Sundanese have generated voices and shipped in 2.10.0 before a native speaker's review (the user's choice); corrections to their texts or pronunciation go out in a later update. Acehnese and Minangkabau need recordings and remain hidden (see Voice-over → Regional languages).
 
 1. **Check the texts:** a native speaker reads each ARB file and fixes stiff words.
 2. **Record the voices:** the user records Acehnese and Minangkabau. Convert, listen, then turn those languages on. Review the generated Javanese and Sundanese clips and replace any inaccurate lines.
 3. **Tell people:** a release that turns a language on is a new feature (minor version) and goes in the release notes, both listings and the website.
+
+### Next: app size and memory
+
+Google Play warned that build 28 (2.10.0) is much bigger: about 31 MB to 41 MB for arm64, nearly all of it the Javanese and Sundanese voice clips (4.4 MB each), which every device downloads. Each new language adds as much. From February 2027 Play also holds apps to new memory and optimisation thresholds.
+
+1. **Smaller voice clips:** clips are 128 kbps MP3 (`output_format` in `tool/elevenlabs.json`); speech stays clear far lower, so lower that for new clips and re-encode the bundled `assets/audio/<code>/` ones, then listen to a sample in each language, and compare APK sizes. Play Asset Delivery per language is the bigger fix, for Android only.
+2. **Memory:** once 2.10.0 is live, watch Play Console → Android vitals → Memory. If it is near a threshold, measure the heaviest screens (map sky, play world, story scenes) on a real phone: decode pictures at their shown size, free voice and music players when a screen closes. Recheck in January 2027 either way.
 
 ### Later
 
