@@ -18,13 +18,13 @@ class AppLocalizationsAce extends AppLocalizations {
   String get editPlayer => 'Gantoe ureueng meu\'en';
 
   @override
-  String get addPlayer => 'Ureueng meu\'en barô';
+  String get addPlayer => 'Ureueng meu\'en baro';
 
   @override
   String get nickname => 'Nan panggilan';
 
   @override
-  String get chooseAvatar => 'Piléh gamba';
+  String get chooseAvatar => 'Pileh gamba';
 
   @override
   String get save => 'Keubah';
@@ -33,7 +33,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get cancel => 'Batai';
 
   @override
-  String get delete => 'Hapôh';
+  String get delete => 'Hapoh';
 
   @override
   String get ok => 'Nyo';
@@ -47,7 +47,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get play => 'Meu\'en';
 
   @override
-  String get askAGrownUp => 'Lakèe bantu bak ureueng tuha';
+  String get askAGrownUp => 'Lakee bantu bak ureueng tuha';
 
   @override
   String parentGateQuestion(int a, int b) {
@@ -55,7 +55,7 @@ class AppLocalizationsAce extends AppLocalizations {
   }
 
   @override
-  String get parentGateWrong => 'Goh lom beutôi. Cuba lom.';
+  String get parentGateWrong => 'Goh lom beutoi. Cuba lom.';
 
   @override
   String get parentArea => 'Teumpat ureueng tuha';
@@ -64,7 +64,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get language => 'Bahsa';
 
   @override
-  String get languageSystem => 'Ikôt perangkat';
+  String get languageSystem => 'Ikot perangkat';
 
   @override
   String get plan => 'Versi';
@@ -74,7 +74,7 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String planFull(int count) {
-    return 'Sponsor: trôk $count ureueng meu\'en';
+    return 'Sponsor: trok $count ureueng meu\'en';
   }
 
   @override
@@ -88,13 +88,13 @@ class AppLocalizationsAce extends AppLocalizations {
   }
 
   @override
-  String get changeStartingIsland => 'Gantoe planet phôn';
+  String get changeStartingIsland => 'Gantoe planet phon';
 
   @override
   String get progressThisWeek => '7 uroe nyang ka lheueh';
 
   @override
-  String get progressAllTime => 'Yoh phôn';
+  String get progressAllTime => 'Yoh phon';
 
   @override
   String progressPuzzles(int count) {
@@ -103,12 +103,12 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String progressMinutes(int count) {
-    return '$count meunét meu\'en';
+    return '$count meunet meu\'en';
   }
 
   @override
   String progressLastPlayed(String date) {
-    return 'Akhé meu\'en: $date';
+    return 'Akhe meu\'en: $date';
   }
 
   @override
@@ -118,13 +118,13 @@ class AppLocalizationsAce extends AppLocalizations {
   String get progressIslands => 'Planet';
 
   @override
-  String get statusNotStarted => 'Goh lom phôn';
+  String get statusNotStarted => 'Goh lom phon';
 
   @override
-  String get statusPractising => 'Teungoh meulatéh';
+  String get statusPractising => 'Teungoh meulateh';
 
   @override
-  String get statusMastered => 'Ka meuphôm';
+  String get statusMastered => 'Ka meuphom';
 
   @override
   String progressLevels(int solved, int total) {
@@ -133,7 +133,7 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get progressSponsorOnly =>
-      'Sponsor jeuet geukalon laporan kemajuan nyang leungkap: teka-teki nyang ka lheueh, watèe meu\'en, ngon kemajuan bak tiep-tiep planet.';
+      'Sponsor jeuet geukalon laporan kemajuan nyang leungkap: teka-teki nyang ka lheueh, watee meu\'en, ngon kemajuan bak tiep-tiep planet.';
 
   @override
   String get music => 'Musik';
@@ -142,32 +142,32 @@ class AppLocalizationsAce extends AppLocalizations {
   String get soundEffects => 'Su efek';
 
   @override
-  String get hintArrowsFollowRoad => 'Panah peutunjôk ikôt jalan';
+  String get hintArrowsFollowRoad => 'Panah peutunjok ikot jalan';
 
   @override
   String get hintArrowsFollowRoadHint =>
-      'Mate: panah ngadap u ateuh, lagée bak blok.';
+      'Mate: panah ngadap u ateuh, lagee bak blok.';
 
   @override
-  String get soundEffectsHint => 'Su peutunjôk teutap meudeungo.';
+  String get soundEffectsHint => 'Su peutunjok teutap meudeungo.';
 
   @override
-  String get supportCobaLagi => 'Dukông Coba Lagi';
+  String get supportCobaLagi => 'Dukong Coba Lagi';
 
   @override
-  String get debugPlanOverride => 'Debug: pakè versi leungkap';
+  String get debugPlanOverride => 'Debug: pake versi leungkap';
 
   @override
   String get players => 'Ureueng meu\'en';
 
   @override
   String deletePlayerConfirm(String name) {
-    return 'Hapôh $name ngon mandum kemajuan jih?';
+    return 'Hapoh $name ngon mandum kemajuan jih?';
   }
 
   @override
   String get playerLimitReached =>
-      'Versi nyoe keu sidroe ureueng meu\'en mantong. Lakèe bantu bak ureueng tuha.';
+      'Versi nyoe keu sidroe ureueng meu\'en mantong. Lakee bantu bak ureueng tuha.';
 
   @override
   String get run => 'Jak!';
@@ -176,34 +176,34 @@ class AppLocalizationsAce extends AppLocalizations {
   String get step => 'Sa langkah';
 
   @override
-  String get reset => 'Phôn lom';
+  String get reset => 'Phon lom';
 
   @override
   String get undo => 'Peuriwang';
 
   @override
-  String get redo => 'Peubalék';
+  String get redo => 'Peubalek';
 
   @override
-  String get clearBlocks => 'Hapôh mandum blok';
+  String get clearBlocks => 'Hapoh mandum blok';
 
   @override
-  String get removeBlock => 'Hapôh blok nyoe';
+  String get removeBlock => 'Hapoh blok nyoe';
 
   @override
   String get blockForward => 'U keue';
 
   @override
-  String get blockTurnLeft => 'Beulôk u wie';
+  String get blockTurnLeft => 'Beulok u wie';
 
   @override
-  String get blockTurnRight => 'Beulôk u uneun';
+  String get blockTurnRight => 'Beulok u uneun';
 
   @override
   String get blockRepeat => 'Ulang';
 
   @override
-  String get blockStar => 'Blok peugöt lôn';
+  String get blockStar => 'Blok peugot lon';
 
   @override
   String get toMap => 'U peta';
@@ -215,18 +215,18 @@ class AppLocalizationsAce extends AppLocalizations {
   String get feedbackBumped => 'Ups, na nyang theun.';
 
   @override
-  String get feedbackStoppedShort => 'Ka toe! Jak laju trôk u bandéra.';
+  String get feedbackStoppedShort => 'Ka toe! Jak laju trok u bandera.';
 
   @override
   String get feedbackOtherBoard =>
-      'Peta nyan ka jadéh! Peta nyoe laén, jadi kalon u keue sigohlom tiep langkah.';
+      'Peta nyan ka jadeh! Peta nyoe laen, jadi kalon u keue sigohlom tiep langkah.';
 
   @override
-  String get feedbackMissedStars => 'Kumpôi mandum bintang dilèe.';
+  String get feedbackMissedStars => 'Kumpoi mandum bintang dilee.';
 
   @override
   String get feedbackTooManySteps =>
-      'Langkah jih le that! Cuba nyang leubèh bacut.';
+      'Langkah jih le that! Cuba nyang leubeh bacut.';
 
   @override
   String get home => 'Beranda';
@@ -244,16 +244,16 @@ class AppLocalizationsAce extends AppLocalizations {
   String get conceptFunctions => 'Blok Ajaib';
 
   @override
-  String get decisionAdvance => 'Planet barô ka teuhah!';
+  String get decisionAdvance => 'Planet baro ka teuhah!';
 
   @override
-  String get decisionPractice => 'Jak tacuba nyang laén!';
+  String get decisionPractice => 'Jak tacuba nyang laen!';
 
   @override
   String get bonusAdventure => 'Petualangan bonus!';
 
   @override
-  String get decisionReview => 'Jak tamita harta karôn bak planet nyang ilèe.';
+  String get decisionReview => 'Jak tamita harta karon bak planet nyang ilee.';
 
   @override
   String get decisionReturn => 'Woe u petualangan kah!';
@@ -268,7 +268,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get hintNextPattern => 'Peuleumah blok nyang meu-ulang';
 
   @override
-  String get hintNextRing => 'Peuleumah blok nyang peureulèe gantoe';
+  String get hintNextRing => 'Peuleumah blok nyang peureulee gantoe';
 
   @override
   String get repeatMore => 'Tamah sigo';
@@ -280,16 +280,16 @@ class AppLocalizationsAce extends AppLocalizations {
   String get dropBlocksHere => 'Boh blok keunoe';
 
   @override
-  String get pretestWelcome => 'Hai, lôn Koba! Jak tameu\'en peumanaih dilèe!';
+  String get pretestWelcome => 'Hai, lon Koba! Jak tameu\'en peumanaih dilee!';
 
   @override
-  String get pretestStart => 'Phôn';
+  String get pretestStart => 'Phon';
 
   @override
   String get listenAgain => 'Deungo lom';
 
   @override
-  String get promptReading => 'Gamba pat nyang pah ngon tuléh nyoe?';
+  String get promptReading => 'Gamba pat nyang pah ngon tuleh nyoe?';
 
   @override
   String get promptCounting => 'Padum boh?';
@@ -301,19 +301,19 @@ class AppLocalizationsAce extends AppLocalizations {
   String get promptSideRight => 'Teukan nyang di uneun.';
 
   @override
-  String get promptTurnLeft => 'Panah beulôk u wie. Jinoe jih tunjôk u pat?';
+  String get promptTurnLeft => 'Panah beulok u wie. Jinoe jih tunjok u pat?';
 
   @override
-  String get promptTurnRight => 'Panah beulôk u uneun. Jinoe jih tunjôk u pat?';
+  String get promptTurnRight => 'Panah beulok u uneun. Jinoe jih tunjok u pat?';
 
   @override
   String get promptPattern => 'Peue nyang lheuh nyoe?';
 
   @override
-  String get promptSequencing => 'Langkah pat nyang trôk u bandéra?';
+  String get promptSequencing => 'Langkah pat nyang trok u bandera?';
 
   @override
-  String get pretestDone => 'Ka lheueh! Petualangan kah phôn jinoe.';
+  String get pretestDone => 'Ka lheueh! Petualangan kah phon jinoe.';
 
   @override
   String get startAdventure => 'Jak!';
@@ -331,7 +331,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get wordCar => 'moto';
 
   @override
-  String get wordTree => 'bak kayèe';
+  String get wordTree => 'bak kayee';
 
   @override
   String get wordBall => 'bola';
@@ -340,13 +340,13 @@ class AppLocalizationsAce extends AppLocalizations {
   String get wordFlower => 'bungong';
 
   @override
-  String get wordBoat => 'peurahô';
+  String get wordBoat => 'peuraho';
 
   @override
-  String get wordBird => 'cicém';
+  String get wordBird => 'cicem';
 
   @override
-  String get wordCake => 'kuéh';
+  String get wordCake => 'kueh';
 
   @override
   String get colorRed => 'mirah';
@@ -355,10 +355,10 @@ class AppLocalizationsAce extends AppLocalizations {
   String get colorBlue => 'biru';
 
   @override
-  String get colorGreen => 'ijô';
+  String get colorGreen => 'ijo';
 
   @override
-  String get colorYellow => 'kunèng';
+  String get colorYellow => 'kuneng';
 
   @override
   String wordsWithColor(String color, String object) {
@@ -366,7 +366,7 @@ class AppLocalizationsAce extends AppLocalizations {
   }
 
   @override
-  String get startingIsland => 'Planet phôn';
+  String get startingIsland => 'Planet phon';
 
   @override
   String get retakePretest => 'Meu\'en peumanaih lom';
@@ -380,7 +380,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get placementNotYet => 'Goh lom meu\'en peumanaih';
 
   @override
-  String get setByParent => 'geuatô lé ureueng tuha';
+  String get setByParent => 'geuato le ureueng tuha';
 
   @override
   String get cheerCelebrate1 => 'Hebat!';
@@ -410,30 +410,30 @@ class AppLocalizationsAce extends AppLocalizations {
   String get cheerEncourage3 => 'Jak tajak laju!';
 
   @override
-  String get cheerEncourage4 => 'Teurimong gaséh ka kacuba!';
+  String get cheerEncourage4 => 'Teurimong gaseh ka kacuba!';
 
   @override
   String get cheerEncourage5 => 'Kah hebat!';
 
   @override
   String get donateExplainer =>
-      'Coba Lagi gratis. Donasi padum mantong jeuet geupeuhah fitur sponsor keu keluarga droeneuh ngon geubantu kamoe peugöt leubèh le petualangan.';
+      'Coba Lagi gratis. Donasi padum mantong jeuet geupeuhah fitur sponsor keu keluarga droeneuh ngon geubantu kamoe peugot leubeh le petualangan.';
 
   @override
   String get donateUnavailable => 'Donasi hana bak perangkat nyoe.';
 
   @override
-  String get restoreDonation => 'Peuriwang donasi nyang ilèe';
+  String get restoreDonation => 'Peuriwang donasi nyang ilee';
 
   @override
   String get tipExplainer =>
-      'Coba Lagi gratis. Tip padum mantong jeuet geupeuhah fitur sponsor keu keluarga droeneuh ngon geubantu kamoe peugöt leubèh le petualangan.';
+      'Coba Lagi gratis. Tip padum mantong jeuet geupeuhah fitur sponsor keu keluarga droeneuh ngon geubantu kamoe peugot leubeh le petualangan.';
 
   @override
   String get tipsUnavailable => 'Tip hana bak perangkat nyoe.';
 
   @override
-  String get restorePurchases => 'Peuriwang peublòe';
+  String get restorePurchases => 'Peuriwang peubloe';
 
   @override
   String get haveUnlockCode => 'Na kode?';
@@ -443,40 +443,40 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get buyUnlockCodeExplainer =>
-      'Bloe kode bak situs kamoe. Kode geukirém lewat email; laju peutamong lewat \"Na kode?\".';
+      'Bloe kode bak situs kamoe. Kode geukirem lewat email; laju peutamong lewat \"Na kode?\".';
 
   @override
   String get unlockCode => 'Kode';
 
   @override
-  String get useUnlockCode => 'Pakè kode';
+  String get useUnlockCode => 'Pake kode';
 
   @override
   String get unlockCodeRejected =>
-      'Kode nyan hana beulaku. Neuparéksa lom, lheuh nyan neucuba sigo treuk.';
+      'Kode nyan hana beulaku. Neupareksa lom, lheuh nyan neucuba sigo treuk.';
 
   @override
   String get unlockCodeGithubOnly =>
       'Kode nyoe keu aplikasi nibak GitHub. Bak aplikasi nyoe, bantuan meulalui toko aplikasi.';
 
   @override
-  String get thanksForSupport => 'Teurimong gaséh ka neudukông Coba Lagi!';
+  String get thanksForSupport => 'Teurimong gaseh ka neudukong Coba Lagi!';
 
   @override
-  String get playGoal => 'Bantu lôn trôk u bandéra!';
+  String get playGoal => 'Bantu lon trok u bandera!';
 
   @override
-  String get playGoalStars => 'Kumpôi mandum bintang, lheuh nyan u bandéra!';
+  String get playGoalStars => 'Kumpoi mandum bintang, lheuh nyan u bandera!';
 
   @override
-  String get playGoalLoops => 'Pakè blok ulang keu trôk u bandéra!';
+  String get playGoalLoops => 'Pake blok ulang keu trok u bandera!';
 
   @override
   String get playGoalFunctions =>
-      'Pasoe blok bintang, lheuh nyan pakè beule go keu trôk u bandéra!';
+      'Pasoe blok bintang, lheuh nyan pake beule go keu trok u bandera!';
 
   @override
-  String get playHowTo => 'Tarék blok u kotak putéh, lheuh nyan teukan Jak!';
+  String get playHowTo => 'Tarek blok u kotak puteh, lheuh nyan teukan Jak!';
 
   @override
   String get backToIsland => 'Woe u planet';
@@ -499,7 +499,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get conceptConditions => 'Kalon u keue';
 
   @override
-  String get blockUntilGoal => 'Ulang trôk u bandéra';
+  String get blockUntilGoal => 'Ulang trok u bandera';
 
   @override
   String get blockIfPathClear => 'Meunyo soh';
@@ -509,28 +509,28 @@ class AppLocalizationsAce extends AppLocalizations {
       'Kalon u keue! Boh blok u keue lam blok mata. Jih jak u keue meunyo jalan di keue soh mantong. Blok kah beu jeuet bak tiep-tiep peta!';
 
   @override
-  String get updateAvailableTitle => 'Na versi barô';
+  String get updateAvailableTitle => 'Na versi baro';
 
   @override
   String get updateAvailableBody =>
-      'Versi barô Coba Lagi ka na. Lakèe bantu bak ureueng tuha keu peubarô aplikasi.';
+      'Versi baro Coba Lagi ka na. Lakee bantu bak ureueng tuha keu peubaro aplikasi.';
 
   @override
-  String get updateWithParent => 'Lakèe bantu keu peubarô';
+  String get updateWithParent => 'Lakee bantu keu peubaro';
 
   @override
   String get updateContinue => 'Lanjut meu\'en';
 
   @override
   String get updateOpenFailed =>
-      'Peubarô goh lom jeuet teuhah. Cuba lom atawa lanjut meu\'en.';
+      'Peubaro goh lom jeuet teuhah. Cuba lom atawa lanjut meu\'en.';
 
   @override
   String get codeTab => 'Tab Kode';
 
   @override
   String get codeTabHint =>
-      'Aneuk jeuet jiketik kode seulaén pakè blok gamba. Meu\'en peumanaih geupeuudép keu aneuk nyang ka jeuet jibeuet.';
+      'Aneuk jeuet jiketik kode seulaen pake blok gamba. Meu\'en peumanaih geupeuudep keu aneuk nyang ka jeuet jibeuet.';
 
   @override
   String get editorBlocks => 'Blok';
@@ -540,7 +540,7 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get codeDrafts =>
-      'Tiep-tiep editor jikeubah draf droe. Draf kode phôn teuka nibak blok kah.';
+      'Tiep-tiep editor jikeubah draf droe. Draf kode phon teuka nibak blok kah.';
 
   @override
   String get codeHelp => 'Panduan kode';
@@ -550,74 +550,74 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Teukan peurintah keu tamah, atawa ketik keudroe. Nan peurintah teutap sama bak bahsa pat mantong. Akhé aksi ngon (); ngon boh isi ulang ngon pareksa antara kurông kurawai buka ngon tutôp. Jumlah ulang 1–9. Peugöt Blok Ajaib ngon define star, lheuh nyan jalankan ngon star();. // phôn komentar. Tiep peurintah teuhitông sa blok, meuhat peurintah lam kurông kurawai. Keubah angka ngon steps = 3; ngon pakè move(steps); keu jak u keue sabe le nyan. Angka teutap sama trôk kah keubah nyang barô. Keubah dilèe sigohlom pakè. until_flag jiulang isi kurông kurawai jih trôk robot trôk u bandéra, hana peureulèe bileung.';
+      'Teukan peurintah keu tamah, atawa ketik keudroe. Nan peurintah teutap sama bak bahsa pat mantong. Akhe aksi ngon (); ngon boh isi ulang ngon pareksa antara kurong kurawai buka ngon tutop. Jumlah ulang 1–9. Peugot Blok Ajaib ngon define star, lheuh nyan jalankan ngon star();. // phon komentar. Tiep peurintah teuhitong sa blok, meuhat peurintah lam kurong kurawai. Keubah angka ngon steps = 3; ngon pake move(steps); keu jak u keue sabe le nyan. Angka teutap sama trok kah keubah nyang baro. Keubah dilee sigohlom pake. until_flag jiulang isi kurong kurawai jih trok robot trok u bandera, hana peureulee bileung.';
 
   @override
   String get codeSyntax =>
-      'Pareksa nan peurintah, kurông, kurông kurawai, ngon titék koma.';
+      'Pareksa nan peurintah, kurong, kurong kurawai, ngon titek koma.';
 
   @override
-  String get codeNumber => 'Piléh angka nibak 1 trôk 9.';
+  String get codeNumber => 'Pileh angka nibak 1 trok 9.';
 
   @override
-  String get codeDuplicateStar => 'Pakè saboh bagian define star mantong.';
+  String get codeDuplicateStar => 'Pake saboh bagian define star mantong.';
 
   @override
   String get codeNestedStar => 'Boh define star di luwa ulang ngon pareksa.';
 
   @override
   String get codeTooLarge =>
-      'Cuba program nyang leubèh paneuk ngon leubèh bacut bagian meutingkat.';
+      'Cuba program nyang leubeh paneuk ngon leubeh bacut bagian meutingkat.';
 
   @override
-  String get codeDisallowed => 'Pakè peurintah nyang na keu teka-teki nyoe.';
+  String get codeDisallowed => 'Pake peurintah nyang na keu teka-teki nyoe.';
 
   @override
   String get codeLimit => 'Cuba kurang peurintah mangat pah ngon bateue blok.';
 
   @override
-  String get codeEmptyBody => 'Tamah peurintah lam kurông kurawai.';
+  String get codeEmptyBody => 'Tamah peurintah lam kurong kurawai.';
 
   @override
   String get codeEmptyStar =>
-      'Tamah peurintah u define star sigohlom pakè star();.';
+      'Tamah peurintah u define star sigohlom pake star();.';
 
   @override
   String get codeRecursiveStar =>
-      'Pakè langkah, beulôk, ulang, atawa pareksa lam define star.';
+      'Pake langkah, beulok, ulang, atawa pareksa lam define star.';
 
   @override
   String get codeReady => 'Ka siap keu jalan';
 
   @override
-  String get codeStart => 'Tamah peurintah keu phôn.';
+  String get codeStart => 'Tamah peurintah keu phon.';
 
   @override
   String codeLine(int line, String message) {
-    return 'Baréh $line: $message';
+    return 'Bareh $line: $message';
   }
 
   @override
   String codeRunningLine(int line) {
-    return 'Teungoh jalan baréh $line';
+    return 'Teungoh jalan bareh $line';
   }
 
   @override
-  String get codeDefineStar => 'Peugöt blok lôn';
+  String get codeDefineStar => 'Peugot blok lon';
 
   @override
-  String get conceptUntil => 'Trôk u bandéra';
+  String get conceptUntil => 'Trok u bandera';
 
   @override
   String get playGoalUntil =>
-      'Pakè blok ulang trôk u bandéra: blok nyan jak laju keudroe, jadi kah hana peureulèe bileung!';
+      'Pake blok ulang trok u bandera: blok nyan jak laju keudroe, jadi kah hana peureulee bileung!';
 
   @override
-  String get conceptDebugging => 'Peugöt!';
+  String get conceptDebugging => 'Peugot!';
 
   @override
   String get playGoalDebugging =>
-      'Ups, blok nyoe goh lom pah! Teukan Jak, kalon peue nyang teujadi, lheuh nyan peugöt.';
+      'Ups, blok nyoe goh lom pah! Teukan Jak, kalon peue nyang teujadi, lheuh nyan peugot.';
 
   @override
   String get conceptVariables => 'Kotak Langkah';
@@ -626,17 +626,17 @@ class AppLocalizationsAce extends AppLocalizations {
   String get blockSetSteps => 'Keubah langkah';
 
   @override
-  String get blockMoveSteps => 'Pakè langkah';
+  String get blockMoveSteps => 'Pake langkah';
 
   @override
-  String get stepsFewer => 'Keubah angka nyang leubèh ubit';
+  String get stepsFewer => 'Keubah angka nyang leubeh ubit';
 
   @override
-  String get stepsMore => 'Keubah angka nyang leubèh rayek';
+  String get stepsMore => 'Keubah angka nyang leubeh rayek';
 
   @override
   String get playGoalVariables =>
-      'Keubah angka lam Kotak Langkah kah, lheuh nyan pakè keu jak u keue sabe le nyan! Angka jih jeuet pakè lom atawa gantoe. Trôk u bandéra ngon kumpôi mandum bintang.';
+      'Keubah angka lam Kotak Langkah kah, lheuh nyan pake keu jak u keue sabe le nyan! Angka jih jeuet pake lom atawa gantoe. Trok u bandera ngon kumpoi mandum bintang.';
 
   @override
   String stepBoxValue(String value) {
@@ -645,14 +645,14 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get codeUnsetSteps =>
-      'Keubah angka ngon steps = 2; sigohlom pakè move(steps);.';
+      'Keubah angka ngon steps = 2; sigohlom pake move(steps);.';
 
   @override
   String get variableHint =>
-      'Keubah angka dilèe, lheuh nyan pakè kotak keu jak u keue. Angka teutap sama trôk kah gantoe.';
+      'Keubah angka dilee, lheuh nyan pake kotak keu jak u keue. Angka teutap sama trok kah gantoe.';
 
   @override
-  String get tutorialTitle => 'Kalon lôn!';
+  String get tutorialTitle => 'Kalon lon!';
 
   @override
   String get tutorialWatchAgain => 'Kalon lom';
@@ -667,10 +667,10 @@ class AppLocalizationsAce extends AppLocalizations {
   String get storyTitle => 'Kapai bintang Koba';
 
   @override
-  String get storyShelfIntro => 'Phôn hikayat';
+  String get storyShelfIntro => 'Phon hikayat';
 
   @override
-  String get storyShelfNewPlanet => 'Planet barô';
+  String get storyShelfNewPlanet => 'Planet baro';
 
   @override
   String get storyShelfEnding => 'Tangki jih ka peunoh!';
@@ -684,41 +684,41 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get storyIntroWind =>
-      'Wuusss! Angèn angkasa jipeu-ayôn bintang nibak tangki jih, u mandum planet.';
+      'Wuusss! Angen angkasa jipeu-ayon bintang nibak tangki jih, u mandum planet.';
 
   @override
-  String get storyIntroLand => 'Bintang jih ka habéh, jadi kapai jih beutrôn.';
+  String get storyIntroLand => 'Bintang jih ka habeh, jadi kapai jih beutron.';
 
   @override
-  String get storyIntroBump => 'Ups, na batèe! Hana peue. Lôn cuba lom!';
+  String get storyIntroBump => 'Ups, na batee! Hana peue. Lon cuba lom!';
 
   @override
   String get storyIntroHelp =>
-      'Jak tamita bintang jih sajan-sajan. Keuneuk kah bantu lôn, Komandan?';
+      'Jak tamita bintang jih sajan-sajan. Keuneuk kah bantu lon, Komandan?';
 
   @override
   String get storyFly =>
-      'Tangki lôn ka meutamah bintang! Jak u planet nyang lheuh nyoe!';
+      'Tangki lon ka meutamah bintang! Jak u planet nyang lheuh nyoe!';
 
   @override
   String get storyArrivalDirections =>
-      'Kapai jih trôn bak planet nyang peunoh papan peutunjôk. Arah jih u pat-pat mantong!';
+      'Kapai jih tron bak planet nyang peunoh papan peutunjok. Arah jih u pat-pat mantong!';
 
   @override
   String get storyArrivalDirectionsKoba =>
-      'Lôn beujak u pat? Peuleumah ngon panah: u keue, u wie, atawa u uneun!';
+      'Lon beujak u pat? Peuleumah ngon panah: u keue, u wie, atawa u uneun!';
 
   @override
   String get storyArrivalSequencing =>
-      'Di sinoe, bintang jih na sapanjang jalan nyang meubeulôk-beulôk.';
+      'Di sinoe, bintang jih na sapanjang jalan nyang meubeulok-beulok.';
 
   @override
   String get storyArrivalSequencingKoba =>
-      'Lôn peureulèe mandum langkah jih meuurôt, sa-sa!';
+      'Lon peureulee mandum langkah jih meuurot, sa-sa!';
 
   @override
   String get storyArrivalLoops =>
-      'Bak planet nyoe, jalan jih u keue, beulôk, u keue, beulôk, meu-ulang-ulang.';
+      'Bak planet nyoe, jalan jih u keue, beulok, u keue, beulok, meu-ulang-ulang.';
 
   @override
   String get storyArrivalLoopsKoba =>
@@ -726,27 +726,27 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get storyArrivalFunctions =>
-      'Koba jiteumèe blok ajaib nyang meukilat bak tanoh.';
+      'Koba jiteumee blok ajaib nyang meukilat bak tanoh.';
 
   @override
   String get storyArrivalFunctionsKoba =>
-      'Blok nyoe jeuet jiingat gerakan lôn! Peurunoe sigo, lheuh nyan pakè beule go.';
+      'Blok nyoe jeuet jiingat gerakan lon! Peurunoe sigo, lheuh nyan pake beule go.';
 
   @override
   String get storyArrivalConditions =>
-      'Kabôt teubai jitôp planet nyoe. Koba hana jeuet jikalon jalan jih!';
+      'Kabot teubai jitop planet nyoe. Koba hana jeuet jikalon jalan jih!';
 
   @override
   String get storyArrivalConditionsKoba =>
-      'Lôn peuudép lampu lôn ngon lôn kalon u keue sigohlom lôn melangkah.';
+      'Lon peuudep lampu lon ngon lon kalon u keue sigohlom lon melangkah.';
 
   @override
   String get storyArrivalVariables =>
-      'Bak planet nyoe, Koba jiteumèe kotak ubit ngon angka.';
+      'Bak planet nyoe, Koba jiteumee kotak ubit ngon angka.';
 
   @override
   String get storyArrivalVariablesKoba =>
-      'Kotak nyoe jiingat angka! Angka jih jipeugah padum langkah lôn jak.';
+      'Kotak nyoe jiingat angka! Angka jih jipeugah padum langkah lon jak.';
 
   @override
   String get storyArrivalDebugging =>
@@ -754,15 +754,15 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get storyArrivalDebuggingKoba =>
-      'Blok nyoe goh lom pah. Jak tamita nyang peureulèe peugöt!';
+      'Blok nyoe goh lom pah. Jak tamita nyang peureulee peugot!';
 
   @override
   String get storyArrivalUntil =>
-      'Jeuôh, jeuôh that, na bandéra bak ujông jalan nyang panyang.';
+      'Jeuoh, jeuoh that, na bandera bak ujong jalan nyang panyang.';
 
   @override
   String get storyArrivalUntilKoba =>
-      'Langkah jih le that keu bileung! Lôn jak laju mantong trôk u bandéra.';
+      'Langkah jih le that keu bileung! Lon jak laju mantong trok u bandera.';
 
   @override
   String get storyArrivalOtherwise =>
@@ -770,15 +770,15 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get storyArrivalOtherwiseKoba =>
-      'Meunyo jalan jih soh, lôn jak u keue. Meunyo hana, lôn beulôk!';
+      'Meunyo jalan jih soh, lon jak u keue. Meunyo hana, lon beulok!';
 
   @override
   String get storyEnding =>
-      'Bintang akhé ka theureubang woe. Tangki Koba ka peunoh!';
+      'Bintang akhe ka theureubang woe. Tangki Koba ka peunoh!';
 
   @override
   String get storyEndingKoba =>
-      'Teurimong gaséh, Komandan! Kah ka kabantu lôn meuteumèe mandum bintang.';
+      'Teurimong gaseh, Komandan! Kah ka kabantu lon meuteumee mandum bintang.';
 
   @override
   String get storyEndingMore =>
@@ -789,86 +789,86 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get storyNewPlanet =>
-      'Wuusss! Angèn angkasa jipeu-ayôn padum boh bintang nibak tangki, u planet nyang goh lom meuteumèe.';
+      'Wuusss! Angen angkasa jipeu-ayon padum boh bintang nibak tangki, u planet nyang goh lom meuteumee.';
 
   @override
   String get storyNewPlanetKoba =>
-      'Planet barô! Keuneuk kah bantu lôn mita bintang lom, Komandan?';
+      'Planet baro! Keuneuk kah bantu lon mita bintang lom, Komandan?';
 
   @override
   String get storyThanksDirections =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn wie ngon uneun, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon wie ngon uneun, Komandan!';
 
   @override
   String get storyThanksSequencing =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn langkah meuurôt, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon langkah meuurot, Komandan!';
 
   @override
   String get storyThanksLoops =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn meu-ulang, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon meu-ulang, Komandan!';
 
   @override
   String get storyThanksFunctions =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn Blok Ajaib, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon Blok Ajaib, Komandan!';
 
   @override
   String get storyThanksConditions =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn kalon u keue, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon kalon u keue, Komandan!';
 
   @override
   String get storyThanksVariables =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn Kotak Langkah, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon Kotak Langkah, Komandan!';
 
   @override
   String get storyThanksDebugging =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn peugöt blok, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon peugot blok, Komandan!';
 
   @override
   String get storyThanksUntil =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn jak trôk u bandéra, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon jak trok u bandera, Komandan!';
 
   @override
   String get storyThanksOtherwise =>
-      'Peunoh lom! Teurimong gaséh ka kapeurunoe lôn peue nyang lôn peugöt meunyo hana, Komandan!';
+      'Peunoh lom! Teurimong gaseh ka kapeurunoe lon peue nyang lon peugot meunyo hana, Komandan!';
 
   @override
   String get watchHow => 'Kalon cara jih';
 
   @override
   String get tutorialDirections =>
-      'Teukan blok panah keu peugah bak lôn u pat lôn beujak: u keue, beulôk u wie, beulôk u uneun. Lheuh nyan teukan Jak!';
+      'Teukan blok panah keu peugah bak lon u pat lon beujak: u keue, beulok u wie, beulok u uneun. Lheuh nyan teukan Jak!';
 
   @override
   String get tutorialSequencing =>
-      'Susôn langkah jih meuurôt, sa-sa, trôk u bandéra.';
+      'Suson langkah jih meuurot, sa-sa, trok u bandera.';
 
   @override
   String get tutorialLoops =>
-      'Langkah jih sama laju? Peutamong u blok ulang, lheuh nyan piléh padum go!';
+      'Langkah jih sama laju? Peutamong u blok ulang, lheuh nyan pileh padum go!';
 
   @override
   String get tutorialFunctions =>
-      'Peugöt blok ajaib kah keudroe bak baréh bintang. Lheuh nyan pakè bintang jih beule go!';
+      'Peugot blok ajaib kah keudroe bak bareh bintang. Lheuh nyan pake bintang jih beule go!';
 
   @override
   String get tutorialConditions =>
-      'Blok mata jikalon u keue. Meunyo jalan jih soh, lôn jak u keue. Meunyo hana, lôn preh. Jadi blok nyang sama jeuet bak tiep-tiep peta!';
+      'Blok mata jikalon u keue. Meunyo jalan jih soh, lon jak u keue. Meunyo hana, lon preh. Jadi blok nyang sama jeuet bak tiep-tiep peta!';
 
   @override
   String get tutorialVariables =>
-      'Keubah angka lam Kotak Langkah. Lheuh nyan pakè langkah keu jak sabe le nyan!';
+      'Keubah angka lam Kotak Langkah. Lheuh nyan pake langkah keu jak sabe le nyan!';
 
   @override
   String get tutorialDebugging =>
-      'Blok nyoe goh lom pah. Teukan Jak ngon kalon beugot. Lheuh nyan teukan blok nyang peureulèe peugöt, ngon teukan blok nyang beutôi!';
+      'Blok nyoe goh lom pah. Teukan Jak ngon kalon beugot. Lheuh nyan teukan blok nyang peureulee peugot, ngon teukan blok nyang beutoi!';
 
   @override
   String get tutorialUntil =>
-      'Ulang trôk u bandéra jijak laju keudroe, jadi kah hana peureulèe bileung!';
+      'Ulang trok u bandera jijak laju keudroe, jadi kah hana peureulee bileung!';
 
   @override
   String get hintPattern =>
-      'Blok-blok nyoe jiteuka lom ngon lom. Cuba pakè blok ulang!';
+      'Blok-blok nyoe jiteuka lom ngon lom. Cuba pake blok ulang!';
 
   @override
   String get hintAgain => 'Teukan lampu lom keu kalon blok nyang meu-ulang!';
@@ -891,37 +891,37 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get tourPalette =>
-      'Nyoe blok-blok kah. Teukan saboh, atawa tarék u program kah.';
+      'Nyoe blok-blok kah. Teukan saboh, atawa tarek u program kah.';
 
   @override
   String get tourProgram =>
-      'Program kah na di sinoe. Lôn jalankan blok jih meuurôt, nibak nyang phôn. Teukan blok keu gantoe.';
+      'Program kah na di sinoe. Lon jalankan blok jih meuurot, nibak nyang phon. Teukan blok keu gantoe.';
 
   @override
-  String get tourGo => 'Teukan Jak, ngon lôn ikôt blok-blok kah!';
+  String get tourGo => 'Teukan Jak, ngon lon ikot blok-blok kah!';
 
   @override
   String get tourStep =>
-      'Tumbôi nyoe jijalankan saboh blok tiep go, jadi kah jeuet kakalon beugot.';
+      'Tumboi nyoe jijalankan saboh blok tiep go, jadi kah jeuet kakalon beugot.';
 
   @override
-  String get tourReset => 'Nyang nyoe jiba lôn woe u phôn.';
+  String get tourReset => 'Nyang nyoe jiba lon woe u phon.';
 
   @override
   String get tourHint =>
-      'Bingông? Lheuh padum go cuba, lampu jiudép. Tiep go teukan jipeuleumah bacut treuk: phôn jalan jih, lheuh nyan blok pat nyang peureulèe gantoe. Tanda ubit bak lampu jipeuleumah peue nyang lheuh nyoe.';
+      'Bingong? Lheuh padum go cuba, lampu jiudep. Tiep go teukan jipeuleumah bacut treuk: phon jalan jih, lheuh nyan blok pat nyang peureulee gantoe. Tanda ubit bak lampu jipeuleumah peue nyang lheuh nyoe.';
 
   @override
   String get tourFollow =>
-      'Nyoe jiputa peta seuperpeuet putaran tiep go, jadi kah jeuet kakalon nibak sisi lôn.';
+      'Nyoe jiputa peta seuperpeuet putaran tiep go, jadi kah jeuet kakalon nibak sisi lon.';
 
   @override
   String get tourBoards =>
-      'Di sinoe na padum boh peta. Teukan titék keu kalon tiep peta. Blok kah beujiba lôn trôk u bandéra bak tiep-tiep peta!';
+      'Di sinoe na padum boh peta. Teukan titek keu kalon tiep peta. Blok kah beujiba lon trok u bandera bak tiep-tiep peta!';
 
   @override
   String get tourListen =>
-      'Teukan speaker keu deungo lom peue nyang beukapeugöt.';
+      'Teukan speaker keu deungo lom peue nyang beukapeugot.';
 
   @override
   String get tourWarmUpListen =>
@@ -929,26 +929,26 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get tourWarmUpAnswer =>
-      'Lheuh nyan teukan gamba nyang kah pikée beutôi!';
+      'Lheuh nyan teukan gamba nyang kah pikee beutoi!';
 
   @override
   String get tourWarmUpSteps =>
-      'Bekaih gaki jipeuleumah padum jeuôh kah ka meu\'en.';
+      'Bekaih gaki jipeuleumah padum jeuoh kah ka meu\'en.';
 
   @override
-  String get tourBlockForward => 'Panah ijô jipeujak lôn u keue sa langkah.';
+  String get tourBlockForward => 'Panah ijo jipeujak lon u keue sa langkah.';
 
   @override
   String get tourBlockTurnLeft =>
-      'Panah biru jipeubeulôk lôn u wie, hana meupinah.';
+      'Panah biru jipeubeulok lon u wie, hana meupinah.';
 
   @override
   String get tourBlockTurnRight =>
-      'Panah oranye jipeubeulôk lôn u uneun, hana meupinah.';
+      'Panah oranye jipeubeulok lon u uneun, hana meupinah.';
 
   @override
   String get tourBlockRepeat =>
-      'Blok ulang jijalankan blok lam jih meu-ulang go. Teukan kurang atawa tamah keu piléh padum go.';
+      'Blok ulang jijalankan blok lam jih meu-ulang go. Teukan kurang atawa tamah keu pileh padum go.';
 
   @override
   String get tourBlockSetSteps =>
@@ -956,7 +956,7 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get tourBlockMoveSteps =>
-      'Panah nyoe jipeujak lôn u keue sabe le angka lam Kotak Langkah.';
+      'Panah nyoe jipeujak lon u keue sabe le angka lam Kotak Langkah.';
 
   @override
   String get tourBlockIfPathClear =>
@@ -964,31 +964,31 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get tourBlockIfElse =>
-      'Blok mata nyoe na dua baréh: baréh ateuh jijak meunyo jalan jih soh, baréh yup meunyo hana.';
+      'Blok mata nyoe na dua bareh: bareh ateuh jijak meunyo jalan jih soh, bareh yup meunyo hana.';
 
   @override
   String get tourBlockUntilGoal =>
-      'Ulang trôk u bandéra jijalankan blok lam jih laju-laju, trôk lôn trôk u bandéra.';
+      'Ulang trok u bandera jijalankan blok lam jih laju-laju, trok lon trok u bandera.';
 
   @override
   String get tourBlockStar =>
-      'Blok bintang jijalankan blok bak baréh bintang kah: blok ajaib peugöt kah keudroe.';
+      'Blok bintang jijalankan blok bak bareh bintang kah: blok ajaib peugot kah keudroe.';
 
   @override
   String get tourNext => 'Lanjut';
 
   @override
-  String get tourDone => 'Ka meuphôm!';
+  String get tourDone => 'Ka meuphom!';
 
   @override
   String get tourHelp => 'Pakriban cara jih?';
 
   @override
-  String get breakTitle => 'Watèe meupiôh!';
+  String get breakTitle => 'Watee meupioh!';
 
   @override
   String get breakBody =>
-      'Kah ka meu\'en ngon hebat. Peupiôh mata kah, cuba meuregang, lheuh nyan meu\'en lom teuma.';
+      'Kah ka meu\'en ngon hebat. Peupioh mata kah, cuba meuregang, lheuh nyan meu\'en lom teuma.';
 
   @override
   String get breakHome => 'Woe u ureueng meu\'en';
@@ -998,14 +998,14 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get breakVoice =>
-      'Watèe meupiôh! Kah ka meu\'en ngon hebat. Peupiôh mata kah, cuba meuregang, lheuh nyan meu\'en lom teuma.';
+      'Watee meupioh! Kah ka meu\'en ngon hebat. Peupioh mata kah, cuba meuregang, lheuh nyan meu\'en lom teuma.';
 
   @override
-  String get breakReminder => 'Peuingat meupiôh';
+  String get breakReminder => 'Peuingat meupioh';
 
   @override
   String get breakReminderHint =>
-      'Lheuh meu\'en teka-teki sabe treb nyoe, aneuk geujak meupiôh. Ureueng tuha mantong nyang jeuet geulanjut.';
+      'Lheuh meu\'en teka-teki sabe treb nyoe, aneuk geujak meupioh. Ureueng tuha mantong nyang jeuet geulanjut.';
 
   @override
   String get breakOff => 'Mate';
@@ -1051,7 +1051,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get warmUpReading => 'Beuet';
 
   @override
-  String get warmUpPick => 'Piléh meu\'en!';
+  String get warmUpPick => 'Pileh meu\'en!';
 
   @override
   String get warmUpDone => 'Hebat that meu\'en kah! Meu\'en lom?';
@@ -1066,10 +1066,10 @@ class AppLocalizationsAce extends AppLocalizations {
   String get promptColorBlue => 'Teukan nyang biru!';
 
   @override
-  String get promptColorGreen => 'Teukan nyang ijô!';
+  String get promptColorGreen => 'Teukan nyang ijo!';
 
   @override
-  String get promptColorYellow => 'Teukan nyang kunèng!';
+  String get promptColorYellow => 'Teukan nyang kuneng!';
 
   @override
   String get promptShapeCircle => 'Teukan lingkaran!';
@@ -1081,7 +1081,7 @@ class AppLocalizationsAce extends AppLocalizations {
   String get promptShapeTriangle => 'Teukan segitiga!';
 
   @override
-  String get promptShapeHeart => 'Teukan até!';
+  String get promptShapeHeart => 'Teukan ate!';
 
   @override
   String playLevel(int number) {
@@ -1098,10 +1098,10 @@ class AppLocalizationsAce extends AppLocalizations {
   String get stickersIslands => 'Planet';
 
   @override
-  String get stickerNotYet => 'Goh lom meuteumèe';
+  String get stickerNotYet => 'Goh lom meuteumee';
 
   @override
-  String get stickerGold => 'Mandum bintang ka meukumpôi!';
+  String get stickerGold => 'Mandum bintang ka meukumpoi!';
 
   @override
   String get blockIfElse => 'Meunyo soh, meunyo hana';
@@ -1117,11 +1117,11 @@ class AppLocalizationsAce extends AppLocalizations {
 
   @override
   String get playGoalOtherwise =>
-      'Pakè blok mata ngon dua baréh: meunyo jalan jih soh, jak sa langkah. Meunyo hana, beulôk!';
+      'Pake blok mata ngon dua bareh: meunyo jalan jih soh, jak sa langkah. Meunyo hana, beulok!';
 
   @override
   String get tutorialOtherwise =>
-      'Mata jikalon u keue. Meunyo jalan jih soh, jak sa langkah. Meunyo hana, beulôk. Lheuh nyan mandum jih meu-ulang trôk u bandéra!';
+      'Mata jikalon u keue. Meunyo jalan jih soh, jak sa langkah. Meunyo hana, beulok. Lheuh nyan mandum jih meu-ulang trok u bandera!';
 
   @override
   String starsEarned(int count) {

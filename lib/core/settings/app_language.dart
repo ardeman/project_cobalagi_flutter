@@ -10,7 +10,7 @@
 /// language) only once it is [voiced]: every voice clip recorded in it.
 enum AppLanguage {
   indonesian('id', 'Bahasa Indonesia'),
-  acehnese('ace', 'Bahsa Acèh', fallback: 'id', voiced: false),
+  acehnese('ace', 'Bahsa Aceh', fallback: 'id', voiced: false),
   minangkabau('min', 'Baso Minang', fallback: 'id', voiced: false),
   javanese('jv', 'Basa Jawa', fallback: 'id'),
   sundanese('su', 'Basa Sunda', fallback: 'id'),

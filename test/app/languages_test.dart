@@ -27,6 +27,34 @@ void main() {
     });
   }
 
+  // Children learn to read with the Indonesian alphabet, so regional
+  // languages skip spelling marks such as é or ô.
+  for (final language in AppLanguage.values) {
+    test('${language.name} uses only letters taught in Indonesian', () {
+      final arb =
+          jsonDecode(
+                File(
+                  'lib/app/l10n/app_${language.code}.arb',
+                ).readAsStringSync(),
+              )
+              as Map<String, Object?>;
+      final marked = [
+        for (final MapEntry(:key, :value) in arb.entries)
+          if (!key.startsWith('@') &&
+              value is String &&
+              RegExp('[À-ÖØ-öø-ÿ]').hasMatch(value))
+            key,
+      ];
+      expect(marked, isEmpty);
+    });
+  }
+  // The picker names each language in its own words, with the same letters.
+  test('language names use only letters taught in Indonesian', () {
+    for (final language in AppLanguage.values) {
+      expect(language.name, isNot(matches('[À-ÖØ-öø-ÿ]')));
+    }
+  });
+
   test('every language file is in the picker', () {
     final codes = [
       for (final file in Directory('lib/app/l10n').listSync())

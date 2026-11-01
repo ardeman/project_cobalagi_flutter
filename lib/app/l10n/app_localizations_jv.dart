@@ -215,17 +215,17 @@ class AppLocalizationsJv extends AppLocalizations {
   String get feedbackBumped => 'Ups, ana sing ngalangi.';
 
   @override
-  String get feedbackStoppedShort => 'Meh wae! Terus mlaku nganti gendéra.';
+  String get feedbackStoppedShort => 'Meh wae! Terus mlaku nganti gendera.';
 
   @override
   String get feedbackOtherBoard =>
-      'Peta kuwi wis bisa! Peta iki béda, dadi delengen ngarep sadurunge saben langkah.';
+      'Peta kuwi wis bisa! Peta iki beda, dadi delengen ngarep sadurunge saben langkah.';
 
   @override
   String get feedbackMissedStars => 'Klumpukna kabeh lintang dhisik.';
 
   @override
-  String get feedbackTooManySteps => 'Langkahé kakehan! Coba luwih sithik.';
+  String get feedbackTooManySteps => 'Langkahe kakehan! Coba luwih sithik.';
 
   @override
   String get home => 'Ngarep';
@@ -258,10 +258,10 @@ class AppLocalizationsJv extends AppLocalizations {
   String get decisionReturn => 'Bali menyang petualanganmu!';
 
   @override
-  String get decisionMapComplete => 'Kowé wis njelajahi kabeh planet!';
+  String get decisionMapComplete => 'Kowe wis njelajahi kabeh planet!';
 
   @override
-  String get hint => 'Tuduhna dalané';
+  String get hint => 'Tuduhna dalane';
 
   @override
   String get hintNextPattern => 'Tuduhna blok sing bola-bali';
@@ -276,7 +276,7 @@ class AppLocalizationsJv extends AppLocalizations {
   String get repeatFewer => 'Kurangi sepisan';
 
   @override
-  String get dropBlocksHere => 'Selehna blok ing kéné';
+  String get dropBlocksHere => 'Selehna blok ing kene';
 
   @override
   String get pretestWelcome => 'Hai, aku Koba! Ayo dolanan pemanasan dhisik!';
@@ -301,17 +301,17 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get promptTurnLeft =>
-      'Panahé menggok ngiwa. Saiki nuding menyang endi?';
+      'Panahe menggok ngiwa. Saiki nuding menyang endi?';
 
   @override
   String get promptTurnRight =>
-      'Panahé menggok nengen. Saiki nuding menyang endi?';
+      'Panahe menggok nengen. Saiki nuding menyang endi?';
 
   @override
-  String get promptPattern => 'Apa sing sabanjuré?';
+  String get promptPattern => 'Apa sing sabanjure?';
 
   @override
-  String get promptSequencing => 'Langkah endi sing tekan gendéra?';
+  String get promptSequencing => 'Langkah endi sing tekan gendera?';
 
   @override
   String get pretestDone => 'Rampung! Petualanganmu diwiwiti saiki.';
@@ -320,7 +320,7 @@ class AppLocalizationsJv extends AppLocalizations {
   String get startAdventure => 'Ayo!';
 
   @override
-  String get wordSun => 'srengéngé';
+  String get wordSun => 'srengenge';
 
   @override
   String get wordStar => 'lintang';
@@ -390,7 +390,7 @@ class AppLocalizationsJv extends AppLocalizations {
   String get cheerCelebrate2 => 'Keren!';
 
   @override
-  String get cheerCelebrate3 => 'Kowé kasil!';
+  String get cheerCelebrate3 => 'Kowe kasil!';
 
   @override
   String get cheerCelebrate4 => 'Super!';
@@ -402,10 +402,10 @@ class AppLocalizationsJv extends AppLocalizations {
   String get cheerCelebrate6 => 'Luar biasa!';
 
   @override
-  String get cheerEncourage1 => 'Pikirané apik!';
+  String get cheerEncourage1 => 'Pikirane apik!';
 
   @override
-  String get cheerEncourage2 => 'Usahané apik!';
+  String get cheerEncourage2 => 'Usahane apik!';
 
   @override
   String get cheerEncourage3 => 'Ayo terus!';
@@ -414,37 +414,37 @@ class AppLocalizationsJv extends AppLocalizations {
   String get cheerEncourage4 => 'Suwun wis nyoba!';
 
   @override
-  String get cheerEncourage5 => 'Kowé hebat!';
+  String get cheerEncourage5 => 'Kowe hebat!';
 
   @override
   String get donateExplainer =>
-      'Coba Lagi gratis. Donasi pira waé mbukak fitur sponsor kanggo kulawargamu lan mbantu awaké déwé nggawé luwih akèh petualangan.';
+      'Coba Lagi gratis. Donasi pira wae mbukak fitur sponsor kanggo kulawargamu lan mbantu awake dewe nggawe luwih akeh petualangan.';
 
   @override
   String get donateUnavailable => 'Donasi ora ana ing piranti iki.';
 
   @override
-  String get restoreDonation => 'Balèkna donasi sadurungé';
+  String get restoreDonation => 'Balekna donasi sadurunge';
 
   @override
   String get tipExplainer =>
-      'Coba Lagi gratis. Tip pira waé mbukak fitur sponsor kanggo kulawargamu lan mbantu awaké déwé nggawé luwih akèh petualangan.';
+      'Coba Lagi gratis. Tip pira wae mbukak fitur sponsor kanggo kulawargamu lan mbantu awake dewe nggawe luwih akeh petualangan.';
 
   @override
   String get tipsUnavailable => 'Tip ora ana ing piranti iki.';
 
   @override
-  String get restorePurchases => 'Balèkna sing wis dituku';
+  String get restorePurchases => 'Balekna sing wis dituku';
 
   @override
-  String get haveUnlockCode => 'Duwé kode?';
+  String get haveUnlockCode => 'Duwe kode?';
 
   @override
   String get buyUnlockCode => 'Tuku kode';
 
   @override
   String get buyUnlockCodeExplainer =>
-      'Tuku kode ing situs kita. Kodené dikirim lewat email; banjur lebokna lewat \"Duwé kode?\".';
+      'Tuku kode ing situs kita. Kodene dikirim lewat email; banjur lebokna lewat \"Duwe kode?\".';
 
   @override
   String get unlockCode => 'Kode';
@@ -464,22 +464,22 @@ class AppLocalizationsJv extends AppLocalizations {
   String get thanksForSupport => 'Suwun wis ndhukung Coba Lagi!';
 
   @override
-  String get playGoal => 'Tulungi aku tekan gendéra!';
+  String get playGoal => 'Tulungi aku tekan gendera!';
 
   @override
   String get playGoalStars =>
-      'Klumpukna kabeh lintang, banjur menyang gendéra!';
+      'Klumpukna kabeh lintang, banjur menyang gendera!';
 
   @override
-  String get playGoalLoops => 'Nganggo blok baleni supaya tekan gendéra!';
+  String get playGoalLoops => 'Nganggo blok baleni supaya tekan gendera!';
 
   @override
   String get playGoalFunctions =>
-      'Isi blok lintang, banjur nganggo bola-bali supaya tekan gendéra!';
+      'Isi blok lintang, banjur nganggo bola-bali supaya tekan gendera!';
 
   @override
   String get playHowTo =>
-      'Sérét blok menyang kothak putih, banjur pencet Mlaku!';
+      'Seret blok menyang kothak putih, banjur pencet Mlaku!';
 
   @override
   String get backToIsland => 'Bali menyang planet';
@@ -496,20 +496,20 @@ class AppLocalizationsJv extends AppLocalizations {
   String get levelLocked => 'Durung kebukak';
 
   @override
-  String get answerWas => 'Jawabané sing iki!';
+  String get answerWas => 'Jawabane sing iki!';
 
   @override
   String get conceptConditions => 'Deleng ngarep';
 
   @override
-  String get blockUntilGoal => 'Baleni nganti gendéra';
+  String get blockUntilGoal => 'Baleni nganti gendera';
 
   @override
-  String get blockIfPathClear => 'Yèn kosong';
+  String get blockIfPathClear => 'Yen kosong';
 
   @override
   String get playGoalConditions =>
-      'Delengen ngarep! Selehna blok maju ing njero blok mripat. Blok kuwi mung maju yèn dalan ing ngarep kosong. Blokmu kudu kasil ing saben peta!';
+      'Delengen ngarep! Selehna blok maju ing njero blok mripat. Blok kuwi mung maju yen dalan ing ngarep kosong. Blokmu kudu kasil ing saben peta!';
 
   @override
   String get updateAvailableTitle => 'Ana nganyari';
@@ -533,7 +533,7 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get codeTabHint =>
-      'Bocah bisa ngetik kode saliyané nganggo blok gambar. Dolanan pemanasan nguripaké kanggo bocah sing wis bisa maca.';
+      'Bocah bisa ngetik kode saliyane nganggo blok gambar. Dolanan pemanasan nguripake kanggo bocah sing wis bisa maca.';
 
   @override
   String get editorBlocks => 'Blok';
@@ -543,7 +543,7 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get codeDrafts =>
-      'Saben editor nyimpen draf déwé. Draf kode kapisan asalé saka blokmu.';
+      'Saben editor nyimpen draf dewe. Draf kode kapisan asale saka blokmu.';
 
   @override
   String get codeHelp => 'Pandhuan kode';
@@ -553,17 +553,17 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get codeGuide =>
-      'Demok préntah kanggo nambahaké, utawa ketik déwé. Jeneng préntah tetep padha ing kabeh basa. Pungkasi aksi nganggo (); lan selehna isi baleni lan pamriksan ing antarané kurung kurawal buka lan tutup. Cacahé baleni 1–9. Gawé Blok Ajaib nganggo define star, banjur lakokna nganggo star();. // miwiti komentar. Saben préntah diétung siji blok, kalebu préntah ing njero kurung kurawal. Simpen angka nganggo steps = 3; lan nganggo move(steps); kanggo maju semono. Angkané tetep padha nganti kowé nyimpen sing anyar. Simpen sadurungé nganggo. until_flag mbaleni isi kurung kurawalé nganti robot tekan gendéra, tanpa étungan.';
+      'Demok prentah kanggo nambahake, utawa ketik dewe. Jeneng prentah tetep padha ing kabeh basa. Pungkasi aksi nganggo (); lan selehna isi baleni lan pamriksan ing antarane kurung kurawal buka lan tutup. Cacahe baleni 1–9. Gawe Blok Ajaib nganggo define star, banjur lakokna nganggo star();. // miwiti komentar. Saben prentah dietung siji blok, kalebu prentah ing njero kurung kurawal. Simpen angka nganggo steps = 3; lan nganggo move(steps); kanggo maju semono. Angkane tetep padha nganti kowe nyimpen sing anyar. Simpen sadurunge nganggo. until_flag mbaleni isi kurung kurawale nganti robot tekan gendera, tanpa etungan.';
 
   @override
   String get codeSyntax =>
-      'Priksa jeneng préntah, tandha kurung, kurung kurawal, lan titik koma.';
+      'Priksa jeneng prentah, tandha kurung, kurung kurawal, lan titik koma.';
 
   @override
   String get codeNumber => 'Pilih angka saka 1 nganti 9.';
 
   @override
-  String get codeDuplicateStar => 'Nganggo siji bagéan define star waé.';
+  String get codeDuplicateStar => 'Nganggo siji bagean define star wae.';
 
   @override
   String get codeNestedStar =>
@@ -571,31 +571,31 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get codeTooLarge =>
-      'Coba program sing luwih cendhak kanthi bagéan bertingkat sing luwih sithik.';
+      'Coba program sing luwih cendhak kanthi bagean bertingkat sing luwih sithik.';
 
   @override
-  String get codeDisallowed => 'Nganggo préntah sing ana kanggo teka-teki iki.';
+  String get codeDisallowed => 'Nganggo prentah sing ana kanggo teka-teki iki.';
 
   @override
   String get codeLimit =>
-      'Coba kurangi préntah supaya cocog karo watesan blok.';
+      'Coba kurangi prentah supaya cocog karo watesan blok.';
 
   @override
-  String get codeEmptyBody => 'Tambahna préntah ing njero kurung kurawal.';
+  String get codeEmptyBody => 'Tambahna prentah ing njero kurung kurawal.';
 
   @override
   String get codeEmptyStar =>
-      'Tambahna préntah menyang define star sadurungé nganggo star();.';
+      'Tambahna prentah menyang define star sadurunge nganggo star();.';
 
   @override
   String get codeRecursiveStar =>
       'Nganggo langkah, menggok, baleni, utawa pamriksan ing njero define star.';
 
   @override
-  String get codeReady => 'Siap dilakokaké';
+  String get codeReady => 'Siap dilakokake';
 
   @override
-  String get codeStart => 'Tambahna préntah kanggo miwiti.';
+  String get codeStart => 'Tambahna prentah kanggo miwiti.';
 
   @override
   String codeLine(int line, String message) {
@@ -604,25 +604,25 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String codeRunningLine(int line) {
-    return 'Nglakokaké baris $line';
+    return 'Nglakokake baris $line';
   }
 
   @override
-  String get codeDefineStar => 'Gawé blokku';
+  String get codeDefineStar => 'Gawe blokku';
 
   @override
-  String get conceptUntil => 'Nganti gendéra';
+  String get conceptUntil => 'Nganti gendera';
 
   @override
   String get playGoalUntil =>
-      'Nganggo blok baleni nganti gendéra: blok kuwi terus mlaku déwé, dadi kowé ora perlu ngétung!';
+      'Nganggo blok baleni nganti gendera: blok kuwi terus mlaku dewe, dadi kowe ora perlu ngetung!';
 
   @override
-  String get conceptDebugging => 'Bénakna!';
+  String get conceptDebugging => 'Benakna!';
 
   @override
   String get playGoalDebugging =>
-      'Ups, blok iki durung pas! Pencet Mlaku, delengen apa sing kedadéan, banjur bénakna.';
+      'Ups, blok iki durung pas! Pencet Mlaku, delengen apa sing kedadean, banjur benakna.';
 
   @override
   String get conceptVariables => 'Kothak Langkah';
@@ -637,11 +637,11 @@ class AppLocalizationsJv extends AppLocalizations {
   String get stepsFewer => 'Simpen angka luwih cilik';
 
   @override
-  String get stepsMore => 'Simpen angka luwih gedhé';
+  String get stepsMore => 'Simpen angka luwih gedhe';
 
   @override
   String get playGoalVariables =>
-      'Simpen angka ing Kothak Langkahmu, banjur nganggo kanggo maju semono! Angkané bisa dienggo maneh utawa diganti. Tekan gendéra lan klumpukna kabeh lintang.';
+      'Simpen angka ing Kothak Langkahmu, banjur nganggo kanggo maju semono! Angkane bisa dienggo maneh utawa diganti. Tekan gendera lan klumpukna kabeh lintang.';
 
   @override
   String stepBoxValue(String value) {
@@ -650,11 +650,11 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get codeUnsetSteps =>
-      'Simpen angka nganggo steps = 2; sadurungé nganggo move(steps);.';
+      'Simpen angka nganggo steps = 2; sadurunge nganggo move(steps);.';
 
   @override
   String get variableHint =>
-      'Simpen angka dhisik, banjur nganggo kothak kanggo maju. Angkané tetep padha nganti kowé ngganti.';
+      'Simpen angka dhisik, banjur nganggo kothak kanggo maju. Angkane tetep padha nganti kowe ngganti.';
 
   @override
   String get tutorialTitle => 'Delengen aku!';
@@ -669,45 +669,45 @@ class AppLocalizationsJv extends AppLocalizations {
   String get tutorialSkip => 'Liwati';
 
   @override
-  String get storyTitle => 'Kapal lintangé Koba';
+  String get storyTitle => 'Kapal lintange Koba';
 
   @override
-  String get storyShelfIntro => 'Wiwitané crita';
+  String get storyShelfIntro => 'Wiwitane crita';
 
   @override
   String get storyShelfNewPlanet => 'Planet anyar';
 
   @override
-  String get storyShelfEnding => 'Tangkiné kebak!';
+  String get storyShelfEnding => 'Tangkine kebak!';
 
   @override
-  String get storyShelfFullAgain => 'Tangkiné kebak maneh';
+  String get storyShelfFullAgain => 'Tangkine kebak maneh';
 
   @override
   String get storyIntroFly =>
-      'Iki kapal lintangé Koba. Kapal iki mabur nganggo lintang!';
+      'Iki kapal lintange Koba. Kapal iki mabur nganggo lintang!';
 
   @override
   String get storyIntroWind =>
-      'Wuusss! Angin angkasa nyebul lintang saka tangkiné, menyang kabeh planet.';
+      'Wuusss! Angin angkasa nyebul lintang saka tangkine, menyang kabeh planet.';
 
   @override
-  String get storyIntroLand => 'Lintangé entèk, dadi kapalé kudu mudhun.';
+  String get storyIntroLand => 'Lintange entek, dadi kapale kudu mudhun.';
 
   @override
   String get storyIntroBump => 'Ups, ana watu! Ora apa-apa. Aku nyoba maneh!';
 
   @override
   String get storyIntroHelp =>
-      'Ayo golèk lintangé bareng. Kowé gelem nulungi aku, Komandan?';
+      'Ayo golek lintange bareng. Kowe gelem nulungi aku, Komandan?';
 
   @override
   String get storyFly =>
-      'Tangkiku tambah lintang! Ayo menyang planet sabanjuré!';
+      'Tangkiku tambah lintang! Ayo menyang planet sabanjure!';
 
   @override
   String get storyArrivalDirections =>
-      'Kapalé mudhun ing planet sing kebak papan pitunjuk. Arahé menyang ngendi-endi!';
+      'Kapale mudhun ing planet sing kebak papan pitunjuk. Arahe menyang ngendi-endi!';
 
   @override
   String get storyArrivalDirectionsKoba =>
@@ -715,43 +715,43 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get storyArrivalSequencing =>
-      'Ing kéné, lintangé ana ing sadawané dalan sing menggak-menggok.';
+      'Ing kene, lintange ana ing sadawane dalan sing menggak-menggok.';
 
   @override
   String get storyArrivalSequencingKoba =>
-      'Aku butuh kabeh langkahé urut, siji-siji!';
+      'Aku butuh kabeh langkahe urut, siji-siji!';
 
   @override
   String get storyArrivalLoops =>
-      'Ing planet iki, dalané maju, menggok, maju, menggok, terus bola-bali.';
+      'Ing planet iki, dalane maju, menggok, maju, menggok, terus bola-bali.';
 
   @override
   String get storyArrivalLoopsKoba =>
-      'Akèh banget langkahé! Ana dalan cepet, ora?';
+      'Akeh banget langkahe! Ana dalan cepet, ora?';
 
   @override
   String get storyArrivalFunctions =>
-      'Koba nemokaké blok ajaib sing gumebyar ing lemah.';
+      'Koba nemokake blok ajaib sing gumebyar ing lemah.';
 
   @override
   String get storyArrivalFunctionsKoba =>
-      'Blok iki bisa ngéling-éling obahku! Wulangen sepisan, banjur nganggo bola-bali.';
+      'Blok iki bisa ngeling-eling obahku! Wulangen sepisan, banjur nganggo bola-bali.';
 
   @override
   String get storyArrivalConditions =>
-      'Pedhut kandel nutupi planet iki. Koba ora bisa ndeleng dalané!';
+      'Pedhut kandel nutupi planet iki. Koba ora bisa ndeleng dalane!';
 
   @override
   String get storyArrivalConditionsKoba =>
-      'Aku nguripaké lampuku lan ndeleng ngarep sadurungé jumangkah.';
+      'Aku nguripake lampuku lan ndeleng ngarep sadurunge jumangkah.';
 
   @override
   String get storyArrivalVariables =>
-      'Ing planet iki, Koba nemokaké kothak cilik sing ana angkané.';
+      'Ing planet iki, Koba nemokake kothak cilik sing ana angkane.';
 
   @override
   String get storyArrivalVariablesKoba =>
-      'Kothak iki ngéling-éling angka! Angkané ngandhani pira langkahku.';
+      'Kothak iki ngeling-eling angka! Angkane ngandhani pira langkahku.';
 
   @override
   String get storyArrivalDebugging =>
@@ -759,46 +759,46 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get storyArrivalDebuggingKoba =>
-      'Blok iki durung pas. Ayo golèk sing kudu dibénakaké!';
+      'Blok iki durung pas. Ayo golek sing kudu dibenakake!';
 
   @override
   String get storyArrivalUntil =>
-      'Adoh, adoh banget, ana gendéra ing pucuké dalan sing dawa.';
+      'Adoh, adoh banget, ana gendera ing pucuke dalan sing dawa.';
 
   @override
   String get storyArrivalUntilKoba =>
-      'Langkahé kakehan kanggo diétung! Aku mlaku terus waé nganti gendéra.';
+      'Langkahe kakehan kanggo dietung! Aku mlaku terus wae nganti gendera.';
 
   @override
   String get storyArrivalOtherwise =>
-      'Dalané pecah dadi loro. Ing salah sijiné ana grumbul!';
+      'Dalane pecah dadi loro. Ing salah sijine ana grumbul!';
 
   @override
   String get storyArrivalOtherwiseKoba =>
-      'Yèn dalané kosong, aku maju. Yèn ora, aku menggok!';
+      'Yen dalane kosong, aku maju. Yen ora, aku menggok!';
 
   @override
   String get storyEnding =>
-      'Lintang pungkasan mabur mulih. Tangkiné Koba kebak!';
+      'Lintang pungkasan mabur mulih. Tangkine Koba kebak!';
 
   @override
   String get storyEndingKoba =>
-      'Suwun, Komandan! Kowé nulungi aku nemokaké kabeh lintang.';
+      'Suwun, Komandan! Kowe nulungi aku nemokake kabeh lintang.';
 
   @override
   String get storyEndingMore =>
-      'Saiki awaké déwé bisa mabur menyang ngendi waé. Ayo terus dolanan bareng!';
+      'Saiki awake dewe bisa mabur menyang ngendi wae. Ayo terus dolanan bareng!';
 
   @override
   String get storyFullAgain => 'Lintang-lintang mabur mulih menyang tangki.';
 
   @override
   String get storyNewPlanet =>
-      'Wuusss! Angin angkasa nyebul sawetara lintang saka tangki, menyang planet sing durung tau ditemokaké.';
+      'Wuusss! Angin angkasa nyebul sawetara lintang saka tangki, menyang planet sing durung tau ditemokake.';
 
   @override
   String get storyNewPlanetKoba =>
-      'Planet anyar! Kowé gelem nulungi aku golèk lintang maneh, Komandan?';
+      'Planet anyar! Kowe gelem nulungi aku golek lintang maneh, Komandan?';
 
   @override
   String get storyThanksDirections =>
@@ -826,18 +826,18 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get storyThanksDebugging =>
-      'Kebak maneh! Suwun wis mulang aku mbénakaké blok, Komandan!';
+      'Kebak maneh! Suwun wis mulang aku mbenakake blok, Komandan!';
 
   @override
   String get storyThanksUntil =>
-      'Kebak maneh! Suwun wis mulang aku mlaku nganti gendéra, Komandan!';
+      'Kebak maneh! Suwun wis mulang aku mlaku nganti gendera, Komandan!';
 
   @override
   String get storyThanksOtherwise =>
-      'Kebak maneh! Suwun wis mulang aku apa sing ditindakaké yèn ora, Komandan!';
+      'Kebak maneh! Suwun wis mulang aku apa sing ditindakake yen ora, Komandan!';
 
   @override
-  String get watchHow => 'Deleng carané';
+  String get watchHow => 'Deleng carane';
 
   @override
   String get tutorialDirections =>
@@ -845,19 +845,19 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get tutorialSequencing =>
-      'Tata langkahé urut, siji-siji, nganti tekan gendéra.';
+      'Tata langkahe urut, siji-siji, nganti tekan gendera.';
 
   @override
   String get tutorialLoops =>
-      'Langkahé padha terus? Lebokna ing blok baleni, banjur pilih ping pira!';
+      'Langkahe padha terus? Lebokna ing blok baleni, banjur pilih ping pira!';
 
   @override
   String get tutorialFunctions =>
-      'Gawé blok ajaibmu déwé ing baris lintang. Banjur nganggo lintangé bola-bali!';
+      'Gawe blok ajaibmu dewe ing baris lintang. Banjur nganggo lintange bola-bali!';
 
   @override
   String get tutorialConditions =>
-      'Blok mripat ndeleng ngarep. Yèn dalané kosong, aku maju. Yèn ora, aku ngenteni. Dadi blok sing padha kasil ing saben peta!';
+      'Blok mripat ndeleng ngarep. Yen dalane kosong, aku maju. Yen ora, aku ngenteni. Dadi blok sing padha kasil ing saben peta!';
 
   @override
   String get tutorialVariables =>
@@ -865,11 +865,11 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get tutorialDebugging =>
-      'Blok iki durung pas. Pencet Mlaku lan gatèkna. Banjur demok blok sing kudu dibénakaké, lan demok blok sing bener!';
+      'Blok iki durung pas. Pencet Mlaku lan gatekna. Banjur demok blok sing kudu dibenakake, lan demok blok sing bener!';
 
   @override
   String get tutorialUntil =>
-      'Baleni nganti gendéra terus mlaku déwé, dadi kowé ora perlu ngétung!';
+      'Baleni nganti gendera terus mlaku dewe, dadi kowe ora perlu ngetung!';
 
   @override
   String get hintPattern =>
@@ -881,11 +881,11 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get hintLookHere =>
-      'Delengen blok sing ana lampuné. Coba ganti blok kuwi!';
+      'Delengen blok sing ana lampune. Coba ganti blok kuwi!';
 
   @override
   String get hintLookHereMany =>
-      'Delengen blok-blok sing ana lampuné. Coba ganti blok-blok kuwi!';
+      'Delengen blok-blok sing ana lampune. Coba ganti blok-blok kuwi!';
 
   @override
   String get turnMap => 'Puter peta';
@@ -897,87 +897,87 @@ class AppLocalizationsJv extends AppLocalizations {
 
   @override
   String get tourPalette =>
-      'Iki blok-blokmu. Demok siji, utawa sérét menyang programmu.';
+      'Iki blok-blokmu. Demok siji, utawa seret menyang programmu.';
 
   @override
   String get tourProgram =>
-      'Programmu ana ing kéné. Aku nglakokaké bloké urut, saka sing kapisan. Demok blok kanggo ngganti.';
+      'Programmu ana ing kene. Aku nglakokake bloke urut, saka sing kapisan. Demok blok kanggo ngganti.';
 
   @override
   String get tourGo => 'Pencet Mlaku, lan aku manut blok-blokmu!';
 
   @override
   String get tourStep =>
-      'Tombol iki nglakokaké siji blok saben pisan, dadi kowé bisa ndeleng kanthi tliti.';
+      'Tombol iki nglakokake siji blok saben pisan, dadi kowe bisa ndeleng kanthi tliti.';
 
   @override
   String get tourReset => 'Sing iki nggawa aku bali menyang wiwitan.';
 
   @override
   String get tourHint =>
-      'Bingung? Sawisé nyoba kaping pira-pira, lampuné murup. Saben didemok nuduhaké sithik engkas: kapisan dalané, banjur blok endi sing kudu diganti. Tandha cilik ing lampu nuduhaké apa sing sabanjuré.';
+      'Bingung? Sawise nyoba kaping pira-pira, lampune murup. Saben didemok nuduhake sithik engkas: kapisan dalane, banjur blok endi sing kudu diganti. Tandha cilik ing lampu nuduhake apa sing sabanjure.';
 
   @override
   String get tourFollow =>
-      'Iki muter peta saprapat puteran saben pisan, dadi kowé bisa ndeleng saka sisihku.';
+      'Iki muter peta saprapat puteran saben pisan, dadi kowe bisa ndeleng saka sisihku.';
 
   @override
   String get tourBoards =>
-      'Ing kéné ana sawetara peta. Demok titik kanggo ndeleng saben peta. Blokmu kudu nggawa aku tekan gendéra ing saben peta!';
+      'Ing kene ana sawetara peta. Demok titik kanggo ndeleng saben peta. Blokmu kudu nggawa aku tekan gendera ing saben peta!';
 
   @override
   String get tourListen =>
-      'Demok speaker kanggo ngrungokaké maneh apa sing kudu ditindakaké.';
+      'Demok speaker kanggo ngrungokake maneh apa sing kudu ditindakake.';
 
   @override
   String get tourWarmUpListen =>
-      'Rungokna pitakoné. Demok speaker kanggo ngrungokaké maneh.';
+      'Rungokna pitakone. Demok speaker kanggo ngrungokake maneh.';
 
   @override
   String get tourWarmUpAnswer => 'Banjur demok gambar sing miturutmu bener!';
 
   @override
   String get tourWarmUpSteps =>
-      'Tapak sikil nuduhaké wis tekan ngendi dolananmu.';
+      'Tapak sikil nuduhake wis tekan ngendi dolananmu.';
 
   @override
-  String get tourBlockForward => 'Panah ijo nggawé aku maju sak langkah.';
+  String get tourBlockForward => 'Panah ijo nggawe aku maju sak langkah.';
 
   @override
   String get tourBlockTurnLeft =>
-      'Panah biru nggawé aku menggok ngiwa, tanpa pindhah.';
+      'Panah biru nggawe aku menggok ngiwa, tanpa pindhah.';
 
   @override
   String get tourBlockTurnRight =>
-      'Panah oranye nggawé aku menggok nengen, tanpa pindhah.';
+      'Panah oranye nggawe aku menggok nengen, tanpa pindhah.';
 
   @override
   String get tourBlockRepeat =>
-      'Blok baleni nglakokaké blok ing njeroné bola-bali. Demok min utawa plus kanggo milih ping pira.';
+      'Blok baleni nglakokake blok ing njerone bola-bali. Demok min utawa plus kanggo milih ping pira.';
 
   @override
   String get tourBlockSetSteps =>
-      'Kothak Langkah nyimpen cacahé langkah. Demok min utawa plus kanggo ngowahi.';
+      'Kothak Langkah nyimpen cacahe langkah. Demok min utawa plus kanggo ngowahi.';
 
   @override
   String get tourBlockMoveSteps =>
-      'Panah iki nggawé aku maju semono angka ing Kothak Langkah.';
+      'Panah iki nggawe aku maju semono angka ing Kothak Langkah.';
 
   @override
   String get tourBlockIfPathClear =>
-      'Blok mripat ndeleng ngarep. Blok ing njeroné mung mlaku yèn dalané kosong.';
+      'Blok mripat ndeleng ngarep. Blok ing njerone mung mlaku yen dalane kosong.';
 
   @override
   String get tourBlockIfElse =>
-      'Blok mripat iki duwé rong baris: baris ndhuwur mlaku yèn dalané kosong, baris ngisor yèn ora.';
+      'Blok mripat iki duwe rong baris: baris ndhuwur mlaku yen dalane kosong, baris ngisor yen ora.';
 
   @override
   String get tourBlockUntilGoal =>
-      'Baleni nganti gendéra nglakokaké blok ing njeroné terus-terusan, nganti aku tekan gendéra.';
+      'Baleni nganti gendera nglakokake blok ing njerone terus-terusan, nganti aku tekan gendera.';
 
   @override
   String get tourBlockStar =>
-      'Blok lintang nglakokaké blok ing baris lintangmu: blok ajaib gaweanmu déwé.';
+      'Blok lintang nglakokake blok ing baris lintangmu: blok ajaib gaweanmu dewe.';
 
   @override
   String get tourNext => 'Terus';
@@ -986,31 +986,31 @@ class AppLocalizationsJv extends AppLocalizations {
   String get tourDone => 'Mudheng!';
 
   @override
-  String get tourHelp => 'Piyé carané?';
+  String get tourHelp => 'Piye carane?';
 
   @override
-  String get breakTitle => 'Wayahé ngaso!';
+  String get breakTitle => 'Wayahe ngaso!';
 
   @override
   String get breakBody =>
-      'Kowé wis dolanan kanthi hebat. Ngasokna mripatmu, coba ulet-ulet, banjur dolanan maneh mengko.';
+      'Kowe wis dolanan kanthi hebat. Ngasokna mripatmu, coba ulet-ulet, banjur dolanan maneh mengko.';
 
   @override
   String get breakHome => 'Bali menyang pemain';
 
   @override
-  String get breakContinue => 'Wong tuwa bisa nerusaké';
+  String get breakContinue => 'Wong tuwa bisa nerusake';
 
   @override
   String get breakVoice =>
-      'Wayahé ngaso! Kowé wis dolanan kanthi hebat. Ngasokna mripatmu, coba ulet-ulet, banjur dolanan maneh mengko.';
+      'Wayahe ngaso! Kowe wis dolanan kanthi hebat. Ngasokna mripatmu, coba ulet-ulet, banjur dolanan maneh mengko.';
 
   @override
-  String get breakReminder => 'Pangéling ngaso';
+  String get breakReminder => 'Pangeling ngaso';
 
   @override
   String get breakReminderHint =>
-      'Sawisé dolanan teka-teki semene suwéné, bocah diajak ngaso. Mung wong tuwa sing bisa nerusaké.';
+      'Sawise dolanan teka-teki semene suwene, bocah diajak ngaso. Mung wong tuwa sing bisa nerusake.';
 
   @override
   String get breakOff => 'Mati';
@@ -1025,8 +1025,8 @@ class AppLocalizationsJv extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'Kari $count teka-teki engkas bisa nggawa kowé menyang $island!',
-      one: 'Teka-teki sabanjuré bisa nggawa kowé menyang $island!',
+      other: 'Kari $count teka-teki engkas bisa nggawa kowe menyang $island!',
+      one: 'Teka-teki sabanjure bisa nggawa kowe menyang $island!',
     );
     return '$_temp0';
   }
@@ -1035,7 +1035,7 @@ class AppLocalizationsJv extends AppLocalizations {
   String get conceptWarmUp => 'Pemanasan';
 
   @override
-  String get warmUpCounting => 'Ngétung';
+  String get warmUpCounting => 'Ngetung';
 
   @override
   String get warmUpColors => 'Werna';
@@ -1103,30 +1103,30 @@ class AppLocalizationsJv extends AppLocalizations {
   String get stickersIslands => 'Planet';
 
   @override
-  String get stickerNotYet => 'Durung éntuk';
+  String get stickerNotYet => 'Durung entuk';
 
   @override
   String get stickerGold => 'Kabeh lintang wis kumpul!';
 
   @override
-  String get blockIfElse => 'Yèn kosong, yèn ora';
+  String get blockIfElse => 'Yen kosong, yen ora';
 
   @override
-  String get otherwiseRowClear => 'Yèn dalané kosong';
+  String get otherwiseRowClear => 'Yen dalane kosong';
 
   @override
-  String get otherwiseRowBlocked => 'Yèn ora';
+  String get otherwiseRowBlocked => 'Yen ora';
 
   @override
-  String get conceptOtherwise => 'Yèn ora';
+  String get conceptOtherwise => 'Yen ora';
 
   @override
   String get playGoalOtherwise =>
-      'Nganggo blok mripat sing rong baris: yèn dalané kosong, jumangkah. Yèn ora, menggok!';
+      'Nganggo blok mripat sing rong baris: yen dalane kosong, jumangkah. Yen ora, menggok!';
 
   @override
   String get tutorialOtherwise =>
-      'Mripat ndeleng ngarep. Yèn dalané kosong, jumangkah. Yèn ora, menggok. Banjur kabeh dibaleni nganti gendéra!';
+      'Mripat ndeleng ngarep. Yen dalane kosong, jumangkah. Yen ora, menggok. Banjur kabeh dibaleni nganti gendera!';
 
   @override
   String starsEarned(int count) {
