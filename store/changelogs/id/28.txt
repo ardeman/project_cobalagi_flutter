@@ -1,0 +1,4 @@
+- Coba Lagi kini juga berbahasa Jawa dan Sunda. Pilih bahasanya di area orang tua.
+- Pindahkan anak ke perangkat lain: simpan progresnya ke file, lalu muat di sana.
+- Pilihan bahasa di area orang tua kini berupa daftar sederhana.
+- Menggeser blok ulangi kini menggulir layar; seret blok dari gambarnya.

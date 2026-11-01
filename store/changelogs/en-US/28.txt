@@ -1,0 +1,4 @@
+- Coba Lagi now speaks Javanese and Sundanese too. Pick the language in the parent area.
+- Move a child to another device: save their progress to a file and load it there.
+- The language choice in the parent area is now a simple list.
+- A swipe on a repeat block now scrolls; drag it by its picture.
