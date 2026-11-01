@@ -1,0 +1,7 @@
+Header and Search Results videos for this listing are not in this repo.
+They are in the video project's folder (video_marketing in external-projects.json):
+
+Header:         out/app-store-header-id.mp4
+Search Results: out/app-store-search-id.mp4
+
+Make them again with its scripts/app-store-video.sh.

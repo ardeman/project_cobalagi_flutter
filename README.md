@@ -326,7 +326,7 @@ Delete the old slides first (Play takes at most eight), then upload 1 to 8 in or
 
 ### App Store listing
 
-`store/app_store/<locale>/` (`id` first, `en-US`) holds one listing for iOS, iPadOS and macOS, in fastlane's file names: `name.txt` (30), `subtitle.txt` (30), `keywords.txt` (100, commas without spaces, no words from the name or subtitle), `promotional_text.txt` (170), `description.txt` (4,000) and `screenshots/{iphone,ipad,mac,duo}/`. `store/render.sh` also renders `header.png` and `search_result.png`. `test/store/store_text_test.dart` checks the limits and the words Apple forbids.
+`store/app_store/<locale>/` (`id` first, `en-US`) holds one listing for iOS, iPadOS and macOS, in fastlane's file names: `name.txt` (30), `subtitle.txt` (30), `keywords.txt` (100, commas without spaces, no words from the name or subtitle), `promotional_text.txt` (170), `description.txt` (4,000) and `screenshots/{iphone,ipad,mac,duo}/`, plus `header_and_search_results.txt`, which says where that locale's Header and Search Results videos are. `test/store/store_text_test.dart` checks the limits and the words Apple forbids.
 
 | App Store Connect setting | Value |
 | --- | --- |
@@ -338,7 +338,7 @@ Delete the old slides first (Play takes at most eight), then upload 1 to 8 in or
 | App Review notes | Paste `store/app_store/review_notes.txt`; it answers the Kids Category questions up front. After replying to a review message: Update Review, then Resubmit |
 | In-app purchases | Non-Consumable tips with the ids in `assets/config/donations.json`, at the same prices as on Play, with Family Sharing on |
 | Text and screenshots | `store/app_store/<locale>/`, slides 1 to 8 in order |
-| Header and Search Results | The videos from the video project (`video_marketing` in `external-projects.json`, its `app-store-video.sh`); there are no stills |
+| Header and Search Results | The videos named in `store/app_store/<locale>/header_and_search_results.txt` (they live in the video project); there are no stills |
 | Version release | Automatic, for iOS and macOS |
 
 Upload iOS builds made with Xcode 27.1 or later, so the app reaches the iPhone Duo's screen edge.
