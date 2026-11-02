@@ -690,6 +690,9 @@ void _paintText(
     text: TextSpan(
       text: text,
       style: TextStyle(
+        // A canvas has no theme; named so tests and recordings draw digits,
+        // not their test font's squares (iOS falls back to its system font).
+        fontFamily: 'Roboto',
         fontSize: size,
         fontWeight: FontWeight.w900,
         color: color,

@@ -889,6 +889,8 @@ void paintStoryNumber(
     text: TextSpan(
       text: text,
       style: TextStyle(
+        // As in board_arrival.dart's _paintText.
+        fontFamily: 'Roboto',
         fontSize: size,
         fontWeight: FontWeight.w900,
         height: 1,
