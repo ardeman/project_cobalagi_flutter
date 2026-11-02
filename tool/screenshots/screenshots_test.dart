@@ -875,6 +875,12 @@ void main() {
           'arrival-debugging',
           'arrival-until',
           'ending-otherwise',
+          // The second short: three more planets.
+          'arrival-conditions',
+          'arrival-functions',
+          'arrival-variables',
+          'new-planet-variables',
+          'full-again-variables',
         ]) {
           testWidgets(
             'video frames story $scene',
