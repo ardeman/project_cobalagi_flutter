@@ -84,7 +84,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - Every page shares one header (menu, GitHub icon, language button, ☰ on phones) and one footer, copied from `privacy.html`; the home page differs only in linking to its own sections. `tool/website_changelog.dart` copies them into the changelog, and `test/store/website_changelog_test.dart` fails if any page drifts.
 - Every text has Indonesian in the HTML and English in `data-en` (`data-en-alt`, `data-en-src` for images). Screenshots come in pairs: `<name>-id.png` and `<name>.png`.
 - Pushing a change under `website/` to `master` publishes it live (`.github/workflows/pages.yml`).
-- Claims on the pages must stay true for the released app. During the closed test the user allows pushing website changes for a build that hasn't reached Google Play yet, together with the feature. When the app starts storing or sending different data, update `privacy.html` and its date in the same change.
+- Claims on the pages must stay true for the released app. When the app starts storing or sending different data, update `privacy.html` and its date in the same change.
 
 ## Keeping docs current
 
