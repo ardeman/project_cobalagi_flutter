@@ -7,7 +7,7 @@ A coding-learning app for children, in Bahasa Indonesia and English. Koba the ro
 
 A short, voice-led warm-up game picks each child's starting point; after every lesson the app chooses to advance, practise or review.
 
-> **Status:** version 2.9.0 (build 27). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac, and on [Google Play](https://play.google.com/store/apps/details?id=com.ardeman.cobalagi) since 2026-10-30 (full production rollout). Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
+> **Status:** version 2.10.0 (build 28). Live on the [App Store](https://apps.apple.com/app/id6823508005) for iPhone, iPad and Mac, and on [Google Play](https://play.google.com/store/apps/details?id=com.ardeman.cobalagi) since 2026-10-30 (full production rollout). Android APKs, a Linux AppImage (also for the Steam Deck), macOS and Windows builds are on [GitHub Releases](https://github.com/ardeman/project_cobalagi_flutter/releases).
 
 Website: [cobalagi.ardeman.com](https://cobalagi.ardeman.com) (source in `website/`).
 
