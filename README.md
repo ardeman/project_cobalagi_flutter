@@ -412,6 +412,7 @@ Each topic has one home. Update that file instead of copying its content elsewhe
 | `README.md` | Everyone | Overview, setup, commands, layout, release steps |
 | `AGENTS.md` | AI coding agents (and humans who want the rules) | Conventions, guardrails, definition of done, decisions |
 | `CLAUDE.md`, `GEMINI.md` | Claude Code, Gemini CLI | Only an import of `AGENTS.md` |
+| `.github/copilot-instructions.md` | GitHub Copilot (chat, code review) | Only a pointer to `AGENTS.md`; `copilot-setup-steps.yml` prepares its coding agent |
 | `branding/README.md` | Whoever changes the art | Koba, the ship and the app icon |
 | `LICENSE`, `NOTICE.md` | Everyone | Terms for the code (GPL-3.0), and for sounds, art and the name |
 | `website/` | Visitors of cobalagi.ardeman.com | The landing page, privacy policy and screenshots |

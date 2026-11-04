@@ -91,7 +91,7 @@ A change is done only when the **Checks** command in `README.md` passes. If you 
 - Separate projects this repo works with (the video project, Dahlunas) are found through the git-ignored `external-projects.json`, one section each with its `folder`, `readme` and `rules`; copy `external-projects.example.json` if it's missing, and ask where a folder is if its path doesn't exist. Never write their paths into docs or code; name the section instead, and add a section to both files for a new project.
 - When you change a command, the layout or the setup, update `README.md`. When you change a convention or rule, update this file.
 - Never copy content between docs. Link to the owning file instead (see the documentation map in `README.md`).
-- `CLAUDE.md` and `GEMINI.md` must contain only the import of this file.
+- `CLAUDE.md` and `GEMINI.md` must contain only the import of this file, and `.github/copilot-instructions.md` only a pointer to it.
 
 ## Decisions
 
