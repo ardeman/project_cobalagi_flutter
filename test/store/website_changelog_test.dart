@@ -74,5 +74,7 @@ void main() {
     expect(part('404.html', 'footer'), footer);
     expect(part('support.html', 'header'), header);
     expect(part('support.html', 'footer'), footer);
+    expect(part('terms.html', 'header'), header);
+    expect(part('terms.html', 'footer'), footer);
   });
 }
