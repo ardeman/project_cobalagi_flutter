@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cobalagi/engine/examples/example.dart';
 import 'package:cobalagi/engine/generator/solver.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
 import 'package:cobalagi/engine/interpreter/run_event.dart';
@@ -229,6 +230,39 @@ void main() {
         ];
         expect(checks.any((e) => e.clear), isTrue);
         expect(checks.any((e) => !e.clear), isTrue);
+      });
+    }
+    if (level.concept == 'examples') {
+      test('${level.id} sorts pictures, then follows the walls', () {
+        expect(level.rounds, isNotEmpty);
+        expect(level.palette, contains(InstructionKind.ifElse));
+        expect(level.things, isNotEmpty);
+        for (final thing in level.things.values) {
+          expect(classify(thing, level.examples), isNotNull);
+        }
+        final answer = followWalls(level);
+        expect(answer, isNotNull, reason: 'no wall-follow fits');
+        expect(runProgram(answer!, level).succeeded, isTrue);
+        bool roundRight(int round) {
+          final known = [
+            for (var r = 0; r <= round; r++)
+              for (final index in level.rounds[r].show) level.examples[index],
+          ];
+          return level.rounds[round].ask.every(
+            (index) =>
+                classify(level.asks[index].thing, known) ==
+                level.asks[index].safe,
+          );
+        }
+
+        // The too-alike round gets a new picture wrong; the last round,
+        // with the varied pictures, gets them right.
+        expect(roundRight(0), level.id != 'examples-02');
+        expect(roundRight(level.rounds.length - 1), isTrue);
+        expect(
+          {for (final round in level.rounds) ...round.show},
+          {for (var i = 0; i < level.examples.length; i++) i},
+        );
       });
     }
     if (level.moreBoards.isNotEmpty) {

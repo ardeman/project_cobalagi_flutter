@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:cobalagi/engine/examples/example.dart';
 import 'package:cobalagi/engine/world/grid_point.dart';
 import 'package:cobalagi/engine/world/level.dart';
+import 'package:cobalagi/features/examples/view/example_picture.dart';
 import 'package:cobalagi/features/play/view/world/ink.dart';
 import 'package:cobalagi/features/play/view/world/planet_piece.dart';
 import 'package:cobalagi/features/play/view/world/world_theme.dart';
@@ -182,6 +184,27 @@ class BoardPainter {
           }(),
   ];
 
+  /// Creatures Koba learned about, standing on their tiles.
+  late final List<({Offset at, Image image, double size})> _things = [
+    for (final MapEntry(:key, :value) in level.things.entries)
+      (
+        at: Offset(key.x + 0.5, key.y + 0.5),
+        image: inkedPiece(
+          (canvas) => paintExampleThing(
+            canvas,
+            const Rect.fromLTWH(-0.5, -0.5, 1, 1),
+            value,
+          ),
+          bounds: _obstacleBounds,
+        ),
+        size: switch (value.size) {
+          ExampleSize.small => 0.72,
+          ExampleSize.medium => 0.86,
+          ExampleSize.big => 1,
+        },
+      ),
+  ];
+
   /// Paints the board (on the starry [sky] unless not), turned [upright]
   /// (see `BoardComponent.upright`), in an untilted frame of one unit per
   /// tile: the caller tilts it.
@@ -213,6 +236,18 @@ class BoardPainter {
         obstacle.size,
       );
       drawInked(canvas, obstacle.image, _obstacleBounds);
+      canvas.restore();
+    }
+    final creatures = [..._things]
+      ..sort((a, b) => depth(a.at).compareTo(depth(b.at)));
+    for (final thing in creatures) {
+      canvas
+        ..save()
+        ..translate(thing.at.dx, thing.at.dy)
+        ..rotate(upright);
+      standUp(canvas, const Offset(0, 0.28));
+      canvas.scale(thing.size);
+      drawInked(canvas, thing.image, _obstacleBounds);
       canvas.restore();
     }
   }

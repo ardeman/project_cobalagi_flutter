@@ -1169,6 +1169,57 @@ class AppLocalizationsId extends AppLocalizations {
   String get loadPlayer => 'Muat pemain dari file';
 
   @override
+  String get conceptExamples => 'Ajar Koba';
+
+  @override
+  String get playGoalExamples =>
+      'Mata melihat benda di depan. Kalau kelihatan aman, melangkah. Kalau tidak, belok!';
+
+  @override
+  String get tutorialExamples =>
+      'Kamu sudah menunjukkan gambar yang aman. Mata melihat ke depan. Kalau kelihatan aman, aku melangkah. Kalau tidak, aku belok, sampai bendera!';
+
+  @override
+  String get storyArrivalExamples =>
+      'Benda-benda baru ada di jalan planet ini.';
+
+  @override
+  String get storyArrivalExamplesKoba =>
+      'Ada yang aman dilewati, ada yang tidak. Ajar aku dengan gambar, nanti aku belajar!';
+
+  @override
+  String get storyThanksExamples =>
+      'Penuh lagi! Terima kasih sudah mengajariku belajar dari contoh, Komandan!';
+
+  @override
+  String get sortSafe => 'Yang aman taruh di sini.';
+
+  @override
+  String get sortNotSafe => 'Yang ini tidak aman.';
+
+  @override
+  String get sortKobaTries => 'Aku coba yang baru.';
+
+  @override
+  String get sortKobaWrong =>
+      'Aku menebak dari gambarnya. Gambarnya terlalu mirip.';
+
+  @override
+  String get sortMore => 'Gambar lagi';
+
+  @override
+  String get sortLetsGo => 'Ayo main!';
+
+  @override
+  String get tourSortPicture => 'Gambar baru. Taruh di kelompok yang pas.';
+
+  @override
+  String get tourSortSafe => 'Gambar yang aman masuk kelompok ini.';
+
+  @override
+  String get tourSortNot => 'Gambar yang tidak aman masuk kelompok ini.';
+
+  @override
   String playerLoaded(String name) {
     return '$name sudah bergabung';
   }

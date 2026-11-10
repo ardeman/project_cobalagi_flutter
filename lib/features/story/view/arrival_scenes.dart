@@ -8,6 +8,7 @@ import 'package:cobalagi/app/l10n/app_localizations.dart';
 import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/audio/voice_clips.dart';
 import 'package:cobalagi/core/character/robot_face.dart';
+import 'package:cobalagi/engine/examples/example.dart';
 import 'package:cobalagi/engine/world/direction.dart';
 import 'package:cobalagi/engine/world/grid_point.dart';
 import 'package:cobalagi/features/editors/blocks/data/block.dart';
@@ -31,6 +32,7 @@ const arrivalScenes = <String, ArrivalScene>{
   'debugging': DebuggingArrival(),
   'until': UntilArrival(),
   'otherwise': OtherwiseArrival(),
+  'examples': ExamplesArrival(),
 };
 
 /// A planet's arrival (about 10 seconds), played on the first visit before
@@ -861,6 +863,91 @@ class OtherwiseArrival extends BoardArrival {
 
   @override
   double get runTo => 0.95;
+}
+
+/// Teach Koba: two creatures sit on the path. The eye steps when the next
+/// one is safe and turns when it is not, using pictures Koba was shown.
+class ExamplesArrival extends BoardArrival {
+  const ExamplesArrival() : super('examples');
+
+  @override
+  String sceneWords(AppLocalizations l10n) => l10n.storyArrivalExamples;
+
+  @override
+  String kobaWords(AppLocalizations l10n) => l10n.storyArrivalExamplesKoba;
+
+  @override
+  String thanksWords(AppLocalizations l10n) => l10n.storyThanksExamples;
+
+  @override
+  List<String> get rows => const ['S.ab', '##G#'];
+
+  @override
+  Direction get facing => Direction.east;
+
+  @override
+  List<LabeledExample> get examples => const [
+    LabeledExample(
+      ExampleThing(
+        colour: ExampleColour.green,
+        shape: ExampleShape.circle,
+        size: ExampleSize.big,
+      ),
+      safe: true,
+    ),
+    LabeledExample(
+      ExampleThing(
+        colour: ExampleColour.green,
+        shape: ExampleShape.triangle,
+        size: ExampleSize.small,
+      ),
+      safe: true,
+    ),
+    LabeledExample(
+      ExampleThing(
+        colour: ExampleColour.red,
+        shape: ExampleShape.triangle,
+        size: ExampleSize.small,
+      ),
+      safe: false,
+    ),
+    LabeledExample(
+      ExampleThing(
+        colour: ExampleColour.red,
+        shape: ExampleShape.circle,
+        size: ExampleSize.big,
+      ),
+      safe: false,
+    ),
+  ];
+
+  @override
+  Map<String, ExampleThing> get catalog => const {
+    'a': ExampleThing(
+      colour: ExampleColour.green,
+      shape: ExampleShape.circle,
+      size: ExampleSize.small,
+    ),
+    'b': ExampleThing(
+      colour: ExampleColour.red,
+      shape: ExampleShape.triangle,
+      size: ExampleSize.medium,
+    ),
+  };
+
+  @override
+  List<Block> get program => [
+    arrivalBlock(
+      BlockType.untilGoal,
+      children: [
+        arrivalBlock(
+          BlockType.ifElse,
+          children: [arrivalBlock(BlockType.forward)],
+          otherwise: [arrivalBlock(BlockType.turnRight)],
+        ),
+      ],
+    ),
+  ];
 }
 
 /// [text] (a number or "!") centred on [c], [size] tall, in [color] with an

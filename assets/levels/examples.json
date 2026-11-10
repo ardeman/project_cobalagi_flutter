@@ -1,0 +1,197 @@
+{
+  "levels": [
+    {
+      "id": "examples-01",
+      "concept": "examples",
+      "facing": "east",
+      "palette": ["move", "turnLeft", "turnRight", "untilGoal", "ifElse"],
+      "maxBlocks": 5,
+      "examples": [
+        {"colour": "green", "shape": "circle", "size": "big", "safe": true},
+        {"colour": "blue", "shape": "star", "size": "big", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "small", "safe": false},
+        {"colour": "yellow", "shape": "star", "size": "small", "safe": false}
+      ],
+      "asks": [
+        {"colour": "green", "shape": "circle", "size": "medium", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "medium", "safe": false}
+      ],
+      "rounds": [{"show": [0, 1, 2, 3], "ask": [0, 1]}],
+      "things": {
+        "a": {"colour": "green", "shape": "circle", "size": "medium"},
+        "b": {"colour": "red", "shape": "triangle", "size": "medium"}
+      },
+      "rows": [
+        "#######",
+        "#S.a.b#",
+        "####.##",
+        "####.##",
+        "####G##",
+        "#######"
+      ]
+    },
+    {
+      "id": "examples-02",
+      "concept": "examples",
+      "facing": "north",
+      "palette": ["move", "turnLeft", "turnRight", "untilGoal", "ifElse"],
+      "maxBlocks": 5,
+      "examples": [
+        {"colour": "green", "shape": "circle", "size": "big", "safe": true},
+        {"colour": "green", "shape": "triangle", "size": "small", "safe": true},
+        {"colour": "green", "shape": "square", "size": "medium", "safe": true},
+        {"colour": "blue", "shape": "circle", "size": "small", "safe": true},
+        {"colour": "blue", "shape": "star", "size": "big", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "small", "safe": false},
+        {"colour": "red", "shape": "circle", "size": "big", "safe": false},
+        {"colour": "red", "shape": "square", "size": "medium", "safe": false},
+        {"colour": "yellow", "shape": "star", "size": "small", "safe": false},
+        {"colour": "yellow", "shape": "circle", "size": "medium", "safe": false}
+      ],
+      "asks": [
+        {"colour": "green", "shape": "triangle", "size": "medium", "safe": true},
+        {"colour": "red", "shape": "circle", "size": "medium", "safe": false}
+      ],
+      "rounds": [
+        {"show": [0, 5], "ask": [0, 1]},
+        {"show": [1, 2, 3, 4, 6, 7, 8, 9], "ask": [0, 1]}
+      ],
+      "things": {
+        "a": {"colour": "green", "shape": "triangle", "size": "medium"},
+        "b": {"colour": "red", "shape": "circle", "size": "medium"}
+      },
+      "rows": [
+        "######",
+        "#G.a.#",
+        "b###.#",
+        "####.#",
+        "####S#",
+        "######"
+      ]
+    },
+    {
+      "id": "examples-03",
+      "concept": "examples",
+      "facing": "east",
+      "palette": ["move", "turnLeft", "turnRight", "untilGoal", "ifElse"],
+      "maxBlocks": 5,
+      "examples": [
+        {"colour": "green", "shape": "circle", "size": "big", "safe": true},
+        {"colour": "green", "shape": "triangle", "size": "small", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "small", "safe": false},
+        {"colour": "red", "shape": "circle", "size": "big", "safe": false}
+      ],
+      "asks": [
+        {"colour": "green", "shape": "circle", "size": "medium", "safe": true},
+        {"colour": "red", "shape": "circle", "size": "medium", "safe": false}
+      ],
+      "rounds": [{"show": [0, 1, 2, 3], "ask": [0, 1]}],
+      "things": {
+        "a": {"colour": "green", "shape": "circle", "size": "small"},
+        "b": {"colour": "red", "shape": "triangle", "size": "medium"}
+      },
+      "rows": [
+        "#####",
+        "#S.a#",
+        "###.#",
+        "###.#",
+        "#G..#",
+        "b####"
+      ]
+    },
+    {
+      "id": "examples-04",
+      "concept": "examples",
+      "facing": "east",
+      "palette": ["move", "turnLeft", "turnRight", "untilGoal", "ifElse"],
+      "maxBlocks": 5,
+      "examples": [
+        {"colour": "green", "shape": "circle", "size": "big", "safe": true},
+        {"colour": "green", "shape": "triangle", "size": "small", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "small", "safe": false},
+        {"colour": "red", "shape": "circle", "size": "big", "safe": false}
+      ],
+      "asks": [
+        {"colour": "green", "shape": "circle", "size": "medium", "safe": true},
+        {"colour": "red", "shape": "circle", "size": "medium", "safe": false}
+      ],
+      "rounds": [{"show": [0, 1, 2, 3], "ask": [0, 1]}],
+      "things": {
+        "a": {"colour": "green", "shape": "circle", "size": "small"},
+        "b": {"colour": "red", "shape": "triangle", "size": "medium"}
+      },
+      "rows": [
+        "########",
+        "#S.a...#",
+        "######.#",
+        "#G####.#",
+        "#.####.#",
+        "#......#",
+        "b#######"
+      ]
+    },
+    {
+      "id": "examples-05",
+      "concept": "examples",
+      "facing": "south",
+      "palette": ["move", "turnLeft", "turnRight", "untilGoal", "ifElse"],
+      "maxBlocks": 5,
+      "examples": [
+        {"colour": "green", "shape": "circle", "size": "big", "safe": true},
+        {"colour": "green", "shape": "triangle", "size": "small", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "small", "safe": false},
+        {"colour": "red", "shape": "circle", "size": "big", "safe": false}
+      ],
+      "asks": [
+        {"colour": "green", "shape": "circle", "size": "medium", "safe": true},
+        {"colour": "red", "shape": "circle", "size": "medium", "safe": false}
+      ],
+      "rounds": [{"show": [0, 1, 2, 3], "ask": [0, 1]}],
+      "things": {
+        "a": {"colour": "green", "shape": "circle", "size": "small"},
+        "b": {"colour": "red", "shape": "triangle", "size": "medium"}
+      },
+      "rows": [
+        "b#######",
+        "#S##G..#",
+        "#.####.#",
+        "#.####.#",
+        "#.####.#",
+        "#..a...#",
+        "########"
+      ]
+    },
+    {
+      "id": "examples-06",
+      "concept": "examples",
+      "facing": "north",
+      "palette": ["move", "turnLeft", "turnRight", "untilGoal", "ifElse"],
+      "maxBlocks": 5,
+      "examples": [
+        {"colour": "green", "shape": "circle", "size": "big", "safe": true},
+        {"colour": "green", "shape": "triangle", "size": "small", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "small", "safe": false},
+        {"colour": "red", "shape": "circle", "size": "big", "safe": false}
+      ],
+      "asks": [
+        {"colour": "green", "shape": "circle", "size": "medium", "safe": true},
+        {"colour": "red", "shape": "circle", "size": "medium", "safe": false}
+      ],
+      "rounds": [{"show": [0, 1, 2, 3], "ask": [0, 1]}],
+      "things": {
+        "a": {"colour": "green", "shape": "circle", "size": "small"},
+        "b": {"colour": "red", "shape": "triangle", "size": "medium"}
+      },
+      "rows": [
+        "#########",
+        "#S.a....#",
+        "#######.#",
+        "#...G##.#",
+        "#.#####.#",
+        "#.#####.#",
+        "#.......#",
+        "b########"
+      ]
+    }
+  ]
+}

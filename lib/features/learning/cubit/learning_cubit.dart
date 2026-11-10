@@ -148,6 +148,7 @@ class LearningCubit extends Cubit<LearningState> {
   /// coding screen and the warm-up games (never a concept id).
   static const playTour = 'tour-play';
   static const warmUpTour = 'tour-warmup';
+  static const sortTour = 'tour-sort';
 
   /// Whether the child has yet to see the tour [id] (see [playTour]).
   bool tourDue(String id) =>

@@ -69,7 +69,9 @@ void main() {
     test('${language.name} is offered once its voice is finished', () {
       final missing = [
         for (final id in VoiceClips.all.keys)
-          if (!File('assets/audio/${language.code}/$id.mp3').existsSync()) id,
+          if (!VoiceClips.pending.contains(id) &&
+              !File('assets/audio/${language.code}/$id.mp3').existsSync())
+            id,
       ];
       final bundled = File(
         'pubspec.yaml',
@@ -125,6 +127,20 @@ void main() {
     final l10n = AppLocalizations.of(context);
     expect(l10n.nextIslandSoon(2, 'Arah'), contains('2'));
     expect(l10n.nextIslandSoon(1, 'Arah'), isNot(contains('1')));
+  });
+
+  test('clips still to record are named and not bundled yet', () {
+    expect(VoiceClips.pending, isNotEmpty);
+    for (final id in VoiceClips.pending) {
+      expect(VoiceClips.all, contains(id), reason: id);
+      for (final language in AppLanguage.values.where((l) => l.voiced)) {
+        expect(
+          File('assets/audio/${language.code}/$id.mp3').existsSync(),
+          isFalse,
+          reason: '$id is bundled for ${language.code}',
+        );
+      }
+    }
   });
 
   test('a regional language speaks Indonesian until it has its own clip', () {
