@@ -27,9 +27,11 @@
 // speech-to-speech; a line not recorded yet is skipped, so the app plays
 // the Indonesian clip instead.
 //
-// Voices, model and settings live in tool/elevenlabs.json. Shipping the clips
-// needs an ElevenLabs plan with a commercial license (not the free plan).
-// Needs ffmpeg.
+// Voices, model and settings live in tool/elevenlabs.json. The stored clip is
+// mono at that file's output_format (sample rate and bitrate); normalize
+// trims silence and evens the level, then encodes there, so a lower format
+// stays lower. Shipping the clips needs an ElevenLabs plan with a commercial
+// license (not the free plan). Needs ffmpeg.
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -67,6 +69,7 @@ Future<void> main(List<String> args) async {
   final config =
       jsonDecode(File('tool/elevenlabs.json').readAsStringSync())
           as Map<String, Object?>;
+  final voiceFormat = VoiceFormat.parse(config['output_format']! as String);
   final speakers = config['voices']! as Map<String, Object?>;
   final languages = switch (_option(args, '--lang')) {
     final String one => [one],
@@ -143,7 +146,7 @@ Future<void> main(List<String> args) async {
       }
       try {
         final raw = '${temp.path}/$language-$id.mp3';
-        final format = config['output_format']! as String;
+        final format = voiceFormat.name;
         if (recordings) {
           final trimmed = '${temp.path}/$language-$id.wav';
           await trimSilence(recording.path, trimmed);
@@ -160,7 +163,12 @@ Future<void> main(List<String> args) async {
           await _speak(key, voiceId, format, body, File(raw));
         }
         out.parent.createSync(recursive: true);
-        await normalizeAudio(raw, out.path);
+        await normalizeAudio(
+          raw,
+          out.path,
+          sampleRate: voiceFormat.sampleRate,
+          bitrateKbps: voiceFormat.bitrateKbps,
+        );
         made++;
         stdout.writeln('✓ ${out.path}');
       } on Object catch (e) {
