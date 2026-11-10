@@ -2122,6 +2122,96 @@ abstract class AppLocalizations {
   /// **'Load a player from a file'**
   String get loadPlayer;
 
+  /// No description provided for @conceptExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Teach Koba'**
+  String get conceptExamples;
+
+  /// No description provided for @playGoalExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'The eye looks at the next thing. If it looks safe, step. Otherwise, turn!'**
+  String get playGoalExamples;
+
+  /// No description provided for @tutorialExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'You showed me which pictures are safe. The eye looks ahead. If it looks safe, I step. Otherwise, I turn, until the flag!'**
+  String get tutorialExamples;
+
+  /// No description provided for @storyArrivalExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Strange new things sit on the paths of this planet.'**
+  String get storyArrivalExamples;
+
+  /// No description provided for @storyArrivalExamplesKoba.
+  ///
+  /// In en, this message translates to:
+  /// **'Some are safe to pass, and some are not. Teach me with pictures, and I\'ll learn!'**
+  String get storyArrivalExamplesKoba;
+
+  /// No description provided for @storyThanksExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Full again! Thank you for teaching me to learn from examples, commander!'**
+  String get storyThanksExamples;
+
+  /// No description provided for @sortSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe ones go here.'**
+  String get sortSafe;
+
+  /// No description provided for @sortNotSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'These ones are not safe.'**
+  String get sortNotSafe;
+
+  /// No description provided for @sortKobaTries.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ll try a new one.'**
+  String get sortKobaTries;
+
+  /// No description provided for @sortKobaWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'I guessed from the pictures. They were too alike.'**
+  String get sortKobaWrong;
+
+  /// No description provided for @sortMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More pictures'**
+  String get sortMore;
+
+  /// No description provided for @sortLetsGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s go!'**
+  String get sortLetsGo;
+
+  /// No description provided for @tourSortPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'A new picture. Put it in the group it belongs to.'**
+  String get tourSortPicture;
+
+  /// No description provided for @tourSortSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Safe pictures go in this group.'**
+  String get tourSortSafe;
+
+  /// No description provided for @tourSortNot.
+  ///
+  /// In en, this message translates to:
+  /// **'Pictures that are not safe go in this group.'**
+  String get tourSortNot;
+
   /// No description provided for @playerLoaded.
   ///
   /// In en, this message translates to:

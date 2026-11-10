@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import '../examples/example.dart';
 import '../interpreter/interpreter.dart';
 import '../program/instruction.dart';
 import '../program/program.dart';
@@ -20,6 +21,7 @@ enum PuzzleKind {
   debugging,
   until,
   otherwise,
+  examples,
 }
 
 const minDifficulty = 1;
@@ -59,6 +61,9 @@ GeneratedPuzzle generatePuzzle(
   if (kind == PuzzleKind.otherwise) {
     return _otherwise(random, difficulty, seed);
   }
+  if (kind == PuzzleKind.examples) {
+    return _examples(random, difficulty, seed);
+  }
   if (kind == PuzzleKind.conditions) {
     return _conditions(random, difficulty, seed);
   }
@@ -75,6 +80,9 @@ GeneratedPuzzle generatePuzzle(
       PuzzleKind.debugging => throw StateError('debugging plants a bug'),
       PuzzleKind.until => throw StateError('until traces a counted route'),
       PuzzleKind.otherwise => throw StateError('otherwise follows the walls'),
+      PuzzleKind.examples => throw StateError(
+        'examples decorate an otherwise maze',
+      ),
     };
     final puzzle = _buildPuzzle(
       kind,
@@ -238,6 +246,67 @@ GeneratedPuzzle _otherwise(Random random, int difficulty, int seed) {
     return GeneratedPuzzle(level, solution);
   }
   throw StateError('no valid otherwise puzzle for seed $seed');
+}
+
+/// An Otherwise maze with creatures on it. Safe ones stand on the path and
+/// unsafe ones stand where a wall was, labeled by [canonicalExamples], so
+/// the same wall-following program still solves it and the eye is looking
+/// at what Koba learned.
+GeneratedPuzzle _examples(Random random, int difficulty, int seed) {
+  for (var attempt = 0; attempt < 8; attempt++) {
+    final base = _otherwise(random, difficulty, seed + attempt * 1000);
+    final level = _withCreatures(
+      base.level,
+      random,
+      id: 'examples-d$difficulty-s$seed',
+    );
+    if (level.things.isNotEmpty && runProgram(base.solution, level).succeeded) {
+      return GeneratedPuzzle(level, base.solution);
+    }
+  }
+  throw StateError('no valid examples puzzle for seed $seed');
+}
+
+Level _withCreatures(Level maze, Random random, {required String id}) {
+  final rows = [for (final row in maze.rows) row.split('')];
+  final floors = <GridPoint>[];
+  final walls = <GridPoint>[];
+  for (var y = 0; y < rows.length; y++) {
+    for (var x = 0; x < rows[y].length; x++) {
+      final point = GridPoint(x, y);
+      switch (rows[y][x]) {
+        case '.':
+          floors.add(point);
+        case '#':
+          walls.add(point);
+      }
+    }
+  }
+  floors.shuffle(random);
+  walls.shuffle(random);
+  final catalog = <String, ExampleThing>{};
+  if (floors.isNotEmpty) {
+    catalog['a'] = safeNeighbours[random.nextInt(safeNeighbours.length)];
+    for (final point in floors.take(2)) {
+      rows[point.y][point.x] = 'a';
+    }
+  }
+  if (walls.isNotEmpty) {
+    catalog['b'] = unsafeNeighbours[random.nextInt(unsafeNeighbours.length)];
+    for (final point in walls.take(2)) {
+      rows[point.y][point.x] = 'b';
+    }
+  }
+  return Level.fromRows(
+    id: id,
+    concept: PuzzleKind.examples.name,
+    rows: [for (final row in rows) row.join()],
+    startFacing: maze.startFacing,
+    palette: maze.palette,
+    maxBlocks: maze.maxBlocks,
+    catalog: catalog,
+    examples: canonicalExamples,
+  );
 }
 
 /// A working program with one bug planted in it, for the child to find and
@@ -551,6 +620,7 @@ GeneratedPuzzle? _buildPuzzle(
     PuzzleKind.variables => _variablePalette,
     PuzzleKind.until => _untilPalette,
     PuzzleKind.otherwise => _otherwisePalette,
+    PuzzleKind.examples => _otherwisePalette,
     PuzzleKind.directions ||
     PuzzleKind.sequencing ||
     PuzzleKind.debugging => _sequencePalette,

@@ -13,7 +13,8 @@ enum Obstacle {
   cactus,
   crate,
   asteroid,
-  hedge;
+  hedge,
+  pod;
 
   /// The sound of Koba bumping into it, by what it is made of.
   SoundEffect get bumpSound => switch (this) {
@@ -21,6 +22,7 @@ enum Obstacle {
     alienPlant || cactus || hedge => SoundEffect.bumpPlant,
     crystal || iceSpike => SoundEffect.bumpCrystal,
     crate => SoundEffect.bumpWood,
+    pod => SoundEffect.bumpPlant,
   };
 }
 
@@ -30,7 +32,18 @@ enum Decor { craters, tufts, ripples, sparkles, drifts, pebbles, panels }
 
 /// The planet's finish. Every one carries the red flag the voice talks
 /// about ("reach the flag"), so the goal reads the same on every planet.
-enum Finish { flag, dome, chest, castle, igloo, tent, toolbox, rocket, ufo }
+enum Finish {
+  flag,
+  dome,
+  chest,
+  castle,
+  igloo,
+  tent,
+  toolbox,
+  rocket,
+  ufo,
+  lantern,
+}
 
 /// How a planet's world looks: its sky, ground, obstacles and finish. The
 /// board is a piece of the planet's surface floating in a dark, starry sky;
@@ -163,6 +176,18 @@ final class WorldTheme {
     finish: Finish.ufo,
   );
 
+  /// A dusk garden where new creatures sit on the paths, for Teach Koba.
+  static const garden = WorldTheme(
+    background: Color(0xFF2A1848),
+    floor: Color(0xFFFFF6E8),
+    floorEdge: Color(0xFFE4CBA8),
+    ground: Color(0xFF6B5A8E),
+    groundSide: Color(0xFF4A3D68),
+    decor: Decor.sparkles,
+    obstacle: Obstacle.pod,
+    finish: Finish.lantern,
+  );
+
   /// One world per planet, keyed by concept id.
   static WorldTheme forConcept(String concept) => switch (concept) {
     'sequencing' => jungle,
@@ -173,6 +198,7 @@ final class WorldTheme {
     'debugging' => station,
     'until' => asteroids,
     'otherwise' => maze,
+    'examples' => garden,
     _ => moon,
   };
 }
@@ -247,6 +273,38 @@ void drawObstacle(Canvas canvas, Rect cell, Obstacle obstacle, int seed) {
           _fill(0xFFB9ACFF),
         );
       }
+    case Obstacle.pod:
+      // A closed seed pod, standing where a creature is not.
+      canvas
+        ..drawOval(
+          Rect.fromCenter(
+            center: c + const Offset(0.02, 0.08),
+            width: 0.5,
+            height: 0.22,
+          ),
+          shadow,
+        )
+        ..drawOval(
+          Rect.fromCenter(
+            center: c + const Offset(0, -0.02),
+            width: 0.46,
+            height: 0.62,
+          ),
+          _fill(0xFF7E57C2),
+        )
+        ..drawOval(
+          Rect.fromCenter(
+            center: c + const Offset(-0.06, -0.12),
+            width: 0.22,
+            height: 0.16,
+          ),
+          _fill(0xFFB39DDB),
+        )
+        ..drawLine(
+          Offset(c.dx, c.dy - 0.28),
+          Offset(c.dx, c.dy + 0.22),
+          _detail,
+        );
     case Obstacle.moonRock:
       // A round grey boulder with craters.
       canvas
@@ -723,6 +781,32 @@ void drawFinish(Canvas canvas, Finish finish) {
           _fill(0xFFE65100),
         );
       _flag(canvas, const Offset(0.5, 0.32), 0.24, scale: 0.7);
+    case Finish.lantern:
+      // A lantern on a post, lit, with the flag above it.
+      canvas
+        ..drawOval(const Rect.fromLTWH(0.28, 0.78, 0.44, 0.12), base)
+        ..drawRect(
+          const Rect.fromLTWH(0.46, 0.42, 0.08, 0.4),
+          _fill(0xFF5D4037),
+        )
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            const Rect.fromLTWH(0.32, 0.28, 0.36, 0.28),
+            const Radius.circular(0.08),
+          ),
+          _fill(0xFFFFE082),
+        )
+        ..drawRRect(
+          RRect.fromRectAndRadius(
+            const Rect.fromLTWH(0.32, 0.28, 0.36, 0.28),
+            const Radius.circular(0.08),
+          ),
+          Paint()
+            ..color = const Color(0xFF222244)
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 0.03,
+        );
+      _flag(canvas, const Offset(0.5, 0.18), 0.16, scale: 0.55);
   }
 }
 

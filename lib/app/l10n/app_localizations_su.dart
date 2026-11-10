@@ -1170,6 +1170,56 @@ class AppLocalizationsSu extends AppLocalizations {
   String get loadPlayer => 'Buka pamaen tina file';
 
   @override
+  String get conceptExamples => 'Ajar Koba';
+
+  @override
+  String get playGoalExamples =>
+      'Panon nempo barang di hareup. Lamun katempo aman, ngalengkah. Lamun henteu, mengkol!';
+
+  @override
+  String get tutorialExamples =>
+      'Anjeun geus nembongkeun gambar nu aman. Panon nempo ka hareup. Lamun katempo aman, kuring ngalengkah. Lamun henteu, kuring mengkol, nepi ka bandera!';
+
+  @override
+  String get storyArrivalExamples => 'Aya barang anyar di jalanna planet ieu.';
+
+  @override
+  String get storyArrivalExamplesKoba =>
+      'Aya nu aman diliwatan, aya nu henteu. Ajar kuring ku gambar, engke kuring diajar!';
+
+  @override
+  String get storyThanksExamples =>
+      'Pinuh deui! Nuhun geus ngajarkeun aku diajar tina conto, Komandan!';
+
+  @override
+  String get sortSafe => 'Nu aman taroh di dieu.';
+
+  @override
+  String get sortNotSafe => 'Nu ieu teu aman.';
+
+  @override
+  String get sortKobaTries => 'Kuring coba nu anyar.';
+
+  @override
+  String get sortKobaWrong =>
+      'Kuring nebak tina gambarna. Gambarna mirip teuing.';
+
+  @override
+  String get sortMore => 'Gambar deui';
+
+  @override
+  String get sortLetsGo => 'Hayu maen!';
+
+  @override
+  String get tourSortPicture => 'Gambar anyar. Taroh dina kelompok nu pas.';
+
+  @override
+  String get tourSortSafe => 'Gambar nu aman asup kelompok ieu.';
+
+  @override
+  String get tourSortNot => 'Gambar nu teu aman asup kelompok ieu.';
+
+  @override
   String playerLoaded(String name) {
     return '$name geus ngagabung';
   }

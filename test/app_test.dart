@@ -318,7 +318,7 @@ void main() {
       expect(find.text('0 puzzles solved'), findsNWidgets(2));
       expect(find.text("Hasn't finished a puzzle yet"), findsOneWidget);
       // Every coding island; the Warm-up island isn't on the report.
-      expect(find.textContaining('Not started'), findsNWidgets(9));
+      expect(find.textContaining('Not started'), findsNWidgets(10));
       expect(find.textContaining('Sponsors see the full'), findsNothing);
     });
   });

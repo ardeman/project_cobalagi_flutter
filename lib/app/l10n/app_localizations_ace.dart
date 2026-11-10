@@ -1167,6 +1167,55 @@ class AppLocalizationsAce extends AppLocalizations {
   String get loadPlayer => 'Peuhah ureueng meu\'en nibak file';
 
   @override
+  String get conceptExamples => 'Peurunoe Koba';
+
+  @override
+  String get playGoalExamples =>
+      'Mata jikalon barang di keue. Meunyo katingeh aman, jak sa langkah. Meunyo hana, beulok!';
+
+  @override
+  String get tutorialExamples =>
+      'Kah ka tunyok gamba nyang aman. Mata jikalon u keue. Meunyo katingeh aman, lon jak. Meunyo hana, lon beulok, trok u bandera!';
+
+  @override
+  String get storyArrivalExamples => 'Na barang baro di jalan planet nyoe.';
+
+  @override
+  String get storyArrivalExamplesKoba =>
+      'Na nyang aman dilewati, na nyang hana. Peurunoe lon ngon gamba, lon meurunoe!';
+
+  @override
+  String get storyThanksExamples =>
+      'Peunoh lom! Teurimong gaseh ka peurunoe lon meurunoe nibak conto, Komandan!';
+
+  @override
+  String get sortSafe => 'Nyang aman pasoe keunoe.';
+
+  @override
+  String get sortNotSafe => 'Nyang nyoe hana aman.';
+
+  @override
+  String get sortKobaTries => 'Lon cuba nyang baro.';
+
+  @override
+  String get sortKobaWrong => 'Lon teuka dari gamba. Gamba jih mirip that.';
+
+  @override
+  String get sortMore => 'Gamba lom';
+
+  @override
+  String get sortLetsGo => 'Jak main!';
+
+  @override
+  String get tourSortPicture => 'Gamba baro. Pasoe lam kelompok nyang pas.';
+
+  @override
+  String get tourSortSafe => 'Gamba nyang aman tamong kelompok nyoe.';
+
+  @override
+  String get tourSortNot => 'Gamba nyang hana aman tamong kelompok nyoe.';
+
+  @override
   String playerLoaded(String name) {
     return '$name ka meugabong';
   }

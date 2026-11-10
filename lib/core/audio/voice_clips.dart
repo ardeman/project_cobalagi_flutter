@@ -47,6 +47,7 @@ abstract final class VoiceClips {
   static const playGoalDebugging = 'play_goal_debugging';
   static const playGoalUntil = 'play_goal_until';
   static const playGoalOtherwise = 'play_goal_otherwise';
+  static const playGoalExamples = 'play_goal_examples';
   static const playHowTo = 'play_how_to';
   static const hintPattern = 'hint_pattern';
   static const hintAgain = 'hint_again';
@@ -113,6 +114,7 @@ abstract final class VoiceClips {
     'debugging',
     'until',
     'otherwise',
+    'examples',
   ];
   static String storyArrival(String concept) => 'story_arrival_$concept';
   static String storyArrivalKoba(String concept) =>
@@ -153,7 +155,34 @@ abstract final class VoiceClips {
     'debugging',
     'until',
     'otherwise',
+    'examples',
   ];
+
+  static const sortSafe = 'sort_safe';
+  static const sortNotSafe = 'sort_not_safe';
+  static const sortKobaTries = 'sort_koba_tries';
+  static const sortKobaWrong = 'sort_koba_wrong';
+  static const tourSortPicture = 'tour_sort_picture';
+  static const tourSortSafe = 'tour_sort_safe';
+  static const tourSortNot = 'tour_sort_not';
+
+  /// Clips named here are not recorded yet. Playback skips a missing file,
+  /// and a shipped language stays offered while only these are absent.
+  /// Remove an id once its mp3 is in every voiced language.
+  static const pending = {
+    'tutorial_examples',
+    playGoalExamples,
+    'story_arrival_examples',
+    'story_arrival_examples_koba',
+    'story_thanks_examples',
+    sortSafe,
+    sortNotSafe,
+    sortKobaTries,
+    sortKobaWrong,
+    tourSortPicture,
+    tourSortSafe,
+    tourSortNot,
+  };
 
   /// Clip id → ARB key.
   static final Map<String, String> all = {
@@ -184,6 +213,14 @@ abstract final class VoiceClips {
     playGoalDebugging: 'playGoalDebugging',
     playGoalUntil: 'playGoalUntil',
     playGoalOtherwise: 'playGoalOtherwise',
+    playGoalExamples: 'playGoalExamples',
+    sortSafe: 'sortSafe',
+    sortNotSafe: 'sortNotSafe',
+    sortKobaTries: 'sortKobaTries',
+    sortKobaWrong: 'sortKobaWrong',
+    tourSortPicture: 'tourSortPicture',
+    tourSortSafe: 'tourSortSafe',
+    tourSortNot: 'tourSortNot',
     playHowTo: 'playHowTo',
     hintPattern: 'hintPattern',
     hintAgain: 'hintAgain',
@@ -290,6 +327,11 @@ abstract final class VoiceClips {
     playGoalDebugging,
     playGoalUntil,
     playGoalOtherwise,
+    playGoalExamples,
+    sortSafe,
+    sortNotSafe,
+    sortKobaTries,
+    sortKobaWrong,
     playHowTo,
     hintPattern,
     hintAgain,
@@ -317,6 +359,9 @@ abstract final class VoiceClips {
     tourBlockIfElse,
     tourBlockUntilGoal,
     tourBlockStar,
+    tourSortPicture,
+    tourSortSafe,
+    tourSortNot,
     feedbackBumped,
     feedbackStoppedShort,
     feedbackOtherBoard,

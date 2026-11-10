@@ -1172,6 +1172,56 @@ class AppLocalizationsJv extends AppLocalizations {
   String get loadPlayer => 'Bukak pemain saka file';
 
   @override
+  String get conceptExamples => 'Warahi Koba';
+
+  @override
+  String get playGoalExamples =>
+      'Mripat ndeleng barang ing ngarep. Yen katon aman, jumangkah. Yen ora, menggok!';
+
+  @override
+  String get tutorialExamples =>
+      'Kowe wis nuduhake gambar sing aman. Mripat ndeleng ngarep. Yen katon aman, aku jumangkah. Yen ora, aku menggok, nganti gendera!';
+
+  @override
+  String get storyArrivalExamples => 'Ana barang anyar ing dalane planet iki.';
+
+  @override
+  String get storyArrivalExamplesKoba =>
+      'Ana sing aman diliwati, ana sing ora. Warahi aku nganggo gambar, mengko aku sinau!';
+
+  @override
+  String get storyThanksExamples =>
+      'Kebak maneh! Suwun wis mulang aku sinau saka conto, Komandan!';
+
+  @override
+  String get sortSafe => 'Sing aman dilebokke kene.';
+
+  @override
+  String get sortNotSafe => 'Sing iki ora aman.';
+
+  @override
+  String get sortKobaTries => 'Aku nyoba sing anyar.';
+
+  @override
+  String get sortKobaWrong =>
+      'Aku nebak saka gambare. Gambare kok mirip banget.';
+
+  @override
+  String get sortMore => 'Gambar maneh';
+
+  @override
+  String get sortLetsGo => 'Ayo dolan!';
+
+  @override
+  String get tourSortPicture => 'Gambar anyar. Lebokke ing klompok sing pas.';
+
+  @override
+  String get tourSortSafe => 'Gambar sing aman mlebu klompok iki.';
+
+  @override
+  String get tourSortNot => 'Gambar sing ora aman mlebu klompok iki.';
+
+  @override
   String playerLoaded(String name) {
     return '$name wis melu';
   }
