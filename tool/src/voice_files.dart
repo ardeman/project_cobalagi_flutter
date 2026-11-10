@@ -17,27 +17,108 @@ Map<String, Object?> loadStrings(String language) =>
     jsonDecode(File('lib/app/l10n/app_$language.arb').readAsStringSync())
         as Map<String, Object?>;
 
-/// Trims silence at both ends and evens out loudness, writing a small mono
-/// MP3, so every clip sounds equally loud whatever made it.
-Future<void> normalizeAudio(String input, String output) =>
-    runChecked('ffmpeg', [
-      '-y',
-      '-loglevel',
-      'error',
-      '-i',
-      input,
-      '-af',
-      'silenceremove=start_periods=1:start_threshold=-50dB,areverse,'
-          'silenceremove=start_periods=1:start_threshold=-50dB,areverse,'
-          'loudnorm=I=-16:TP=-1.5:LRA=11',
+/// The MP3 voice format in `tool/elevenlabs.json` (`mp3_<sampleRate>_<kbps>`).
+///
+/// Clips are stored mono. One speaker has no stereo image, so a second
+/// channel would spend half the bits on silence.
+class VoiceFormat {
+  const VoiceFormat({
+    required this.name,
+    required this.sampleRate,
+    required this.bitrateKbps,
+  });
+
+  /// The ElevenLabs `output_format` string, such as `mp3_22050_32`.
+  final String name;
+
+  final int sampleRate;
+  final int bitrateKbps;
+
+  static final _pattern = RegExp(r'^mp3_(\d+)_(\d+)$');
+
+  static VoiceFormat parse(String format) {
+    final match = _pattern.firstMatch(format);
+    if (match == null) {
+      throw FormatException(
+        'Unsupported output_format "$format". '
+        'Voice clips use mp3_<sampleRate>_<kbps>.',
+      );
+    }
+    return VoiceFormat(
+      name: format,
+      sampleRate: int.parse(match.group(1)!),
+      bitrateKbps: int.parse(match.group(2)!),
+    );
+  }
+
+  /// The format new clips are requested and stored in.
+  static VoiceFormat load() {
+    final config =
+        jsonDecode(File('tool/elevenlabs.json').readAsStringSync())
+            as Map<String, Object?>;
+    final format = config['output_format'];
+    if (format is! String) {
+      throw const FormatException(
+        'tool/elevenlabs.json needs a string output_format.',
+      );
+    }
+    return parse(format);
+  }
+}
+
+/// Language folders under `assets/audio/`. Sound effects and music keep
+/// their own rates.
+List<String> bundledVoiceLanguages() {
+  const notVoice = {'sfx', 'music'};
+  final languages = <String>[];
+  for (final entity in Directory('assets/audio').listSync()) {
+    if (entity is! Directory) continue;
+    final name = entity.path.split(Platform.pathSeparator).last;
+    if (!notVoice.contains(name)) languages.add(name);
+  }
+  languages.sort();
+  return languages;
+}
+
+/// ffmpeg arguments for a mono CBR MP3, at LAME's highest quality for the
+/// bitrate.
+List<String> monoMp3Args({required int sampleRate, required int bitrateKbps}) =>
+    [
       '-ac',
       '1',
       '-ar',
-      '22050',
+      '$sampleRate',
+      '-c:a',
+      'libmp3lame',
+      '-compression_level',
+      '0',
       '-b:a',
-      '64k',
-      output,
-    ]);
+      '${bitrateKbps}k',
+    ];
+
+/// Trims silence at both ends and evens out loudness, writing a mono MP3,
+/// so every clip sounds equally loud whatever made it.
+///
+/// [bitrateKbps] stays 64 for sound effects. Voice clips pass [VoiceFormat],
+/// so a lower `output_format` is what gets stored.
+Future<void> normalizeAudio(
+  String input,
+  String output, {
+  int sampleRate = 22050,
+  int bitrateKbps = 64,
+}) => runChecked('ffmpeg', [
+  '-y',
+  '-loglevel',
+  'error',
+  '-i',
+  input,
+  '-af',
+  'silenceremove=start_periods=1:start_threshold=-50dB,areverse,'
+      'silenceremove=start_periods=1:start_threshold=-50dB,areverse,'
+      'loudnorm=I=-16:TP=-1.5:LRA=11',
+  ...monoMp3Args(sampleRate: sampleRate, bitrateKbps: bitrateKbps),
+  output,
+]);
 
 /// Trims silence at both ends, keeping the recording's quality, so
 /// speech-to-speech converts (and bills) only the spoken part.

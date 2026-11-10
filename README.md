@@ -176,6 +176,14 @@ dart run tool/design_voice.dart               # Voice Design previews for Koba
 dart run tool/design_voice.dart --save <generated_voice_id>  # keep a preview as a voice
 ```
 
+Clips are stored as mono MP3 at `output_format` in `tool/elevenlabs.json` (22.05 kHz, 32 kbps). Generating a clip still trims silence and evens the level, then encodes at that rate. After the format changes, re-encode clips already in the repo (this does not trim or re-level them):
+
+```sh
+dart run tool/reencode_voice.dart            # every bundled language
+dart run tool/reencode_voice.dart --lang id  # one language
+dart run tool/reencode_voice.dart --check    # confirm the format, and that each clip decodes
+```
+
 ### Regional languages
 
 Javanese and Sundanese use direct text-to-speech with `eleven_v4`, following the user's sample review (Decisions, 2026-10-25). Generate their missing clips with `dart run tool/generate_voice.dart --lang jv` or `--lang su`. Javanese sets `language_code: jv`; Sundanese lets the model infer the language because it has no supported language code. Pronunciation and the draft texts still need a native speaker's review before release.
@@ -395,7 +403,7 @@ Javanese and Sundanese have generated voices and shipped in 2.10.0 before a nati
 
 Google Play warned that build 28 (2.10.0) is much bigger: about 31 MB to 41 MB for arm64, nearly all of it the Javanese and Sundanese voice clips (4.4 MB each), which every device downloads. Each new language adds as much. From February 2027 Play also holds apps to new memory and optimisation thresholds.
 
-1. **Smaller voice clips:** clips are 128 kbps MP3 (`output_format` in `tool/elevenlabs.json`); speech stays clear far lower, so lower that for new clips and re-encode the bundled `assets/audio/<code>/` ones, then listen to a sample in each language, and compare APK sizes. Play Asset Delivery per language is the bigger fix, for Android only.
+1. **Smaller voice clips (done):** bundled clips are mono MP3 at 22.05 kHz and 32 kbps (`mp3_22050_32` in `tool/elevenlabs.json`). The API used to return 128 kbps and normalize stored 64 kbps; 32 kbps keeps the consonant band and about halves the voice download. `dart run tool/reencode_voice.dart` brings older clips in line. Listen to `play_how_to` in each language on a device. Play Asset Delivery per language is still the bigger fix, for Android only.
 2. **Memory:** once 2.10.0 is live, watch Play Console → Android vitals → Memory. If it is near a threshold, measure the heaviest screens (map sky, play world, story scenes) on a real phone: decode pictures at their shown size, free voice and music players when a screen closes. Recheck in January 2027 either way.
 
 ### Later
