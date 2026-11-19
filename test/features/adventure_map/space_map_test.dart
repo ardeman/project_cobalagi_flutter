@@ -296,7 +296,7 @@ void main() {
     addTearDown(tester.view.reset);
     final ids = [
       'warmup', 'directions', 'sequencing', 'loops', 'functions', //
-      'conditions', 'variables', 'debugging', 'until', 'otherwise',
+      'conditions', 'variables', 'debugging', 'until', 'otherwise', 'examples',
     ];
     await pumpWithAudio(
       tester,

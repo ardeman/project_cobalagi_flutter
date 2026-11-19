@@ -353,7 +353,7 @@ VIDEO_FRAMES=1 flutter test tool/screenshots --update-goldens --plain-name 'vide
 
 ## Roadmap
 
-**Done:** the engine, picture blocks and typed code; the learning loop and the warm-up placement; ten planets (Warm-up, Directions, Step by step, Loops, Magic Block, Look ahead, Step Box, Fix it!, Until the flag, Otherwise) with "Watch me!" demos; hints, stickers, sound, music and Koba's voice; the Star fuel story; game controllers and folding phones; moving a child to another device with a progress file (parent area); releases on the App Store, Google Play (closed test, then production access) and GitHub. The reasons behind each choice are in `AGENTS.md` → Decisions.
+**Done:** the engine, picture blocks and typed code; the learning loop and the warm-up placement; ten planets in the released app (Warm-up, Directions, Step by step, Loops, Magic Block, Look ahead, Step Box, Fix it!, Until the flag, Otherwise) with "Watch me!" demos; hints, stickers, sound, music and Koba's voice; the Star fuel story; game controllers and folding phones; moving a child to another device with a progress file (parent area); releases on the App Store, Google Play (closed test, then production access) and GitHub. Teach Koba (learning from examples) is in the tree after Otherwise, with its sorting screen, and waits on voice clips and a device check before a release (see Next). The reasons behind each choice are in `AGENTS.md` → Decisions.
 
 ### Next: more platforms
 
@@ -398,10 +398,17 @@ Google Play warned that build 28 (2.10.0) is much bigger: about 31 MB to 41 MB f
 1. **Smaller voice clips:** clips are 128 kbps MP3 (`output_format` in `tool/elevenlabs.json`); speech stays clear far lower, so lower that for new clips and re-encode the bundled `assets/audio/<code>/` ones, then listen to a sample in each language, and compare APK sizes. Play Asset Delivery per language is the bigger fix, for Android only.
 2. **Memory:** once 2.10.0 is live, watch Play Console → Android vitals → Memory. If it is near a threshold, measure the heaviest screens (map sky, play world, story scenes) on a real phone: decode pictures at their shown size, free voice and music players when a screen closes. Recheck in January 2027 either way.
 
+### Next: Teach Koba before a release
+
+The planet is in the app (after Otherwise). The website and the store listings still describe the released ten planets. Before the release that ships Teach Koba:
+
+1. **Record the clips** named in `VoiceClips.pending` (Indonesian, Javanese, Sundanese and English). Drop an id from `pending` once every voiced language has the file. Do not add a silent placeholder.
+2. **Check the sorting screen** on a phone, upright and sideways, and on a half-folded phone: the pictures fit, a wrong bin shakes the picture back, "More pictures" then "Let's go", then the maze.
+3. **Check the words:** a native speaker reads the new lines in the regional ARB files.
+
 ### Later
 
 - **Koba celebration clip** (a time-boxed test after the Play launch): an AI clip of Koba celebrating, turned into a sprite sheet for Flame's `SpriteAnimation` on the solved card. Keep it only if Koba still looks like Koba.
-- **Teach Koba (an AI planet)**: children learn that computers learn from examples, as in code.org's AI for Oceans, without reading, chatbots or the internet. Koba meets new things on a planet; the child sorts picture examples into safe and not safe, Koba sorts new ones by itself and gets some wrong when the examples were too alike, and more varied examples fix it. The model is a few lines of pure Dart (nearest neighbour on colour, shape and size), and Koba's eye block then uses what it learned in Otherwise programs, so the planet still compiles to the shared `Program`. No camera, microphone or generative AI. It needs everything a new planet needs (lesson pack, `PuzzleKind`, demo, arrival scene, thank-you line, tour lines and clips) plus the sorting screen.
 
 ## Documentation map
 

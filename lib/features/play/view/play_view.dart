@@ -35,11 +35,12 @@ import 'package:cobalagi/features/editors/typed/view/typed_code_editor.dart';
 import '../../../engine/world/level.dart';
 import '../../../learning/exercise_result.dart';
 import '../../../learning/learning_engine.dart';
+import '../../examples/view/sorting_screen.dart';
+import '../../learning/cubit/learning_cubit.dart';
 import '../../editors/blocks/cubit/blocks_cubit.dart';
 import '../../editors/blocks/data/block.dart';
 import '../../editors/blocks/view/block_editor.dart';
 import '../../editors/blocks/view/block_tile.dart';
-import '../../learning/cubit/learning_cubit.dart';
 import '../../learning/view/concepts.dart';
 import '../cubit/play_cubit.dart';
 import 'puzzle_stars.dart';
@@ -124,6 +125,9 @@ class _PlayViewState extends State<PlayView> {
 
   /// The guided tour is showing (see [PlayView.showTour]).
   late var _touring = widget.showTour;
+
+  /// A Teach Koba lesson sorts pictures before the blocks open.
+  late var _teach = _level.rounds.isNotEmpty;
   final _tour = _TourKeys();
 
   /// What the tour says about a palette block, and its voice clip.
@@ -468,6 +472,16 @@ class _PlayViewState extends State<PlayView> {
 
   @override
   Widget build(BuildContext context) {
+    if (_teach) {
+      final learning = context.read<LearningCubit>();
+      return SortingScreen(
+        level: _level,
+        homePath: widget.homePath,
+        showTour: learning.tourDue(LearningCubit.sortTour),
+        onTourDone: () => learning.markTutorialSeen(LearningCubit.sortTour),
+        onDone: () => setState(() => _teach = false),
+      );
+    }
     final keyboardOpen = MediaQuery.viewInsetsOf(context).bottom > 0;
     return MultiBlocProvider(
       providers: [
@@ -1002,7 +1016,9 @@ class _PlayViewState extends State<PlayView> {
 
   /// The spoken goal of a level: its words and its voice clip.
   static (String Function(AppLocalizations), String) _goal(Level level) =>
-      level.starter != null
+      level.concept == 'examples'
+      ? ((l) => l.playGoalExamples, VoiceClips.playGoalExamples)
+      : level.starter != null
       ? ((l) => l.playGoalDebugging, VoiceClips.playGoalDebugging)
       : level.palette.contains(InstructionKind.ifElse)
       ? ((l) => l.playGoalOtherwise, VoiceClips.playGoalOtherwise)

@@ -8,6 +8,7 @@
     { "id": "variables", "prerequisites": ["conditions"] },
     { "id": "debugging", "prerequisites": ["loops", "variables"] },
     { "id": "until", "prerequisites": ["loops", "debugging"] },
-    { "id": "otherwise", "prerequisites": ["conditions", "until"] }
+    { "id": "otherwise", "prerequisites": ["conditions", "until"] },
+    { "id": "examples", "prerequisites": ["otherwise"] }
   ]
 }

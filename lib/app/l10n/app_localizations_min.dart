@@ -1168,6 +1168,56 @@ class AppLocalizationsMin extends AppLocalizations {
   String get loadPlayer => 'Muek pamain dari file';
 
   @override
+  String get conceptExamples => 'Ajari Koba';
+
+  @override
+  String get playGoalExamples =>
+      'Mato mancaliak barang di muko. Kalau kaliahatan aman, malangkah. Kalau indak, baluak!';
+
+  @override
+  String get tutorialExamples =>
+      'Sanjo alah manunjuakan gambar nan aman. Mato mancaliak ka muko. Kalau kaliahatan aman, awak malangkah. Kalau indak, awak baluak, sampai ka bandera!';
+
+  @override
+  String get storyArrivalExamples => 'Ado barang baru di jalan planet ko.';
+
+  @override
+  String get storyArrivalExamplesKoba =>
+      'Ado nan aman dilalui, ado nan indak. Ajari awak jo gambar, awak baraja!';
+
+  @override
+  String get storyThanksExamples =>
+      'Panuah baliak! Tarimo kasih alah maajari awak baraja dari contoh, Komandan!';
+
+  @override
+  String get sortSafe => 'Nan aman latakan di siko.';
+
+  @override
+  String get sortNotSafe => 'Nan ko indak aman.';
+
+  @override
+  String get sortKobaTries => 'Awak cubo nan baru.';
+
+  @override
+  String get sortKobaWrong =>
+      'Awak mancubo dari gambarnyo. Gambarnyo samo bana.';
+
+  @override
+  String get sortMore => 'Gambar lai';
+
+  @override
+  String get sortLetsGo => 'Ayo main!';
+
+  @override
+  String get tourSortPicture => 'Gambar baru. Latakan di kalompok nan pas.';
+
+  @override
+  String get tourSortSafe => 'Gambar nan aman masuak kalompok ko.';
+
+  @override
+  String get tourSortNot => 'Gambar nan indak aman masuak kalompok ko.';
+
+  @override
   String playerLoaded(String name) {
     return '$name alah bagabuang';
   }

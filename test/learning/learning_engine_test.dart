@@ -49,7 +49,7 @@ ExerciseResult result(
 
 void main() {
   group('skill graph', () {
-    test('follows Directions → … → Until the flag → Otherwise', () {
+    test('follows Directions → … → Otherwise → Teach Koba', () {
       expect(graph.first, 'directions');
       expect(graph.nextAfter('directions'), 'sequencing');
       expect(graph.nextAfter('sequencing'), 'loops');
@@ -59,9 +59,12 @@ void main() {
       expect(graph.nextAfter('variables'), 'debugging');
       expect(graph.nextAfter('debugging'), 'until');
       expect(graph.nextAfter('until'), 'otherwise');
-      expect(graph.nextAfter('otherwise'), isNull);
+      expect(graph.nextAfter('otherwise'), 'examples');
+      expect(graph.nextAfter('examples'), isNull);
       // Struggling with "otherwise" reviews the plain eye block.
       expect(graph.reviewTargetFor('otherwise'), 'conditions');
+      // Teach Koba's programs are Otherwise programs.
+      expect(graph.reviewTargetFor('examples'), 'otherwise');
       expect(graph.reviewTargetFor('until'), 'loops');
       // Struggling to fix bugs reviews loops, where the bugs come from.
       expect(graph.reviewTargetFor('debugging'), 'loops');
@@ -173,8 +176,8 @@ void main() {
 
     test('mastering the last concept completes the map', () {
       final (_, decision) = play(
-        engine.initialState(startConcept: 'otherwise'),
-        [for (var i = 0; i < config.minExercises; i++) result('otherwise')],
+        engine.initialState(startConcept: 'examples'),
+        [for (var i = 0; i < config.minExercises; i++) result('examples')],
       );
       expect(decision, isA<MapComplete>());
     });

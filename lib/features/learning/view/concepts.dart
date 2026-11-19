@@ -14,6 +14,7 @@ String conceptName(AppLocalizations l10n, String id) => switch (id) {
   'debugging' => l10n.conceptDebugging,
   'until' => l10n.conceptUntil,
   'otherwise' => l10n.conceptOtherwise,
+  'examples' => l10n.conceptExamples,
   warmUpIsland => l10n.conceptWarmUp,
   _ => id,
 };
@@ -28,6 +29,7 @@ IconData conceptIcon(String id) => switch (id) {
   'debugging' => Icons.build_rounded,
   'until' => Icons.sports_score_rounded,
   'otherwise' => Icons.alt_route_rounded,
+  'examples' => Icons.school_rounded,
   warmUpIsland => Icons.sports_esports_rounded,
   _ => Icons.terrain_rounded,
 };
@@ -42,6 +44,7 @@ Color conceptColor(String id) => switch (id) {
   'debugging' => const Color(0xFF5C6BC0),
   'until' => const Color(0xFF7CB342),
   'otherwise' => const Color(0xFF6D4AFF),
+  'examples' => const Color(0xFF00838F),
   warmUpIsland => const Color(0xFFFF7A59),
   _ => const Color(0xFF8D6E63),
 };

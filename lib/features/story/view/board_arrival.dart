@@ -7,6 +7,7 @@ import 'package:flutter/painting.dart';
 import 'package:cobalagi/core/audio/sound_effects.dart';
 import 'package:cobalagi/core/character/robot_face.dart';
 import 'package:cobalagi/core/character/robot_turn.dart';
+import 'package:cobalagi/engine/examples/example.dart';
 import 'package:cobalagi/engine/interpreter/interpreter.dart';
 import 'package:cobalagi/engine/interpreter/run_event.dart';
 import 'package:cobalagi/engine/world/direction.dart';
@@ -62,6 +63,12 @@ abstract class BoardArrival extends ArrivalScene {
 
   /// The program Koba runs.
   List<Block> get program;
+
+  /// Pictures Koba already learned, so a creature on the board is safe or not.
+  List<LabeledExample> get examples => const [];
+
+  /// Grid letter to the creature it draws.
+  Map<String, ExampleThing> get catalog => const {};
 
   /// The Magic Block's blocks, shown in a row of their own.
   List<Block> get magic => const [];
@@ -881,6 +888,8 @@ final class BoardPlay {
         rows: scene.rows,
         startFacing: scene.facing,
         palette: {BlockType.forward.kind},
+        examples: scene.examples,
+        catalog: scene.catalog,
       ) {
     final program = _numbered(scene.program, 'm');
     final magic = _numbered(scene.magic, 's');

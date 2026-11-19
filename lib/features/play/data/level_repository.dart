@@ -15,6 +15,7 @@ const levelPacks = [
   'debugging',
   'until',
   'otherwise',
+  'examples',
 ];
 
 /// Parses a pack file: `{"levels": [<level JSON>, ...]}`.

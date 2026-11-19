@@ -1180,6 +1180,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadPlayer => 'Load a player from a file';
 
   @override
+  String get conceptExamples => 'Teach Koba';
+
+  @override
+  String get playGoalExamples =>
+      'The eye looks at the next thing. If it looks safe, step. Otherwise, turn!';
+
+  @override
+  String get tutorialExamples =>
+      'You showed me which pictures are safe. The eye looks ahead. If it looks safe, I step. Otherwise, I turn, until the flag!';
+
+  @override
+  String get storyArrivalExamples =>
+      'Strange new things sit on the paths of this planet.';
+
+  @override
+  String get storyArrivalExamplesKoba =>
+      'Some are safe to pass, and some are not. Teach me with pictures, and I\'ll learn!';
+
+  @override
+  String get storyThanksExamples =>
+      'Full again! Thank you for teaching me to learn from examples, commander!';
+
+  @override
+  String get sortSafe => 'Safe ones go here.';
+
+  @override
+  String get sortNotSafe => 'These ones are not safe.';
+
+  @override
+  String get sortKobaTries => 'I\'ll try a new one.';
+
+  @override
+  String get sortKobaWrong =>
+      'I guessed from the pictures. They were too alike.';
+
+  @override
+  String get sortMore => 'More pictures';
+
+  @override
+  String get sortLetsGo => 'Let\'s go!';
+
+  @override
+  String get tourSortPicture =>
+      'A new picture. Put it in the group it belongs to.';
+
+  @override
+  String get tourSortSafe => 'Safe pictures go in this group.';
+
+  @override
+  String get tourSortNot => 'Pictures that are not safe go in this group.';
+
+  @override
   String playerLoaded(String name) {
     return '$name has joined';
   }

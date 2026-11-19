@@ -402,5 +402,56 @@
       },
       "go"
     ]
+  },
+  "examples": {
+    "level": {
+      "id": "tutorial-examples",
+      "concept": "examples",
+      "facing": "east",
+      "palette": [
+        "move",
+        "turnLeft",
+        "turnRight",
+        "untilGoal",
+        "ifElse"
+      ],
+      "maxBlocks": 5,
+      "examples": [
+        {"colour": "green", "shape": "circle", "size": "big", "safe": true},
+        {"colour": "green", "shape": "triangle", "size": "small", "safe": true},
+        {"colour": "red", "shape": "triangle", "size": "small", "safe": false},
+        {"colour": "red", "shape": "circle", "size": "big", "safe": false}
+      ],
+      "things": {
+        "a": {"colour": "green", "shape": "circle", "size": "small"},
+        "b": {"colour": "red", "shape": "triangle", "size": "medium"}
+      },
+      "rows": [
+        "######",
+        "#S.ab#",
+        "###.##",
+        "#G..##",
+        "######"
+      ]
+    },
+    "actions": [
+      {
+        "add": "untilGoal"
+      },
+      {
+        "add": "ifElse",
+        "in": [0]
+      },
+      {
+        "add": "forward",
+        "in": [0, 0]
+      },
+      {
+        "add": "turnRight",
+        "in": [0, 0],
+        "otherwise": true
+      },
+      "go"
+    ]
   }
 }
