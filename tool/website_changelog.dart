@@ -122,24 +122,26 @@ String buildChangelogPage({String root = '.'}) {
     if (builds.length == 1) {
       final r = builds.single;
       final build = r['build'] as int;
+      // Anchors keep the build id for deep links; the label is the version
+      // name only, since a store rejection can ship a later build of the
+      // same version to some devices.
       entries.write('''
         <article class="release" id="build-$build">
-          <h2>$newest$version <span class="build" data-en="build $build">build $build</span></h2>
+          <h2>$newest$version</h2>
           <p class="updated">${_time(r)}</p>
 ${body(build)}        </article>
 ''');
       continue;
     }
-    final range = '${builds.last['build']}–${builds.first['build']}';
     entries.write('''
         <article class="release">
-          <h2>$newest$version <span class="build" data-en="builds $range">build $range</span></h2>
+          <h2>$newest$version</h2>
 ''');
     for (final r in builds) {
       final build = r['build'] as int;
       entries.write('''
           <section class="release-build" id="build-$build">
-          <h3><span class="build" data-en="build $build">build $build</span> ${_time(r)}</h3>
+          <h3>${_time(r)}</h3>
 ${body(build)}          </section>
 ''');
     }

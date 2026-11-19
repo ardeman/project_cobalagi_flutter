@@ -37,10 +37,21 @@ void main() {
   test('test builds of one version share its card', () {
     final page = buildChangelogPage();
     final versions = RegExp(
-      r'<h2>(?:<span class="newest"[^>]*>[^<]*</span> )?([\d.]+) ',
+      r'<h2>(?:<span class="newest"[^>]*>[^<]*</span> )?([\d.]+)</h2>',
     ).allMatches(page).map((m) => m[1]).toList();
     expect(versions.toSet(), hasLength(versions.length));
-    expect(page, contains('data-en="builds 21–23"'));
+    // Version 2.6.1 had three test uploads; they share one card with
+    // one section each (anchors keep the build ids, labels do not).
+    expect(page, contains('id="build-21"'));
+    expect(page, contains('id="build-22"'));
+    expect(page, contains('id="build-23"'));
+    expect(
+      RegExp(
+        r'<h2>(?:<span class="newest"[^>]*>[^<]*</span> )?2\.6\.1</h2>',
+      ).allMatches(page),
+      hasLength(1),
+    );
+    expect(page, isNot(contains('class="build"')));
   });
 
   test('every page has the same menu and footer', () {

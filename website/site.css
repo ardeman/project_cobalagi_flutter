@@ -525,10 +525,6 @@ footer { padding: 40px 0 48px; color: var(--space-muted); font-size: 0.95rem; }
 .release { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 28px; }
 .release:first-child { border: 2px solid var(--teal); box-shadow: var(--shadow); }
 .release h2 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; margin: 0 0 2px; font-size: 1.6rem; }
-.release .build {
-  font-size: 0.85rem; font-weight: 700; color: var(--teal-deep);
-  background: var(--surface-2); border-radius: 999px; padding: 2px 10px;
-}
 .release .newest {
   order: -1; flex-basis: 100%;
   font-size: 0.8rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--coral);
